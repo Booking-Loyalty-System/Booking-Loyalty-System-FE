@@ -31,11 +31,16 @@
     "lint-staged": "^17.0.4",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
+    "validate-branch-name": "^1.3.2",
     "vite": "^8.0.12"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix"
     ]
+  },
+  "validate-branch-name": {
+    "pattern": "^(main|feat|fix|docs|refactor|hotfix)/.+$",
+    "errorMsg": "Tên branch sai định dạng rồi bạn ơi! Phải là feat/..., fix/..., docs/... chứ!"
   }
 }
