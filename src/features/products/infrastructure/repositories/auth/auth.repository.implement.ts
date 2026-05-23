@@ -1,11 +1,11 @@
-import type { IAuthRepository } from './auth.repository.ts';
+import type { IAuthRepository } from './auth.repository.interface.ts';
 import type { AuthResponseData } from '../../../domain/models/auth/auth.model';
 import type { ApiResponse } from '../../../domain/apiResponse.ts';
-import { LoginRequest } from '../../application/useLogin';
-import { httpClient } from '@/core/api/httpClient';
+import type { LoginRequest } from '../../../application/useAuth.ts';
+import { httpClient } from '@/core/http/httpClient.ts';
 import { ENDPOINTS } from '@/core/api/endpoints';
 
-export class AuthRepositoryImpl implements IAuthRepository {
+export class AuthRepositoryImplement implements IAuthRepository {
     async login(credentials: LoginRequest): Promise<AuthResponseData> {
         // Vì apiClient interceptor của bạn đã return response.data,
         // nên httpClient.post ở đây sẽ nhận về object chứa { statusCode, message, data }
