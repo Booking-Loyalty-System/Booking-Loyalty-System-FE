@@ -1,122 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useAuth } from '@/features/products/application/useAuth';
+import { LoginPage } from '@/features/products/presentation/pages/LoginPage';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+// 1. Khởi tạo QueryClient cho React Query
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // Tắt tự động refetch khi click chuyển tab cho đỡ tốn tài nguyên
+      retry: 1, // Nếu lỗi thì thử gọi lại 1 lần
+    },
+  },
+});
 
+// 2. Component điều phối chính nội bộ ứng dụng
+function AppContent() {
+  const { isAuthenticated, user, logout } = useAuth();
+
+  // 💡 Nếu chưa đăng nhập -> Ép hiển thị trang Login
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  // 💡 Nếu đã đăng nhập thành công -> Hiển thị Giao diện chính của App
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <div className="app-layout">
+        <header className="app-header">
+          <h1>Hệ Thống Quản Lý</h1>
+          <div className="user-info">
+            <span>Xin chào, <strong>{user?.username}</strong> ({user?.email})</span>
+            <button className="logout-btn" onClick={logout}>Đăng xuất</button>
+          </div>
+        </header>
 
-      <div className="ticks"></div>
+        <main className="app-main">
+          <section id="center">
+            <h2>Chào mừng bạn đã quay trở lại!</h2>
+            <p>Hệ thống Clean Architecture đã kích hoạt và sẵn sàng vận hành.</p>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+            {/* Mai mốt bạn code thêm ProductList, OrderList... thì vứt ở đây */}
+            <div style={{ marginTop: '20px', padding: '20px', border: '1px dashed #ccc' }}>
+              <em>Tầng Presentation (Giao diện chính sau đăng nhập) sẽ hiển thị tại đây.</em>
+            </div>
+          </section>
+        </main>
+      </div>
+  );
 }
 
-export default App
+// 3. Component App tổng bọc đầy đủ các Context/Provider cần thiết
+export default function App() {
+  return (
+      <QueryClientProvider client={queryClient}>
+          <AppContent />
+      </QueryClientProvider>
+  );
+}
