@@ -1,34 +1,9 @@
-import React, { useState } from 'react';
 import { Mail, Lock, Droplets } from 'lucide-react';
-import { useAuth } from '../../application/useAuth.ts';
 
-export const LoginPage: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const { login, isLoading, error } = useAuth();
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Kích hoạt hook login với requestBody đúng chuẩn
-        login({ email, password });
-    };
-
-    // Hàm tiện ích để Quick Access test nhanh trong quá trình Demo
-    const handleQuickAccess = (role: 'customer' | 'staff' | 'admin') => {
-        const credentials = {
-            customer: { email: 'customer@autowash.com', pass: '12345678' },
-            staff: { email: 'staff@autowash.com', pass: '12345678' },
-            admin: { email: 'admin@autowash.com', pass: '12345678' }
-        };
-
-        setEmail(credentials[role].email);
-        setPassword(credentials[role].pass);
-    };
-
+export default function Login() {
     return (
         <div className="min-h-screen bg-[#e6f0fa] flex items-center justify-center p-4 antialiased font-sans">
-            {/* Container chính với viền nét đứt màu xanh */}
+            {/* Container chính với viền nét đứt màu xanh như trong hình */}
             <div className="w-full max-w-[1100px] border-2 border-dashed border-[#1e6ffd] rounded-lg p-6 bg-transparent flex flex-col md:flex-row gap-6">
 
                 {/* PANEL TRÁI: Giới thiệu tính năng */}
@@ -56,24 +31,33 @@ export const LoginPage: React.FC = () => {
 
                         {/* Danh sách tính năng */}
                         <div className="space-y-5">
+                            {/* Tính năng 1 */}
                             <div className="flex items-start gap-4">
-                                <div className="w-7 h-7 rounded-md bg-[#e6f0fa] text-[#1e6ffd] font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">1</div>
+                                <div className="w-7 h-7 rounded-md bg-[#e6f0fa] text-[#1e6ffd] font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
+                                    1
+                                </div>
                                 <div>
                                     <h3 className="font-semibold text-[#0f172a] text-base">Easy Booking</h3>
                                     <p className="text-sm text-[#64748b]">Schedule your car wash in seconds</p>
                                 </div>
                             </div>
 
+                            {/* Tính năng 2 */}
                             <div className="flex items-start gap-4">
-                                <div className="w-7 h-7 rounded-md bg-[#e6f0fa] text-[#1e6ffd] font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">2</div>
+                                <div className="w-7 h-7 rounded-md bg-[#e6f0fa] text-[#1e6ffd] font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
+                                    2
+                                </div>
                                 <div>
                                     <h3 className="font-semibold text-[#0f172a] text-base">Loyalty Rewards</h3>
                                     <p className="text-sm text-[#64748b]">Earn points and get exclusive benefits</p>
                                 </div>
                             </div>
 
+                            {/* Tính năng 3 */}
                             <div className="flex items-start gap-4">
-                                <div className="w-7 h-7 rounded-md bg-[#e6f0fa] text-[#1e6ffd] font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">3</div>
+                                <div className="w-7 h-7 rounded-md bg-[#e6f0fa] text-[#1e6ffd] font-bold text-sm flex items-center justify-center shrink-0 mt-0.5">
+                                    3
+                                </div>
                                 <div>
                                     <h3 className="font-semibold text-[#0f172a] text-base">Premium Service</h3>
                                     <p className="text-sm text-[#64748b]">Professional car care guaranteed</p>
@@ -94,20 +78,17 @@ export const LoginPage: React.FC = () => {
                         </div>
 
                         {/* Form Fields */}
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
                             {/* Email Input */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-[#334155]">Email Address</label>
                                 <div className="relative">
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
-                                        <Mail className="w-5 h-5" />
-                                    </span>
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
+                    <Mail className="w-5 h-5" />
+                  </span>
                                     <input
                                         type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
                                         placeholder="john@example.com"
-                                        required
                                         className="w-full pl-12 pr-4 py-3 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:border-[#1e6ffd] focus:ring-1 focus:ring-[#1e6ffd] transition-all"
                                     />
                                 </div>
@@ -117,15 +98,12 @@ export const LoginPage: React.FC = () => {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-[#334155]">Password</label>
                                 <div className="relative">
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
-                                        <Lock className="w-5 h-5" />
-                                    </span>
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
+                    <Lock className="w-5 h-5" />
+                  </span>
                                     <input
                                         type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        required
                                         className="w-full pl-12 pr-4 py-3 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:border-[#1e6ffd] focus:ring-1 focus:ring-[#1e6ffd] transition-all"
                                     />
                                 </div>
@@ -145,24 +123,12 @@ export const LoginPage: React.FC = () => {
                                 </a>
                             </div>
 
-                            {/* Error Message */}
-                            {error && (
-                                <div className="text-sm text-red-500 bg-red-50 border border-red-100 p-3 rounded-lg font-medium">
-                                    Đăng nhập thất bại. Vui lòng thử lại!
-                                </div>
-                            )}
-
                             {/* Button Sign In */}
                             <button
                                 type="submit"
-                                disabled={isLoading}
-                                className="w-full bg-[#1e6ffd] disabled:bg-[#7ea2f7] text-white font-semibold py-3.5 px-4 rounded-xl hover:bg-[#1a5fdb] active:scale-[0.99] transition-all shadow-sm mt-2 flex items-center justify-center"
+                                className="w-full bg-[#1e6ffd] text-white font-semibold py-3.5 px-4 rounded-xl hover:bg-[#1a5fdb] active:scale-[0.99] transition-all shadow-sm mt-2"
                             >
-                                {isLoading ? (
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    'Sign In'
-                                )}
+                                Sign In
                             </button>
 
                             {/* Create Account Link */}
@@ -179,29 +145,17 @@ export const LoginPage: React.FC = () => {
 
                         {/* Quick Access (Demo) */}
                         <div className="text-center">
-                            <span className="text-xs font-medium text-[#94a3b8] uppercase tracking-wider block mb-3">
-                                Quick Access (Demo)
-                            </span>
+              <span className="text-xs font-medium text-[#94a3b8] uppercase tracking-wider block mb-3">
+                Quick Access (Demo)
+              </span>
                             <div className="grid grid-cols-3 gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => handleQuickAccess('customer')}
-                                    className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-medium text-xs py-2 px-3 rounded-lg transition-colors"
-                                >
+                                <button className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-medium text-xs py-2 px-3 rounded-lg transition-colors">
                                     Customer
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleQuickAccess('staff')}
-                                    className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-medium text-xs py-2 px-3 rounded-lg transition-colors"
-                                >
+                                <button className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-medium text-xs py-2 px-3 rounded-lg transition-colors">
                                     Staff
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleQuickAccess('admin')}
-                                    className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-medium text-xs py-2 px-3 rounded-lg transition-colors"
-                                >
+                                <button className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-medium text-xs py-2 px-3 rounded-lg transition-colors">
                                     Admin
                                 </button>
                             </div>
@@ -213,4 +167,4 @@ export const LoginPage: React.FC = () => {
             </div>
         </div>
     );
-};
+}
