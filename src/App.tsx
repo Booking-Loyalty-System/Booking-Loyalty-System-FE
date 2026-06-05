@@ -1,58 +1,63 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useAuth } from '@/features/products/application/useAuth';
-import { LoginPage } from '@/features/products/presentation/pages/LoginPage';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LoginPage } from './features/products/presentation/pages/LoginPage';
+import { RegisterPage } from './features/products/presentation/pages/RegisterPage';
+import {AutoWashSimulation} from "@/shared/auto-wash-simulation.tsx";
+import {ProtectedRoute} from "@/core/guard/ProtectedRoute.tsx";
+import {CustomerLayout} from "./features/products/presentation/layouts/CustomerLayout.tsx";
+import {BookWash} from "@/features/products/presentation/components/BookWash.tsx";
+import {Dashboard} from "@/features/products/presentation/components/Dashboard.tsx";
+import Membership from "./features/products/presentation/components/LoyaltyTier.tsx";
+import {RewardsSection} from "@/features/products/presentation/components/RewardsSection.tsx";
+import {MyVehicles} from "@/features/products/presentation/components/MyVehicle.tsx";
+import {Promotions} from "@/features/products/presentation/components/Promotion.tsx";
+import {BookingHistory} from "@/features/products/presentation/components/BookingHistory.tsx";
+import {ProfileSettings} from "@/features/products/presentation/components/ProfileSettings.tsx";
+import {NotificationCenter} from "@/features/products/presentation/components/NotificationCenter.tsx";
+import {Toaster} from "sonner";
 
-// 1. Khởi tạo QueryClient cho React Query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false, // Tắt tự động refetch khi click chuyển tab cho đỡ tốn tài nguyên
-      retry: 1, // Nếu lỗi thì thử gọi lại 1 lần
-    },
-  },
-});
+function App() {
+    return (
+        <>
+            <Toaster richColors position="top-right" />
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/login" replace />} />
 
-// 2. Component điều phối chính nội bộ ứng dụng
-function AppContent() {
-  const { isAuthenticated, user, logout } = useAuth();
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route element={<CustomerLayout />} >
+                        <Route path="/live-tracking-test" element={<AutoWashSimulation />} />
+                        <Route path="/book-wash" element={<BookWash />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/loyalty-tier" element={<Membership />} />
+                        <Route path="/rewards" element={<RewardsSection />} />
+                        <Route path="/my-vehicles" element={<MyVehicles />} />
+                        <Route path="/booking-history" element={<BookingHistory />} />
+                        <Route path="/promotions" element={<Promotions />} />
+                        <Route path="/settings" element={<ProfileSettings />} />
+                        <Route path="/notifications" element={<NotificationCenter />} />
+                    </Route>
 
-  // 💡 Nếu chưa đăng nhập -> Ép hiển thị trang Login
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
+                    <Route element={<ProtectedRoute allowedRoles={['Customer']} />}>
+                        <Route element={<CustomerLayout />} >
+                            <Route path="/live-tracking" element={<AutoWashSimulation />} />
+                            <Route path="/auto-wash-simulation" element={<AutoWashSimulation />} />
+                        </Route>
+                    </Route>
 
-  // 💡 Nếu đã đăng nhập thành công -> Hiển thị Giao diện chính của App
-  return (
-      <div className="app-layout">
-        <header className="app-header">
-          <h1>Hệ Thống Quản Lý</h1>
-          <div className="user-info">
-            <span>Xin chào, <strong>{user?.username}</strong> ({user?.email})</span>
-            <button className="logout-btn" onClick={logout}>Đăng xuất</button>
-          </div>
-        </header>
+                    {/*<Route element={<ProtectedRoute allowedRoles={['Staff', 'Admin']} />}>*/}
+                    {/*    <Route path="/staff/dashboard" element={<StaffDashboard />} />*/}
+                    {/*</Route>*/}
 
-        <main className="app-main">
-          <section id="center">
-            <h2>Chào mừng bạn đã quay trở lại!</h2>
-            <p>Hệ thống Clean Architecture đã kích hoạt và sẵn sàng vận hành.</p>
+                    {/*<Route element={<ProtectedRoute allowedRoles={['Admin']} />}>*/}
+                    {/*    <Route path="/admin/dashboard" element={<AdminDashboard />} />*/}
+                    {/*</Route>*/}
 
-            {/* Mai mốt bạn code thêm ProductList, OrderList... thì vứt ở đây */}
-            <div style={{ marginTop: '20px', padding: '20px', border: '1px dashed #ccc' }}>
-              <em>Tầng Presentation (Giao diện chính sau đăng nhập) sẽ hiển thị tại đây.</em>
-            </div>
-          </section>
-        </main>
-      </div>
-  );
+                    <Route path="*" element={<Navigate to="/login" replace />} />
+                </Routes>
+            </BrowserRouter>
+        </>
+    );
 }
 
-// 3. Component App tổng bọc đầy đủ các Context/Provider cần thiết
-export default function App() {
-  return (
-      <QueryClientProvider client={queryClient}>
-          <AppContent />
-      </QueryClientProvider>
-  );
-}
+export default App;

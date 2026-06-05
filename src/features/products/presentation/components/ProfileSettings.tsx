@@ -1,0 +1,172 @@
+import React, { useState } from 'react';
+import { User, Edit3, Lock, Bell, ShieldCheck, Download, ExternalLink, Trash2 } from 'lucide-react';
+
+export const ProfileSettings: React.FC = () => {
+    const [emailNotify, setEmailNotify] = useState(true);
+    const [smsNotify, setSMSNotify] = useState(true);
+    const [marketingEmail, setMarketingEmail] = useState(false);
+    const [twoFactor, setTwoFactor] = useState(false);
+
+    return (
+        <div className="w-full font-sans text-slate-800">
+            <p className="text-sm font-medium text-slate-400 mb-6">Manage your account information and preferences</p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                {/* CỘT TRÁI + GIỮA (2/3): FORM CHÍNH */}
+                <div className="lg:col-span-2 space-y-6">
+
+                    {/* Khối 1: Personal Information */}
+                    <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-5">
+                        <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+                            <div className="flex items-center gap-2 font-bold text-base text-slate-900">
+                                <User className="w-5 h-5 text-blue-600" />
+                                <span>Personal Information</span>
+                            </div>
+                            <button className="inline-flex items-center gap-1 border-2 border-blue-600 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-blue-50 transition">
+                                <Edit3 className="w-3.5 h-3.5" />
+                                <span>Edit</span>
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
+                                <input type="text" readOnly value="John Doe" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
+                                <input type="text" readOnly value="+1 234-567-8900" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+                                <input type="email" readOnly value="john.doe@example.com" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Khối 2: Password & Security */}
+                    <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-5">
+                        <div className="flex items-center gap-2 font-bold text-base text-slate-900 border-b border-slate-50 pb-3">
+                            <Lock className="w-5 h-5 text-blue-600" />
+                            <span>Password & Security</span>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="space-y-1.5 relative">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Current Password</label>
+                                <input type="password" value="••••••••" disabled className="w-full bg-slate-50/40 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono" />
+                            </div>
+                            <div className="space-y-1.5 relative">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">New Password</label>
+                                <input type="password" value="••••••••" disabled className="w-full bg-slate-50/40 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono" />
+                            </div>
+                            <div className="space-y-1.5 relative">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Confirm New Password</label>
+                                <input type="password" value="••••••••" disabled className="w-full bg-slate-50/40 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono" />
+                            </div>
+
+                            <button className="bg-blue-600 text-white text-sm font-bold w-full sm:w-auto px-6 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm">
+                                Update Password
+                            </button>
+
+                            <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
+                                <div>
+                                    <h4 className="text-sm font-bold text-slate-800">Two-Factor Authentication</h4>
+                                    <p className="text-xs text-slate-400 font-medium mt-0.5">Add an extra layer of security to your account</p>
+                                </div>
+                                {/* Custom Toggle Switch */}
+                                <button
+                                    onClick={() => setTwoFactor(!twoFactor)}
+                                    className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none shrink-0 ${twoFactor ? 'bg-blue-600' : 'bg-slate-200'}`}
+                                >
+                                    <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${twoFactor ? 'translate-x-5' : 'translate-x-0'}`} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* CỘT PHẢI (1/3): THẺ THÔNG TIN TỔNG QUAN & CONFIG PHỤ */}
+                <div className="space-y-6">
+
+                    {/* Khối Thẻ Thành Viên Xanh Dương */}
+                    <div className="bg-blue-600 text-white rounded-2xl p-6 shadow-md space-y-5">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white">
+                                <User className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <p className="text-xs text-blue-100 font-medium">Member Since</p>
+                                <p className="text-lg font-black tracking-wide">January 2026</p>
+                            </div>
+                        </div>
+                        <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
+                            <div className="flex justify-between opacity-90"><span>Total Bookings:</span><span className="font-bold">28</span></div>
+                            <div className="flex justify-between opacity-90"><span>Total Spent:</span><span className="font-bold">$1,245.50</span></div>
+                            <div className="flex justify-between items-baseline">
+                                <span>Points Balance:</span>
+                                <span className="text-base font-black text-amber-300">2.45 pts</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Khối Cấu Hình Notifications Tắt/Mở */}
+                    <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4">
+                        <div className="flex items-center gap-2 font-bold text-sm text-slate-900 border-b border-slate-50 pb-2">
+                            <Bell className="w-4 h-4 text-blue-600" />
+                            <span>Notifications</span>
+                        </div>
+                        <div className="space-y-3.5">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-slate-500">Email Notifications</span>
+                                <button onClick={() => setEmailNotify(!emailNotify)} className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${emailNotify ? 'bg-blue-600' : 'bg-slate-200'}`}>
+                                    <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${emailNotify ? 'translate-x-5' : 'translate-x-0'}`} />
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-slate-500">SMS Notifications</span>
+                                <button onClick={() => setSMSNotify(!smsNotify)} className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${smsNotify ? 'bg-blue-600' : 'bg-slate-200'}`}>
+                                    <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${smsNotify ? 'translate-x-5' : 'translate-x-0'}`} />
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-slate-500">Marketing Emails</span>
+                                <button onClick={() => setMarketingEmail(!marketingEmail)} className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${marketingEmail ? 'bg-blue-600' : 'bg-slate-200'}`}>
+                                    <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${marketingEmail ? 'translate-x-5' : 'translate-x-0'}`} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Khối Quyền Riêng Tư (Privacy) */}
+                    <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div className="flex items-center gap-2 font-bold text-sm text-slate-900 border-b border-slate-50 pb-2">
+                            <ShieldCheck className="w-4 h-4 text-blue-600" />
+                            <span>Privacy</span>
+                        </div>
+                        <div className="space-y-1 text-xs font-bold text-slate-600">
+                            <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition text-left">
+                                <span>Download My Data</span>
+                                <Download className="w-3.5 h-3.5 text-slate-400" />
+                            </button>
+                            <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition text-left">
+                                <span>Privacy Policy</span>
+                                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                            </button>
+                            <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition text-left">
+                                <span>Terms of Service</span>
+                                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                            </button>
+                            <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-rose-50 text-rose-600 transition text-left pt-2 border-t border-slate-50 mt-1">
+                                <span>Delete Account</span>
+                                <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    );
+};
