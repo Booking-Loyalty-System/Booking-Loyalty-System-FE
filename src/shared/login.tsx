@@ -83,9 +83,9 @@ export default function Login() {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-[#334155]">Email Address</label>
                                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
-                    <Mail className="w-5 h-5" />
-                  </span>
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
+                                        <Mail className="w-5 h-5" />
+                                    </span>
                                     <input
                                         type="email"
                                         placeholder="john@example.com"
@@ -98,9 +98,9 @@ export default function Login() {
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-[#334155]">Password</label>
                                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
-                    <Lock className="w-5 h-5" />
-                  </span>
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#94a3b8]">
+                                        <Lock className="w-5 h-5" />
+                                    </span>
                                     <input
                                         type="password"
                                         placeholder="••••••••"
@@ -145,9 +145,9 @@ export default function Login() {
 
                         {/* Quick Access (Demo) */}
                         <div className="text-center">
-              <span className="text-xs font-medium text-[#94a3b8] uppercase tracking-wider block mb-3">
-                Quick Access (Demo)
-              </span>
+                            <span className="text-xs font-medium text-[#94a3b8] uppercase tracking-wider block mb-3">
+                                Quick Access (Demo)
+                            </span>
                             <div className="grid grid-cols-3 gap-2">
                                 <button className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-medium text-xs py-2 px-3 rounded-lg transition-colors">
                                     Customer
