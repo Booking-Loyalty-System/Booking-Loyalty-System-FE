@@ -1,5 +1,5 @@
 import type { IAuthRepository } from './auth.repository.interface.ts';
-import type {AuthResponseData, RefreshTokenRequest, RegisterRequest} from '../../../domain/models/auth/auth.model';
+import type { AuthResponseData, RefreshTokenRequest, RegisterRequest } from '../../../domain/models/auth/auth.model';
 import type { ApiResponse } from '../../../domain/apiResponse.ts';
 import type { LoginRequest } from '@/features/products/domain/models/auth/auth.model.ts';
 import { httpClient } from '@/core/http/httpClient.ts';
@@ -8,7 +8,7 @@ import { ENDPOINTS } from '@/core/api/endpoints';
 
 export class AuthRepositoryImplement implements IAuthRepository {
     async login(credentials: LoginRequest): Promise<AuthResponseData> {
-        /* 🛠️ MOCK LOGIN FOR QUICK TESTING - COMMENTED OUT
+        //MOCK LOGIN FOR QUICK TESTING - COMMENTED OUT
         const testAccounts: Record<string, { role: string; fullName: string; pass: string }> = {
             'customer@system.com': { role: 'Customer', fullName: 'Test Customer', pass: 'customer' },
             'staff@system.com': { role: 'Staff', fullName: 'Test Staff', pass: 'staff' },
@@ -29,7 +29,7 @@ export class AuthRepositoryImplement implements IAuthRepository {
                 }
             };
         }
-        */
+
 
         // Vì apiClient interceptor của bạn đã return response.data,
         // nên httpClient.post ở đây sẽ nhận về object chứa { statusCode, message, data }
@@ -42,7 +42,7 @@ export class AuthRepositoryImplement implements IAuthRepository {
     }
 
     async logout(): Promise<void> {
-         await httpClient.post<ApiResponse<null>>(
+        await httpClient.post<ApiResponse<null>>(
             ENDPOINTS.AUTH.LOGOUT
         );
     }
