@@ -70,7 +70,7 @@ export const MyVehicles: React.FC = () => {
                     // 💡 SỬA LỖI 400: Map dữ liệu UI sang đúng định dạng API cần (VehicleRequest)
                     const inputData = {
                         licensePlate: formData.licensePlate,
-                        type: formData.type, // Giữ nguyên chữ 'type' để khớp với CreateVehicleInput
+                        vehicleType: formData.type, // Giữ nguyên chữ 'type' để khớp với CreateVehicleInput
                         vehicleName: formData.vehicleName,
                         brand: formData.brand,
                         model: formData.model,

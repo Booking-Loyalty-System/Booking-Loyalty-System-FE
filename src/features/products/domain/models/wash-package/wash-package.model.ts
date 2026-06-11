@@ -8,3 +8,9 @@ export interface WashPackage {
     vehicleType: string | null;
     isActive?: boolean | null;
 }
+
+export interface WashPackageSelectionProps {
+    washPackages: WashPackage[];
+    selectedPackageId: string;
+    onSelectPackage: (id: string) => void;
+}

@@ -24,5 +24,9 @@ export const ENDPOINTS = {
 
     BOOKING:{
         BOOKING: '/bookings'
+    },
+
+    BRANCH:{
+        BRANCH: '/admin/branches'
     }
 };
