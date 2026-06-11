@@ -17,15 +17,8 @@ export const LoginPage: React.FC = () => {
             await login({ email, password });
             toast.success('Đăng nhập thành công!');
 
-            // const role = data.user.role;
             setTimeout(() => {
-                // if (role === 'Staff') {
-                //     navigate('/staff/dashboard');
-                // } else if (role === 'Admin') {
-                //     navigate('/staff/dashboard'); // For now
-                // } else {
-                    navigate('/dashboard');
-                // }
+                navigate('/dashboard');
             }, 1000);
         } catch (err) {
             console.error("Đăng nhập email thất bại:", err);

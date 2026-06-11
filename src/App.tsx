@@ -15,9 +15,6 @@ import {NotificationCenter} from "@/features/products/presentation/components/No
 import {Toaster} from "sonner";
 import {BookingPage} from "@/features/products/presentation/pages/BookingPage";
 import {LiveTrackingPage} from "@/features/products/presentation/pages/LiveTrackingPage";
-// import {StaffLayout} from "@/features/products/presentation/layouts/StaffLayout";
-// import {StaffDashboard} from "@/features/products/presentation/pages/StaffDashboard";
-// import {StaffQueue, QueueMonitor, StaffAssignment} from "@/features/products/presentation/pages/StaffPages";
 
 function App() {
     return (
@@ -48,16 +45,6 @@ function App() {
                             <Route path="/auto-wash-simulation" element={<AutoWashSimulation />} />
                         </Route>
                     </Route>
-
-                    {/* <Route element={<ProtectedRoute allowedRoles={['Staff']} />}>
-                        <Route element={<StaffLayout />} >
-                            <Route path="/staff/dashboard" element={<StaffDashboard />} />
-                            <Route path="/staff/queue" element={<StaffQueue />} />
-                            <Route path="/staff/monitor" element={<QueueMonitor />} />
-                            <Route path="/staff/assignment" element={<StaffAssignment />} />
-                            <Route path="/staff/settings" element={<ProfileSettings />} />
-                        </Route>
-                    </Route> */}
 
                     {/*<Route element={<ProtectedRoute allowedRoles={['Admin']} />}>*/}
                     {/*    <Route path="/admin/dashboard" element={<AdminDashboard />} />*/}
