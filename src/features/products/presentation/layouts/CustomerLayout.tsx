@@ -193,6 +193,8 @@ export const CustomerLayout: React.FC = () => {
                         </div>
 
                         <button
+                            type="button"
+                            aria-label="Notifications"
                             onClick={() => navigate('/notifications')}
                             className={`relative p-2 rounded-xl transition-all duration-200 focus:outline-none ${location.pathname === '/notifications' ? 'bg-[#f1f5f9] text-[#0f172a]' : 'text-[#64748b] hover:text-[#0f172a] hover:bg-[#f1f5f9]'}`}
                         >

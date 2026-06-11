@@ -14,11 +14,27 @@ export const LoginPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await login({ email, password });
+            const authData = await login({ email, password });
+
             toast.success('Đăng nhập thành công!');
 
             setTimeout(() => {
-                navigate('/dashboard');
+                switch (authData.user.role) {
+                    case 'Customer':
+                        navigate('/dashboard');
+                        break;
+
+                    case 'Staff':
+                        navigate('/staff/dashboard');
+                        break;
+
+                    case 'Admin':
+                        navigate('/admin/dashboard');
+                        break;
+
+                    default:
+                        navigate('/login');
+                }
             }, 1000);
         } catch (err) {
             console.error("Đăng nhập email thất bại:", err);
