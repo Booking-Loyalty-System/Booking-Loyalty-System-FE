@@ -4,7 +4,7 @@ import { useAuth } from '../../application/useAuth.ts';
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from '@react-oauth/google'; // 🌟 Chuyển sang dùng hook useGoogleLogin để lấy code
 import { CarScene } from "@/shared/car-scene.tsx";
-import {toast} from "sonner";
+import { toast } from "sonner";
 
 export const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -16,8 +16,16 @@ export const LoginPage: React.FC = () => {
         try {
             await login({ email, password });
             toast.success('Đăng nhập thành công!');
+
+            // const role = data.user.role;
             setTimeout(() => {
-                navigate('/live-tracking');
+                // if (role === 'Staff') {
+                //     navigate('/staff/dashboard');
+                // } else if (role === 'Admin') {
+                //     navigate('/staff/dashboard'); // For now
+                // } else {
+                    navigate('/dashboard');
+                // }
             }, 1000);
         } catch (err) {
             console.error("Đăng nhập email thất bại:", err);
@@ -59,9 +67,9 @@ export const LoginPage: React.FC = () => {
 
     const handleQuickAccess = (role: 'customer' | 'staff' | 'admin') => {
         const credentials = {
-            customer: { email: 'customer@autowash.com', pass: '12345678' },
-            staff: { email: 'staff@autowash.com', pass: '12345678' },
-            admin: { email: 'admin@autowash.com', pass: '12345678' }
+            customer: { email: 'customer@system.com', pass: 'customer' },
+            staff: { email: 'staff@system.com', pass: 'staff' },
+            admin: { email: 'admin@system.com', pass: 'admin' }
         };
 
         setEmail(credentials[role].email);
@@ -69,7 +77,8 @@ export const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="h-screen w-screen bg-[#e6f0fa] flex items-center justify-center p-6 overflow-hidden antialiased font-sans">
+        <div className="h-screen w-screen bg-[#e6f
+        0fa] flex items-center justify-center p-6 overflow-hidden antialiased font-sans">
             <div className="w-full px-20 py-6 bg-transparent flex flex-row gap-6 h-full">
 
                 {/* PANEL TRÁI: GIỚI THIỆU TÍNH NĂNG */}

@@ -24,5 +24,24 @@ export const ENDPOINTS = {
 
     BOOKING:{
         BOOKING: '/bookings'
+    },
+
+    BRANCHES: {
+        BASE: '/branches',
+        SLOTS: (branchId: string, date: string) => `/branches/${branchId}/slots?date=${date}`,
+    },
+
+    LOYALTY: {
+        INFO: '/loyalty/info',
+        TRANSACTIONS: '/loyalty/transactions',
+        REDEEM: '/loyalty/redeem',
+    },
+
+    STAFF: {
+        DASHBOARD_STATS: '/staff/dashboard/stats',
+        TODAY_BOOKINGS: '/staff/bookings/today',
+        UPDATE_BOOKING_STATUS: (id: string, status: string) => `/staff/bookings/${id}/status?status=${status}`,
+        CHECK_IN: (id: string) => `/staff/bookings/${id}/check-in`,
+        COMPLETE_WASH: (id: string) => `/staff/bookings/${id}/complete-wash`,
     }
 };

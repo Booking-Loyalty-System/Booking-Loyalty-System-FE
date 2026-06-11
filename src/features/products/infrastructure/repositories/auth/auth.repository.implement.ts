@@ -8,6 +8,29 @@ import { ENDPOINTS } from '@/core/api/endpoints';
 
 export class AuthRepositoryImplement implements IAuthRepository {
     async login(credentials: LoginRequest): Promise<AuthResponseData> {
+        /* 🛠️ MOCK LOGIN FOR QUICK TESTING - COMMENTED OUT
+        const testAccounts: Record<string, { role: string; fullName: string; pass: string }> = {
+            'customer@system.com': { role: 'Customer', fullName: 'Test Customer', pass: 'customer' },
+            'staff@system.com': { role: 'Staff', fullName: 'Test Staff', pass: 'staff' },
+            'admin@system.com': { role: 'Admin', fullName: 'Test Admin', pass: 'admin' },
+        };
+
+        const testAccount = testAccounts[credentials.email];
+        if (testAccount && testAccount.pass === credentials.password) {
+            console.log(`[MockLogin] Logging in as ${testAccount.role}`);
+            return {
+                accessToken: 'mock-access-token-' + Math.random().toString(36).substring(7),
+                refreshToken: 'mock-refresh-token',
+                user: {
+                    id: `mock-${testAccount.role.toLowerCase()}-id`,
+                    email: credentials.email,
+                    role: testAccount.role,
+                    fullName: testAccount.fullName
+                }
+            };
+        }
+        */
+
         // Vì apiClient interceptor của bạn đã return response.data,
         // nên httpClient.post ở đây sẽ nhận về object chứa { statusCode, message, data }
         const response = await httpClient.post<ApiResponse<AuthResponseData>>(
