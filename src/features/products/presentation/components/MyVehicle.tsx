@@ -67,16 +67,16 @@
 //                 onSubmit={async (e: React.FormEvent) => {
 //                     e.preventDefault();
 
-//                     // 💡 SỬA LỖI 400: Map dữ liệu UI sang đúng định dạng API cần (VehicleRequest)
-//                     const inputData = {
-//                         licensePlate: formData.licensePlate,
-//                         type: formData.type, // Giữ nguyên chữ 'type' để khớp với CreateVehicleInput
-//                         vehicleName: formData.vehicleName,
-//                         brand: formData.brand,
-//                         model: formData.model,
-//                         color: formData.color,
-//                         isPrimary: formData.isPrimary
-//                     };
+                    // 💡 SỬA LỖI 400: Map dữ liệu UI sang đúng định dạng API cần (VehicleRequest)
+                    const inputData = {
+                        licensePlate: formData.licensePlate,
+                        vehicleType: formData.type, // Giữ nguyên chữ 'type' để khớp với CreateVehicleInput
+                        vehicleName: formData.vehicleName,
+                        brand: formData.brand,
+                        model: formData.model,
+                        color: formData.color,
+                        isPrimary: formData.isPrimary
+                    };
 
 //                     try {
 //                         await createVehicle(inputData);

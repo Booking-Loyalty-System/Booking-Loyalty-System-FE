@@ -22,8 +22,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ car }) => {
         }`}>
             <div>
                 <div className="flex items-center justify-between border-b border-slate-50 pb-4 mb-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getIconBgClass(car.type)}`}>
-                        {car.type === 'Large' ? <Truck className="w-6 h-6" /> : <Car className="w-6 h-6" />}
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getIconBgClass(car.vehicleType)}`}>
+                        {car.vehicleType === 'Large' ? <Truck className="w-6 h-6" /> : <Car className="w-6 h-6" />}
                     </div>
                     <div className="flex items-center gap-1">
                         <button className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50"><Edit2 className="w-4 h-4" /></button>
@@ -33,7 +33,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ car }) => {
                 <div className="space-y-3">
                     <div>
                         <p className="text-xs font-semibold text-slate-400">Vehicle Type</p>
-                        <p className="text-base font-extrabold text-slate-900">{car.type}</p>
+                        <p className="text-base font-extrabold text-slate-900">{car.vehicleType}</p>
                     </div>
                     <div>
                         <p className="text-xs font-semibold text-slate-400">Name / Model</p>
