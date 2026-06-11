@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "../../../../../shared/components/layout/Layout";
 import {
   Package,
@@ -12,116 +12,128 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
+import { AdminWashPackageRepositoryImplement } from "../../../infrastructure/repositories/wash-package/admin-wash-package.repository.implement";
+import type { WashPackageResponseData } from "../../../domain/models/wash-package/admin-wash-package.model";
 
-interface WashPackage {
-  id: number;
-  name: string;
-  price: number;
-  duration: number;
-  description: string;
-  features: string[];
-  isActive: boolean;
-}
-
-const initialPackages: WashPackage[] = [
-  {
-    id: 1,
-    name: "Basic Wash",
-    price: 21.25,
-    duration: 15,
-    description: "Essential exterior cleaning",
-    features: ["Exterior wash", "Tire cleaning", "Hand dry"],
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Premium Wash",
-    price: 38.25,
-    duration: 30,
-    description: "Complete interior and exterior service",
-    features: [
-      "Everything in Basic",
-      "Interior vacuum",
-      "Window cleaning",
-      "Dashboard wipe",
-    ],
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "Ceramic Wash",
-    price: 72.25,
-    duration: 60,
-    description: "Premium protection with ceramic coating",
-    features: [
-      "Everything in Premium",
-      "Ceramic coating",
-      "Paint protection",
-      "Wheel polish",
-    ],
-    isActive: true,
-  },
-  {
-    id: 4,
-    name: "Express Wash",
-    price: 15.0,
-    duration: 10,
-    description: "Quick exterior clean",
-    features: ["Basic exterior wash", "Quick dry"],
-    isActive: false,
-  },
-];
+// Khởi tạo Repository
+const washPackageRepo = new AdminWashPackageRepositoryImplement();
 
 export function AdminPackages() {
-  const [packages, setPackages] = useState<WashPackage[]>(initialPackages);
-  const [isEditing, setIsEditing] = useState<number | null>(null);
+  const [packages, setPackages] = useState<WashPackageResponseData[]>([]);
+  const [isEditing, setIsEditing] = useState<string | null>(null); // Đổi thành string vì id là UUID
   const [isAdding, setIsAdding] = useState(false);
-  const [editForm, setEditForm] = useState<WashPackage | null>(null);
+  const [editForm, setEditForm] = useState<WashPackageResponseData | null>(
+    null,
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleEdit = (pkg: WashPackage) => {
+  // Lấy dữ liệu từ API khi component mount
+  const fetchPackages = async () => {
+    try {
+      setIsLoading(true);
+      const data = await washPackageRepo.getAll();
+      setPackages(data);
+    } catch (error) {
+      console.error("Failed to fetch packages:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPackages();
+  }, []);
+
+  const handleEdit = (pkg: WashPackageResponseData) => {
     setIsEditing(pkg.id);
     setEditForm({ ...pkg });
   };
 
-  const handleSave = () => {
-    if (editForm) {
-      setPackages(packages.map((p) => (p.id === editForm.id ? editForm : p)));
-      setIsEditing(null);
-      setEditForm(null);
+  const handleSave = async () => {
+    if (editForm && isEditing) {
+      try {
+        await washPackageRepo.update(isEditing, {
+          name: editForm.name,
+          description: editForm.description,
+          price: editForm.price,
+          durationMinutes: editForm.durationMinutes,
+          features: editForm.features.filter((f) => f.trim() !== ""), // Lọc bỏ feature rỗng
+          vehicleType: editForm.vehicleType,
+          isActive: editForm.isActive,
+        });
+        await fetchPackages(); // Reload lại danh sách
+        setIsEditing(null);
+        setEditForm(null);
+      } catch (error) {
+        console.error("Failed to update package:", error);
+        alert("Có lỗi xảy ra khi cập nhật gói rửa xe!");
+      }
     }
   };
 
   const handleAdd = () => {
     setIsAdding(true);
     setEditForm({
-      id: Date.now(),
+      id: "",
       name: "",
       price: 0,
-      duration: 0,
+      durationMinutes: 0,
       description: "",
       features: [""],
+      vehicleType: "Small",
       isActive: true,
+      createdAt: new Date().toISOString(),
     });
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (editForm && editForm.name && editForm.price > 0) {
-      setPackages([...packages, editForm]);
-      setIsAdding(false);
-      setEditForm(null);
+      try {
+        await washPackageRepo.create({
+          name: editForm.name,
+          description: editForm.description,
+          price: editForm.price,
+          durationMinutes: editForm.durationMinutes,
+          features: editForm.features.filter((f) => f.trim() !== ""),
+          vehicleType: editForm.vehicleType,
+        });
+        await fetchPackages();
+        setIsAdding(false);
+        setEditForm(null);
+      } catch (error) {
+        console.error("Failed to create package:", error);
+        alert("Có lỗi xảy ra khi tạo gói mới!");
+      }
     }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this package?")) {
-      setPackages(packages.filter((p) => p.id !== id));
+      try {
+        await washPackageRepo.delete(id);
+        await fetchPackages();
+      } catch (error) {
+        console.error("Failed to delete package:", error);
+        alert("Có lỗi xảy ra khi xóa gói!");
+      }
     }
   };
 
-  const handleToggleStatus = (id: number) => {
-    setPackages(
-      packages.map((p) => (p.id === id ? { ...p, isActive: !p.isActive } : p)),
-    );
+  const handleToggleStatus = async (pkg: WashPackageResponseData) => {
+    try {
+      await washPackageRepo.update(pkg.id, {
+        name: pkg.name,
+        description: pkg.description,
+        price: pkg.price,
+        durationMinutes: pkg.durationMinutes,
+        features: pkg.features,
+        vehicleType: pkg.vehicleType,
+        isActive: !pkg.isActive, // Đảo trạng thái hiện tại
+      });
+      await fetchPackages();
+    } catch (error) {
+      console.error("Failed to toggle status:", error);
+    }
   };
 
   const handleCancel = () => {
@@ -172,94 +184,104 @@ export function AdminPackages() {
           </button>
         </div>
 
-        {/* Packages Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {packages.map((pkg) => (
-            <div
-              key={pkg.id}
-              className={`bg-white rounded-xl border-2 p-6 transition-all ${
-                pkg.isActive
-                  ? "border-blue-200 shadow-sm"
-                  : "border-gray-200 opacity-60"
-              }`}
-            >
-              {/* Package Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Package className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleEdit(pkg)}
-                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(pkg.id)}
-                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Package Info */}
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {pkg.name}
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
-
-              {/* Price and Duration */}
-              <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-green-600" />
-                  <span className="font-bold text-gray-900">
-                    ${pkg.price.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-orange-600" />
-                  <span className="text-sm text-gray-600">
-                    {pkg.duration} min
-                  </span>
-                </div>
-              </div>
-
-              {/* Features */}
-              <div className="space-y-2 mb-4">
-                {pkg.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">{feature}</span>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <p className="text-gray-500">Loading packages...</p>
+          </div>
+        ) : (
+          /* Packages Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {packages
+              .filter((pkg) => pkg.isActive)
+              .map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className={`bg-white rounded-xl border-2 p-6 transition-all ${
+                    pkg.isActive
+                      ? "border-blue-200 shadow-sm"
+                      : "border-gray-200 opacity-60"
+                  }`}
+                >
+                  {/* Package Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Package className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleEdit(pkg)}
+                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(pkg.id)}
+                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
 
-              {/* Status Toggle */}
-              <button
-                onClick={() => handleToggleStatus(pkg.id)}
-                className={`w-full py-2 rounded-lg font-semibold transition-colors ${
-                  pkg.isActive
-                    ? "bg-green-100 text-green-700 hover:bg-green-200"
-                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                }`}
-              >
-                {pkg.isActive ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Active
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    <XCircle className="w-4 h-4" />
-                    Inactive
-                  </span>
-                )}
-              </button>
-            </div>
-          ))}
-        </div>
+                  {/* Package Info */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    {pkg.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {pkg.description}
+                  </p>
+
+                  {/* Price and Duration */}
+                  <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                      <span className="font-bold text-gray-900">
+                        {pkg.price.toLocaleString()} VND
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm text-gray-600">
+                        {pkg.durationMinutes} min
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Features */}
+                  <div className="space-y-2 mb-4">
+                    {pkg.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                        <span className="text-sm text-gray-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Status Toggle */}
+                  <button
+                    onClick={() => handleToggleStatus(pkg)}
+                    className={`w-full py-2 rounded-lg font-semibold transition-colors ${
+                      pkg.isActive
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                    }`}
+                  >
+                    {pkg.isActive ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <CheckCircle2 className="w-4 h-4" />
+                        Active
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center gap-2">
+                        <XCircle className="w-4 h-4" />
+                        Inactive
+                      </span>
+                    )}
+                  </button>
+                </div>
+              ))}
+          </div>
+        )}
       </div>
 
       {/* Edit/Add Modal */}
@@ -315,7 +337,7 @@ export function AdminPackages() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Price ($)
+                    Price (VND)
                   </label>
                   <input
                     type="number"
@@ -326,7 +348,6 @@ export function AdminPackages() {
                         price: parseFloat(e.target.value),
                       })
                     }
-                    step="0.01"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
@@ -336,16 +357,34 @@ export function AdminPackages() {
                   </label>
                   <input
                     type="number"
-                    value={editForm.duration}
+                    value={editForm.durationMinutes}
                     onChange={(e) =>
                       setEditForm({
                         ...editForm,
-                        duration: parseInt(e.target.value),
+                        durationMinutes: parseInt(e.target.value),
                       })
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
+              </div>
+
+              {/* Vehicle Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vehicle Type
+                </label>
+                <select
+                  value={editForm.vehicleType || "Small"}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, vehicleType: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                  <option value="Small">Small</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Large">Large</option>
+                </select>
               </div>
 
               {/* Features */}
