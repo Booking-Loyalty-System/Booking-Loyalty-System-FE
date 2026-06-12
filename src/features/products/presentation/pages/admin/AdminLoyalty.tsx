@@ -56,7 +56,7 @@ const initialRewards = [
 ];
 
 export function AdminLoyalty() {
-  const [tiers, setTiers] = useState(initialTiers);
+  const [tiers] = useState(initialTiers);
   const [rewards, setRewards] = useState(initialRewards);
   const [isAddingReward, setIsAddingReward] = useState(false);
   const [newReward, setNewReward] = useState({

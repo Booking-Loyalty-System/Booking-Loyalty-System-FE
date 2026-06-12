@@ -9,8 +9,6 @@ import {
   Download,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   XAxis,
@@ -20,7 +18,6 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Legend,
 } from "recharts";
 
 const growthData = [
