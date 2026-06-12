@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Layout } from "../../../../../shared/components/layout/Layout";
+import { Layout } from "../../components/layout/Layout";
 import {
   DollarSign,
   Users,

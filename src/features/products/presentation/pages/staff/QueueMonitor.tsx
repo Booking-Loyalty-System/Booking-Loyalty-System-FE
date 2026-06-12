@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Layout } from "../../../../../shared/components/layout/Layout";
+import { Layout } from "../../components/layout/Layout";
 import {
   Car,
   Clock,
@@ -15,16 +15,16 @@ import {
   Zap,
   Target,
 } from "lucide-react";
-import { Button } from "../../../../../shared/components/ui/button";
+import { Button } from "../../components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../../../../../shared/components/ui/dialog";
-import { Progress } from "../../../../../shared/components/ui/progress";
-import { Badge } from "../../../../../shared/components/ui/badge";
+} from "../../components/ui/dialog";
+import { Progress } from "../../components/ui/progress";
+import { Badge } from "../../components/ui/badge";
 
 interface QueueVehicle {
   id: string;
