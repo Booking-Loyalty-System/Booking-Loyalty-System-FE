@@ -15,6 +15,7 @@ import { NotificationCenter } from "@/features/products/presentation/components/
 import { Toaster } from "sonner";
 import { BookingPage } from "@/features/products/presentation/pages/BookingPage";
 import { LiveTrackingPage } from "@/features/products/presentation/pages/LiveTrackingPage";
+import { FeatureUnderDevelopment } from "@/features/products/presentation/components/FeatureUnderDevelopment";
 
 function App() {
     return (
@@ -26,6 +27,8 @@ function App() {
 
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    
+                    {/* Customer Routes */}
                     <Route element={<ProtectedRoute allowedRoles={['Customer']} />}>
                         <Route element={<CustomerLayout />}>
                             <Route path="/live-tracking/:bookingId" element={<LiveTrackingPage />} />
@@ -41,16 +44,18 @@ function App() {
                         </Route>
                     </Route>
 
+                    {/* Shared Protected Routes (Simulation) */}
                     <Route element={<ProtectedRoute allowedRoles={['Customer']} />}>
                         <Route element={<CustomerLayout />} >
-                            <Route path="/live-tracking/:bookingId" element={<LiveTrackingPage />} />
                             <Route path="/auto-wash-simulation" element={<AutoWashSimulation />} />
                         </Route>
                     </Route>
 
-                    {/* <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
-                        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                    </Route> */}
+                    {/* Staff & Admin Placeholder Routes */}
+                    <Route element={<ProtectedRoute allowedRoles={['Staff', 'Admin']} />}>
+                        <Route path="/staff/dashboard" element={<FeatureUnderDevelopment />} />
+                        <Route path="/admin/dashboard" element={<FeatureUnderDevelopment />} />
+                    </Route>
 
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>

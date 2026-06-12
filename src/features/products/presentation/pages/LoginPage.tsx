@@ -9,6 +9,7 @@ import { toast } from "sonner";
 export const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isDemo, setIsDemo] = useState(false);
     const { login, isLoading, error } = useAuth();
     const navigate = useNavigate();
     const handleSubmit = async (e: React.FormEvent) => {
@@ -16,9 +17,14 @@ export const LoginPage: React.FC = () => {
         try {
             const authData = await login({ email, password });
 
-            toast.success('Đăng nhập thành công!');
+            if (isDemo) {
+                toast.info(`Demo: Đăng nhập thành công với vai trò ${authData.user.role}`);
+            } else {
+                toast.success('Đăng nhập thành công!');
+            }
 
             setTimeout(() => {
+                setIsDemo(false);
                 switch (authData.user.role) {
                     case 'Customer':
                         navigate('/dashboard');
@@ -38,6 +44,7 @@ export const LoginPage: React.FC = () => {
             }, 1000);
         } catch (err) {
             console.error("Đăng nhập email thất bại:", err);
+            setIsDemo(false);
         }
     };
 
@@ -81,6 +88,7 @@ export const LoginPage: React.FC = () => {
             admin: { email: 'admin@system.com', pass: 'admin' }
         };
 
+        setIsDemo(true);
         setEmail(credentials[role].email);
         setPassword(credentials[role].pass);
     };
