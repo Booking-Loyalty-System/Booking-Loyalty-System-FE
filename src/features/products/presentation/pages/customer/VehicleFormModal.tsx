@@ -1,7 +1,7 @@
 import React from 'react';
 import { Loader2, X } from 'lucide-react';
-import { CAR_BRANDS } from "@/shared/constants/vehicle-data.ts";
-import type {VehicleFormData} from "@/features/products/domain/models/vehicle/vehicle.model.ts";
+import { CAR_BRANDS } from "@/shared/constants/vehicle-data";
+import type { VehicleFormData } from "@/features/products/domain/models/vehicle/vehicle.model";
 
 interface Props {
     isOpen: boolean;
@@ -15,8 +15,8 @@ interface Props {
 }
 
 export const VehicleFormModal: React.FC<Props> = ({
-                                                      isOpen, onClose, formData, handleInputChange, onSubmit, isCreating, currentVehicleNames
-                                                  }) => {
+    isOpen, onClose, formData, handleInputChange, onSubmit, isCreating, currentVehicleNames
+}) => {
     if (!isOpen) return null;
 
     return (

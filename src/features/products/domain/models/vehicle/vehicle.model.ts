@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type VehicleType = 'Small' | 'Medium' | 'Large';
 
 export interface VehicleResponse {
@@ -25,6 +27,7 @@ export interface VehicleRequest {
 }
 
 export interface Vehicle {
+    type: ReactNode;
     id: string;
     customerId: string;
     licensePlate: string;

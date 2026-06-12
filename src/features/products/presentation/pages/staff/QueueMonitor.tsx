@@ -15,16 +15,16 @@ import {
   Zap,
   Target,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../components/common/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../../components/ui/dialog";
-import { Progress } from "../../components/ui/progress";
-import { Badge } from "../../components/ui/badge";
+} from "../../components/common/dialog";
+import { Progress } from "../../components/common/progress";
+import { Badge } from "../../components/common/badge";
 
 interface QueueVehicle {
   id: string;

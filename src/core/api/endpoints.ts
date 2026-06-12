@@ -33,5 +33,11 @@ export const ENDPOINTS = {
 
     BRANCH:{
         BRANCH: '/admin/branches'
+    },
+
+    LOYALTY: {
+        INFO: '/loyalty/info',
+        TRANSACTIONS: '/loyalty/transactions',
+        REDEEM: '/loyalty/redeem',
     }
 };

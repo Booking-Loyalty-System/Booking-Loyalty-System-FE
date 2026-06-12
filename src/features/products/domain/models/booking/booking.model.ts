@@ -1,31 +1,26 @@
-import type {DateSlot} from "@/features/products/domain/models/time-slot/time-slot.model.ts";
-import type {Vehicle} from "@/features/products/domain/models/vehicle/vehicle.model.ts";
-import type {WashPackage} from "@/features/products/domain/models/wash-package/wash-package.model.ts";
-
 export interface CreateBookingInput {
     vehicleId: string;
     washPackageId: string;
-    branchId: string;
-    bookingDate: string;
-    startTime: string;
+    branchId: string; // Bổ sung chi nhánh
+    bookingDate: string; // "YYYY-MM-DD"
+    startTime: string; // "HH:mm"
+    voucherCode?: string; // Mã voucher nếu có
+    usePoints?: number; // Số điểm muốn sử dụng để giảm giá
 }
 
 export interface BookingResponseData {
     id: string;
+    bookingCode: string; // Mã đặt lịch hiển thị cho khách (VD: BW-12345)
     vehicleId: string;
+    vehicleName?: string;
+    licensePlate?: string;
     washPackageId: string;
+    serviceName?: string;
+    branchId: string;
     bookingDate: string;
     startTime: string;
-    status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
+    status: 'Pending' | 'Confirmed' | 'CheckedIn' | 'Queued' | 'InProgress' | 'Completed' | 'CheckedOut' | 'Cancelled' | 'NoShow';
+    totalAmount: number; // Tổng tiền sau khi trừ giảm giá
+    pointsEarned?: number; // Số điểm dự kiến nhận được
     createdAt: string;
-}
-
-export interface BookingSummaryProps {
-    selectedPackageId: string;
-    selectedTime: string;
-    currentVehicle?: Vehicle;
-    currentPackage?: WashPackage;
-    selectedDateSlot?: DateSlot;
-    isBooking: boolean;
-    onConfirmBooking: () => void;
 }

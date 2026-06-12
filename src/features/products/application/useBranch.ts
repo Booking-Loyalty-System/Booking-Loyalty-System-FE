@@ -1,39 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
-import { BranchRepositoryImplement } from '../infrastructure/repositories/branch/branch.repository.implement.ts';
-import type { Branch } from '../domain/models/branch/branch.model.ts';
+import { BranchRepositoryImplement } from '../infrastructure/repositories/branch/branch.repository.implement';
 
 const branchRepository = new BranchRepositoryImplement();
 
-export const useBranch = (branchId?: string) => {
-    // 1. Lấy toàn bộ danh sách chi nhánh (Branches)
-    const {
-        data: branches = [],
-        isLoading: isLoadingBranches,
-        error: fetchBranchesError
-    } = useQuery<Branch[]>({
-        queryKey: ['branches'], // Đổi key cho đúng ngữ nghĩa
-        queryFn: () => branchRepository.getAllBranch(),
-        staleTime: 1000 * 60 * 5, // Cache trong 5 phút
-    });
+export const useBranch = () => {
+    // Hook lấy danh sách tất cả chi nhánh
+    const useGetAllBranches = () => {
+        return useQuery({
+            queryKey: ['branches'],
+            queryFn: () => branchRepository.getAllBranches(),
+        });
+    };
 
-    // 2. Lấy thông tin chi tiết của 1 chi nhánh dựa vào branchId
-    const {
-        data: branchDetail = null,
-        isLoading: isLoadingDetail,
-        error: fetchDetailError
-    } = useQuery<Branch | null>({
-        queryKey: ['branch_detail', branchId], // Sử dụng chính xác branchId
-        queryFn: () => branchRepository.getBranchById(branchId!), // Gọi hàm từ branchRepository
-        enabled: !!branchId, // Chỉ chạy khi branchId có giá trị hợp lệ
-        staleTime: 1000 * 60 * 5,
-    });
+    // Hook lấy slot trống theo chi nhánh và ngày
+    // Chúng ta truyền branchId và date vào queryKey để react-query tự động fetch lại khi khách đổi ngày hoặc đổi chi nhánh
+    const useGetAvailableSlots = (branchId: string, date: string) => {
+        return useQuery({
+            queryKey: ['available-slots', branchId, date],
+            queryFn: () => branchRepository.getAvailableSlots(branchId, date),
+            enabled: !!branchId && !!date, // Chỉ chạy khi đã có đủ branchId và date
+        });
+    };
 
     return {
-        branches,
-        branchDetail,
-        isLoading: isLoadingBranches || isLoadingDetail,
-        isLoadingBranches,
-        isLoadingDetail,
-        error: fetchBranchesError || fetchDetailError,
+        useGetAllBranches,
+        useGetAvailableSlots,
     };
 };
