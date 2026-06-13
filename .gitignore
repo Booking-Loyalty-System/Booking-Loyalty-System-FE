@@ -66,3 +66,6 @@ Desktop.ini
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Project specific ignores
+trash/

@@ -1,4 +1,4 @@
-import type { LoyaltyInfo, LoyaltyTransaction } from '../../domain/models/loyalty/loyalty.model';
+import type { LoyaltyInfo, LoyaltyTransaction } from '../../../domain/models/loyalty/loyalty.model';
 
 export interface ILoyaltyRepository {
     // Lấy thông tin hạng và điểm hiện tại của user

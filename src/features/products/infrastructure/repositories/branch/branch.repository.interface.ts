@@ -1,4 +1,4 @@
-import type { Branch, BookingSlot } from '../../domain/models/branch/branch.model';
+import type { Branch, BookingSlot } from '../../../domain/models/branch/branch.model';
 
 export interface IBranchRepository {
     // Lấy danh sách tất cả chi nhánh

@@ -18,8 +18,9 @@ import { LiveTrackingPage } from "@/features/products/presentation/pages/custome
 import { NotFoundPage } from "@/features/products/presentation/pages/NotFoundPage";
 
 // --- STAFF & ADMIN PAGES ---
+import { StaffLayout } from "./features/products/presentation/layouts/StaffLayout";
 import { StaffDashboard } from "@/features/products/presentation/pages/staff/StaffDashboard";
-import { StaffQueue } from "@/features/products/presentation/pages/staff/StaffQueue";
+import { StaffQueuePage } from "@/features/products/presentation/pages/staff/StaffQueue";
 import { QueueMonitor } from "@/features/products/presentation/pages/staff/QueueMonitor";
 
 import { AdminDashboard } from "@/features/products/presentation/pages/admin/AdminDashboard";
@@ -71,9 +72,11 @@ function App() {
 
           {/* 🌟 STAFF ROUTES 🌟 */}
           <Route element={<ProtectedRoute allowedRoles={["Staff", "Admin"]} />}>
-            <Route path="/staff" element={<StaffDashboard />} />
-            <Route path="/staff/queue" element={<StaffQueue />} />
-            <Route path="/staff/monitor" element={<QueueMonitor />} />
+            <Route element={<StaffLayout />}>
+              <Route path="/staff/dashboard" element={<StaffDashboard />} />
+              <Route path="/staff/queue" element={<StaffQueuePage />} />
+              <Route path="/staff/monitor" element={<QueueMonitor />} />
+            </Route>
           </Route>
 
           {/* 🌟 ADMIN ROUTES 🌟 */}
