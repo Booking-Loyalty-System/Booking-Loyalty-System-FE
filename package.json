@@ -98,5 +98,6 @@
   "validate-branch-name": {
     "pattern": "^(main|feat|fix|docs|refactor|hotfix)/.+$",
     "errorMsg": "Tên branch sai định dạng rồi bạn ơi! Phải là feat/..., fix/..., docs/... chứ!"
-  }
+  },
+  "packageManager": "pnpm@9.1.0"
 }

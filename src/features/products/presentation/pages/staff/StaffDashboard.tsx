@@ -4,12 +4,10 @@ import {
   CheckCircle,
   Clock,
   Car,
-  User,
   Calendar,
   Award,
   Sparkles,
 } from "lucide-react";
-import { toast } from "sonner";
 
 const todayBookings = [
   {
@@ -129,7 +127,7 @@ export function StaffDashboard() {
       </div>
 
       {/* Current Status */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 mb-8 text-white">
+      <div className="bg-linear-to-br from-blue-600 to-blue-700 rounded-xl p-6 mb-8 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm opacity-90 mb-1">Current Time</p>
