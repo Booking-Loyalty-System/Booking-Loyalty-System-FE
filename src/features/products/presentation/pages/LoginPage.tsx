@@ -21,28 +21,23 @@ export const LoginPage: React.FC = () => {
       toast.success("Đăng nhập thành công!");
 
       setTimeout(() => {
-        // Lấy token từ localStorage (do useAuth đã lưu vào sau khi login thành công)
-        const token = localStorage.getItem("access_token");
+        // Lấy thông tin user trực tiếp từ localStorage thay vì decode token (để hỗ trợ cả mock login)
+        const savedUser = localStorage.getItem("user_info");
 
-        if (token) {
-          const decoded: any = jwtDecode(token);
-          const role =
-            decoded[
-              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-            ] ||
-            decoded.role ||
-            decoded.Role;
+        if (savedUser) {
+          const user = JSON.parse(savedUser);
+          const role = user.role;
 
-          // Điều hướng dựa trên Role giống như Google Login
+          // Điều hướng dựa trên Role
           if (role === "Admin") {
             navigate("/admin");
           } else if (role === "Staff") {
-            navigate("/staff");
+            navigate("/staff/dashboard");
           } else {
             navigate("/dashboard"); // Customer mặc định
           }
         } else {
-          // Fallback nếu không tìm thấy token
+          // Fallback nếu không tìm thấy thông tin user
           navigate("/dashboard");
         }
       }, 1000);
@@ -80,7 +75,7 @@ export const LoginPage: React.FC = () => {
 
         setTimeout(() => {
           // Điều hướng chuẩn xác theo Role
-          const decoded: any = jwtDecode(data.token);
+          const decoded = jwtDecode<Record<string, string | undefined>>(data.token);
           const role =
             decoded[
               "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
@@ -89,7 +84,7 @@ export const LoginPage: React.FC = () => {
             decoded.Role;
 
           if (role === "Admin") navigate("/admin");
-          else if (role === "Staff") navigate("/staff");
+          else if (role === "Staff") navigate("/staff/dashboard");
           else navigate("/dashboard"); // Customer mặc định
         }, 1000);
       } else {
