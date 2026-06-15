@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { AuthRepositoryImplement } from '../infrastructure/repositories/auth/auth.repository.implement.ts';
-import type {User, RefreshTokenRequest, RegisterRequest} from '../domain/models/auth/auth.model.ts';
+import type {
+    User,
+    RefreshTokenRequest,
+    RegisterRequest,
+    PhoneRegisterRequest, AuthResponseData
+} from '../domain/models/auth/auth.model.ts';
 
 const authRepository = new AuthRepositoryImplement();
 
@@ -51,7 +56,8 @@ export const useAuth = () => {
     // 3. Mutation: Refresh Token
     const refreshTokenMutation = useMutation({
         mutationFn: (data: RefreshTokenRequest) => authRepository.refreshToken(data),
-        onSuccess: (data) => {
+        onSuccess: (res) => {
+            const data = (res as unknown as { data?: AuthResponseData })?.data || res;
             // Cập nhật lại Access Token mới vào LocalStorage
             localStorage.setItem('access_token', data.accessToken);
 
@@ -95,6 +101,24 @@ export const useAuth = () => {
         }
     });
 
+    const registerWithPhoneMutation = useMutation({
+        mutationFn: (userData: PhoneRegisterRequest) => authRepository.registerWithPhone(userData),
+        onSuccess: (data) => {
+            localStorage.setItem('access_token', data.accessToken);
+            if (data.refreshToken) {
+                localStorage.setItem('refresh_token', data.refreshToken);
+            }
+            localStorage.setItem('user_info', JSON.stringify(data.user));
+            queryClient.setQueryData(['current_user'], data.user);
+
+            console.log("Đăng ký bằng SĐT thành công!");
+            window.location.href = '/dashboard';
+        },
+        onError: (error) => {
+            alert("Đăng ký bằng SĐT thất bại: " + error.message);
+        }
+    });
+
     return {
         user,
         isAuthenticated,
@@ -102,11 +126,14 @@ export const useAuth = () => {
         isLoggingOut: logoutMutation.isPending,
         isRefreshing: refreshTokenMutation.isPending,
         isPending: registerMutation.isPending,
+        isPendingPhone: registerWithPhoneMutation.isPending,
+
         error: loginMutation.error || logoutMutation.error || refreshTokenMutation.error,
 
         login: loginMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
         register: registerMutation.mutateAsync,
         refreshToken: refreshTokenMutation.mutateAsync,
+        registerWithPhone: registerWithPhoneMutation.mutateAsync,
     };
 };

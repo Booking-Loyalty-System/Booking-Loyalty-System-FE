@@ -4,7 +4,7 @@ import type { ApiResponse } from '../../../domain/apiResponse.ts';
 import type { LoginRequest } from '@/features/products/domain/models/auth/auth.model.ts';
 import { httpClient } from '@/core/http/httpClient.ts';
 import { ENDPOINTS } from '@/core/api/endpoints';
-// import type {PhoneRegisterRequest} from "@/features/products/application/requests/PhoneRegisterRequest.ts";
+import type {PhoneRegisterRequest} from "@/features/products/domain/models/auth/auth.model.ts";
 
 export class AuthRepositoryImplement implements IAuthRepository {
     async login(credentials: LoginRequest): Promise<AuthResponseData> {
@@ -40,15 +40,15 @@ export class AuthRepositoryImplement implements IAuthRepository {
         return response.data;
     }
 
-    // async registerWithPhone(data: PhoneRegisterRequest): Promise<AuthResponseData> {
-    //     const response = await httpClient.post<ApiResponse<AuthResponseData>>(
-    //         ENDPOINTS.AUTH.REGISTER_WITH_PHONE,
-    //         {
-    //             phoneNumber: data.phoneNumber,
-    //             otpCode: data.idToken
-    //         }
-    //     );
-    //
-    //     return response.data;
-    // }
+    async registerWithPhone(data: PhoneRegisterRequest): Promise<AuthResponseData> {
+        const response = await httpClient.post<ApiResponse<AuthResponseData>>(
+            ENDPOINTS.AUTH.REGISTER_WITH_PHONE,
+            {
+                phoneNumber: data.phoneNumber,
+                otpCode: data.idToken
+            }
+        );
+
+        return response.data;
+    }
 }

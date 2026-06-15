@@ -1,40 +1,54 @@
 import { Clock } from "lucide-react";
-import type { DateTimeSelectionProps } from "@/features/products/domain/models/time-slot/time-slot.model.ts";
+import type { DailyTimeSlotsSummaryDto } from "../../domain/models/time-slot/time-slot.dto.ts";
+
+export interface DynamicDateSlot {
+    apiDate: string;
+    dayName: string;
+    dayNum: string | number;
+}
+
+// Định nghĩa lại Props nhận data thật từ API gối đầu
+interface DateTimeSelectionProps {
+    dynamicDateSlots: DynamicDateSlot[];
+    weeklySummary: DailyTimeSlotsSummaryDto[]; // Thêm cục data 7 ngày từ React Query
+    selectedDate: string;
+    onSelectDate: (date: string) => void;
+    selectedTime: string;
+    onSelectTime: (time: string) => void;
+}
 
 export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
-                                                                        dynamicDateSlots, timeSlots, selectedDate, onSelectDate, selectedTime, onSelectTime
+                                                                        dynamicDateSlots,
+                                                                        weeklySummary,
+                                                                        selectedDate,
+                                                                        onSelectDate,
+                                                                        selectedTime,
+                                                                        onSelectTime
                                                                     }) => {
 
+    // 1. Tìm danh sách ca giờ thuộc riêng ngày đang được chọn trên UI (selectedDate)
+    const currentDayData = weeklySummary.find(slot => slot.date === selectedDate);
+    // Nếu API chưa về kịp hoặc trống, fallback về mảng rỗng để tránh crash giao diện
+    const activeTimeSlots = currentDayData ? currentDayData.timeSlots : [];
+
     const isSlotDisabled = (slotTime: string): boolean => {
-        // 1. Lấy thời gian hiện tại theo giờ Việt Nam (UTC+7)
         const now = new Date();
         const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
         const vnTime = new Date(utc + (7 * 3600000));
-
         const todayStr = vnTime.toISOString().split('T')[0];
 
-        // Nếu không phải hôm nay thì không chặn
         if (selectedDate !== todayStr) return false;
 
-        // 2. Tính thời điểm giới hạn (Giờ hiện tại + 2 tiếng)
         const limitTime = new Date(vnTime.getTime() + 2 * 60 * 60 * 1000);
-
-        // 3. Xử lý chuỗi giờ (Hỗ trợ có hoặc không có AM/PM)
-        // Cắt bỏ khoảng trắng 2 đầu và tách phần giờ với chữ AM/PM (nếu có)
         const [timePart, modifier] = slotTime.trim().split(' ');
         const timeElements = timePart.split(':').map(Number);
         let hours = timeElements[0];
         const minutes = timeElements[1];
 
-        // Chuyển đổi sang hệ 24h nếu có AM/PM
         if (modifier) {
             const upperModifier = modifier.toUpperCase();
-            if (upperModifier === 'PM' && hours < 12) {
-                hours += 12;
-            }
-            if (upperModifier === 'AM' && hours === 12) {
-                hours = 0;
-            }
+            if (upperModifier === 'PM' && hours < 12) hours += 12;
+            if (upperModifier === 'AM' && hours === 12) hours = 0;
         }
 
         const slotDate = new Date(vnTime);
@@ -45,6 +59,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
     return (
         <div className="space-y-6">
+            {/* --- Phần chọn ngày (Tabs) --- */}
             <div className="space-y-4">
                 <h3 className="text-xl font-bold text-[#0f172a]">Select Date</h3>
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
@@ -55,7 +70,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                 key={slot.apiDate}
                                 onClick={() => {
                                     onSelectDate(slot.apiDate);
-                                    onSelectTime('');
+                                    onSelectTime(''); // Reset giờ đã chọn khi nhảy ngày
                                 }}
                                 className={`cursor-pointer border rounded-2xl p-4 text-center transition-all ${
                                     isDateSelected
@@ -75,45 +90,58 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                 </div>
             </div>
 
-            {/* --- Phần chọn giờ --- */}
+            {/* --- Phần chọn giờ dịch từ Real-time API --- */}
             <div className="space-y-4 pt-2">
                 <h4 className="text-lg font-bold text-[#0f172a]">Available Time Slots</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    {timeSlots.map((slot, index) => {
-                        const isPast = isSlotDisabled(slot.time);
-                        const isFull = slot.status === 'full';
-                        const isDisabled = isFull || isPast;
-                        const isTimeSelected = selectedTime === slot.time;
 
-                        let statusClasses: string;
+                {activeTimeSlots.length === 0 ? (
+                    <div className="text-sm font-medium text-slate-400 py-4 italic">
+                        Vui lòng chọn chi nhánh để cập nhật ca trống...
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        {activeTimeSlots.map((slot) => {
+                            // Định dạng hiển thị giờ (Chuyển hh:mm:ss thành hh:mm ngắn gọn cho chuẩn UI)
+                            const displayTime = slot.startTime.substring(0, 5);
 
-                        if (isDisabled) {
-                            statusClasses = 'border-[#e2e8f0] bg-slate-50 text-slate-400 cursor-not-allowed opacity-60';
-                        } else if (isTimeSelected) {
-                            statusClasses = 'border-[#1e6ffd] ring-2 ring-blue-100 bg-white';
-                        } else if (slot.status === 'limited') {
-                            statusClasses = 'border-[#fbd38d] bg-[#fffaf0]';
-                        } else {
-                            statusClasses = 'border-[#bbf7d0] bg-[#f0fdf4]';
-                        }
+                            const isPast = isSlotDisabled(slot.startTime);
+                            // Hết chỗ khi backend trả về isAvailable = false hoặc slotRatio chứa chữ 'Full'
+                            const isFull = !slot.isAvailable || slot.slotRatio.toLowerCase().includes('full');
+                            const isDisabled = isFull || isPast;
+                            const isTimeSelected = selectedTime === slot.startTime;
 
-                        return (
-                            <div
-                                key={index}
-                                onClick={() => !isDisabled && onSelectTime(slot.time)}
-                                className={`border rounded-2xl p-4 transition-all relative flex flex-col gap-1 ${!isDisabled ? 'cursor-pointer' : ''} ${statusClasses}`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4" />
-                                    <span className="text-sm font-black">{slot.time}</span>
+                            let statusClasses: string;
+
+                            if (isDisabled) {
+                                statusClasses = 'border-[#e2e8f0] bg-slate-50 text-slate-400 cursor-not-allowed opacity-60';
+                            } else if (isTimeSelected) {
+                                statusClasses = 'border-[#1e6ffd] ring-2 ring-blue-100 bg-white text-[#1e6ffd]';
+                            } else if (slot.slotRatio.includes('1') || slot.slotRatio.includes('2')) {
+                                // Nếu còn ít khoang rảnh (1 hoặc 2), chuyển box sang cảnh báo màu cam (Limited)
+                                statusClasses = 'border-[#fbd38d] bg-[#fffaf0] text-amber-700';
+                            } else {
+                                // Còn nhiều khoang rảnh rỗi (Màu xanh lá nhẹ dịu)
+                                statusClasses = 'border-[#bbf7d0] bg-[#f0fdf4] text-emerald-800';
+                            }
+
+                            return (
+                                <div
+                                    key={slot.timeSlotId}
+                                    onClick={() => !isDisabled && onSelectTime(slot.startTime)}
+                                    className={`border rounded-2xl p-4 transition-all relative flex flex-col gap-1 ${!isDisabled ? 'cursor-pointer hover:scale-[1.02]' : ''} ${statusClasses}`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Clock className="w-4 h-4" />
+                                        <span className="text-sm font-black">{displayTime}</span>
+                                    </div>
+                                    <span className="text-xs font-semibold pl-6">
+                                        {isDisabled ? (isPast ? 'Closed' : 'Full') : slot.slotRatio}
+                                    </span>
                                 </div>
-                                <span className="text-xs font-semibold pl-6">
-                                    {isDisabled ? (isPast ? 'Closed' : 'Full') : `${slot.availableSlots} slots left`}
-                                </span>
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );

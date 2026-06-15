@@ -20,3 +20,17 @@ export interface DateTimeSelectionProps {
     selectedTime: string;
     onSelectTime: (time: string) => void;
 }
+
+export interface BranchTimeSlotGroupDto {
+    timeSlotId: string;
+    startTime: string;
+    endTime: string;
+    slotRatio: string;
+    isAvailable: boolean;
+}
+
+export interface DailyTimeSlotsSummaryDto {
+    date: string; // YYYY-MM-DD
+    dayOfWeek: string;
+    timeSlots: BranchTimeSlotGroupDto[];
+}

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { AuthRepositoryImplement } from '@/features/products/infrastructure/repositories/auth/auth.repository.implement.ts';
+import type {AuthResponseData} from "@/features/products/domain/models/auth/auth.model.ts";
 
 // Khởi tạo instance
 export const apiClient = axios.create({
@@ -14,7 +15,8 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
-        if (token && config.headers) {
+        const isRefreshRequest = config.url?.includes('refresh') || config.url?.includes('Refresh');
+        if (token && config.headers && !isRefreshRequest) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
@@ -42,15 +44,16 @@ apiClient.interceptors.response.use(
                 // Lúc này toàn bộ file hệ thống đã lốt xong xuôi, gọi thoải mái không sợ chết
                 const authRepository = new AuthRepositoryImplement();
 
-                const data = await authRepository.refreshToken({ refreshToken });
+                const res = await authRepository.refreshToken({ refreshToken });
 
-                if (data && data.accessToken) {
-                    localStorage.setItem('access_token', data.accessToken);
-                    if (data.refreshToken) {
-                        localStorage.setItem('refresh_token', data.refreshToken);
+                const tokenData = (res as unknown as { data?: AuthResponseData })?.data || res;
+                if (tokenData && tokenData.accessToken) {
+                    localStorage.setItem('access_token', tokenData.accessToken);
+                    if (tokenData.refreshToken) {
+                        localStorage.setItem('refresh_token', tokenData.refreshToken);
                     }
 
-                    originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+                    originalRequest.headers.Authorization = `Bearer ${tokenData.accessToken}`;
                     return apiClient(originalRequest);
                 }
             } catch (refreshError) {

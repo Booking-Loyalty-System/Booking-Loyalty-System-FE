@@ -9,6 +9,7 @@ export interface User {
 export interface AuthResponseData {
     accessToken: string;
     refreshToken: string;
+    accessTokenExpiry: string;
     user: User;
 }
 
@@ -18,10 +19,9 @@ export interface LoginRequest {
     password?: string; // Thêm dấu ? nếu password không bắt buộc, hoặc xóa ? đi nếu bắt buộc
 }
 
-// 📤 LAYER REQUEST: Dữ liệu gửi lên khi Register bằng số điện thoại (nếu có dùng lại)
 export interface PhoneRegisterRequest {
     phoneNumber: string;
-    idToken: string; // hoặc otpCode tùy Swagger
+    idToken: string;
 }
 
 // 📤 LAYER REQUEST: Dữ liệu gửi lên khi cần refresh token

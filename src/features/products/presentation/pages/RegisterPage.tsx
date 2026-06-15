@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import {User, Phone, Lock, Droplets, CheckCircle2, Mail, Calendar} from 'lucide-react';
+import React, {useRef, useState} from 'react';
+import { toast } from "sonner";
+import {User, Phone, Lock, Droplets, CheckCircle2, Mail, Calendar, KeyRound} from 'lucide-react';
 import {useAuth} from "@/features/products/application/useAuth.ts";
+import { auth } from "@/firebase-config.ts";
+import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
 
 export const RegisterPage: React.FC = () => {
     // 1. Thêm các state mới để khớp với RegisterRequest
@@ -8,26 +11,94 @@ export const RegisterPage: React.FC = () => {
     const [dateOfBirth, setDateOfBirth] = useState('');
 
     const [fullName, setFullName] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const { register, isPending } = useAuth();
+    const { register, registerWithPhone, isPending, isPendingPhone } = useAuth();
+    const [registerMode, setRegisterMode] = useState<'email' | 'phone'>('email');
+
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [otp, setOtp] = useState('');
+    const [isOtpSent, setIsOtpSent] = useState(false);
+    const [confirmResult, setConfirmResult] = useState<ConfirmationResult | null>(null);
+
+    const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
+    const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            alert("Mật khẩu xác nhận không khớp!");
+            toast.error("Mật khẩu xác nhận không khớp!");
             return;
         }
+        try {
+            register({
+                email,
+                password,
+                fullName,
+                phoneNumber,
+                dateOfBirth: new Date(dateOfBirth).toISOString(),
+            });
+            toast.success("Đăng ký tài khoản thành công!");
+        } catch (error) {
+            console.error("Đăng nhập email thất bại:", error);
+        }
+    };
 
-        // Gọi API ở đây!
-        register({
-            email,
-            password,
-            fullName,
-            phoneNumber,
-            dateOfBirth: new Date(dateOfBirth).toISOString(),
-        });
+    const setupRecaptcha = () => {
+        if (!recaptchaVerifierRef.current && recaptchaContainerRef.current && auth) {
+            recaptchaVerifierRef.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+                'size': 'visible',
+            });
+        }
+    };
+
+    const handleSendOTP = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!phoneNumber) return toast.warning("Vui lòng nhập số điện thoại");
+
+        try {
+            setupRecaptcha();
+            const appVerifier = recaptchaVerifierRef.current;
+
+            if (!appVerifier) {
+                toast.error("Không thể khởi tạo bộ xác thực reCaptcha.");
+                return;
+            }
+
+            const formattedPhone = phoneNumber.startsWith('0') ? '+84' + phoneNumber.slice(1) : phoneNumber;
+
+            const result = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+            setConfirmResult(result);
+            setIsOtpSent(true);
+            toast.success("Đã gửi mã OTP thành công!");
+        } catch (error) {
+            const err = error as Error;
+            console.error("Lỗi gửi OTP:", err);
+            toast.error("Không thể gửi OTP: " + err.message);
+        }
+    };
+
+    const handlePhoneSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!otp || !confirmResult) return;
+
+        try {
+            const result = await confirmResult.confirm(otp);
+            const user = result.user;
+
+            const idToken = await user.getIdToken();
+            const verifiedPhone = user.phoneNumber ?? phoneNumber;
+            // 3. Gọi API registerWithPhone của hệ thống
+            registerWithPhone({
+                phoneNumber: verifiedPhone,
+                idToken: idToken
+            });
+            toast.success("Xác thực OTP thành công! Đang đăng nhập...");
+        } catch (error) {
+            console.error("Sai OTP:", error);
+            toast.error("Mã OTP không chính xác hoặc đã hết hạn!");
+        }
     };
 
     return (
@@ -69,6 +140,22 @@ export const RegisterPage: React.FC = () => {
                             <p className="text-[#64748b] text-base">Get started with AutoWash Pro</p>
                         </div>
 
+                        <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
+                            <button
+                                onClick={() => setRegisterMode('email')}
+                                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${registerMode === 'email' ? 'bg-white shadow text-[#4a90e2]' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Bằng Email
+                            </button>
+                            <button
+                                onClick={() => setRegisterMode('phone')}
+                                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${registerMode === 'phone' ? 'bg-white shadow text-[#4a90e2]' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Bằng SĐT (OTP)
+                            </button>
+                        </div>
+
+                        {registerMode === 'email' && (
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {/* Input Fields */}
                             <InputField icon={<User />} label="Full Name" value={fullName} onChange={setFullName} placeholder="John Doe" />
@@ -89,6 +176,61 @@ export const RegisterPage: React.FC = () => {
                                 {isPending ? "Đang xử lý..." : "Create Account"}
                             </button>
                         </form>
+                            )}
+
+                        {registerMode === 'phone' && (
+                            <form onSubmit={handlePhoneSubmit} className="space-y-4 animate-in fade-in zoom-in duration-300">
+                                <div className="space-y-1.5">
+                                    <label className="text-sm font-semibold text-[#334155]">Phone Number</label>
+                                    <div className="flex gap-2">
+                                        <div className="relative flex-1">
+                                            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#94a3b8]">
+                                                <Phone size={18} />
+                                            </span>
+                                            <input
+                                                type="text"
+                                                value={phoneNumber}
+                                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                                placeholder="+84 901 234 567"
+                                                disabled={isOtpSent} // Khóa ô nhập khi đã gửi OTP
+                                                required
+                                                className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#e2e8f0] rounded-xl text-base focus:border-[#4a90e2] outline-none transition-all disabled:bg-slate-50"
+                                            />
+                                        </div>
+                                        {!isOtpSent && (
+                                            <button
+                                                onClick={handleSendOTP}
+                                                className="bg-slate-900 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-slate-800 whitespace-nowrap"
+                                            >
+                                                Gửi mã
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div ref={recaptchaContainerRef}></div>
+
+                                {isOtpSent && (
+                                    <>
+                                        <InputField
+                                            icon={<KeyRound />}
+                                            label="Mã OTP"
+                                            value={otp}
+                                            onChange={setOtp}
+                                            placeholder="Nhập 6 số OTP..."
+                                            type="text"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={isPendingPhone}
+                                            className="w-full bg-emerald-500 text-white py-2.5 rounded-xl font-semibold hover:bg-emerald-600 mt-4 transition-colors"
+                                        >
+                                            {isPendingPhone ? "Đang xác thực..." : "Xác nhận & Đăng ký"}
+                                        </button>
+                                    </>
+                                )}
+                            </form>
+                        )}
                     </div>
                 </div>
             </div>

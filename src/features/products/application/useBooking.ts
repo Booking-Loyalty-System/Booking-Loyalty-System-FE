@@ -1,33 +1,53 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import { BookingRepositoryImplement } from '../infrastructure/repositories/booking/booking.repository.implement.ts';
-import type { CreateBookingInput } from '../domain/models/booking/booking.model.ts';
+import type {CreateBookingInput, MyBookingRecord} from '../domain/models/booking/booking.model.ts';
 
 const bookingRepository = new BookingRepositoryImplement();
 
 export const useBooking = () => {
     const queryClient = useQueryClient();
 
+    const myBookingsQuery = useQuery<MyBookingRecord[]>({
+        queryKey: ['my_bookings'],
+        queryFn: () => bookingRepository.getMyBookings(),
+        // staleTime: Có thể đặt thời gian cache ở đây nếu muốn, ví dụ 1 phút: 60 * 1000
+    });
+
     // Sử dụng useMutation cho việc tạo mới Booking
     const createBookingMutation = useMutation({
         mutationFn: (bookingData: CreateBookingInput) =>
             bookingRepository.createBooking(bookingData),
-        onSuccess: () => {
-            // Sau khi đặt lịch thành công, làm mới danh sách booking hoặc các query liên quan
+        onSuccess: (data) => {
+            console.log("Đặt lịch thành công:", data);
+
+            // Xóa cache cũ, buộc React Query phải gọi lại api getMyBookings
+            // để bảng lịch sử có dữ liệu mới nhất
             queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
         },
+        onError: (error) => {
+            console.error("Lỗi khi tạo booking:", error);
+        }
+    });
+
+    const cancelBookingMutation = useMutation({
+        mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+            bookingRepository.cancelBooking(id, reason),
+        onSuccess: () => {
+            // Tự động reload lại danh sách lịch sử bốc lịch
+            queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
+        },
+        onError: (error) => {
+            console.error("Lỗi khi hủy đặt lịch:", error);
+        }
     });
 
     return {
-        // Trạng thái đang xử lý (true khi đang gửi request)
+        myBookings: myBookingsQuery.data || [],
+        isFetchingBookings: myBookingsQuery.isLoading,
         isBooking: createBookingMutation.isPending,
-
-        // Trả về error nếu có
         error: createBookingMutation.error,
-
-        // Hàm gọi thực thi booking
         createBooking: createBookingMutation.mutateAsync,
-
-        // Trả về dữ liệu kết quả sau khi mutate xong (tùy chọn)
-        bookingResult: createBookingMutation.data,
+        cancelBooking: cancelBookingMutation.mutateAsync,
+        isCanceling: cancelBookingMutation.isPending
     };
 };

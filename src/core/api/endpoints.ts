@@ -9,8 +9,7 @@ export const ENDPOINTS = {
         LOGOUT: '/auth/logout',
         REGISTER: '/auth/register',
         REFRESH_TOKEN: '/auth/refresh-token',
-        REGISTER_WITH_PHONE: '/auth/send-otp',
-        REGISTER_WITH_PHONE_VERIFY: '/auth/verify-otp',
+        REGISTER_WITH_PHONE: '/auth/verify-otp',
     },
 
     VEHICLES: {
@@ -23,10 +22,24 @@ export const ENDPOINTS = {
     },
 
     BOOKING:{
-        BOOKING: '/bookings'
+        BOOKING: '/bookings',
+        MY_BOOKING: '/bookings/my-bookings',
+        CANCEL: (id: string) => `/bookings/${id}/cancel`,
     },
 
     BRANCH:{
         BRANCH: '/admin/branches'
+    },
+
+    CUSTOMER: {
+        ME: '/customers/me'
+    },
+
+    TIER: {
+        TIER: '/tiers'
+    },
+
+    TIME_SLOT: {
+        WEEK_SUMMARY: '/time-slots/weekly-summary'
     }
 };

@@ -16,7 +16,7 @@ THREE.DefaultLoadingManager.onError = (url: string) => {
 };
 
 export const CarWithEffects = ({ currentStep }: { currentStep: number }) => {
-    const { scene } = useGLTF('/car_1.glb', false, false, (loader) => {
+    const { scene } = useGLTF('/car-optimized.glb', false, false, (loader) => {
         // Ép hàm báo lỗi của GLTFLoader thành hàm trống (bỏ qua mọi lỗi vặt liên quan đến texture ẩn)
         loader.manager.onError = () => {};
     });

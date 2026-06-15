@@ -1,4 +1,4 @@
-import type { DateSlot, TimeSlot } from '@/features/products/domain/models/time-slot/time-slot.model';
+import type { DateSlot, TimeSlot } from '../../features/products/domain/models/time-slot/time-slot.dto';
 
 export const TIME_SLOTS: TimeSlot[] = [
     { time: '08:00 AM', availableSlots: 2, totalSlots: 4, status: 'available' },
