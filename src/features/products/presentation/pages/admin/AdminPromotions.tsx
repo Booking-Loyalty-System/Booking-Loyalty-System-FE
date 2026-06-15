@@ -4,10 +4,8 @@ import {
   Megaphone,
   Plus,
   Calendar,
-  Tag,
   Trash2,
   Edit2,
-  Sparkles,
   CheckCircle,
   XCircle,
 } from "lucide-react";
@@ -48,7 +46,7 @@ const initialPromotions = [
 ];
 
 export function AdminPromotions() {
-  const [promotions, setPromotions] = useState(initialPromotions);
+  const [promotions] = useState(initialPromotions);
   const [isCreating, setIsCreating] = useState(false);
 
   return (

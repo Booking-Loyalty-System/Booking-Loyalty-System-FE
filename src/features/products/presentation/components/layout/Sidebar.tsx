@@ -6,12 +6,9 @@ import {
   Gift,
   Megaphone,
   History,
-  User,
-  Users,
   Droplets,
   BarChart3,
   Car,
-  Tag,
   UserCog,
   Bell,
   CreditCard,
@@ -19,7 +16,6 @@ import {
   Package,
   FileText,
   Monitor,
-  ClipboardList,
 } from "lucide-react";
 
 interface SidebarProps {
