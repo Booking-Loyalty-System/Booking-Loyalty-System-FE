@@ -3,17 +3,29 @@ import { Calendar, Search, Filter, ClipboardList } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 
 export const TotalBookings: React.FC = () => {
+    // [KIẾN THỨC] useStaffDashboard: Một Custom Hook tự xây dựng để tách biệt logic lấy dữ liệu (Data Fetching) ra khỏi UI.
+    // Giúp code ngắn gọn hơn và có thể tái sử dụng ở nhiều trang khác nhau của Staff.
     const { bookings, isLoading } = useStaffDashboard();
+    
+    // [KIẾN THỨC] useState: Hook cơ bản của React dùng để quản lý trạng thái (state) nội bộ của component.
+    // - searchTerm: Dùng để lưu trữ những gì người dùng gõ vào ô tìm kiếm.
+    // - statusFilter: Lưu trạng thái bộ lọc đang được chọn (Tất cả, Đang chờ, Đã hủy...).
+    // Khi giá trị trong useState thay đổi, React sẽ tự động render lại (re-render) trang để cập nhật kết quả.
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('All');
 
+    // [KIẾN THỨC] Filtering Logic: Đây là kỹ thuật lọc dữ liệu trực tiếp ở Frontend (Client-side filtering).
+    // Phù hợp khi lượng dữ liệu trong ngày không quá lớn, giúp phản hồi tìm kiếm diễn ra tức thì mà không cần gọi lại API.
     const filteredBookings = bookings.filter(b => {
+        // Kiểm tra xem mã booking hoặc biển số xe có chứa từ khóa tìm kiếm hay không (không phân biệt hoa thường)
         const matchesSearch = b.bookingCode.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               (b.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+        // Kiểm tra xem trạng thái booking có khớp với bộ lọc đang chọn hay không
         const matchesStatus = statusFilter === 'All' || b.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
 
+    // Hiển thị trạng thái đang tải (Loading)
     if (isLoading) return (
         <div className="p-8 space-y-6">
             <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
@@ -23,10 +35,11 @@ export const TotalBookings: React.FC = () => {
 
     return (
         <div className="space-y-6">
+            {/* Tiêu đề trang và hiển thị ngày hiện tại */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Total Bookings</h1>
-                    <p className="text-gray-500 text-sm">Overview of all bookings scheduled for today.</p>
+                    <p className="text-gray-500 text-sm">Tổng hợp tất cả các lịch đặt trong ngày hôm nay.</p>
                 </div>
                 <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg text-blue-700 font-semibold text-sm">
                     <Calendar className="w-4 h-4" />
@@ -34,13 +47,13 @@ export const TotalBookings: React.FC = () => {
                 </div>
             </div>
 
-            {/* Filters */}
+            {/* Thanh công cụ: Tìm kiếm và Bộ lọc */}
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input 
                         type="text" 
-                        placeholder="Search by code or license plate..." 
+                        placeholder="Tìm theo mã hoặc biển số..." 
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -53,40 +66,41 @@ export const TotalBookings: React.FC = () => {
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                        <option value="All">All Statuses</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="CheckedIn">Checked In</option>
-                        <option value="Queued">Queued</option>
-                        <option value="InProgress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                        <option value="CheckedOut">Checked Out</option>
-                        <option value="Cancelled">Cancelled</option>
-                        <option value="NoShow">No Show</option>
+                        <option value="All">Tất cả trạng thái</option>
+                        <option value="Confirmed">Xác nhận</option>
+                        <option value="CheckedIn">Đã đến</option>
+                        <option value="Queued">Đang đợi</option>
+                        <option value="InProgress">Đang rửa</option>
+                        <option value="Completed">Hoàn thành</option>
+                        <option value="CheckedOut">Đã thanh toán</option>
+                        <option value="Cancelled">Đã hủy</option>
+                        <option value="NoShow">Khách không đến</option>
                     </select>
                 </div>
             </div>
 
-            {/* Table */}
+            {/* Bảng hiển thị danh sách Booking */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 {filteredBookings.length === 0 ? (
+                    // Hiển thị khi không có dữ liệu
                     <div className="p-12 text-center text-gray-500">
                         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <ClipboardList className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="font-semibold">No bookings found</p>
-                        <p className="text-sm">Try adjusting your filters.</p>
+                        <p className="font-semibold">Không tìm thấy lịch đặt nào</p>
+                        <p className="text-sm">Vui lòng điều chỉnh lại bộ lọc hoặc từ khóa tìm kiếm.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th className="py-4 px-6">Booking Code</th>
-                                    <th className="py-4 px-6">Customer / Vehicle</th>
-                                    <th className="py-4 px-6">Service</th>
-                                    <th className="py-4 px-6">Time</th>
-                                    <th className="py-4 px-6">Status</th>
-                                    <th className="py-4 px-6 text-right">Amount</th>
+                                    <th className="py-4 px-6">Mã Booking</th>
+                                    <th className="py-4 px-6">Xe / Biển số</th>
+                                    <th className="py-4 px-6">Dịch vụ</th>
+                                    <th className="py-4 px-6">Giờ hẹn</th>
+                                    <th className="py-4 px-6">Trạng thái</th>
+                                    <th className="py-4 px-6 text-right">Tổng tiền</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -100,6 +114,7 @@ export const TotalBookings: React.FC = () => {
                                         <td className="py-4 px-6 text-sm text-gray-700">{b.serviceName || 'Dịch vụ đã chọn'}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700 font-medium">{b.startTime || '--:--'}</td>
                                         <td className="py-4 px-6">
+                                            {/* Badge hiển thị trạng thái với màu sắc tương ứng */}
                                             <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
                                                 b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' : 
                                                 b.status === 'CheckedIn' ? 'bg-purple-100 text-purple-700' :

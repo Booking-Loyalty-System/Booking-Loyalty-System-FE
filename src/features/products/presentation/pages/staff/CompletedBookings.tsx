@@ -3,9 +3,14 @@ import { Search, CheckSquare, Calendar, Download } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 
 export const CompletedBookings: React.FC = () => {
+    // [KIẾN THỨC] Hook useStaffDashboard dùng TanStack Query (React Query) dưới nền để quản lý server state.
+    // TanStack Query giúp tự động cache dữ liệu, quản lý trạng thái loading/error và re-fetch cực kỳ hiệu quả.
     const { bookings, isLoading } = useStaffDashboard();
+    
     const [searchTerm, setSearchTerm] = useState('');
 
+    // [KIẾN THỨC] Multi-condition Filtering: Lọc theo nhiều điều kiện.
+    // Ở đây ta kết hợp lọc theo Status (chỉ lấy ca xong) VÀ lọc theo từ khóa tìm kiếm.
     const completedBookings = bookings.filter(b => 
         (b.status === 'Completed' || b.status === 'CheckedOut') &&
         (b.bookingCode.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -24,39 +29,42 @@ export const CompletedBookings: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Completed Bookings</h1>
-                    <p className="text-gray-500 text-sm">List of all successfully finished services today.</p>
+                    <p className="text-gray-500 text-sm">Danh sách các dịch vụ đã hoàn tất trong ngày.</p>
                 </div>
+                {/* [KIẾN THỨC] Lucide React: Thư viện icon dạng SVG, nhẹ và dễ tùy chỉnh màu sắc qua Tailwind CSS (ví dụ: w-4 h-4). */}
                 <button className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors">
                     <Download className="w-4 h-4" />
-                    Export Report
+                    Xuất báo cáo
                 </button>
             </div>
 
-            {/* Stats Summary */}
+            {/* Thẻ thống kê nhanh */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Total Completed</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tổng ca hoàn thành</p>
                     <p className="text-2xl font-black text-emerald-600">{completedBookings.length}</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Total Revenue</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tổng doanh thu</p>
                     <p className="text-2xl font-black text-gray-900">
-                        {completedBookings.reduce((sum, b) => sum + b.totalAmount, 0).toLocaleString('vi-VN')}đ
+                        {/* [KIẾN THỨC] Array.reduce(): Hàm của JavaScript dùng để tính toán một giá trị duy nhất từ một mảng.
+                           Ở đây dùng để cộng dồn totalAmount của tất cả booking đã lọc được. */}
+                        {completedBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0).toLocaleString('vi-VN')}đ
                     </p>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Average Service Time</p>
-                    <p className="text-2xl font-black text-gray-900">24 mins</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Thời gian TB / ca</p>
+                    <p className="text-2xl font-black text-gray-900">24 phút</p>
                 </div>
             </div>
 
-            {/* Filters */}
+            {/* Ô tìm kiếm */}
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input 
                         type="text" 
-                        placeholder="Search by code or license plate..." 
+                        placeholder="Tìm theo mã hoặc biển số..." 
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -64,27 +72,27 @@ export const CompletedBookings: React.FC = () => {
                 </div>
             </div>
 
-            {/* Table */}
+            {/* Bảng dữ liệu */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 {completedBookings.length === 0 ? (
                     <div className="p-12 text-center text-gray-500">
                         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <CheckSquare className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="font-semibold">No completed bookings yet</p>
-                        <p className="text-sm">Finish some services to see them here.</p>
+                        <p className="font-semibold">Chưa có ca hoàn thành nào</p>
+                        <p className="text-sm">Hoàn tất các dịch vụ đang thực hiện để thấy chúng ở đây.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th className="py-4 px-6">Booking Code</th>
-                                    <th className="py-4 px-6">Customer / Vehicle</th>
-                                    <th className="py-4 px-6">Service</th>
-                                    <th className="py-4 px-6">Completed Time</th>
-                                    <th className="py-4 px-6">Status</th>
-                                    <th className="py-4 px-6 text-right">Amount</th>
+                                    <th className="py-4 px-6">Mã Booking</th>
+                                    <th className="py-4 px-6">Xe / Biển số</th>
+                                    <th className="py-4 px-6">Dịch vụ</th>
+                                    <th className="py-4 px-6">Thời gian hoàn tất</th>
+                                    <th className="py-4 px-6">Trạng thái</th>
+                                    <th className="py-4 px-6 text-right">Thanh toán</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -110,7 +118,7 @@ export const CompletedBookings: React.FC = () => {
                                             </span>
                                         </td>
                                         <td className="py-4 px-6 text-right font-bold text-gray-900">
-                                            {b.totalAmount.toLocaleString('vi-VN')}đ
+                                            {(b.totalAmount || 0).toLocaleString('vi-VN')}đ
                                         </td>
                                     </tr>
                                 ))}
