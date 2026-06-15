@@ -22,6 +22,9 @@ import { StaffLayout } from "./features/products/presentation/layouts/StaffLayou
 import { StaffDashboard } from "@/features/products/presentation/pages/staff/StaffDashboard";
 import { StaffQueuePage } from "@/features/products/presentation/pages/staff/StaffQueue";
 import { QueueMonitor } from "@/features/products/presentation/pages/staff/QueueMonitor";
+import { TotalBookings } from "@/features/products/presentation/pages/staff/TotalBookings";
+import { CompletedBookings } from "@/features/products/presentation/pages/staff/CompletedBookings";
+import { CancelledBookings } from "@/features/products/presentation/pages/staff/CancelledBookings";
 
 import { AdminDashboard } from "@/features/products/presentation/pages/admin/AdminDashboard";
 import { AdminAnalytics } from "@/features/products/presentation/pages/admin/AdminAnalytics";
@@ -76,6 +79,9 @@ function App() {
               <Route path="/staff/dashboard" element={<StaffDashboard />} />
               <Route path="/staff/queue" element={<StaffQueuePage />} />
               <Route path="/staff/monitor" element={<QueueMonitor />} />
+              <Route path="/staff/total-bookings" element={<TotalBookings />} />
+              <Route path="/staff/completed-bookings" element={<CompletedBookings />} />
+              <Route path="/staff/cancelled-bookings" element={<CancelledBookings />} />
             </Route>
           </Route>
 

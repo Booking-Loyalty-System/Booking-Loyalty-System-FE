@@ -30,6 +30,52 @@ const MOCK_BOOKINGS: BookingResponseData[] = [
         totalAmount: 250000,
         createdAt: '2026-06-12T09:00:00Z',
     },
+    {
+        id: '3',
+        bookingCode: 'BW-003',
+        vehicleId: 'v3',
+        licensePlate: '51G-123.45',
+        washPackageId: 'p1',
+        serviceName: 'Rửa xe tiêu chuẩn',
+        branchId: 'b1',
+        bookingDate: '2026-06-12',
+        startTime: '11:00',
+        status: 'Completed',
+        totalAmount: 100000,
+        createdAt: '2026-06-12T10:00:00Z',
+    },
+    {
+        id: '4',
+        bookingCode: 'BW-004',
+        vehicleId: 'v4',
+        licensePlate: '43A-555.55',
+        washPackageId: 'p2',
+        serviceName: 'Rửa xe cao cấp',
+        branchId: 'b1',
+        bookingDate: '2026-06-12',
+        startTime: '12:00',
+        status: 'Cancelled',
+        totalAmount: 250000,
+        createdAt: '2026-06-12T11:00:00Z',
+        cancelReason: 'Khách đổi ý',
+        cancelledBy: 'Customer'
+    },
+    {
+        id: '5',
+        bookingCode: 'BW-005',
+        vehicleId: 'v5',
+        licensePlate: '75A-666.66',
+        washPackageId: 'p1',
+        serviceName: 'Rửa xe tiêu chuẩn',
+        branchId: 'b1',
+        bookingDate: '2026-06-12',
+        startTime: '13:00',
+        status: 'Cancelled',
+        totalAmount: 100000,
+        createdAt: '2026-06-12T12:00:00Z',
+        cancelReason: 'Thiết bị bảo trì đột xuất',
+        cancelledBy: 'Staff'
+    },
 ];
 
 export class StaffBookingRepositoryMock implements IStaffBookingRepository {
@@ -63,7 +109,15 @@ export class StaffBookingRepositoryMock implements IStaffBookingRepository {
 
     async cancelBookingByStaff(bookingId: string, reason: string): Promise<BookingResponseData> {
         console.log(`[Mock] Booking ${bookingId} cancelled by staff. Reason: ${reason}`);
-        return this.updateStatus(bookingId, 'Cancelled');
+        const index = this.bookings.findIndex(b => b.id === bookingId);
+        if (index === -1) throw new Error('Booking not found');
+        this.bookings[index] = { 
+            ...this.bookings[index], 
+            status: 'Cancelled',
+            cancelReason: reason,
+            cancelledBy: 'Staff'
+        };
+        return Promise.resolve(this.bookings[index]);
     }
 
     async markAsNoShow(bookingId: string): Promise<BookingResponseData> {

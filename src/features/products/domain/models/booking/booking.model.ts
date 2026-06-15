@@ -23,4 +23,6 @@ export interface BookingResponseData {
     totalAmount: number; // Tổng tiền sau khi trừ giảm giá
     pointsEarned?: number; // Số điểm dự kiến nhận được
     createdAt: string;
+    cancelReason?: string;
+    cancelledBy?: 'Customer' | 'Staff';
 }

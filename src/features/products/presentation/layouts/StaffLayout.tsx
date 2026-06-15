@@ -8,7 +8,10 @@ import {
     Settings, 
     Bell, 
     CheckCircle2,
-    Coffee
+    Coffee,
+    ClipboardList,
+    CheckSquare,
+    XCircle
 } from 'lucide-react';
 import { useAuth } from '../../application/useAuth';
 
@@ -20,7 +23,9 @@ export const StaffLayout: React.FC = () => {
     const staffLinks = [
         { to: '/staff/dashboard', icon: LayoutDashboard, label: 'Overview' },
         { to: '/staff/queue', icon: Car, label: "Live Queue" },
-        // { to: '/staff/total-bookings', icon: Calendar, label: "Total Bookings" }, // Optional
+        { to: '/staff/total-bookings', icon: ClipboardList, label: "Total Bookings" },
+        { to: '/staff/completed-bookings', icon: CheckSquare, label: "Completed" },
+        { to: '/staff/cancelled-bookings', icon: XCircle, label: "Cancelled" },
     ];
 
     const systemLinks = [
