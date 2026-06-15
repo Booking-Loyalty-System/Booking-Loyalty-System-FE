@@ -24,9 +24,10 @@ export const CancelledBookings: React.FC = () => {
 
     return (
         <div className="space-y-6">
+            {/* Tiêu đề trang */}
             <div>
                 <h1 className="text-2xl font-bold text-gray-900">Cancelled Bookings</h1>
-                <p className="text-gray-500 text-sm">Xem lại các lịch đặt bị hủy hoặc khách hàng không đến.</p>
+                <p className="text-gray-500 text-sm">Review bookings that were cancelled or marked as no-show.</p>
             </div>
 
             {/* Thẻ thống kê nhanh */}
@@ -37,7 +38,7 @@ export const CancelledBookings: React.FC = () => {
                         <XCircle className="w-6 h-6 text-rose-600" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tổng ca đã hủy</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Cancelled</p>
                         <p className="text-2xl font-black text-rose-600">{cancelledBookings.filter(b => b.status === 'Cancelled').length}</p>
                     </div>
                 </div>
@@ -46,7 +47,7 @@ export const CancelledBookings: React.FC = () => {
                         <AlertCircle className="w-6 h-6 text-amber-600" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Số ca No-Show</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total No-Show</p>
                         <p className="text-2xl font-black text-amber-600">{cancelledBookings.filter(b => b.status === 'NoShow').length}</p>
                     </div>
                 </div>
@@ -59,7 +60,7 @@ export const CancelledBookings: React.FC = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input 
                         type="text" 
-                        placeholder="Tìm theo mã hoặc biển số..." 
+                        placeholder="Search by code or license plate..." 
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -74,18 +75,18 @@ export const CancelledBookings: React.FC = () => {
                         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <XCircle className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="font-semibold">Không tìm thấy lịch đặt bị hủy nào</p>
+                        <p className="font-semibold">No cancelled bookings found</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th className="py-4 px-6">Mã Booking</th>
-                                    <th className="py-4 px-6">Xe / Dịch vụ</th>
-                                    <th className="py-4 px-6">Người thực hiện hủy</th>
-                                    <th className="py-4 px-6">Lý do hủy</th>
-                                    <th className="py-4 px-6">Trạng thái</th>
+                                    <th className="py-4 px-6">Booking Code</th>
+                                    <th className="py-4 px-6">Vehicle / Service</th>
+                                    <th className="py-4 px-6">Cancelled By</th>
+                                    <th className="py-4 px-6">Reason</th>
+                                    <th className="py-4 px-6">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -93,8 +94,8 @@ export const CancelledBookings: React.FC = () => {
                                     <tr key={b.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="py-4 px-6 font-bold text-gray-900">{b.bookingCode || 'N/A'}</td>
                                         <td className="py-4 px-6">
-                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Chưa cập nhật BSX'}</p>
-                                            <p className="text-xs text-gray-500">{b.serviceName || 'Dịch vụ'}</p>
+                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Pending Plate'}</p>
+                                            <p className="text-xs text-gray-500">{b.serviceName || 'Service'}</p>
                                         </td>
                                         <td className="py-4 px-6">
                                             {/* [KIẾN THỨC] Conditional Rendering: Sử dụng toán tử tam phân (Ternary Operator) để hiển thị UI khác nhau tùy theo dữ liệu.
@@ -102,21 +103,21 @@ export const CancelledBookings: React.FC = () => {
                                             {b.cancelledBy === 'Staff' ? (
                                                 <div className="flex items-center gap-2 text-blue-600">
                                                     <ShieldAlert className="w-4 h-4" />
-                                                    <span className="text-xs font-bold uppercase tracking-wider">Nhân viên</span>
+                                                    <span className="text-xs font-bold uppercase tracking-wider">Staff</span>
                                                 </div>
                                             ) : b.cancelledBy === 'Customer' ? (
                                                 <div className="flex items-center gap-2 text-gray-600">
                                                     <User className="w-4 h-4" />
-                                                    <span className="text-xs font-bold uppercase tracking-wider">Khách hàng</span>
+                                                    <span className="text-xs font-bold uppercase tracking-wider">Customer</span>
                                                 </div>
                                             ) : (
-                                                <span className="text-xs text-gray-400 italic">Chưa xác định</span>
+                                                <span className="text-xs text-gray-400 italic">Not available</span>
                                             )}
                                         </td>
                                         <td className="py-4 px-6 text-sm">
                                             {/* [KIẾN THỨC] Fallback values (?? hoặc ||): Kỹ thuật "phòng vệ" tránh hiển thị rỗng hoặc undefined. */}
                                             <p className="text-gray-700 italic">
-                                                {b.cancelReason ? `"${b.cancelReason}"` : 'Chưa cập nhật lý do hủy'}
+                                                {b.cancelReason ? `"${b.cancelReason}"` : 'No reason provided'}
                                             </p>
                                         </td>
                                         <td className="py-4 px-6">

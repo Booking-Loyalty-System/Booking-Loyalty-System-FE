@@ -26,26 +26,27 @@ export const CompletedBookings: React.FC = () => {
 
     return (
         <div className="space-y-6">
+            {/* Tiêu đề và nút xuất báo cáo */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Completed Bookings</h1>
-                    <p className="text-gray-500 text-sm">Danh sách các dịch vụ đã hoàn tất trong ngày.</p>
+                    <p className="text-gray-500 text-sm">Overview of all services successfully finished today.</p>
                 </div>
                 {/* [KIẾN THỨC] Lucide React: Thư viện icon dạng SVG, nhẹ và dễ tùy chỉnh màu sắc qua Tailwind CSS (ví dụ: w-4 h-4). */}
                 <button className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors">
                     <Download className="w-4 h-4" />
-                    Xuất báo cáo
+                    Export Report
                 </button>
             </div>
 
             {/* Thẻ thống kê nhanh */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tổng ca hoàn thành</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Completed</p>
                     <p className="text-2xl font-black text-emerald-600">{completedBookings.length}</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tổng doanh thu</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Revenue</p>
                     <p className="text-2xl font-black text-gray-900">
                         {/* [KIẾN THỨC] Array.reduce(): Hàm của JavaScript dùng để tính toán một giá trị duy nhất từ một mảng.
                            Ở đây dùng để cộng dồn totalAmount của tất cả booking đã lọc được. */}
@@ -53,8 +54,8 @@ export const CompletedBookings: React.FC = () => {
                     </p>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Thời gian TB / ca</p>
-                    <p className="text-2xl font-black text-gray-900">24 phút</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Avg Service Time</p>
+                    <p className="text-2xl font-black text-gray-900">24 mins</p>
                 </div>
             </div>
 
@@ -64,7 +65,7 @@ export const CompletedBookings: React.FC = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input 
                         type="text" 
-                        placeholder="Tìm theo mã hoặc biển số..." 
+                        placeholder="Search by code or license plate..." 
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -79,20 +80,20 @@ export const CompletedBookings: React.FC = () => {
                         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <CheckSquare className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="font-semibold">Chưa có ca hoàn thành nào</p>
-                        <p className="text-sm">Hoàn tất các dịch vụ đang thực hiện để thấy chúng ở đây.</p>
+                        <p className="font-semibold">No completed bookings yet</p>
+                        <p className="text-sm">Finish some services to see them here.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th className="py-4 px-6">Mã Booking</th>
-                                    <th className="py-4 px-6">Xe / Biển số</th>
-                                    <th className="py-4 px-6">Dịch vụ</th>
-                                    <th className="py-4 px-6">Thời gian hoàn tất</th>
-                                    <th className="py-4 px-6">Trạng thái</th>
-                                    <th className="py-4 px-6 text-right">Thanh toán</th>
+                                    <th className="py-4 px-6">Booking Code</th>
+                                    <th className="py-4 px-6">Vehicle / Plate</th>
+                                    <th className="py-4 px-6">Service</th>
+                                    <th className="py-4 px-6">Finished Time</th>
+                                    <th className="py-4 px-6">Status</th>
+                                    <th className="py-4 px-6 text-right">Payment</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -100,10 +101,10 @@ export const CompletedBookings: React.FC = () => {
                                     <tr key={b.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="py-4 px-6 font-bold text-emerald-600">{b.bookingCode || 'N/A'}</td>
                                         <td className="py-4 px-6">
-                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Chưa cập nhật BSX'}</p>
-                                            <p className="text-xs text-gray-500">{b.vehicleName || 'Thông tin xe'}</p>
+                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Pending Plate'}</p>
+                                            <p className="text-xs text-gray-500">{b.vehicleName || 'Vehicle Info'}</p>
                                         </td>
-                                        <td className="py-4 px-6 text-sm text-gray-700">{b.serviceName || 'Dịch vụ'}</td>
+                                        <td className="py-4 px-6 text-sm text-gray-700">{b.serviceName || 'Service'}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700 font-medium">
                                             <div className="flex items-center gap-1">
                                                 <Calendar className="w-3 h-3 text-gray-400" />

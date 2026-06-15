@@ -39,11 +39,11 @@ export const TotalBookings: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Total Bookings</h1>
-                    <p className="text-gray-500 text-sm">Tổng hợp tất cả các lịch đặt trong ngày hôm nay.</p>
+                    <p className="text-gray-500 text-sm">Overview of all bookings scheduled for today.</p>
                 </div>
                 <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg text-blue-700 font-semibold text-sm">
                     <Calendar className="w-4 h-4" />
-                    {new Date().toLocaleDateString('vi-VN')}
+                    {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </div>
             </div>
 
@@ -53,7 +53,7 @@ export const TotalBookings: React.FC = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input 
                         type="text" 
-                        placeholder="Tìm theo mã hoặc biển số..." 
+                        placeholder="Search by code or license plate..." 
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -66,15 +66,15 @@ export const TotalBookings: React.FC = () => {
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                        <option value="All">Tất cả trạng thái</option>
-                        <option value="Confirmed">Xác nhận</option>
-                        <option value="CheckedIn">Đã đến</option>
-                        <option value="Queued">Đang đợi</option>
-                        <option value="InProgress">Đang rửa</option>
-                        <option value="Completed">Hoàn thành</option>
-                        <option value="CheckedOut">Đã thanh toán</option>
-                        <option value="Cancelled">Đã hủy</option>
-                        <option value="NoShow">Khách không đến</option>
+                        <option value="All">All Statuses</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="CheckedIn">Checked In</option>
+                        <option value="Queued">Queued</option>
+                        <option value="InProgress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="CheckedOut">Checked Out</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="NoShow">No Show</option>
                     </select>
                 </div>
             </div>
@@ -87,20 +87,20 @@ export const TotalBookings: React.FC = () => {
                         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <ClipboardList className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="font-semibold">Không tìm thấy lịch đặt nào</p>
-                        <p className="text-sm">Vui lòng điều chỉnh lại bộ lọc hoặc từ khóa tìm kiếm.</p>
+                        <p className="font-semibold">No bookings found</p>
+                        <p className="text-sm">Try adjusting your filters or search term.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th className="py-4 px-6">Mã Booking</th>
-                                    <th className="py-4 px-6">Xe / Biển số</th>
-                                    <th className="py-4 px-6">Dịch vụ</th>
-                                    <th className="py-4 px-6">Giờ hẹn</th>
-                                    <th className="py-4 px-6">Trạng thái</th>
-                                    <th className="py-4 px-6 text-right">Tổng tiền</th>
+                                    <th className="py-4 px-6">Booking Code</th>
+                                    <th className="py-4 px-6">Vehicle / Plate</th>
+                                    <th className="py-4 px-6">Service</th>
+                                    <th className="py-4 px-6">Time</th>
+                                    <th className="py-4 px-6">Status</th>
+                                    <th className="py-4 px-6 text-right">Amount</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -108,10 +108,10 @@ export const TotalBookings: React.FC = () => {
                                     <tr key={b.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="py-4 px-6 font-bold text-blue-600">{b.bookingCode || 'N/A'}</td>
                                         <td className="py-4 px-6">
-                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Chưa cập nhật BSX'}</p>
-                                            <p className="text-xs text-gray-500">{b.vehicleName || 'Thông tin xe đang cập nhật'}</p>
+                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Pending Plate'}</p>
+                                            <p className="text-xs text-gray-500">{b.vehicleName || 'Updating vehicle info'}</p>
                                         </td>
-                                        <td className="py-4 px-6 text-sm text-gray-700">{b.serviceName || 'Dịch vụ đã chọn'}</td>
+                                        <td className="py-4 px-6 text-sm text-gray-700">{b.serviceName || 'Selected Service'}</td>
                                         <td className="py-4 px-6 text-sm text-gray-700 font-medium">{b.startTime || '--:--'}</td>
                                         <td className="py-4 px-6">
                                             {/* Badge hiển thị trạng thái với màu sắc tương ứng */}
