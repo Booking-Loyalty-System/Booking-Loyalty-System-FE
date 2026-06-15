@@ -9,25 +9,29 @@ import { ENDPOINTS } from '@/core/api/endpoints';
 export class AuthRepositoryImplement implements IAuthRepository {
     async login(credentials: LoginRequest): Promise<AuthResponseData> {
         // === MOCK LOGIN FOR QUICK TESTING ===
-        const testAccounts: Record<string, { role: string; fullName: string; pass: string }> = {
-            'customer@autowash.com': { role: 'Customer', fullName: 'Test Customer', pass: '12345678' },
-            'staff@autowash.com': { role: 'Staff', fullName: 'Test Staff', pass: '12345678' },
-            'admin@autowash.com': { role: 'Admin', fullName: 'Test Admin', pass: '12345678' },
-        };
-
-        const testAccount = testAccounts[credentials.email];
-        if (testAccount && testAccount.pass === credentials.password) {
-            console.log(`[MockLogin] Logging in as ${testAccount.role}`);
-            return {
-                accessToken: 'mock-access-token',
-                refreshToken: 'mock-refresh-token',
-                user: {
-                    id: `mock-${testAccount.role.toLowerCase()}-id`,
-                    email: credentials.email,
-                    role: testAccount.role,
-                    fullName: testAccount.fullName
-                }
+        const useMock = import.meta.env.VITE_USE_MOCK_STAFF_DATA === 'true';
+        
+        if (useMock) {
+            const testAccounts: Record<string, { role: string; fullName: string; pass: string }> = {
+                'customer@autowash.com': { role: 'Customer', fullName: 'Test Customer', pass: '12345678' },
+                'staff@autowash.com': { role: 'Staff', fullName: 'Test Staff', pass: '12345678' },
+                'admin@autowash.com': { role: 'Admin', fullName: 'Test Admin', pass: '12345678' },
             };
+
+            const testAccount = testAccounts[credentials.email];
+            if (testAccount && testAccount.pass === credentials.password) {
+                console.log(`[MockLogin] Logging in as ${testAccount.role}`);
+                return {
+                    accessToken: 'mock-access-token',
+                    refreshToken: 'mock-refresh-token',
+                    user: {
+                        id: `mock-${testAccount.role.toLowerCase()}-id`,
+                        email: credentials.email,
+                        role: testAccount.role,
+                        fullName: testAccount.fullName
+                    }
+                };
+            }
         }
         // === END MOCK LOGIN ===
 

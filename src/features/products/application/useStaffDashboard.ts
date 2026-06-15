@@ -3,8 +3,8 @@ import { StaffBookingRepositoryImplement } from '../infrastructure/repositories/
 import { StaffBookingRepositoryMock } from '../infrastructure/repositories/staff/staff.repository.mock';
 import { format } from 'date-fns';
 
-// Using a simple check for mock data, can be refined based on env
-const useMock = true; 
+// Using environment variable to control mock data
+const useMock = import.meta.env.VITE_USE_MOCK_STAFF_DATA === 'true'; 
 const staffRepository = useMock ? new StaffBookingRepositoryMock() : new StaffBookingRepositoryImplement();
 
 export const useStaffDashboard = () => {
