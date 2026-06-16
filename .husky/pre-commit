@@ -1,5 +1,1 @@
-# 1. Chạy check type toàn dự án
-pnpm check-types
-
-# 2. Chạy lint-staged để fix code và format
-pnpm exec lint-staged
+pnpm exec commitlint --edit "$1"
