@@ -33,6 +33,7 @@ import { AdminPackages } from "@/features/products/presentation/pages/admin/Admi
 import { AdminPromotions } from "@/features/products/presentation/pages/admin/AdminPromotions";
 import { AdminReports } from "@/features/products/presentation/pages/admin/AdminReports";
 import { AdminStaff } from "@/features/products/presentation/pages/admin/AdminStaff";
+import { AdminBranches } from "@/features/products/presentation/pages/admin/AdminBranches";
 
 function App() {
   return (
@@ -89,6 +90,7 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/packages" element={<AdminPackages />} />
+            <Route path="/admin/branches" element={<AdminBranches />} />
             <Route path="/admin/loyalty" element={<AdminLoyalty />} />
             <Route path="/admin/reports" element={<AdminReports />} />
             <Route path="/admin/analytics" element={<AdminAnalytics />} />

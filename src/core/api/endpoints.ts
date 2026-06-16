@@ -25,6 +25,8 @@ export const ENDPOINTS = {
     ADMIN: {
     WASH_PACKAGES: '/admin/wash-packages',
     WASH_PACKAGE_DETAIL: (id: string) => `/admin/wash-packages/${id}`,
+    BRANCHES: '/admin/branches',
+    BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
 },
 
     BOOKING:{

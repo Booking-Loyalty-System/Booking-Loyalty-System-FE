@@ -21,24 +21,35 @@ export const LoginPage: React.FC = () => {
       toast.success("Đăng nhập thành công!");
 
       setTimeout(() => {
-        // Lấy thông tin user trực tiếp từ localStorage thay vì decode token (để hỗ trợ cả mock login)
-        const savedUser = localStorage.getItem("user_info");
+        // 🌟 Lấy token vừa được lưu thay vì lấy user_info
+        const token = localStorage.getItem("access_token");
 
-        if (savedUser) {
-          const user = JSON.parse(savedUser);
-          const role = user.role;
+        if (token) {
+          try {
+            // Giải mã token để lấy Role (giống hệt cách làm của Google Login)
+            const decoded =
+              jwtDecode<Record<string, string | undefined>>(token);
+            const role =
+              decoded[
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              ] ||
+              decoded.role ||
+              decoded.Role;
 
-          // Điều hướng dựa trên Role
-          if (role === "Admin") {
-            navigate("/admin");
-          } else if (role === "Staff") {
-            navigate("/staff/dashboard");
-          } else {
-            navigate("/dashboard"); // Customer mặc định
+            // Điều hướng chuẩn xác dựa trên Role
+            if (role === "Admin") {
+              navigate("/admin");
+            } else if (role === "Staff") {
+              navigate("/staff/dashboard");
+            } else {
+              navigate("/dashboard"); // Customer mặc định
+            }
+          } catch (decodeError) {
+            console.error("Lỗi giải mã token:", decodeError);
+            toast.error("Dữ liệu xác thực không hợp lệ!");
           }
         } else {
-          // Fallback nếu không tìm thấy thông tin user
-          navigate("/dashboard");
+          toast.error("Không tìm thấy token đăng nhập!");
         }
       }, 1000);
     } catch (err) {
@@ -75,7 +86,9 @@ export const LoginPage: React.FC = () => {
 
         setTimeout(() => {
           // Điều hướng chuẩn xác theo Role
-          const decoded = jwtDecode<Record<string, string | undefined>>(data.token);
+          const decoded = jwtDecode<Record<string, string | undefined>>(
+            data.token,
+          );
           const role =
             decoded[
               "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"

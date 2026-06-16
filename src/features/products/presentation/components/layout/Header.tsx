@@ -1,14 +1,27 @@
-import { Bell, Search, User, Settings, LogOut, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import {
+  Bell,
+  Search,
+  User,
+  Settings,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   title?: string;
   userName?: string;
-  role?: 'customer' | 'staff' | 'admin';
+  role?: "customer" | "staff" | "admin";
 }
 
-function LogoutModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
+function LogoutModal({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
@@ -17,7 +30,9 @@ function LogoutModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel:
           <LogOut className="w-7 h-7 text-red-500" />
         </div>
         <h2 className="text-xl font-semibold text-gray-900">Sign Out?</h2>
-        <p className="text-sm text-gray-500 text-center">Are you sure you want to log out of AutoWash Pro?</p>
+        <p className="text-sm text-gray-500 text-center">
+          Are you sure you want to log out of AutoWash Pro?
+        </p>
         <div className="flex gap-3 w-full mt-2">
           <button
             onClick={onCancel}
@@ -37,32 +52,49 @@ function LogoutModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel:
   );
 }
 
-export function Header({ title = 'Dashboard', userName = 'John Doe', role = 'customer' }: HeaderProps) {
+export function Header({
+  title = "Dashboard",
+  userName = "John Doe",
+  role = "customer",
+}: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const initials = userName.split(' ').map(n => n[0]).join('');
+  const initials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("");
 
   const settingsPath =
-    role === 'admin' ? '/settings' :
-    role === 'staff' ? '/settings' :
-    '/settings';
+    role === "admin"
+      ? "/settings"
+      : role === "staff"
+        ? "/settings"
+        : "/settings";
 
-  const profilePath = '/profile';
+  const profilePath = "/profile";
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
-    if (open) document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    if (open) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
-  const roleLabel = role === 'admin' ? 'Administrator' : role === 'staff' ? 'Staff' : 'Customer';
+  const roleLabel =
+    role === "admin"
+      ? "Administrator"
+      : role === "staff"
+        ? "Staff"
+        : "Customer";
 
   return (
     <>
@@ -92,18 +124,20 @@ export function Header({ title = 'Dashboard', userName = 'John Doe', role = 'cus
             {/* User Avatar + Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setOpen(v => !v)}
+                onClick={() => setOpen((v) => !v)}
                 className="flex items-center gap-3 focus:outline-none group"
               >
                 <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white select-none">
                   {initials}
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-gray-900">{userName}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {userName}
+                  </p>
                   <p className="text-xs text-gray-500">{roleLabel}</p>
                 </div>
                 <ChevronDown
-                  className={`w-4 h-4 text-gray-400 hidden md:block transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 text-gray-400 hidden md:block transition-transform duration-200 ${open ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -111,18 +145,24 @@ export function Header({ title = 'Dashboard', userName = 'John Doe', role = 'cus
               <div
                 className={`absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50
                   transition-all duration-200 origin-top
-                  ${open ? 'opacity-100 scale-y-100 translate-y-0 pointer-events-auto' : 'opacity-0 scale-y-95 -translate-y-1 pointer-events-none'}`}
-                style={{ transformOrigin: 'top right' }}
+                  ${open ? "opacity-100 scale-y-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-y-95 -translate-y-1 pointer-events-none"}`}
+                style={{ transformOrigin: "top right" }}
               >
                 <button
-                  onClick={() => { setOpen(false); navigate(profilePath); }}
+                  onClick={() => {
+                    setOpen(false);
+                    navigate(profilePath);
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
                   <User className="w-4 h-4" />
                   Profile
                 </button>
                 <button
-                  onClick={() => { setOpen(false); navigate(settingsPath); }}
+                  onClick={() => {
+                    setOpen(false);
+                    navigate(settingsPath);
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
                   <Settings className="w-4 h-4" />
@@ -130,7 +170,10 @@ export function Header({ title = 'Dashboard', userName = 'John Doe', role = 'cus
                 </button>
                 <div className="my-1 border-t border-gray-100" />
                 <button
-                  onClick={() => { setOpen(false); setShowLogout(true); }}
+                  onClick={() => {
+                    setOpen(false);
+                    setShowLogout(true);
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
@@ -144,7 +187,10 @@ export function Header({ title = 'Dashboard', userName = 'John Doe', role = 'cus
 
       {showLogout && (
         <LogoutModal
-          onConfirm={() => { setShowLogout(false); navigate('/login'); }}
+          onConfirm={() => {
+            setShowLogout(false);
+            navigate("/login");
+          }}
           onCancel={() => setShowLogout(false)}
         />
       )}

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Calendar,
@@ -16,6 +16,7 @@ import {
   Package,
   FileText,
   Monitor,
+  Building2,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -46,6 +47,7 @@ export function Sidebar({ role = "customer" }: SidebarProps) {
 
   const adminLinks = [
     { to: "/admin", icon: LayoutDashboard, label: "Overview" },
+    { to: "/admin/branches", icon: Building2, label: "Branches" },
     { to: "/admin/packages", icon: Package, label: "Wash Packages" },
     { to: "/admin/loyalty", icon: Award, label: "Loyalty Tiers" },
     { to: "/admin/reports", icon: FileText, label: "Reports & Analytics" },
@@ -103,13 +105,6 @@ export function Sidebar({ role = "customer" }: SidebarProps) {
           );
         })}
       </nav>
-
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="text-xs text-gray-500 text-center">
-          © 2026 AutoWash Pro
-        </div>
-      </div>
     </div>
   );
 }

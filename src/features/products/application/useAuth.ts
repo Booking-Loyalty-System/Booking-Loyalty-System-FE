@@ -12,7 +12,15 @@ export const useAuth = () => {
         queryKey: ['current_user'],
         queryFn: () => {
             const savedUser = localStorage.getItem('user_info');
-            return savedUser ? JSON.parse(savedUser) : null;
+            if (savedUser && savedUser !== 'undefined') {
+                try {
+                    return JSON.parse(savedUser);
+                } catch (e) {
+                    console.error("Lỗi parse cache user:", e);
+                    return null;
+                }
+            }
+            return null;
         },
         staleTime: Infinity,
     });
@@ -26,11 +34,16 @@ export const useAuth = () => {
         onSuccess: (data) => {
             localStorage.setItem('access_token', data.accessToken);
             if (data.refreshToken) {
-                localStorage.setItem('refresh_token', data.refreshToken); // 🌟 Lưu thêm refreshToken khi login
+                localStorage.setItem('refresh_token', data.refreshToken); 
             }
-            localStorage.setItem('user_info', JSON.stringify(data.user));
-
-            queryClient.setQueryData(['current_user'], data.user);
+            
+            // 🌟 CHỈ LƯU KHI CÓ DATA.USER
+            if (data.user) {
+                localStorage.setItem('user_info', JSON.stringify(data.user));
+                queryClient.setQueryData(['current_user'], data.user);
+            } else {
+                localStorage.removeItem('user_info'); // Xóa rác nếu API không trả về
+            }
         },
     });
 
