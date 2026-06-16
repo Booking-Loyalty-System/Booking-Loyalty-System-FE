@@ -8,7 +8,7 @@ const MOCK_BOOKINGS: BookingResponseData[] = [
         vehicleId: 'v1',
         licensePlate: '29A-123.45',
         washPackageId: 'p1',
-        serviceName: 'Rửa xe tiêu chuẩn',
+        serviceName: 'Standard Wash',
         branchId: 'b1',
         bookingDate: '2026-06-12',
         startTime: '09:00',
@@ -22,7 +22,7 @@ const MOCK_BOOKINGS: BookingResponseData[] = [
         vehicleId: 'v2',
         licensePlate: '30K-999.99',
         washPackageId: 'p2',
-        serviceName: 'Rửa xe cao cấp',
+        serviceName: 'Premium Wash',
         branchId: 'b1',
         bookingDate: '2026-06-12',
         startTime: '10:00',
@@ -36,7 +36,7 @@ const MOCK_BOOKINGS: BookingResponseData[] = [
         vehicleId: 'v3',
         licensePlate: '51G-123.45',
         washPackageId: 'p1',
-        serviceName: 'Rửa xe tiêu chuẩn',
+        serviceName: 'Standard Wash',
         branchId: 'b1',
         bookingDate: '2026-06-12',
         startTime: '11:00',
@@ -50,7 +50,7 @@ const MOCK_BOOKINGS: BookingResponseData[] = [
         vehicleId: 'v4',
         licensePlate: '43A-555.55',
         washPackageId: 'p2',
-        serviceName: 'Rửa xe cao cấp',
+        serviceName: 'Premium Wash',
         branchId: 'b1',
         bookingDate: '2026-06-12',
         startTime: '12:00',
@@ -66,7 +66,7 @@ const MOCK_BOOKINGS: BookingResponseData[] = [
         vehicleId: 'v5',
         licensePlate: '75A-666.66',
         washPackageId: 'p1',
-        serviceName: 'Rửa xe tiêu chuẩn',
+        serviceName: 'Standard Wash',
         branchId: 'b1',
         bookingDate: '2026-06-12',
         startTime: '13:00',
@@ -81,6 +81,10 @@ const MOCK_BOOKINGS: BookingResponseData[] = [
 export class StaffBookingRepositoryMock implements IStaffBookingRepository {
     private bookings = [...MOCK_BOOKINGS];
 
+    /**
+     * Giả lập API lấy danh sách booking theo ngày.
+     * Trong thực tế (Implement thật), việc lọc này sẽ được thực hiện bởi Database.
+     */
     async getStaffBookings(date: string): Promise<BookingResponseData[]> {
         console.log(`[Mock] Fetching bookings for ${date}`);
         return Promise.resolve(this.bookings);

@@ -5,7 +5,7 @@ import { useStaffDashboard } from '../../../application/useStaffDashboard';
 export const TotalBookings: React.FC = () => {
     // [KIẾN THỨC] useStaffDashboard: Một Custom Hook tự xây dựng để tách biệt logic lấy dữ liệu (Data Fetching) ra khỏi UI.
     // Giúp code ngắn gọn hơn và có thể tái sử dụng ở nhiều trang khác nhau của Staff.
-    const { bookings, isLoading } = useStaffDashboard();
+    const { bookings, isLoading, selectedDate, setSelectedDate } = useStaffDashboard();
     
     // [KIẾN THỨC] useState: Hook cơ bản của React dùng để quản lý trạng thái (state) nội bộ của component.
     // - searchTerm: Dùng để lưu trữ những gì người dùng gõ vào ô tìm kiếm.
@@ -35,15 +35,20 @@ export const TotalBookings: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            {/* Tiêu đề trang và hiển thị ngày hiện tại */}
+            {/* Tiêu đề trang và bộ chọn ngày */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Total Bookings</h1>
-                    <p className="text-gray-500 text-sm">Overview of all bookings scheduled for today.</p>
+                    <p className="text-gray-500 text-sm">Overview of all bookings scheduled for the selected date.</p>
                 </div>
-                <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg text-blue-700 font-semibold text-sm">
+                <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg text-blue-700 font-semibold text-sm">
                     <Calendar className="w-4 h-4" />
-                    {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    <input 
+                        type="date" 
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="bg-transparent focus:outline-none cursor-pointer"
+                    />
                 </div>
             </div>
 

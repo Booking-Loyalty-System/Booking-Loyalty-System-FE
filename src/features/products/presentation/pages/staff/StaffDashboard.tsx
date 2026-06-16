@@ -7,7 +7,7 @@ import { type BookingResponseData } from '../../../domain/models/booking/booking
 
 export const StaffDashboard: React.FC = () => {
     // Lấy dữ liệu và các hàm thao tác từ hook dashboard
-    const { bookings, isLoading, actions } = useStaffDashboard();
+    const { bookings, isLoading, actions, selectedDate, setSelectedDate } = useStaffDashboard();
     
     // State quản lý việc hiển thị modal thanh toán và tìm kiếm
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
@@ -79,13 +79,16 @@ export const StaffDashboard: React.FC = () => {
                 <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                         <Calendar className="w-8 h-8 text-blue-600" />
-                        <span className="px-2 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase rounded-full tracking-wider">Today</span>
+                        <span className="px-2 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase rounded-full tracking-wider">Date</span>
                     </div>
                     <p className="text-3xl font-black text-gray-900 mb-1">{bookings.length}</p>
                     <p className="text-sm text-gray-500 font-bold uppercase tracking-tight mb-4">Total Bookings</p>
-                    <button className="w-full py-2 bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest rounded-lg hover:bg-blue-100 transition-colors">
-                        View Details
-                    </button>
+                    <input 
+                        type="date" 
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="w-full py-2 bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+                    />
                 </div>
 
                 {/* Các ca đã xong */}
