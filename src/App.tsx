@@ -14,6 +14,13 @@ import {BookingHistory} from "@/features/products/presentation/components/Bookin
 import {ProfileSettings} from "@/features/products/presentation/components/ProfileSettings.tsx";
 import {NotificationCenter} from "@/features/products/presentation/components/NotificationCenter.tsx";
 import {Toaster} from "sonner";
+import {StaffLayout} from "@/features/products/presentation/layouts/StaffLayout.tsx";
+import {StaffDashboard} from "@/features/products/presentation/pages/staff/StaffDashboard.tsx";
+import {StaffQueuePage} from "@/features/products/presentation/pages/staff/StaffQueue.tsx";
+import {QueueMonitor} from "@/features/products/presentation/pages/staff/QueueMonitor.tsx";
+import {TotalBookings} from "@/features/products/presentation/pages/staff/TotalBookings.tsx";
+import {CompletedBookings} from "@/features/products/presentation/pages/staff/CompletedBookings.tsx";
+import {CancelledBookings} from "@/features/products/presentation/pages/staff/CancelledBookings.tsx";
 
 function App() {
     return (
@@ -45,13 +52,16 @@ function App() {
                         </Route>
                     </Route>
 
-                    {/*<Route element={<ProtectedRoute allowedRoles={['Staff', 'Admin']} />}>*/}
-                    {/*    <Route path="/staff/dashboard" element={<StaffDashboard />} />*/}
-                    {/*</Route>*/}
-
-                    {/*<Route element={<ProtectedRoute allowedRoles={['Admin']} />}>*/}
-                    {/*    <Route path="/admin/dashboard" element={<AdminDashboard />} />*/}
-                    {/*</Route>*/}
+                    <Route element={<ProtectedRoute allowedRoles={["Staff", "Admin"]} />}>
+                        <Route element={<StaffLayout />}>
+                            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+                            <Route path="/staff/queue" element={<StaffQueuePage />} />
+                            <Route path="/staff/monitor" element={<QueueMonitor />} />
+                            <Route path="/staff/total-bookings" element={<TotalBookings />} />
+                            <Route path="/staff/completed-bookings" element={<CompletedBookings />} />
+                            <Route path="/staff/cancelled-bookings" element={<CancelledBookings />} />
+                        </Route>
+                    </Route>
 
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>

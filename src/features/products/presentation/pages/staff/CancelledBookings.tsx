@@ -1,19 +1,39 @@
 import React, { useState } from 'react';
-import { Search, XCircle, AlertCircle, User, ShieldAlert } from 'lucide-react';
+import { Search, XCircle, AlertCircle } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 
+interface BookingResponseData {
+    id: string;
+    vehicleId: string;
+    washPackageId: string;
+    bookingDate: string;
+    startTime: string;
+    status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed' | 'NoShow' | 'Rejected' | string;
+    createdAt: string;
+}
+
 export const CancelledBookings: React.FC = () => {
-    const { bookings, isLoading } = useStaffDashboard();
-    
+    // Không dùng "as" ép kiểu lệch nữa, lấy đúng dữ liệu từ hook ra
+    const { bookings = [], isLoading } = useStaffDashboard() as {
+        bookings: BookingResponseData[];
+        isLoading: boolean;
+    };
+
     const [searchTerm, setSearchTerm] = useState('');
 
-    // [KIẾN THỨC] Filter logic cho Cancelled/NoShow:
-    // Kết hợp nhiều trạng thái vào một view duy nhất giúp nhân viên dễ quản lý các ca "không thành công".
-    const cancelledBookings = bookings.filter(b => 
-        (b.status === 'Cancelled' || b.status === 'NoShow') &&
-        (b.bookingCode.toLowerCase().includes(searchTerm.toLowerCase()) || 
-         (b.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false))
-    );
+    // ĐÃ XÓA: State `selectedBookingForReason` bị thừa, gây lỗi ESLint unused-vars.
+
+    // Bộ lọc dữ liệu theo thuộc tính của BookingResponseData
+    const cancelledBookings = bookings.filter(b => {
+        const isMatchStatus = b.status === 'Cancelled' || b.status === 'NoShow' || b.status === 'Rejected';
+
+        // Tìm kiếm theo ID của xe hoặc ID của gói dịch vụ
+        const vehicle = b.vehicleId?.toLowerCase() || '';
+        const packId = b.washPackageId?.toLowerCase() || '';
+        const search = searchTerm.toLowerCase();
+
+        return isMatchStatus && (vehicle.includes(search) || packId.includes(search));
+    });
 
     if (isLoading) return (
         <div className="p-8 space-y-6">
@@ -23,7 +43,7 @@ export const CancelledBookings: React.FC = () => {
     );
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 font-sans antialiased">
             {/* Tiêu đề trang */}
             <div>
                 <h1 className="text-2xl font-bold text-gray-900">Cancelled Bookings</h1>
@@ -32,14 +52,15 @@ export const CancelledBookings: React.FC = () => {
 
             {/* Thẻ thống kê nhanh */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* [KIẾN THỨC] Conditional Statistics: Tính toán số lượng dựa trên điều kiện status ngay trong mảng đã lọc. */}
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
                     <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center">
                         <XCircle className="w-6 h-6 text-rose-600" />
                     </div>
                     <div>
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Cancelled</p>
-                        <p className="text-2xl font-black text-rose-600">{cancelledBookings.filter(b => b.status === 'Cancelled').length}</p>
+                        <p className="text-2xl font-black text-rose-600">
+                            {cancelledBookings.filter(b => b.status === 'Cancelled' || b.status === 'Rejected').length}
+                        </p>
                     </div>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
@@ -48,7 +69,9 @@ export const CancelledBookings: React.FC = () => {
                     </div>
                     <div>
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total No-Show</p>
-                        <p className="text-2xl font-black text-amber-600">{cancelledBookings.filter(b => b.status === 'NoShow').length}</p>
+                        <p className="text-2xl font-black text-amber-600">
+                            {cancelledBookings.filter(b => b.status === 'NoShow').length}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -56,11 +79,10 @@ export const CancelledBookings: React.FC = () => {
             {/* Ô tìm kiếm */}
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 <div className="relative">
-                    {/* [KIẾN THỨC] UX/UI Tip: Màu sắc biểu tượng (Search) và màu Focus của Input đồng bộ với trạng thái chính của trang (Màu đỏ/Rose cho trang Hủy). */}
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input 
-                        type="text" 
-                        placeholder="Search by code or license plate..." 
+                    <input
+                        type="text"
+                        placeholder="Search by vehicle ID or package ID..."
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -68,7 +90,7 @@ export const CancelledBookings: React.FC = () => {
                 </div>
             </div>
 
-            {/* Bảng dữ liệu */}
+            {/* Bảng dữ liệu chuẩn hóa */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 {cancelledBookings.length === 0 ? (
                     <div className="p-12 text-center text-gray-500">
@@ -81,54 +103,43 @@ export const CancelledBookings: React.FC = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-200">
-                                <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th className="py-4 px-6">Booking Code</th>
-                                    <th className="py-4 px-6">Vehicle / Service</th>
-                                    <th className="py-4 px-6">Cancelled By</th>
-                                    <th className="py-4 px-6">Reason</th>
-                                    <th className="py-4 px-6">Status</th>
-                                </tr>
+                            <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <th className="py-4 px-6">Booking ID</th>
+                                <th className="py-4 px-6">Vehicle / Package ID</th>
+                                <th className="py-4 px-6">Date & Time</th>
+                                <th className="py-4 px-6">Status</th>
+                            </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {cancelledBookings.map(b => (
-                                    <tr key={b.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 px-6 font-bold text-gray-900">{b.bookingCode || 'N/A'}</td>
-                                        <td className="py-4 px-6">
-                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Pending Plate'}</p>
-                                            <p className="text-xs text-gray-500">{b.serviceName || 'Service'}</p>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            {/* [KIẾN THỨC] Conditional Rendering: Sử dụng toán tử tam phân (Ternary Operator) để hiển thị UI khác nhau tùy theo dữ liệu.
-                                               Giúp người dùng nhận diện nhanh đối tượng thực hiện thao tác qua icon và màu sắc. */}
-                                            {b.cancelledBy === 'Staff' ? (
-                                                <div className="flex items-center gap-2 text-blue-600">
-                                                    <ShieldAlert className="w-4 h-4" />
-                                                    <span className="text-xs font-bold uppercase tracking-wider">Staff</span>
-                                                </div>
-                                            ) : b.cancelledBy === 'Customer' ? (
-                                                <div className="flex items-center gap-2 text-gray-600">
-                                                    <User className="w-4 h-4" />
-                                                    <span className="text-xs font-bold uppercase tracking-wider">Customer</span>
-                                                </div>
-                                            ) : (
-                                                <span className="text-xs text-gray-400 italic">Not available</span>
-                                            )}
-                                        </td>
-                                        <td className="py-4 px-6 text-sm">
-                                            {/* [KIẾN THỨC] Fallback values (?? hoặc ||): Kỹ thuật "phòng vệ" tránh hiển thị rỗng hoặc undefined. */}
-                                            <p className="text-gray-700 italic">
-                                                {b.cancelReason ? `"${b.cancelReason}"` : 'No reason provided'}
-                                            </p>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                                b.status === 'Cancelled' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
+                            <tbody className="divide-y divide-gray-200 text-sm">
+                            {cancelledBookings.map(b => (
+                                <tr key={b.id} className="hover:bg-gray-50 transition-colors">
+                                    {/* ID Đơn (Sửa lại cho đúng trường của BookingResponseData) */}
+                                    <td className="py-4 px-6 font-mono font-bold text-blue-600">{b.id.substring(0, 8)}...</td>
+
+                                    {/* Thông tin Xe & Gói dịch vụ */}
+                                    <td className="py-4 px-6">
+                                        <p className="font-semibold text-gray-900">{b.vehicleId || 'N/A'}</p>
+                                        <p className="text-xs text-gray-400 mt-0.5">{b.washPackageId}</p>
+                                    </td>
+
+                                    {/* Ngày & Giờ thay vì TotalPrice vì API chưa trả về giá */}
+                                    <td className="py-4 px-6 font-medium text-gray-700">
+                                        <p>{b.bookingDate}</p>
+                                        <p className="text-xs text-gray-400">{b.startTime}</p>
+                                    </td>
+
+                                    {/* Trạng thái Label */}
+                                    <td className="py-4 px-6">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
+                                                b.status === 'Cancelled' || b.status === 'Rejected'
+                                                    ? 'bg-rose-50 text-rose-600 border-rose-100'
+                                                    : 'bg-amber-50 text-amber-600 border-amber-100'
                                             }`}>
                                                 {b.status === 'NoShow' ? 'No Show' : b.status}
                                             </span>
-                                        </td>
-                                    </tr>
-                                ))}
+                                    </td>
+                                </tr>
+                            ))}
                             </tbody>
                         </table>
                     </div>

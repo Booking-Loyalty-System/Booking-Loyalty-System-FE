@@ -41,5 +41,22 @@ export const ENDPOINTS = {
 
     TIME_SLOT: {
         WEEK_SUMMARY: '/time-slots/weekly-summary'
-    }
+    },
+
+    STAFF: {
+        BOOKINGS: '/staff/bookings',
+    },
+
+    LOYALTY: {
+        INFO: '/loyalty/info',
+        TRANSACTIONS: '/loyalty/transactions',
+        REDEEM: '/loyalty/redeem',
+    },
+
+    ADMIN: {
+        WASH_PACKAGES: '/admin/wash-packages',
+        WASH_PACKAGE_DETAIL: (id: string) => `/admin/wash-packages/${id}`,
+        BRANCHES: '/admin/branches',
+        BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
+    },
 };

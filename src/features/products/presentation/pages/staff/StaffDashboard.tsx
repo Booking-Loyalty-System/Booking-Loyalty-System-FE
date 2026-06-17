@@ -5,19 +5,42 @@ import { toast } from 'sonner';
 import { CheckoutSummaryModal } from '../../components/staff/CheckoutSummaryModal';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 
+// 1. Định nghĩa kiểu dữ liệu cục bộ để mở rộng các Status chạy thực tế ở UI
+interface DashboardBooking extends Omit<BookingResponseData, 'status'> {
+    status: 'Pending' | 'Confirmed' | 'CheckedIn' | 'Queued' | 'InProgress' | 'Completed' | 'CheckedOut' | 'Cancelled' | string;
+}
+
+// 2. Định nghĩa chi tiết các hàm Action để thay thế cho kiểu 'any' bị ESLint bắt lỗi
+interface DashboardActions {
+    checkIn: (id: string) => Promise<void>;
+    queue: (id: string) => Promise<void>;
+    start: (params: { id: string; staffId: string }) => Promise<void>;
+    finish: (id: string) => Promise<void>;
+    checkout: (id: string) => Promise<void>;
+}
+
 export const StaffDashboard: React.FC = () => {
-    // Lấy dữ liệu và các hàm thao tác từ hook dashboard
-    const { bookings, isLoading, actions, selectedDate, setSelectedDate } = useStaffDashboard();
-    
-    // State quản lý việc hiển thị modal thanh toán và tìm kiếm
-    const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
+    // Ép kiểu hook chặt chẽ, loại bỏ hoàn toàn 'any'
+    const { bookings = [], isLoading, actions, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
+        bookings: DashboardBooking[];
+        isLoading: boolean;
+        selectedDate: string;
+        setSelectedDate: (date: string) => void;
+        actions: DashboardActions;
+    };
+
+    // Đồng bộ State quản lý modal theo kiểu dữ liệu DashboardBooking mới
+    const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<DashboardBooking | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('All');
 
-    // Lọc danh sách hiển thị dựa trên từ khóa và bộ lọc trạng thái
+    // Lọc danh sách hiển thị dựa trên id và vehicleId
     const filteredBookings = bookings.filter(b => {
-        const matchesSearch = b.bookingCode.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              (b.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+        const bookingId = b.id?.toLowerCase() || '';
+        const vehicle = b.vehicleId?.toLowerCase() || '';
+        const search = searchTerm.toLowerCase();
+
+        const matchesSearch = bookingId.includes(search) || vehicle.includes(search);
         const matchesStatus = statusFilter === 'All' || b.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
@@ -56,7 +79,6 @@ export const StaffDashboard: React.FC = () => {
         }
     };
 
-    // Hiển thị skeleton loading
     if (isLoading) return (
         <div className="p-8 space-y-6">
             <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
@@ -70,9 +92,9 @@ export const StaffDashboard: React.FC = () => {
     );
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 font-sans antialiased">
             <h1 className="text-2xl font-bold text-gray-900">Staff Dashboard</h1>
-            
+
             {/* Hàng thẻ thống kê (Stats) */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {/* Tổng số lịch trong ngày */}
@@ -83,11 +105,11 @@ export const StaffDashboard: React.FC = () => {
                     </div>
                     <p className="text-3xl font-black text-gray-900 mb-1">{bookings.length}</p>
                     <p className="text-sm text-gray-500 font-bold uppercase tracking-tight mb-4">Total Bookings</p>
-                    <input 
-                        type="date" 
+                    <input
+                        type="date"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
-                        className="w-full py-2 bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+                        className="w-full py-2 bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest rounded-lg hover:bg-blue-100 transition-colors cursor-pointer text-center focus:outline-none"
                     />
                 </div>
 
@@ -130,14 +152,16 @@ export const StaffDashboard: React.FC = () => {
                 <div className="p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
                     <h2 className="text-lg font-bold text-gray-900">Today's Bookings</h2>
                     <div className="flex gap-2">
-                        <input 
-                            type="text" 
-                            placeholder="Search code/plate..." 
-                            className="px-4 py-2 border border-gray-200 rounded-lg text-sm"
+                        <input
+                            type="text"
+                            placeholder="Search ID/vehicle..."
+                            className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <select 
-                            className="px-4 py-2 border border-gray-200 rounded-lg text-sm"
+                        <select
+                            className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                         >
                             <option value="All">All Statuses</option>
@@ -157,28 +181,35 @@ export const StaffDashboard: React.FC = () => {
                         <p className="font-semibold">No bookings found</p>
                     </div>
                 ) : (
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-50 border-b border-gray-200">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-gray-50 border-b border-gray-200">
                             <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <th className="py-4 px-6">Booking Code</th>
+                                <th className="py-4 px-6">Booking ID</th>
+                                <th className="py-4 px-6">Vehicle ID</th>
                                 <th className="py-4 px-6">Status</th>
                                 <th className="py-4 px-6 text-right">Actions</th>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
                             {filteredBookings.map(b => (
                                 <tr key={b.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-6 font-medium text-gray-900">{b.bookingCode}</td>
+                                    <td className="py-4 px-6 font-mono font-bold text-blue-600 text-sm">
+                                        #{b.id?.substring(0, 8)}...
+                                    </td>
+                                    <td className="py-4 px-6 font-medium text-gray-900">
+                                        {b.vehicleId || 'N/A'}
+                                    </td>
                                     <td className="py-4 px-6">
-                                        <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                            b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' : 
-                                            b.status === 'CheckedIn' ? 'bg-purple-100 text-purple-700' :
-                                            b.status === 'InProgress' ? 'bg-amber-100 text-amber-700' :
-                                            b.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
-                                            'bg-gray-100 text-gray-700'
-                                        }`}>
-                                            {b.status}
-                                        </span>
+                                            <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                                b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' :
+                                                    b.status === 'CheckedIn' ? 'bg-purple-100 text-purple-700' :
+                                                        b.status === 'InProgress' ? 'bg-amber-100 text-amber-700' :
+                                                            b.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                                                                'bg-gray-100 text-gray-700'
+                                            }`}>
+                                                {b.status}
+                                            </span>
                                     </td>
                                     <td className="py-4 px-6 text-right">
                                         <div className="flex justify-end gap-2">
@@ -191,15 +222,16 @@ export const StaffDashboard: React.FC = () => {
                                     </td>
                                 </tr>
                             ))}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
             {/* Modal hiển thị khi chọn Thanh toán (Checkout) */}
             {selectedBookingForCheckout && (
-                <CheckoutSummaryModal 
-                    booking={selectedBookingForCheckout}
+                <CheckoutSummaryModal
+                    booking={selectedBookingForCheckout as BookingResponseData}
                     onClose={() => setSelectedBookingForCheckout(null)}
                     onConfirm={confirmCheckout}
                 />
