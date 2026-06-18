@@ -9,11 +9,12 @@ interface CheckoutSummaryModalProps {
 }
 
 export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({ booking, onClose, onConfirm }) => {
-    // Fix: Vì BookingResponseData thực tế không có totalAmount, tạm thời dùng số cứng để làm mock tính toán hóa đơn
-    const servicePrice = 100000;
-
+    // In a real app, these details would come from the booking object or a specialized calculation API
+    // For now, we use existing data and mock the breakdown based on common business rules
+    const servicePrice = booking.totalAmount || 100000; // Fallback for mock display
+    
     // Mock customer tier for UI richness - in reality, fetch this from customer profile
-    const mockTier = 'Gold';
+    const mockTier = 'Gold'; 
     const mockDiscount = servicePrice * 0.15; // 15% for Gold
     const finalTotal = servicePrice - mockDiscount;
     const pointsEarned = Math.floor(finalTotal / 1000) * 2; // Mock multiplier
@@ -45,21 +46,18 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({ book
 
                 <div className="space-y-4 mb-6">
                     <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <p className="text-sm text-gray-600 mb-1">Booking ID</p>
-                        {/* Fix: Đổi sang hiển thị 8 ký tự đầu của id thay cho bookingCode */}
-                        <code className="text-lg font-bold text-blue-600">#{booking.id?.substring(0, 8)}</code>
+                        <p className="text-sm text-gray-600 mb-1">Booking Code</p>
+                        <code className="text-lg font-bold text-blue-600">{booking.bookingCode}</code>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-sm text-gray-600 mb-1">Vehicle</p>
-                            {/* Fix: Sử dụng vehicleId thay cho licensePlate */}
-                            <p className="font-semibold text-gray-900">{booking.vehicleId || 'N/A'}</p>
+                            <p className="font-semibold text-gray-900">{booking.licensePlate || 'N/A'}</p>
                         </div>
                         <div>
                             <p className="text-sm text-gray-600 mb-1">Service</p>
-                            {/* Fix: Sử dụng washPackageId thay cho serviceName để đồng bộ */}
-                            <p className="font-semibold text-gray-900">{booking.washPackageId || 'Standard Wash'}</p>
+                            <p className="font-semibold text-gray-900">{booking.serviceName || 'Standard Wash'}</p>
                         </div>
                     </div>
 

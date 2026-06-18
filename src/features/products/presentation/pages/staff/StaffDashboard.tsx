@@ -10,24 +10,9 @@ interface DashboardBooking extends Omit<BookingResponseData, 'status'> {
     status: 'Pending' | 'Confirmed' | 'CheckedIn' | 'Queued' | 'InProgress' | 'Completed' | 'CheckedOut' | 'Cancelled' | string;
 }
 
-// 2. Định nghĩa chi tiết các hàm Action để thay thế cho kiểu 'any' bị ESLint bắt lỗi
-interface DashboardActions {
-    checkIn: (id: string) => Promise<void>;
-    queue: (id: string) => Promise<void>;
-    start: (params: { id: string; staffId: string }) => Promise<void>;
-    finish: (id: string) => Promise<void>;
-    checkout: (id: string) => Promise<void>;
-}
-
 export const StaffDashboard: React.FC = () => {
-    // Ép kiểu hook chặt chẽ, loại bỏ hoàn toàn 'any'
-    const { bookings = [], isLoading, actions, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
-        bookings: DashboardBooking[];
-        isLoading: boolean;
-        selectedDate: string;
-        setSelectedDate: (date: string) => void;
-        actions: DashboardActions;
-    };
+    // Ép kiểu hook chặt chẽ, sử dụng interface actions mới chỉ có updateStatus
+    const { bookings = [], isLoading, actions, selectedDate, setSelectedDate } = useStaffDashboard();
 
     // Đồng bộ State quản lý modal theo kiểu dữ liệu DashboardBooking mới
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<DashboardBooking | null>(null);
@@ -46,16 +31,25 @@ export const StaffDashboard: React.FC = () => {
     });
 
     // Hàm xử lý các thao tác vận hành (Check-in, Queue, Start, Finish, Checkout)
+    // Cập nhật để gọi actions.updateStatus với targetStatus tương ứng
     const handleAction = async (id: string, action: 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout') => {
         try {
             switch(action) {
-                case 'checkIn': await actions.checkIn(id); break;
-                case 'queue': await actions.queue(id); break;
-                case 'start': await actions.start({ id, staffId: 'current-staff-id' }); break;
-                case 'finish': await actions.finish(id); break;
+                case 'checkIn': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 2, staffId: 'current-staff-id' } }); 
+                    break;
+                case 'queue': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 3 } }); 
+                    break;
+                case 'start': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 4, staffId: 'current-staff-id' } }); 
+                    break;
+                case 'finish': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 5 } }); 
+                    break;
                 case 'checkout': {
                     const booking = bookings.find(b => b.id === id);
-                    if (booking) setSelectedBookingForCheckout(booking);
+                    if (booking) setSelectedBookingForCheckout(booking as DashboardBooking);
                     return;
                 }
             }
@@ -70,7 +64,10 @@ export const StaffDashboard: React.FC = () => {
     const confirmCheckout = async () => {
         if (!selectedBookingForCheckout) return;
         try {
-            await actions.checkout(selectedBookingForCheckout.id);
+            await actions.updateStatus({ 
+                id: selectedBookingForCheckout.id, 
+                payload: { targetStatus: 7, reason: 'Dashboard Checkout' } 
+            });
             toast.success('Checkout completed and points awarded!');
             setSelectedBookingForCheckout(null);
         } catch (error) {

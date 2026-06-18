@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import {
-    Clock,
-    PlayCircle,
-    CheckCircle,
-    Car,
-    ChevronRight,
+import { 
+    Clock, 
+    PlayCircle, 
+    CheckCircle, 
+    Car, 
+    ChevronRight, 
     MoreHorizontal,
     User,
     CalendarDays
@@ -19,17 +19,26 @@ type StaffAction = 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout';
 
 export const StaffQueuePage: React.FC = () => {
     const { user } = useAuth();
-    // Đảm bảo lấy đúng kiểu dữ liệu từ hook
-    const { bookings = [], isLoading, actions } = useStaffDashboard();
+    const { bookings, isLoading, actions } = useStaffDashboard();
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
 
     const handleAction = async (id: string, action: StaffAction) => {
         try {
+            // Sử dụng actions.updateStatus để đồng bộ với hook useStaffDashboard mới
+            // Mỗi action tương ứng với một targetStatus quy định bởi Backend
             switch(action) {
-                case 'checkIn': await actions.checkIn(id); break;
-                case 'queue': await actions.queue(id); break;
-                case 'start': await actions.start({ id, staffId: user?.id || 'current-staff-id' }); break;
-                case 'finish': await actions.finish(id); break;
+                case 'checkIn': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 2, staffId: user?.id } }); 
+                    break;
+                case 'queue': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 3 } }); 
+                    break;
+                case 'start': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 4, staffId: user?.id || 'current-staff-id' } }); 
+                    break;
+                case 'finish': 
+                    await actions.updateStatus({ id, payload: { targetStatus: 5 } }); 
+                    break;
                 case 'checkout': {
                     const booking = bookings.find(b => b.id === id);
                     if (booking) setSelectedBookingForCheckout(booking);
@@ -46,7 +55,11 @@ export const StaffQueuePage: React.FC = () => {
     const confirmCheckout = async () => {
         if (!selectedBookingForCheckout) return;
         try {
-            await actions.checkout(selectedBookingForCheckout.id);
+            // Checkout tương ứng với targetStatus: 7
+            await actions.updateStatus({ 
+                id: selectedBookingForCheckout.id, 
+                payload: { targetStatus: 7, reason: 'Checked out by staff' } 
+            });
             toast.success('Checkout completed and points awarded!');
             setSelectedBookingForCheckout(null);
         } catch (error) {
@@ -57,8 +70,8 @@ export const StaffQueuePage: React.FC = () => {
 
     // Filter bookings into columns
     const columns = [
-        {
-            title: 'Incoming',
+        { 
+            title: 'Incoming', 
             icon: <CalendarDays className="w-5 h-5 text-slate-600" />,
             status: ['Confirmed'],
             bg: 'bg-slate-50',
@@ -66,8 +79,8 @@ export const StaffQueuePage: React.FC = () => {
             buttonLabel: 'Check-In',
             action: 'checkIn' as const
         },
-        {
-            title: 'Checked In',
+        { 
+            title: 'Checked In', 
             icon: <Clock className="w-5 h-5 text-purple-600" />,
             status: ['CheckedIn'],
             bg: 'bg-purple-50',
@@ -75,8 +88,8 @@ export const StaffQueuePage: React.FC = () => {
             buttonLabel: 'Send to Queue',
             action: 'queue' as const
         },
-        {
-            title: 'InProgress',
+        { 
+            title: 'InProgress', 
             icon: <PlayCircle className="w-5 h-5 text-blue-600" />,
             status: ['Queued', 'InProgress'],
             bg: 'bg-blue-50',
@@ -84,8 +97,8 @@ export const StaffQueuePage: React.FC = () => {
             buttonLabel: (status: string) => status === 'Queued' ? 'Start Washing' : 'Finish Wash',
             action: (status: string): StaffAction => status === 'Queued' ? 'start' : 'finish'
         },
-        {
-            title: 'Completed',
+        { 
+            title: 'Completed', 
             icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
             status: ['Completed'],
             bg: 'bg-emerald-50',
@@ -119,7 +132,7 @@ export const StaffQueuePage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)] min-h-[600px]">
                 {columns.map((col) => {
                     const columnBookings = bookings.filter(b => col.status.includes(b.status));
-
+                    
                     return (
                         <div key={col.title} className={`${col.bg} rounded-[32px] p-6 border-2 ${col.border} flex flex-col`}>
                             <div className="flex items-center justify-between mb-6">
@@ -144,17 +157,16 @@ export const StaffQueuePage: React.FC = () => {
                                     columnBookings.map(booking => {
                                         const action = typeof col.action === 'function' ? col.action(booking.status) : col.action;
                                         const label = typeof col.buttonLabel === 'function' ? col.buttonLabel(booking.status) : col.buttonLabel;
-
+                                        
                                         return (
-                                            <div
-                                                key={booking.id}
+                                            <div 
+                                                key={booking.id} 
                                                 className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group animate-in fade-in slide-in-from-bottom-2 duration-300"
                                             >
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div className="flex flex-col gap-1">
-                                                        {/* Fix: Sử dụng id thay cho bookingCode và cắt lấy 8 ký tự đầu */}
                                                         <code className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">
-                                                            #{booking.id?.substring(0, 8)}
+                                                            #{booking.bookingCode}
                                                         </code>
                                                         <span className="text-[10px] font-bold text-gray-400">{booking.startTime}</span>
                                                     </div>
@@ -169,10 +181,8 @@ export const StaffQueuePage: React.FC = () => {
                                                             <Car className="w-4 h-4" />
                                                         </div>
                                                         <div>
-                                                            {/* Fix: Sử dụng vehicleId thay cho licensePlate */}
-                                                            <p className="text-sm font-black text-gray-900 leading-tight">{booking.vehicleId || 'N/A'}</p>
-                                                            {/* Fix: Sử dụng washPackageId thay cho serviceName */}
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase">{booking.washPackageId || 'Standard Wash'}</p>
+                                                            <p className="text-sm font-black text-gray-900 leading-tight">{booking.licensePlate}</p>
+                                                            <p className="text-[10px] text-gray-400 font-bold uppercase">{booking.serviceName || 'Standard Wash'}</p>
                                                         </div>
                                                     </div>
 
@@ -187,14 +197,14 @@ export const StaffQueuePage: React.FC = () => {
                                                     </div>
                                                 </div>
 
-                                                <button
+                                                <button 
                                                     onClick={() => handleAction(booking.id, action)}
                                                     className={`w-full mt-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 ${
                                                         action === 'checkIn' ? 'bg-slate-800 text-white hover:bg-black shadow-slate-200' :
-                                                            action === 'queue' ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-100' :
-                                                                action === 'start' ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-100' :
-                                                                    action === 'finish' ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100' :
-                                                                        'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-100'
+                                                        action === 'queue' ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-100' :
+                                                        action === 'start' ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-100' :
+                                                        action === 'finish' ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100' :
+                                                        'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-100'
                                                     } shadow-lg`}
                                                 >
                                                     {label}
@@ -211,7 +221,7 @@ export const StaffQueuePage: React.FC = () => {
             </div>
 
             {selectedBookingForCheckout && (
-                <CheckoutSummaryModal
+                <CheckoutSummaryModal 
                     booking={selectedBookingForCheckout}
                     onClose={() => setSelectedBookingForCheckout(null)}
                     onConfirm={confirmCheckout}

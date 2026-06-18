@@ -1,113 +1,31 @@
 import React, { useState } from 'react';
-import {
-    Calendar, Search, Filter, ClipboardList, Car, Check, X, ArrowRight,
-    DollarSign, CreditCard, Coins
-} from 'lucide-react';
+import { Calendar, Search, Filter, ClipboardList } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
-import { toast } from 'sonner';
-import { useAuth } from "@/features/products/application/useAuth.ts";
-
-interface DashboardBooking {
-    id: string;
-    bookingCode: string;
-    vehicleId: string;
-    vehicleName: string;
-    licensePlate: string;
-    washPackageId: string;
-    serviceName: string;
-    branchId: string;
-    bookingDate: string;
-    startTime: string;
-    status: 'Pending' | 'Confirmed' | 'CheckedIn' | 'Queued' | 'InProgress' | 'Completed' | 'CheckedOut' | 'Cancelled' | 'NoShow' | 'Rejected' | string;
-    totalAmount: number;
-    pointsEarned: number | null;
-    createdAt: string;
-}
-
-interface DashboardActions {
-    updateStatus: (params: {
-        id: string;
-        payload: { targetStatus: number; reason?: string; staffId?: string }
-    }) => Promise<unknown>;
-}
 
 export const TotalBookings: React.FC = () => {
-    const { userId } = useAuth();
-    const { bookings = [], isLoading, selectedDate, setSelectedDate, actions } = useStaffDashboard() as unknown as {
-        bookings: DashboardBooking[];
-        isLoading: boolean;
-        selectedDate: string;
-        setSelectedDate: (date: string) => void;
-        actions: DashboardActions;
-    };
-
+    // [KIẾN THỨC] useStaffDashboard: Một Custom Hook tự xây dựng để tách biệt logic lấy dữ liệu (Data Fetching) ra khỏi UI.
+    // Giúp code ngắn gọn hơn và có thể tái sử dụng ở nhiều trang khác nhau của Staff.
+    const { bookings, isLoading, selectedDate, setSelectedDate } = useStaffDashboard();
+    
+    // [KIẾN THỨC] useState: Hook cơ bản của React dùng để quản lý trạng thái (state) nội bộ của component.
+    // - searchTerm: Dùng để lưu trữ những gì người dùng gõ vào ô tìm kiếm.
+    // - statusFilter: Lưu trạng thái bộ lọc đang được chọn (Tất cả, Đang chờ, Đã hủy...).
+    // Khi giá trị trong useState thay đổi, React sẽ tự động render lại (re-render) trang để cập nhật kết quả.
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('All');
-    const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
-    // STATE CHO QUẢN LÝ THANH TOÁN
-    const [paymentModalBooking, setPaymentModalBooking] = useState<DashboardBooking | null>(null);
-    const [selectedMethod, setSelectedMethod] = useState<'Cash' | 'Transfer'>('Cash');
-
-    // Xử lý logic gọi chung hàm updateStatus với payload tương ứng
-    const handleStatusUpdate = async (bookingId: string, type: 'confirm' | 'cancel' | 'checkin' | 'checkout', method?: 'Cash' | 'Transfer') => {
-        setActionLoadingId(bookingId);
-        try {
-            if (type === 'checkin') {
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: {
-                        targetStatus: 2,
-                        staffId: userId || undefined
-                    }
-                });
-                toast.success('Đã check-in xe vào tiệm thành công!');
-            } else if (type === 'confirm') {
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: { targetStatus: 1 }
-                });
-                toast.success('Đã xác nhận lịch đặt thành công!');
-            } else if (type === 'cancel') {
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: {
-                        targetStatus: 8, // ⚠️ LƯU Ý: Nếu CheckedOut là 7, ông kiểm tra xem Cancelled ở C# là số mấy (ví dụ: 8) thì điền vào đây nhé!
-                        reason: 'Staff cancelled from dashboard'
-                    }
-                });
-                toast.success('Đã hủy lịch đặt thành công.');
-            } else if (type === 'checkout') {
-                // 🌟 ĐÃ CẬP NHẬT: Sửa thành số 7 chuẩn theo Backend của ông
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: {
-                        targetStatus: 7,
-                        reason: `Paid via ${method === 'Cash' ? 'Cash' : 'Bank Transfer'}`
-                    }
-                });
-                toast.success(`Đã thanh toán bằng ${method === 'Cash' ? 'Tiền mặt' : 'Chuyển khoản'} & Xuất xưởng thành công! 🎉`);
-                setPaymentModalBooking(null); // Đóng modal
-            }
-        } catch (error) {
-            console.error('Update status failed:', error);
-            toast.error('Cập nhật trạng thái thất bại, vui lòng thử lại.');
-        } finally {
-            setActionLoadingId(null);
-        }
-    };
-
+    // [KIẾN THỨC] Filtering Logic: Đây là kỹ thuật lọc dữ liệu trực tiếp ở Frontend (Client-side filtering).
+    // Phù hợp khi lượng dữ liệu trong ngày không quá lớn, giúp phản hồi tìm kiếm diễn ra tức thì mà không cần gọi lại API.
     const filteredBookings = bookings.filter(b => {
-        const search = searchTerm.toLowerCase();
-        return (
-            (b.bookingCode?.toLowerCase().includes(search) ||
-                b.licensePlate?.toLowerCase().includes(search) ||
-                b.vehicleName?.toLowerCase().includes(search) ||
-                b.serviceName?.toLowerCase().includes(search)) &&
-            (statusFilter === 'All' || b.status === statusFilter)
-        );
+        // Kiểm tra xem mã booking hoặc biển số xe có chứa từ khóa tìm kiếm hay không (không phân biệt hoa thường)
+        const matchesSearch = b.bookingCode.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              (b.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
+        // Kiểm tra xem trạng thái booking có khớp với bộ lọc đang chọn hay không
+        const matchesStatus = statusFilter === 'All' || b.status === statusFilter;
+        return matchesSearch && matchesStatus;
     });
 
+    // Hiển thị trạng thái đang tải (Loading)
     if (isLoading) return (
         <div className="p-8 space-y-6">
             <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
@@ -116,8 +34,8 @@ export const TotalBookings: React.FC = () => {
     );
 
     return (
-        <div className="space-y-6 font-sans antialiased">
-            {/* Header và Bộ chọn ngày */}
+        <div className="space-y-6">
+            {/* Tiêu đề trang và bộ chọn ngày */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Total Bookings</h1>
@@ -125,8 +43,8 @@ export const TotalBookings: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg text-blue-700 font-semibold text-sm">
                     <Calendar className="w-4 h-4" />
-                    <input
-                        type="date"
+                    <input 
+                        type="date" 
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                         className="bg-transparent focus:outline-none cursor-pointer"
@@ -138,9 +56,9 @@ export const TotalBookings: React.FC = () => {
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Search by Code, Plate, Vehicle or Service..."
+                    <input 
+                        type="text" 
+                        placeholder="Search by code or license plate..." 
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -148,13 +66,12 @@ export const TotalBookings: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     <Filter className="w-4 h-4 text-gray-400" />
-                    <select
+                    <select 
                         className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
                         <option value="All">All Statuses</option>
-                        <option value="Pending">Pending</option>
                         <option value="Confirmed">Confirmed</option>
                         <option value="CheckedIn">Checked In</option>
                         <option value="Queued">Queued</option>
@@ -167,9 +84,10 @@ export const TotalBookings: React.FC = () => {
                 </div>
             </div>
 
-            {/* Bảng hiển thị danh sách */}
+            {/* Bảng hiển thị danh sách Booking */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 {filteredBookings.length === 0 ? (
+                    // Hiển thị khi không có dữ liệu
                     <div className="p-12 text-center text-gray-500">
                         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <ClipboardList className="w-8 h-8 text-gray-400" />
@@ -179,223 +97,52 @@ export const TotalBookings: React.FC = () => {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left table-auto">
+                        <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-200">
-                            <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <th className="py-4 px-6">Booking Code</th>
-                                <th className="py-4 px-6">Vehicle Info</th>
-                                <th className="py-4 px-6">Service Pack</th>
-                                <th className="py-4 px-6">Time</th>
-                                <th className="py-4 px-6">Status</th>
-                                <th className="py-4 px-6 text-right">Amount</th>
-                                <th className="py-4 px-6 text-center">Actions</th>
-                            </tr>
+                                <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th className="py-4 px-6">Booking Code</th>
+                                    <th className="py-4 px-6">Vehicle / Plate</th>
+                                    <th className="py-4 px-6">Service</th>
+                                    <th className="py-4 px-6">Time</th>
+                                    <th className="py-4 px-6">Status</th>
+                                    <th className="py-4 px-6 text-right">Amount</th>
+                                </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                            {filteredBookings.map(b => (
-                                <tr key={b.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-6 font-mono font-black text-blue-600 text-base tracking-wide">
-                                        {b.bookingCode}
-                                    </td>
-
-                                    <td className="py-4 px-6">
-                                        <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-slate-100 rounded-md text-slate-600">
-                                                <Car className="w-4 h-4" />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-gray-900 font-mono text-sm uppercase tracking-tight">
-                                                    {b.licensePlate || 'N/A'}
-                                                </p>
-                                                <p className="text-xs text-gray-400 font-medium">
-                                                    {b.vehicleName || 'Unknown Car'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td className="py-4 px-6 text-sm font-semibold text-gray-700">
-                                        {b.serviceName || 'Standard Wash'}
-                                    </td>
-
-                                    <td className="py-4 px-6 text-sm text-gray-700 font-medium">
-                                        {b.startTime || '--:--'}
-                                    </td>
-
-                                    <td className="py-4 px-6">
-                                        <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                            b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' :
+                                {filteredBookings.map(b => (
+                                    <tr key={b.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="py-4 px-6 font-bold text-blue-600">{b.bookingCode || 'N/A'}</td>
+                                        <td className="py-4 px-6">
+                                            <p className="font-medium text-gray-900">{b.licensePlate || 'Pending Plate'}</p>
+                                            <p className="text-xs text-gray-500">{b.vehicleName || 'Updating vehicle info'}</p>
+                                        </td>
+                                        <td className="py-4 px-6 text-sm text-gray-700">{b.serviceName || 'Selected Service'}</td>
+                                        <td className="py-4 px-6 text-sm text-gray-700 font-medium">{b.startTime || '--:--'}</td>
+                                        <td className="py-4 px-6">
+                                            {/* Badge hiển thị trạng thái với màu sắc tương ứng */}
+                                            <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                                b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' : 
                                                 b.status === 'CheckedIn' ? 'bg-purple-100 text-purple-700' :
-                                                    b.status === 'Queued' ? 'bg-indigo-100 text-indigo-700' :
-                                                        b.status === 'InProgress' ? 'bg-amber-100 text-amber-700' :
-                                                            b.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
-                                                                b.status === 'CheckedOut' ? 'bg-green-100 text-green-700' :
-                                                                    b.status === 'Cancelled' ? 'bg-rose-100 text-rose-700' :
-                                                                        b.status === 'NoShow' ? 'bg-orange-100 text-orange-700' :
-                                                                            b.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                                                'bg-gray-100 text-gray-700'
-                                        }`}>
-                                            {b.status}
-                                        </span>
-                                    </td>
-
-                                    <td className="py-4 px-6 text-right font-black text-gray-900 text-sm">
-                                        {(b.totalAmount || 0).toLocaleString('vi-VN')}đ
-                                    </td>
-
-                                    <td className="py-4 px-6 text-center">
-                                        <div className="flex items-center justify-center gap-2">
-                                            {b.status === 'Pending' && (
-                                                <>
-                                                    <button
-                                                        onClick={() => handleStatusUpdate(b.id, 'confirm')}
-                                                        disabled={actionLoadingId === b.id}
-                                                        className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow-sm transition-all disabled:opacity-50"
-                                                    >
-                                                        <Check className="w-3.5 h-3.5" />
-                                                        Confirm
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleStatusUpdate(b.id, 'cancel')}
-                                                        disabled={actionLoadingId === b.id}
-                                                        className="inline-flex items-center gap-1 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all disabled:opacity-50"
-                                                    >
-                                                        <X className="w-3.5 h-3.5" />
-                                                        Cancel
-                                                    </button>
-                                                </>
-                                            )}
-
-                                            {b.status === 'Confirmed' && (
-                                                <button
-                                                    onClick={() => handleStatusUpdate(b.id, 'checkin')}
-                                                    disabled={actionLoadingId === b.id}
-                                                    className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-all disabled:opacity-50"
-                                                >
-                                                    <ArrowRight className="w-3.5 h-3.5" />
-                                                    Check In
-                                                </button>
-                                            )}
-
-                                            {/* HÀNH ĐỘNG KHI XE ĐÃ RỬA XONG (Completed) */}
-                                            {b.status === 'Completed' && (
-                                                <button
-                                                    onClick={() => setPaymentModalBooking(b)}
-                                                    disabled={actionLoadingId === b.id}
-                                                    className="inline-flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-all shadow-emerald-100"
-                                                >
-                                                    <DollarSign className="w-3.5 h-3.5" />
-                                                    Thanh Toán
-                                                </button>
-                                            )}
-
-                                            {b.status !== 'Pending' && b.status !== 'Confirmed' && b.status !== 'Completed' && (
-                                                <span className="text-xs text-gray-400 italic font-medium">No actions</span>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                                b.status === 'Queued' ? 'bg-indigo-100 text-indigo-700' :
+                                                b.status === 'InProgress' ? 'bg-amber-100 text-amber-700' :
+                                                b.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                                                b.status === 'CheckedOut' ? 'bg-green-100 text-green-700' :
+                                                b.status === 'Cancelled' ? 'bg-rose-100 text-rose-700' :
+                                                'bg-gray-100 text-gray-700'
+                                            }`}>
+                                                {b.status}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-6 text-right font-bold text-gray-900">
+                                            {b.totalAmount.toLocaleString('vi-VN')}đ
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
                 )}
             </div>
-
-            {/* MODAL CHỌN PHƯƠNG THỨC THANH TOÁN (POPUP) */}
-            {paymentModalBooking && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border border-gray-100">
-
-                        {/* Header Modal */}
-                        <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
-                            <h3 className="text-lg font-bold text-gray-900">Xử Lý Thanh Toán</h3>
-                            <button
-                                onClick={() => setPaymentModalBooking(null)}
-                                className="p-1 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        {/* Thông tin đơn hàng tóm tắt */}
-                        <div className="bg-slate-50 p-4 rounded-xl space-y-2 mb-5 border border-slate-100">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-medium">Mã lịch đặt:</span>
-                                <span className="font-mono font-bold text-blue-600">{paymentModalBooking.bookingCode}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-medium">Biển số xe:</span>
-                                <span className="font-semibold text-gray-800 uppercase font-mono">{paymentModalBooking.licensePlate}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-medium">Gói dịch vụ:</span>
-                                <span className="font-semibold text-gray-800">{paymentModalBooking.serviceName}</span>
-                            </div>
-                            <div className="border-t border-gray-200/60 pt-2 flex justify-between items-center mt-1">
-                                <span className="text-gray-900 font-bold">Tổng thanh toán:</span>
-                                <span className="text-lg font-black text-rose-600">
-                                    {(paymentModalBooking.totalAmount || 0).toLocaleString('vi-VN')}đ
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Chọn Phương Thức */}
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                            Chọn phương thức thanh toán
-                        </label>
-                        <div className="grid grid-cols-2 gap-3 mb-6">
-                            {/* Option Tiền Mặt */}
-                            <button
-                                type="button"
-                                onClick={() => setSelectedMethod('Cash')}
-                                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${
-                                    selectedMethod === 'Cash'
-                                        ? 'border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm'
-                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                }`}
-                            >
-                                <Coins className={`w-6 h-6 ${selectedMethod === 'Cash' ? 'text-blue-600' : 'text-gray-400'}`} />
-                                <span className="text-sm font-bold">Tiền mặt</span>
-                            </button>
-
-                            {/* Option Chuyển Khoản */}
-                            <button
-                                type="button"
-                                onClick={() => setSelectedMethod('Transfer')}
-                                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${
-                                    selectedMethod === 'Transfer'
-                                        ? 'border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm'
-                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                }`}
-                            >
-                                <CreditCard className={`w-6 h-6 ${selectedMethod === 'Transfer' ? 'text-blue-600' : 'text-gray-400'}`} />
-                                <span className="text-sm font-bold">Chuyển khoản</span>
-                            </button>
-                        </div>
-
-                        {/* Nhóm Nút Xử Lý */}
-                        <div className="flex gap-3 justify-end">
-                            <button
-                                type="button"
-                                onClick={() => setPaymentModalBooking(null)}
-                                className="px-4 py-2 rounded-xl text-sm font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-colors"
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleStatusUpdate(paymentModalBooking.id, 'checkout', selectedMethod)}
-                                disabled={actionLoadingId === paymentModalBooking.id}
-                                className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-100 transition-colors flex items-center gap-1 disabled:opacity-50"
-                            >
-                                {actionLoadingId === paymentModalBooking.id ? 'Đang xử lý...' : 'Xác Nhận & Xuất Xưởng'}
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
