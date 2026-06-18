@@ -171,11 +171,12 @@ export const StaffDashboard: React.FC = () => {
                     </div>
                 </div>
                 {filteredBookings.length === 0 ? (
-                    <div className="p-12 text-center text-gray-500">
-                        <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                            <Calendar className="w-8 h-8 text-gray-400" />
+                    <div className="p-16 text-center text-gray-500 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                        <div className="mx-auto w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
+                            <Calendar className="w-10 h-10 text-gray-300" />
                         </div>
-                        <p className="font-semibold">No bookings found</p>
+                        <p className="font-bold text-gray-700 text-lg">No bookings today</p>
+                        <p className="text-sm text-gray-400">Everything is clear for now.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
@@ -201,7 +202,7 @@ export const StaffDashboard: React.FC = () => {
                                             <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
                                                 b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' :
                                                     b.status === 'CheckedIn' ? 'bg-purple-100 text-purple-700' :
-                                                        b.status === 'InProgress' ? 'bg-amber-100 text-amber-700' :
+                                                        b.status === 'InProgress' ? 'bg-amber-100 text-amber-700 animate-pulse' :
                                                             b.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
                                                                 'bg-gray-100 text-gray-700'
                                             }`}>

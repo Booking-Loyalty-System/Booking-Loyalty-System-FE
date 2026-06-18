@@ -149,9 +149,9 @@ export const StaffQueuePage: React.FC = () => {
 
                             <div className="flex-1 space-y-4 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
                                 {columnBookings.length === 0 ? (
-                                    <div className="h-full flex flex-col items-center justify-center opacity-40 border-2 border-dashed border-gray-200 rounded-3xl">
-                                        <Car className="w-10 h-10 mb-2" />
-                                        <p className="text-xs font-bold uppercase tracking-widest">Empty</p>
+                                    <div className="h-full flex flex-col items-center justify-center opacity-40 border-2 border-dashed border-gray-200 rounded-3xl p-8">
+                                        <Car className="w-12 h-12 mb-4 text-gray-300" />
+                                        <p className="text-sm font-bold uppercase tracking-widest text-gray-500">No bookings</p>
                                     </div>
                                 ) : (
                                     columnBookings.map(booking => {
@@ -161,7 +161,7 @@ export const StaffQueuePage: React.FC = () => {
                                         return (
                                             <div 
                                                 key={booking.id} 
-                                                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group animate-in fade-in slide-in-from-bottom-2 duration-300"
+                                                className={`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group animate-in fade-in slide-in-from-bottom-2 duration-300 ${booking.status === 'InProgress' ? 'ring-2 ring-amber-500 ring-offset-2 animate-pulse' : ''}`}
                                             >
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div className="flex flex-col gap-1">
