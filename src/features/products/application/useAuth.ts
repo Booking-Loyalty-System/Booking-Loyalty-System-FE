@@ -6,8 +6,46 @@ import type {
     RegisterRequest,
     PhoneRegisterRequest, AuthResponseData
 } from '../domain/models/auth/auth.model.ts';
+import {toast} from "sonner";
 
 const authRepository = new AuthRepositoryImplement();
+
+export interface CleanedTokenData {
+    userId: string | null;
+    email: string | null;
+    role: string | null;
+    exp: number | null;
+    iss: string | null;
+    aud: string | null;
+}
+
+const decodeAndMapToken = (token: string | null): CleanedTokenData | null => {
+    if (!token) return null;
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        const decoded = JSON.parse(jsonPayload);
+
+        // Map từ Claim của .NET sang Object thuần Frontend
+        return {
+            userId: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null,
+            email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || null,
+            role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || null,
+            exp: decoded.exp || null,
+            iss: decoded.iss || null,
+            aud: decoded.aud || null,
+        };
+    } catch (error) {
+        console.error("Lỗi decode JWT token:", error);
+        return null;
+    }
+};
 
 export const useAuth = () => {
     const queryClient = useQueryClient();
@@ -22,20 +60,64 @@ export const useAuth = () => {
         staleTime: Infinity,
     });
 
+    const { data: tokenData } = useQuery<CleanedTokenData | null>({
+        queryKey: ['token_data'],
+        queryFn: () => {
+            const savedData = localStorage.getItem('token_data');
+            return savedData ? JSON.parse(savedData) : null;
+        },
+        staleTime: Infinity,
+    });
+
     const isAuthenticated = !!user && !!localStorage.getItem('access_token');
+
+    const saveTokenData = (accessToken: string): CleanedTokenData | null => {
+        const cleanedData = decodeAndMapToken(accessToken);
+        if (cleanedData) {
+            localStorage.setItem('token_data', JSON.stringify(cleanedData));
+            queryClient.setQueryData(['token_data'], cleanedData);
+        }
+        return cleanedData;
+    };
+
+    const clearAuthData = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
+        localStorage.removeItem('token_data'); // 🌟 Xóa luôn cục dữ liệu sạch
+
+        queryClient.setQueryData(['current_user'], null);
+        queryClient.setQueryData(['token_data'], null); // 🌟 Xóa cache
+        queryClient.clear();
+    };
 
     // 1. Mutation: Login
     const loginMutation = useMutation({
         mutationFn: (credentials: Parameters<typeof authRepository.login>[0]) =>
             authRepository.login(credentials),
         onSuccess: (data) => {
+            if (!data || !data.accessToken) {
+                toast.error("Cấu trúc response login không hợp lệ:");
+                return;
+            }
             localStorage.setItem('access_token', data.accessToken);
             if (data.refreshToken) {
-                localStorage.setItem('refresh_token', data.refreshToken); // 🌟 Lưu thêm refreshToken khi login
+                localStorage.setItem('refresh_token', data.refreshToken);
             }
-            localStorage.setItem('user_info', JSON.stringify(data.user));
+            const cleanedToken = saveTokenData(data.accessToken);
+            if (cleanedToken) {
+                const synthesizedUser: User = {
+                    id: cleanedToken.userId || "",
+                    email: cleanedToken.email || "",
+                    role: cleanedToken.role || "",
+                    // Điền thêm các trường mặc định nếu Model User ở Frontend ép buộc cần có
+                } as unknown as User;
 
-            queryClient.setQueryData(['current_user'], data.user);
+                localStorage.setItem('user_info', JSON.stringify(synthesizedUser));
+                queryClient.setQueryData(['current_user'], synthesizedUser);
+                return synthesizedUser;
+            }
+            return null;
         },
     });
 
@@ -43,13 +125,7 @@ export const useAuth = () => {
     const logoutMutation = useMutation({
         mutationFn: () => authRepository.logout(),
         onSettled: () => {
-            // Xóa sạch toàn bộ token và thông tin user
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token'); // 🌟 Xóa luôn cả refreshToken khi logout
-            localStorage.removeItem('user_info');
-
-            queryClient.setQueryData(['current_user'], null);
-            queryClient.clear();
+            clearAuthData();
         }
     });
 
@@ -61,11 +137,20 @@ export const useAuth = () => {
             // Cập nhật lại Access Token mới vào LocalStorage
             localStorage.setItem('access_token', data.accessToken);
 
+            if (!data || !data.accessToken) {
+                console.error("❌ Cấu trúc response Refresh Token không hợp lệ:", data);
+                toast.error("Không thể tự động gia hạn phiên đăng nhập.");
+                clearAuthData();
+                return;
+            }
+            localStorage.setItem('access_token', data.accessToken);
+
             // Nếu API trả về cả Refresh Token mới thì cập nhật luôn, không thì thôi giữ cái cũ
             if (data.refreshToken) {
                 localStorage.setItem('refresh_token', data.refreshToken);
             }
 
+            saveTokenData(data.accessToken);
             // Cập nhật lại thông tin user trong cache nếu có thay đổi
             if (data.user) {
                 localStorage.setItem('user_info', JSON.stringify(data.user));
@@ -74,12 +159,7 @@ export const useAuth = () => {
         },
         onError: (error) => {
             console.error("Refresh token thất bại, tiến hành logout...", error);
-            // Nếu refresh token cũng oẹo/hết hạn luôn thì tự động sút user ra ngoài
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('user_info');
-            queryClient.setQueryData(['current_user'], null);
-            queryClient.clear();
+            clearAuthData();
         }
     });
 
@@ -91,6 +171,7 @@ export const useAuth = () => {
             localStorage.setItem('access_token', data.accessToken);
             localStorage.setItem('refresh_token', data.refreshToken);
 
+            saveTokenData(data.accessToken);
             console.log("Đăng ký thành công, Token đã lưu:", data);
 
             // 2. Chuyển hướng người dùng về trang chủ hoặc dashboard
@@ -109,6 +190,7 @@ export const useAuth = () => {
                 localStorage.setItem('refresh_token', data.refreshToken);
             }
             localStorage.setItem('user_info', JSON.stringify(data.user));
+            saveTokenData(data.accessToken);
             queryClient.setQueryData(['current_user'], data.user);
 
             console.log("Đăng ký bằng SĐT thành công!");
@@ -121,6 +203,10 @@ export const useAuth = () => {
 
     return {
         user,
+        userId: tokenData?.userId || null,
+        email: tokenData?.email || null,
+        role: tokenData?.role || null,
+        tokenData,
         isAuthenticated,
         isLoading: loginMutation.isPending,
         isLoggingOut: logoutMutation.isPending,

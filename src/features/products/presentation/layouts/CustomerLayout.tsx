@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { toast } from 'sonner'; // Hoặc bất kỳ thư viện toast nào bạn dùng
 import {
     LayoutDashboard, Car, Radio, Award, Gift, Megaphone, History, Bell, Search, Settings, LogOut
 } from 'lucide-react';
 import { SidebarItem } from '../components/SidebarItem';
 import { ProfileDropdown } from '../components/ProfileDropdown';
+
+// Đưa các Hook chuẩn kiến trúc của bạn vào đây
+import { useAuth } from '../../application/useAuth.ts';
+import { useBooking } from '../../application/useBooking.ts';
 
 interface MenuItem {
     path: string;
@@ -15,8 +22,63 @@ interface MenuItem {
 export const CustomerLayout: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const menuItems: MenuItem[] = [
+    // 🌟 Lấy dữ liệu từ các Application Hook chuẩn của hệ thống
+    const { logout, userId } = useAuth();
+    const { myBookings, isLoading } = useBooking();
+
+    // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
+    const hasInProgressBooking = !isLoading && myBookings.some(booking => booking.status === 'InProgress');
+
+    // 🌟 THIẾT LẬP SIGNALR ĐỂ ĐỒNG BỘ DATA REALTIME
+    useEffect(() => {
+        if (!userId) return;
+
+        // Cấu hình endpoint kết nối tới cổng Hub của Backend
+        const connection = new HubConnectionBuilder()
+            .withUrl('https://localhost:7001/hubs/booking', {
+                accessTokenFactory: () => localStorage.getItem('access_token') || ''
+            })
+            .configureLogging(LogLevel.Warning)
+            .withAutomaticReconnect()
+            .build();
+
+        const startSignalR = async () => {
+            try {
+                await connection.start();
+                // Đăng ký định danh Client vào Group riêng trên Server
+                await connection.invoke('JoinCustomerGroup', userId);
+
+                // Lắng nghe tín hiệu thay đổi trạng thái tự động từ Backend gửi về
+                connection.on('BookingStatusChanged', (data: { bookingId: string, status: string }) => {
+                    console.log("🔔 [SignalR] Nhận được tín hiệu thay đổi trạng thái:", data);
+                    const currentStatus = data?.status;
+
+                    if (currentStatus === 'InProgress') {
+                        toast.success('Xe của bạn đã được đưa vào khoang dịch vụ! Đang mở Live Tracking...', { icon: '🚗' });
+                    } else {
+                        toast.info(`Trạng thái đơn hàng hiện tại: ${currentStatus}`, { icon: 'ℹ️' });
+                    }
+                    console.log("🔄 Ép React Query gọi lại API getMyBookings...");
+                    queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
+                });
+            } catch (err) {
+                console.error('SignalR Connection Error: ', err);
+            }
+        };
+
+        startSignalR();
+
+        // Ngắt kết nối khi Component bị huỷ (Unmount) để tránh rò rỉ bộ nhớ
+        return () => {
+            connection.off('BookingStatusChanged');
+            connection.stop();
+        };
+    }, [userId, queryClient]);
+
+    // Mảng Menu gốc của bạn
+    const rawMenuItems: MenuItem[] = [
         {
             path: '/dashboard',
             label: 'Dashboard',
@@ -109,6 +171,9 @@ export const CustomerLayout: React.FC = () => {
         }
     ];
 
+    // 🌟 LỌC MENU: Nếu không có lịch InProgress, loại bỏ hẳn mục Live Tracking khỏi thanh Sidebar
+    const menuItems = rawMenuItems.filter(item => item.path !== '/live-tracking' || hasInProgressBooking);
+
     const titleMap: Record<string, string> = {
         '/dashboard': 'Dashboard',
         '/book-wash': 'Book a Wash',
@@ -124,14 +189,14 @@ export const CustomerLayout: React.FC = () => {
 
     const currentTitle = titleMap[location.pathname] || 'AutoWash Pro';
 
-    const handleLogout = () => {
-        // Thực hiện logic xoá token tại đây nếu cần
+    const handleLogout = async () => {
+        await logout();
         navigate('/login');
     };
 
     return (
         <div className="flex h-screen w-screen bg-[#f8fafc] overflow-hidden antialiased">
-            {/* PANELS TRÁI: SIDEBAR */}
+            {/* SIDEBAR */}
             <aside className="w-64 bg-white border-r border-[#e2e8f0] flex flex-col justify-between p-4 shrink-0 h-full">
                 <div className="flex flex-col h-[calc(100vh-80px)]">
                     <div className="flex items-center gap-3 px-2 py-4 mb-4">
@@ -157,7 +222,6 @@ export const CustomerLayout: React.FC = () => {
                     </nav>
                 </div>
 
-                {/* KHU VỰC NÚT ĐĂNG XUẤT VÀ BẢN QUYỀN */}
                 <div className="pt-2 border-t border-[#f1f5f9] space-y-2">
                     <button
                         onClick={handleLogout}
@@ -174,9 +238,8 @@ export const CustomerLayout: React.FC = () => {
                 </div>
             </aside>
 
-            {/* PANEL PHẢI: TOPBAR & CONTENT */}
+            {/* CONTENT */}
             <div className="flex-1 flex flex-col h-full overflow-hidden">
-                {/* GLOBAL HEADER */}
                 <header className="h-16 bg-white border-b border-[#e2e8f0] flex items-center justify-between px-8 shrink-0">
                     <div className="animate-fade-in">
                         <h1 className="text-2xl font-bold text-[#0f172a]">{currentTitle}</h1>

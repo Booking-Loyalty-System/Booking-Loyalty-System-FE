@@ -49,7 +49,7 @@ export const BookingDetailModal: React.FC<Props> = ({ booking, onClose }) => {
                     </div>
                     <div className="flex justify-between border-b pb-2 border-slate-100">
                         <span className="text-slate-400 flex items-center gap-2"><Clock size={16}/> Giờ</span>
-                        <span className="font-bold text-slate-900">{booking.startTime} - {booking.endTime}</span>
+                        <span className="font-bold text-slate-900">{booking.startTime}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="text-slate-400 flex items-center gap-2"><ShieldCheck size={16}/> Gói</span>

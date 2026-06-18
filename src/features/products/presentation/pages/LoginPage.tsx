@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, Droplets, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../application/useAuth.ts';
 import { Link, useNavigate } from "react-router-dom";
-import { useGoogleLogin } from '@react-oauth/google'; // 🌟 Chuyển sang dùng hook useGoogleLogin để lấy code
+import { useGoogleLogin } from '@react-oauth/google';
 import { CarScene } from "@/shared/car-scene.tsx";
 import {toast} from "sonner";
 
@@ -15,10 +15,21 @@ export const LoginPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            // 1. Chạy login để kích hoạt onSuccess lưu token & user_info vào localStorage
             await login({ email, password });
+
+            const savedUser = localStorage.getItem('user_info');
+            const user = savedUser ? JSON.parse(savedUser) : null;
+            console.log("user in login page", user);
             toast.success('Đăng nhập thành công!');
+
             setTimeout(() => {
-                navigate('/live-tracking');
+                // 3. Check role trên biến user sạch này là chuẩn 100%
+                if (user?.role === 'Staff') {
+                    navigate('/staff/dashboard');
+                } else {
+                    navigate('/dashboard');
+                }
             }, 1000);
         } catch (err) {
             console.error("Đăng nhập email thất bại:", err);
@@ -32,7 +43,7 @@ export const LoginPage: React.FC = () => {
 
         try {
             // 🔥 Truyền code trực tiếp vào URL parameters gửi lên API .NET Core
-            const response = await fetch(`https://localhost:7001/api/auth/googleLogin?code=${encodeURIComponent(authCode)}`, {
+            const response = await fetch(`https://localhost:7001/api/auth/google-login?code=${encodeURIComponent(authCode)}`, {
                 method: 'POST', // Giữ POST hoặc đổi sang GET tùy theo cấu hình Endpoint [HttpPost] hay [HttpGet] ở Backend
                 headers: { 'Content-Type': 'application/json' }
             });
