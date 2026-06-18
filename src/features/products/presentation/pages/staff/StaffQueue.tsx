@@ -24,19 +24,30 @@ export const StaffQueuePage: React.FC = () => {
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
 
     const handleAction = async (id: string, action: StaffAction) => {
+        const statusMap: Record<StaffAction, number> = {
+            checkIn: 1,  // VD: 1 là trạng thái CheckedIn
+            queue: 2,    // VD: 2 là trạng thái Queued
+            start: 3,    // VD: 3 là trạng thái InProgress
+            finish: 4,   // VD: 4 là trạng thái Completed
+            checkout: 5  // VD: 5 là trạng thái CheckedOut
+        };
+
         try {
-            switch(action) {
-                case 'checkIn': await actions.checkIn(id); break;
-                case 'queue': await actions.queue(id); break;
-                case 'start': await actions.start({ id, staffId: user?.id || 'current-staff-id' }); break;
-                case 'finish': await actions.finish(id); break;
-                case 'checkout': {
-                    const booking = bookings.find(b => b.id === id);
-                    if (booking) setSelectedBookingForCheckout(booking);
-                    return;
-                }
+            if (action === 'checkout') {
+                const booking = bookings.find(b => b.id === id);
+                if (booking) setSelectedBookingForCheckout(booking);
+                return;
             }
-            toast.success(`${action.charAt(0).toUpperCase() + action.slice(1)} successful!`);
+
+            await actions.updateStatus({
+                id: id,
+                payload: {
+                    targetStatus: statusMap[action],
+                    staffId: action === 'start' ? (user?.id || 'staff-id') : undefined
+                }
+            });
+
+            toast.success(`Action ${action} successful!`);
         } catch (error) {
             console.error(error);
             toast.error(`Failed to perform ${action}`);
@@ -46,7 +57,10 @@ export const StaffQueuePage: React.FC = () => {
     const confirmCheckout = async () => {
         if (!selectedBookingForCheckout) return;
         try {
-            await actions.checkout(selectedBookingForCheckout.id);
+            await actions.updateStatus({
+                id: selectedBookingForCheckout.id,
+                payload: { targetStatus: 5 } // Tương ứng với Checkout
+            });
             toast.success('Checkout completed and points awarded!');
             setSelectedBookingForCheckout(null);
         } catch (error) {

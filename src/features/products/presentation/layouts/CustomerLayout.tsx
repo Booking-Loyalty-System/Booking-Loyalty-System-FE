@@ -26,10 +26,10 @@ export const CustomerLayout: React.FC = () => {
 
     // 🌟 Lấy dữ liệu từ các Application Hook chuẩn của hệ thống
     const { logout, userId } = useAuth();
-    const { myBookings } = useBooking();
+    const { myBookings, isLoading } = useBooking();
 
     // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
-    const hasInProgressBooking = myBookings.some(booking => booking.status === 'InProgress');
+    const hasInProgressBooking = !isLoading && myBookings.some(booking => booking.status === 'InProgress');
 
     // 🌟 THIẾT LẬP SIGNALR ĐỂ ĐỒNG BỘ DATA REALTIME
     useEffect(() => {
@@ -37,7 +37,9 @@ export const CustomerLayout: React.FC = () => {
 
         // Cấu hình endpoint kết nối tới cổng Hub của Backend
         const connection = new HubConnectionBuilder()
-            .withUrl('https://localhost:7001/hubs/booking') // Điền URL chạy backend của bạn vào đây
+            .withUrl('https://localhost:7001/hubs/booking', {
+                accessTokenFactory: () => localStorage.getItem('access_token') || ''
+            })
             .configureLogging(LogLevel.Warning)
             .withAutomaticReconnect()
             .build();
@@ -49,14 +51,16 @@ export const CustomerLayout: React.FC = () => {
                 await connection.invoke('JoinCustomerGroup', userId);
 
                 // Lắng nghe tín hiệu thay đổi trạng thái tự động từ Backend gửi về
-                connection.on('ReceiveBookingStatusChanged', (data: { bookingId: string, status: string }) => {
-                    // Nếu xe được đưa vào khoang rửa, bắn thông báo chào mừng cho khách thích thú
-                    if (data.status === 'InProgress') {
-                        toast.success('Xe của bạn đã được đưa vào khoang dịch vụ! Đang mở Live Tracking...', { icon: '🚗' });
-                    }
+                connection.on('BookingStatusChanged', (data: { bookingId: string, status: string }) => {
+                    console.log("🔔 [SignalR] Nhận được tín hiệu thay đổi trạng thái:", data);
+                    const currentStatus = data?.status;
 
-                    // 🌟 Kỹ thuật Invalidate: Ép React Query xóa cache cũ và tự fetch lại dữ liệu mới
-                    // Giúp Menu tự động tính toán lại biến 'hasInProgressBooking' mà không cần F5
+                    if (currentStatus === 'InProgress') {
+                        toast.success('Xe của bạn đã được đưa vào khoang dịch vụ! Đang mở Live Tracking...', { icon: '🚗' });
+                    } else {
+                        toast.info(`Trạng thái đơn hàng hiện tại: ${currentStatus}`, { icon: 'ℹ️' });
+                    }
+                    console.log("🔄 Ép React Query gọi lại API getMyBookings...");
                     queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
                 });
             } catch (err) {
@@ -68,7 +72,7 @@ export const CustomerLayout: React.FC = () => {
 
         // Ngắt kết nối khi Component bị huỷ (Unmount) để tránh rò rỉ bộ nhớ
         return () => {
-            connection.off('ReceiveBookingStatusChanged');
+            connection.off('BookingStatusChanged');
             connection.stop();
         };
     }, [userId, queryClient]);

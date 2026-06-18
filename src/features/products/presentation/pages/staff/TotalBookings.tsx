@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Calendar, Search, Filter, ClipboardList, Car, Check, X, ArrowRight,
     DollarSign, CreditCard, Coins
@@ -6,6 +6,9 @@ import {
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 import { toast } from 'sonner';
 import { useAuth } from "@/features/products/application/useAuth.ts";
+import * as signalR from "@microsoft/signalr";
+import {useQueryClient} from "@tanstack/react-query";
+import {BookingDetailModal} from "@/features/products/presentation/components/BookingDetailModal.tsx";
 
 interface DashboardBooking {
     id: string;
@@ -33,6 +36,8 @@ interface DashboardActions {
 
 export const TotalBookings: React.FC = () => {
     const { userId } = useAuth();
+    const queryClient = useQueryClient();
+
     const { bookings = [], isLoading, selectedDate, setSelectedDate, actions } = useStaffDashboard() as unknown as {
         bookings: DashboardBooking[];
         isLoading: boolean;
@@ -40,6 +45,8 @@ export const TotalBookings: React.FC = () => {
         setSelectedDate: (date: string) => void;
         actions: DashboardActions;
     };
+
+    const [detailModalBooking, setDetailModalBooking] = useState<DashboardBooking | null>(null);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('All');
@@ -49,15 +56,73 @@ export const TotalBookings: React.FC = () => {
     const [paymentModalBooking, setPaymentModalBooking] = useState<DashboardBooking | null>(null);
     const [selectedMethod, setSelectedMethod] = useState<'Cash' | 'Transfer'>('Cash');
 
+    const staffBranchId = bookings[0]?.branchId || "";
+
+    useEffect(() => {
+        if (!staffBranchId) return; // Nếu chưa có BranchId thì chưa kết nối để tránh lỗi
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:7001/hubs/booking", {
+                accessTokenFactory: () => localStorage.getItem('access_token') || ''
+            })
+            .withAutomaticReconnect()
+            .build();
+
+        // Khởi chạy kết nối
+        connection.start()
+            .then(async () => {
+                console.log('⚡ Connected to BookingHub!');
+
+                await connection.invoke("joinBranchGroup", staffBranchId);
+                console.log(`Joined branch group: ${staffBranchId}`);
+            })
+            .catch(err => console.error('SignalR Connection Error: ', err));
+
+        connection.on("ReceiveBookingCreated", (newBooking: DashboardBooking) => {
+            console.log("🔥 Dữ liệu SignalR nhận được:", newBooking);
+            console.log("🔥 selectedDate hiện tại:", selectedDate);
+            if (newBooking.bookingDate === selectedDate) {
+                queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
+
+                toast.success(`🎉 Có lịch đặt mới! Mã: ${newBooking.bookingCode}`, {
+                    description: `Xe: ${newBooking.licensePlate} - Khung giờ: ${newBooking.startTime}`
+                });
+            }
+            toast.success(`🎉 Có lịch đặt mới! Mã: ${newBooking.bookingCode}`);
+        });
+
+        // 🧼 CLEANUP LIFECYCLE: Khi Staff đổi chi nhánh hoặc rời trang
+        return () => {
+            if (connection.state === signalR.HubConnectionState.Connected) {
+                // Gọi hàm Leave để giải phóng kết nối khỏi Group ở Backend trước khi ngắt hẳn
+                connection.invoke("leaveBranchGroup", staffBranchId)
+                    .then(() => connection.stop())
+                    .catch(err => console.error('Error during Hub cleanup:', err));
+            } else {
+                connection.stop();
+            }
+        };
+    }, [selectedDate, staffBranchId, queryClient]);
+
     // Xử lý logic gọi chung hàm updateStatus với payload tương ứng
-    const handleStatusUpdate = async (bookingId: string, type: 'confirm' | 'cancel' | 'checkin' | 'checkout', method?: 'Cash' | 'Transfer') => {
+    const handleStatusUpdate = async (bookingId: string, type: 'confirm' | 'cancel' | 'checkin' | 'checkout' | 'start', method?: 'Cash' | 'Transfer') => {
         setActionLoadingId(bookingId);
         try {
+            if (type === 'start') {
+                await actions.updateStatus({
+                    id: bookingId,
+                    payload: {
+                        targetStatus: 2, // ĐÚNG enum InProgress là 2
+                        staffId: userId! // Đảm bảo staffId được truyền
+                    }
+                });
+                toast.success('Đã đưa xe vào khoang rửa! Trạng thái đang là In Progress.');
+            }
             if (type === 'checkin') {
                 await actions.updateStatus({
                     id: bookingId,
                     payload: {
-                        targetStatus: 2,
+                        targetStatus: 5,
                         staffId: userId || undefined
                     }
                 });
@@ -107,13 +172,6 @@ export const TotalBookings: React.FC = () => {
             (statusFilter === 'All' || b.status === statusFilter)
         );
     });
-
-    if (isLoading) return (
-        <div className="p-8 space-y-6">
-            <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-64 bg-gray-100 rounded-xl animate-pulse"></div>
-        </div>
-    );
 
     return (
         <div className="space-y-6 font-sans antialiased">
@@ -169,7 +227,14 @@ export const TotalBookings: React.FC = () => {
 
             {/* Bảng hiển thị danh sách */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                {filteredBookings.length === 0 ? (
+                {isLoading ? (
+                        <div className="p-8 space-y-4 animate-pulse">
+                            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+                            <div className="h-12 bg-gray-100 rounded-lg"></div>
+                            <div className="h-12 bg-gray-100 rounded-lg"></div>
+                            <div className="h-12 bg-gray-100 rounded-lg"></div>
+                        </div>
+                    ) : filteredBookings.length === 0 ? (
                     <div className="p-12 text-center text-gray-500">
                         <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <ClipboardList className="w-8 h-8 text-gray-400" />
@@ -193,7 +258,10 @@ export const TotalBookings: React.FC = () => {
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                             {filteredBookings.map(b => (
-                                <tr key={b.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={b.id}
+                                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                    onClick={() => setDetailModalBooking(b)}
+                                >
                                     <td className="py-4 px-6 font-mono font-black text-blue-600 text-base tracking-wide">
                                         {b.bookingCode}
                                     </td>
@@ -243,8 +311,18 @@ export const TotalBookings: React.FC = () => {
                                         {(b.totalAmount || 0).toLocaleString('vi-VN')}đ
                                     </td>
 
-                                    <td className="py-4 px-6 text-center">
+                                    <td className="py-4 px-6 text-center" onClick={(e) => e.stopPropagation()}>
                                         <div className="flex items-center justify-center gap-2">
+                                            {b.status === 'CheckedIn' && (
+                                                <button
+                                                    onClick={() => handleStatusUpdate(b.id, 'start')}
+                                                    disabled={actionLoadingId === b.id}
+                                                    className="inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-all disabled:opacity-50"
+                                                >
+                                                    <Car className="w-3.5 h-3.5" />
+                                                    Bắt đầu rửa
+                                                </button>
+                                            )}
                                             {b.status === 'Pending' && (
                                                 <>
                                                     <button
@@ -299,6 +377,19 @@ export const TotalBookings: React.FC = () => {
                             </tbody>
                         </table>
                     </div>
+                )}
+
+                {detailModalBooking && (
+                    <BookingDetailModal
+                        booking={{
+                            ...detailModalBooking,
+                            // Map các trường dữ liệu nếu tên khác nhau
+                            vehiclePlate: detailModalBooking.licensePlate,
+                            washPackageName: detailModalBooking.serviceName,
+                            endTime: "" // Nếu DashboardBooking không có endTime, bạn có thể để trống hoặc lấy từ nguồn khác
+                        } as any} // Dùng as any để bỏ qua lỗi type nếu interface chưa đồng nhất
+                        onClose={() => setDetailModalBooking(null)}
+                    />
                 )}
             </div>
 

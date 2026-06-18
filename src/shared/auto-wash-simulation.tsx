@@ -31,53 +31,59 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
     const { myBookings } = useBooking();
 
     // Tìm lịch đặt xe đang chạy (Ưu tiên InProgress, hoặc Queued/Confirmed để tiện test máy)
-    const activeBooking = myBookings.find(b => b.status === 'InProgress' || b.status === 'Queued' || b.status === 'Confirmed');
+    const activeBooking = myBookings.find(b => b.status === 'InProgress');
 
     // Nếu có prop thì ưu tiên dùng prop, không thì lấy ID tự động tìm được
     const bookingId = propBookingId || activeBooking?.id;
 
     // Hàm xử lý khi kết thúc bước 5
-    const handleWashSuccess = useCallback(async () => {
-        // 🌟 Bẫy phòng vệ chặn lỗi undefined trước khi gọi API
+    const handleCloseModalAndUpdateStatus = async () => {
         if (!bookingId) {
             toast.error("Không tìm thấy mã lịch đặt xe hợp lệ để cập nhật!");
             return;
         }
 
-        setShowComplete(true);
         try {
+            // Gọi API chuyển trạng thái (ví dụ sang Completed / CheckedOut tùy số targetStatus của ông)
             await actions.updateStatus({
                 id: bookingId,
                 payload: {
-                    targetStatus: 3, // Hoặc "Completed" tùy theo interface Payload của ông
+                    targetStatus: 3, // Giữ nguyên targetStatus gốc của ông
                     staffId: staffId || undefined
                 }
             });
-            toast.success("Trạm rửa xe đã hoàn thành công việc và đồng bộ hệ thống!");
+            toast.success("Hệ thống đã cập nhật trạng thái hoàn thành!");
+
+            // Cập nhật thành công mới đóng Modal và reset xe về bước 1
+            setShowComplete(false);
+            setActiveStep(WASH_STEPS[0]);
         } catch (error) {
-            toast.error("Rửa xong rồi nhưng cập nhật trạng thái lên server thất bại.");
+            toast.error("Cập nhật trạng thái lên server thất bại. Vui lòng thử lại!");
         }
-    }, [bookingId, staffId, actions]);
+    };
 
     // Tự động nhảy bước tuần tự
     const handleNextStep = useCallback(() => {
         const currentIndex = WASH_STEPS.findIndex((s) => s.id === activeStep.id);
 
         if (currentIndex === WASH_STEPS.length - 1) {
-            handleWashSuccess();
-            setActiveStep(WASH_STEPS[0]);
+            // 🌟 THAY ĐỔI TẠI ĐÂY: Kích hoạt hiện Modal chúc mừng lên màn hình!
+            setShowComplete(true);
         } else {
             setActiveStep(WASH_STEPS[currentIndex + 1]);
         }
-    }, [activeStep.id, handleWashSuccess]);
+    }, [activeStep.id]);
 
     // Thiết lập Interval tự động chạy qua các phân đoạn
     useEffect(() => {
+        if (showComplete) return;
+
         const interval = setInterval(() => {
             handleNextStep();
         }, 5000);
+
         return () => clearInterval(interval);
-    }, [handleNextStep]);
+    }, [handleNextStep, showComplete]);
 
     // 🌟 THÊM GIAO DIỆN CHỜ NẾU HỆ THỐNG CHƯA LOAD XONG ID HOẶC KHÔNG CÓ LỊCH ĐẶT
     if (!bookingId) {
@@ -144,6 +150,7 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
 
                 <button
                     onClick={handleNextStep}
+                    disabled={showComplete}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl text-xs transition-colors shadow-md shadow-blue-100 text-center block mt-4"
                 >
                     {activeStep.id === 5 ? "Hoàn Tất Quy Trình Rửa ✔" : "Kích Hoạt Bước Tiếp Theo →"}
@@ -155,7 +162,10 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
                             <div className="text-5xl mb-4">🎉</div>
                             <h2 className="text-2xl font-bold text-slate-800">Hoàn tất!</h2>
                             <p className="text-slate-600 mt-2">Xe đã sạch bong sáng bóng và trạng thái đã được cập nhật.</p>
-                            <button onClick={() => setShowComplete(false)} className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg">
+                            <button
+                                onClick={handleCloseModalAndUpdateStatus}
+                                className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg"
+                            >
                                 Đóng
                             </button>
                         </div>

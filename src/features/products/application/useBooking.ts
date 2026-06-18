@@ -43,6 +43,7 @@ export const useBooking = () => {
 
     return {
         myBookings: myBookingsQuery.data || [],
+        isLoading: myBookingsQuery.isLoading,
         isFetchingBookings: myBookingsQuery.isLoading,
         isBooking: createBookingMutation.isPending,
         error: createBookingMutation.error,

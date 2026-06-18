@@ -15,10 +15,21 @@ export const LoginPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            // 1. Chạy login để kích hoạt onSuccess lưu token & user_info vào localStorage
             await login({ email, password });
+
+            const savedUser = localStorage.getItem('user_info');
+            const user = savedUser ? JSON.parse(savedUser) : null;
+            console.log("user in login page", user);
             toast.success('Đăng nhập thành công!');
+
             setTimeout(() => {
-                navigate('/live-tracking');
+                // 3. Check role trên biến user sạch này là chuẩn 100%
+                if (user?.role === 'Staff') {
+                    navigate('/staff/dashboard');
+                } else {
+                    navigate('/dashboard');
+                }
             }, 1000);
         } catch (err) {
             console.error("Đăng nhập email thất bại:", err);

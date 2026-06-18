@@ -6,6 +6,7 @@ import type {
     RegisterRequest,
     PhoneRegisterRequest, AuthResponseData
 } from '../domain/models/auth/auth.model.ts';
+import {toast} from "sonner";
 
 const authRepository = new AuthRepositoryImplement();
 
@@ -70,12 +71,13 @@ export const useAuth = () => {
 
     const isAuthenticated = !!user && !!localStorage.getItem('access_token');
 
-    const saveTokenData = (accessToken: string) => {
+    const saveTokenData = (accessToken: string): CleanedTokenData | null => {
         const cleanedData = decodeAndMapToken(accessToken);
         if (cleanedData) {
             localStorage.setItem('token_data', JSON.stringify(cleanedData));
             queryClient.setQueryData(['token_data'], cleanedData);
         }
+        return cleanedData;
     };
 
     const clearAuthData = () => {
@@ -94,15 +96,28 @@ export const useAuth = () => {
         mutationFn: (credentials: Parameters<typeof authRepository.login>[0]) =>
             authRepository.login(credentials),
         onSuccess: (data) => {
+            if (!data || !data.accessToken) {
+                toast.error("Cấu trúc response login không hợp lệ:");
+                return;
+            }
             localStorage.setItem('access_token', data.accessToken);
             if (data.refreshToken) {
-                localStorage.setItem('refresh_token', data.refreshToken); // 🌟 Lưu thêm refreshToken khi login
+                localStorage.setItem('refresh_token', data.refreshToken);
             }
-            localStorage.setItem('user_info', JSON.stringify(data.user));
+            const cleanedToken = saveTokenData(data.accessToken);
+            if (cleanedToken) {
+                const synthesizedUser: User = {
+                    id: cleanedToken.userId || "",
+                    email: cleanedToken.email || "",
+                    role: cleanedToken.role || "",
+                    // Điền thêm các trường mặc định nếu Model User ở Frontend ép buộc cần có
+                } as unknown as User;
 
-            saveTokenData(data.accessToken);
-
-            queryClient.setQueryData(['current_user'], data.user);
+                localStorage.setItem('user_info', JSON.stringify(synthesizedUser));
+                queryClient.setQueryData(['current_user'], synthesizedUser);
+                return synthesizedUser;
+            }
+            return null;
         },
     });
 
@@ -122,11 +137,20 @@ export const useAuth = () => {
             // Cập nhật lại Access Token mới vào LocalStorage
             localStorage.setItem('access_token', data.accessToken);
 
+            if (!data || !data.accessToken) {
+                console.error("❌ Cấu trúc response Refresh Token không hợp lệ:", data);
+                toast.error("Không thể tự động gia hạn phiên đăng nhập.");
+                clearAuthData();
+                return;
+            }
+            localStorage.setItem('access_token', data.accessToken);
+
             // Nếu API trả về cả Refresh Token mới thì cập nhật luôn, không thì thôi giữ cái cũ
             if (data.refreshToken) {
                 localStorage.setItem('refresh_token', data.refreshToken);
             }
 
+            saveTokenData(data.accessToken);
             // Cập nhật lại thông tin user trong cache nếu có thay đổi
             if (data.user) {
                 localStorage.setItem('user_info', JSON.stringify(data.user));
