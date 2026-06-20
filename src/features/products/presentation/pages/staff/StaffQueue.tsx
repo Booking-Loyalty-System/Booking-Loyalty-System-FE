@@ -21,6 +21,19 @@ export const StaffQueuePage: React.FC = () => {
     const { user } = useAuth();
     const { bookings, isLoading, actions } = useStaffDashboard();
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
+    
+    // 🌟 BỘ LỌC CHI NHÁNH PHÍA CLIENT: Cho phép lọc xe hiển thị theo chi nhánh được chọn
+    const [selectedBranchId, setSelectedBranchId] = useState<string>('all');
+    const BRANCHES = [
+        { id: 'all', name: 'All Branches' },
+        { id: 'b1', name: 'Chi nhánh Cầu Giấy' },
+        { id: 'b2', name: 'Chi nhánh Đống Đa' },
+        { id: 'b3', name: 'Chi nhánh Hai Bà Trưng' },
+    ];
+
+    const filteredBookings = selectedBranchId === 'all' 
+        ? bookings 
+        : bookings.filter(b => b.branchId === selectedBranchId);
 
     const handleAction = async (id: string, action: StaffAction) => {
         try {
@@ -112,26 +125,42 @@ export const StaffQueuePage: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm">
                 <div>
                     <h1 className="text-3xl font-black text-gray-900 tracking-tight">Live Queue Monitor</h1>
                     <p className="text-gray-500 font-bold">Manage vehicle workflow in real-time</p>
                 </div>
-                <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="flex -space-x-2">
-                        {[1, 2].map(i => (
-                            <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-[10px] font-black text-blue-600">
-                                S{i}
-                            </div>
-                        ))}
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                    {/* Select box lọc chi nhánh phía client */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Branch:</span>
+                        <select 
+                            value={selectedBranchId}
+                            onChange={(e) => setSelectedBranchId(e.target.value)}
+                            className="bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-xl font-bold p-2 focus:ring-blue-500 focus:border-blue-500 block"
+                        >
+                            {BRANCHES.map(b => (
+                                <option key={b.id} value={b.id}>{b.name}</option>
+                            ))}
+                        </select>
                     </div>
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest pr-2">2 Staff Active</span>
+
+                    <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+                        <div className="flex -space-x-2">
+                            {[1, 2].map(i => (
+                                <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-[9px] font-black text-blue-600">
+                                    S{i}
+                                </div>
+                            ))}
+                        </div>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">2 Staff Active</span>
+                    </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)] min-h-[600px]">
                 {columns.map((col) => {
-                    const columnBookings = bookings.filter(b => col.status.includes(b.status));
+                    const columnBookings = filteredBookings.filter(b => col.status.includes(b.status));
                     
                     return (
                         <div key={col.title} className={`${col.bg} rounded-[32px] p-6 border-2 ${col.border} flex flex-col`}>

@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { StaffBookingRepositoryImplement, type UpdateBookingStatusPayload } from '../infrastructure/repositories/staff/staff.repository.implement';
+import { StaffBookingRepositoryMock } from '../infrastructure/repositories/staff/staff.repository.mock';
 import { format } from 'date-fns';
 
-const staffRepository = new StaffBookingRepositoryImplement();
+// 🌟 DEV MODE TOGGLE: Sử dụng Mock Repository cho đến khi Backend sẵn sàng
+const useMock = true;
+
+const staffRepository = useMock
+    ? new StaffBookingRepositoryMock()
+    : new StaffBookingRepositoryImplement();
 
 export const useStaffDashboard = () => {
     const queryClient = useQueryClient();

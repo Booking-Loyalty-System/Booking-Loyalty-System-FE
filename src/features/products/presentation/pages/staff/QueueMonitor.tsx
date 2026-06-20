@@ -25,6 +25,9 @@ import {
 } from "../../components/common/dialog";
 import { Progress } from "../../components/common/progress";
 import { Badge } from "../../components/common/badge";
+import { useStaffDashboard } from "../../../application/useStaffDashboard";
+import { useAuth } from "../../../application/useAuth";
+import { toast } from "sonner";
 
 interface QueueVehicle {
   id: string;
@@ -51,62 +54,12 @@ interface WashBay {
   maintenanceETA?: string;
 }
 
-// Mock data
-const initialQueue: QueueVehicle[] = [
-  {
-    id: "Q001",
-    queueNumber: 1,
-    customerName: "John Smith",
-    vehicle: "Tesla Model 3",
-    servicePackage: "Premium Wash",
-    estimatedDuration: 15,
-    checkInTime: "09:15",
-    waitingMinutes: 8,
-  },
-  {
-    id: "Q002",
-    queueNumber: 2,
-    customerName: "Sarah Johnson",
-    vehicle: "BMW X5",
-    servicePackage: "Ceramic Wash",
-    estimatedDuration: 30,
-    checkInTime: "09:18",
-    waitingMinutes: 5,
-  },
-  {
-    id: "Q003",
-    queueNumber: 3,
-    customerName: "Mike Chen",
-    vehicle: "Honda Accord",
-    servicePackage: "Basic Wash",
-    estimatedDuration: 10,
-    checkInTime: "09:20",
-    waitingMinutes: 3,
-  },
-  {
-    id: "Q004",
-    queueNumber: 4,
-    customerName: "Emily Davis",
-    vehicle: "Toyota Camry",
-    servicePackage: "Premium Wash",
-    estimatedDuration: 15,
-    checkInTime: "09:22",
-    waitingMinutes: 1,
-  },
-];
-
-const initialBays: WashBay[] = [
+// Định nghĩa cấu hình cơ bản các buồng rửa (Wash Bays) của chi nhánh
+const BASE_BAYS: WashBay[] = [
   {
     id: "BAY_A",
     name: "Bay A",
-    status: "occupied",
-    currentVehicle: "Mercedes C-Class",
-    servicePackage: "Premium Wash",
-    startTime: "09:20",
-    finishETA: "09:35",
-    remainingMinutes: 12,
-    duration: 15,
-    assignedStaff: "Michael Nguyen",
+    status: "available",
   },
   {
     id: "BAY_B",
@@ -122,23 +75,48 @@ const initialBays: WashBay[] = [
   {
     id: "BAY_D",
     name: "Bay D",
-    status: "occupied",
-    currentVehicle: "Ford F-150",
-    servicePackage: "Basic Wash",
-    startTime: "09:10",
-    finishETA: "09:20",
-    remainingMinutes: 3,
-    duration: 10,
-    assignedStaff: "David Le",
+    status: "available",
   },
 ];
 
+// Hàm hỗ trợ tính toán giờ hoàn thành dự kiến (ETA) dựa trên thời gian bắt đầu và thời gian rửa
+function calculateETA(startTimeStr: string, durationMinutes: number): string {
+  try {
+    const [hourStr, minStr] = startTimeStr.split(":");
+    const date = new Date();
+    date.setHours(parseInt(hourStr, 10));
+    date.setMinutes(parseInt(minStr, 10) + durationMinutes);
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } catch (e) {
+    return startTimeStr;
+  }
+}
+
 export function QueueMonitor() {
+  // 🌟 DÙNG HOOK useStaffDashboard & useAuth: Đồng bộ dữ liệu trực tiếp từ Mock/Real Repository của phân hệ Staff
+  const { bookings, isLoading, actions } = useStaffDashboard();
+  const { user } = useAuth();
+
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [queue, setQueue] = useState<QueueVehicle[]>(initialQueue);
-  const [bays, setBays] = useState<WashBay[]>(initialBays);
+  
+  // 🌟 STATE LƯU TRỮ THỜI GIAN ĐẾM NGƯỢC: Dùng để lưu trữ số phút còn lại cho các booking đang InProgress
+  const [bookingRemainingMinutes, setBookingRemainingMinutes] = useState<Record<string, number>>({});
+  
   const [selectedBay, setSelectedBay] = useState<WashBay | null>(null);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+
+  // 🌟 BỘ LỌC CHI NHÁNH PHÍA CLIENT
+  const [selectedBranchId, setSelectedBranchId] = useState<string>('all');
+  const BRANCHES = [
+    { id: 'all', name: 'All Branches' },
+    { id: 'b1', name: 'Chi nhánh Cầu Giấy' },
+    { id: 'b2', name: 'Chi nhánh Đống Đa' },
+    { id: 'b3', name: 'Chi nhánh Hai Bà Trưng' },
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -146,6 +124,139 @@ export function QueueMonitor() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // 🌟 LỌC THEO CHI NHÁNH PHÍA CLIENT
+  const filteredBookingsForBranch = selectedBranchId === 'all' 
+    ? bookings 
+    : bookings.filter(b => b.branchId === selectedBranchId);
+
+  // 🌟 MAP DỮ LIỆU HÀNG CHỜ: Lọc những booking có status 'Queued' của chi nhánh được chọn để hiển thị ở "Waiting Queue"
+  const queuedBookings = filteredBookingsForBranch.filter((b) => b.status === "Queued");
+  
+  const queue: QueueVehicle[] = queuedBookings.map((b, index) => {
+    let estimatedDuration = 15;
+    if (b.serviceName?.toLowerCase().includes("premium") || b.washPackageId === "p2") {
+      estimatedDuration = 30;
+    }
+    
+    // Tính toán thời gian chờ dựa trên thời điểm Check-in (hoặc ngày tạo)
+    const checkInTime = b.startTime || "09:00";
+    const createdTime = b.createdAt ? new Date(b.createdAt).getTime() : new Date().getTime();
+    const waitingMinutes = Math.max(1, Math.round((new Date().getTime() - createdTime) / 60000)) || (index * 5 + 3);
+
+    return {
+      id: b.id,
+      queueNumber: index + 1,
+      customerName: b.licensePlate || `Xe #${b.bookingCode}`,
+      vehicle: b.licensePlate || "Ô tô",
+      servicePackage: b.serviceName || "Standard Wash",
+      estimatedDuration,
+      checkInTime,
+      waitingMinutes,
+    };
+  });
+
+  // 🌟 EFFECT ĐỒNG BỘ TIMER: Tự động khởi tạo đếm ngược cho các xe chuyển sang trạng thái InProgress
+  useEffect(() => {
+    const inProgressBookings = bookings.filter(b => b.status === 'InProgress');
+    setBookingRemainingMinutes(prev => {
+      const next = { ...prev };
+      let updated = false;
+      
+      inProgressBookings.forEach(b => {
+        if (next[b.id] === undefined) {
+          let duration = 15;
+          if (b.serviceName?.toLowerCase().includes("premium") || b.washPackageId === "p2") {
+            duration = 30;
+          }
+          next[b.id] = duration;
+          updated = true;
+        }
+      });
+      
+      // Xóa các xe đã hoàn thành hoặc hủy bỏ khỏi bộ nhớ đếm ngược
+      Object.keys(next).forEach(id => {
+        if (!inProgressBookings.some(b => b.id === id)) {
+          delete next[id];
+          updated = true;
+        }
+      });
+
+      if (updated) return next;
+      return prev;
+    });
+  }, [bookings]);
+
+  // 🌟 EFFECT CHẠY BỘ ĐẾM NGƯỢC GIẢ LẬP: Cứ mỗi 3 giây giảm 1 phút rửa xe để phục vụ demo trực quan
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBookingRemainingMinutes(prev => {
+        const next = { ...prev };
+        let updated = false;
+        
+        Object.keys(next).forEach(bookingId => {
+          if (next[bookingId] > 0) {
+            next[bookingId] = next[bookingId] - 1;
+            updated = true;
+            
+            // Khi đếm ngược về 0, tự động gọi API cập nhật trạng thái Completed (5)
+            if (next[bookingId] === 0) {
+              actions.updateStatus({
+                id: bookingId,
+                payload: { targetStatus: 5 }
+              }).then(() => {
+                toast.success(`Xe tại buồng rửa đã rửa xong và chuyển sang hàng chờ thanh toán!`);
+              }).catch(err => {
+                console.error("Auto complete wash error:", err);
+              });
+            }
+          }
+        });
+        
+        if (updated) return next;
+        return prev;
+      });
+    }, 3000); // 3 giây giả lập tương đương 1 phút rửa
+    
+    return () => clearInterval(interval);
+  }, [actions]);
+
+  // 🌟 TÍNH TOÁN TRẠNG THÁI CÁC BUỒNG RỬA ĐỘNG: Tạo ra dữ liệu buồng rửa từ danh sách InProgress của chi nhánh được chọn
+  const inProgressBookings = filteredBookingsForBranch.filter(b => b.status === 'InProgress');
+  const bays: WashBay[] = BASE_BAYS.map(baseBay => {
+    if (baseBay.status === 'maintenance') {
+      return baseBay;
+    }
+    
+    const activeBookingInBay = inProgressBookings.find(b => b.washBayName === baseBay.name);
+    
+    if (activeBookingInBay) {
+      let duration = 15;
+      if (activeBookingInBay.serviceName?.toLowerCase().includes("premium") || activeBookingInBay.washPackageId === "p2") {
+        duration = 30;
+      }
+      
+      const remaining = bookingRemainingMinutes[activeBookingInBay.id] ?? duration;
+      const startTime = activeBookingInBay.startTime || "09:00";
+      
+      return {
+        ...baseBay,
+        status: 'occupied' as const,
+        currentVehicle: activeBookingInBay.licensePlate || `Xe #${activeBookingInBay.bookingCode}`,
+        servicePackage: activeBookingInBay.serviceName || 'Standard Wash',
+        startTime,
+        finishETA: activeBookingInBay.endTime || calculateETA(startTime, duration),
+        remainingMinutes: remaining,
+        duration,
+        assignedStaff: "Michael Nguyen"
+      };
+    }
+    
+    return {
+      ...baseBay,
+      status: 'available' as const
+    };
+  });
 
   // Calculate statistics
   const waitingVehicles = queue.length;
@@ -156,9 +267,12 @@ export function QueueMonitor() {
           queue.reduce((sum, q) => sum + q.waitingMinutes, 0) / queue.length,
         )
       : 0;
-  const completedToday = 47;
+  
+  // Tính số lượng hoàn thành hôm nay động từ database mock
+  const completedCount = bookings.filter(b => b.status === 'Completed' || b.status === 'CheckedOut').length;
+  const completedToday = 45 + completedCount;
   const throughputPerHour = 12;
-  const bayUtilization = 92;
+  const bayUtilization = bays.filter(b => b.status === 'occupied').length > 0 ? Math.round((bays.filter(b => b.status === 'occupied').length / bays.filter(b => b.status !== 'maintenance').length) * 100) : 0;
 
   // Smart analytics
   const nextAvailableBay = bays
@@ -174,53 +288,45 @@ export function QueueMonitor() {
     setAssignModalOpen(true);
   };
 
-  const handleAssignVehicle = (vehicle: QueueVehicle) => {
+  // 🌟 GÁN XE VÀO BUỒNG RỬA: Gọi API đổi trạng thái booking từ Queued (3) sang InProgress (4) kèm thông tin tên buồng rửa
+  const handleAssignVehicle = async (vehicle: QueueVehicle) => {
     if (!selectedBay) return;
 
-    // Update bay status
-    const now = new Date();
-    const finishTime = new Date(
-      now.getTime() + vehicle.estimatedDuration * 60000,
-    );
-
-    setBays((prev) =>
-      prev.map((bay) =>
-        bay.id === selectedBay.id
-          ? {
-              ...bay,
-              status: "occupied" as const,
-              currentVehicle: vehicle.vehicle,
-              servicePackage: vehicle.servicePackage,
-              startTime: now.toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
-              finishETA: finishTime.toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
-              remainingMinutes: vehicle.estimatedDuration,
-              duration: vehicle.estimatedDuration,
-              assignedStaff: "Michael Nguyen",
-            }
-          : bay,
-      ),
-    );
-
-    // Remove from queue
-    setQueue((prev) => prev.filter((q) => q.id !== vehicle.id));
+    try {
+      await actions.updateStatus({
+        id: vehicle.id,
+        payload: {
+          targetStatus: 4,
+          washBayName: selectedBay.name,
+          staffId: user?.id || "current-staff-id"
+        }
+      });
+      
+      toast.success(`Đã đẩy xe ${vehicle.vehicle} vào ${selectedBay.name} để rửa!`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Gặp lỗi khi điều phối xe vào buồng rửa");
+    }
 
     // Close modal
     setAssignModalOpen(false);
     setSelectedBay(null);
   };
 
+  if (isLoading) {
+    return (
+      <Layout title="Queue Monitor" userName="Staff User" role="staff">
+        <div className="p-8 text-center font-bold text-gray-500">Đang tải dữ liệu vận hành...</div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout title="Queue Monitor" userName="Staff User" role="staff">
       <div className="space-y-6">
         {/* Header with Real-Time Clock */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-lg p-6 text-white">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                 <Activity className="w-8 h-8 text-white" />
@@ -229,7 +335,19 @@ export function QueueMonitor() {
                 <h1 className="text-2xl font-bold">
                   Operations Control Center
                 </h1>
-                <p className="text-blue-100">Real-time wash bay management</p>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <p className="text-blue-100 text-sm">Real-time wash bay management</p>
+                  <span className="text-blue-300/40 hidden sm:inline">|</span>
+                  <select 
+                      value={selectedBranchId}
+                      onChange={(e) => setSelectedBranchId(e.target.value)}
+                      className="bg-blue-800/40 border border-blue-400/50 text-white text-xs rounded-lg font-bold p-1 focus:ring-blue-300 focus:border-blue-300 block cursor-pointer outline-none hover:bg-blue-800/60 transition-colors"
+                  >
+                      {BRANCHES.map(b => (
+                          <option key={b.id} value={b.id} className="text-gray-900 font-medium">{b.name}</option>
+                      ))}
+                  </select>
+                </div>
               </div>
             </div>
             <div className="text-right">

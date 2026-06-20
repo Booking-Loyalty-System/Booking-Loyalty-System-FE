@@ -100,23 +100,34 @@ export class StaffBookingRepositoryMock implements IStaffBookingRepository {
         
         let targetStatusString: BookingResponseData['status'] = 'Pending';
         switch(payload.targetStatus) {
+            case 0: targetStatusString = 'Pending'; break;
             case 1: targetStatusString = 'Confirmed'; break;
             case 2: targetStatusString = 'CheckedIn'; break;
             case 3: targetStatusString = 'Queued'; break;
             case 4: targetStatusString = 'InProgress'; break;
             case 5: targetStatusString = 'Completed'; break;
+            case 6: targetStatusString = 'NoShow'; break;
             case 7: targetStatusString = 'CheckedOut'; break;
             case 8: targetStatusString = 'Cancelled'; break;
         }
 
-        return this.updateStatusInternal(bookingId, targetStatusString);
+        return this.updateStatusInternal(bookingId, targetStatusString, payload.washBayName);
     }
 
-    private updateStatusInternal(bookingId: string, status: BookingResponseData['status']): Promise<BookingResponseData> {
+    private updateStatusInternal(bookingId: string, status: BookingResponseData['status'], washBayName?: string): Promise<BookingResponseData> {
         const index = this.bookings.findIndex(b => b.id === bookingId);
         if (index === -1) throw new Error('Booking not found');
-        this.bookings[index] = { ...this.bookings[index], status };
-        console.log(`[Mock] Updated booking ${bookingId} to ${status}`);
+        
+        this.bookings[index] = { 
+            ...this.bookings[index], 
+            status,
+            // Cập nhật washBayName nếu được gửi lên, hoặc giữ nguyên giá trị cũ, hoặc xóa nếu chuyển trạng thái hoàn thành
+            washBayName: washBayName !== undefined 
+                ? washBayName 
+                : (status === 'Completed' || status === 'CheckedOut' || status === 'Cancelled' ? undefined : this.bookings[index].washBayName)
+        };
+        
+        console.log(`[Mock] Updated booking ${bookingId} to ${status}${this.bookings[index].washBayName ? ` on bay ${this.bookings[index].washBayName}` : ''}`);
         return Promise.resolve(this.bookings[index]);
     }
 }

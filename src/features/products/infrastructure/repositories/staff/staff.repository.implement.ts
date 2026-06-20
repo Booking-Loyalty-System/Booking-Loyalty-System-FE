@@ -8,6 +8,7 @@ export interface UpdateBookingStatusPayload {
     targetStatus: number;
     staffId?: string;
     reason?: string;
+    washBayName?: string;
 }
 
 export class StaffBookingRepositoryImplement implements IStaffBookingRepository {
