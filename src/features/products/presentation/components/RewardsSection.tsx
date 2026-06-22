@@ -30,8 +30,8 @@ export const RewardsSection: React.FC = () => {
     const rewards: RewardItem[] = [
         {
             id: 'rw_1',
-            title: 'Rửa xe Cơ bản Miễn phí',
-            description: 'Đổi lấy một lượt rửa xe cơ bản hoàn toàn miễn phí',
+            title: 'Free Basic Wash',
+            description: 'Redeem for one complimentary basic car wash service',
             validDays: 30,
             requiredPts: 200,
             icon: <Gift className="w-6 h-6" />,
@@ -40,8 +40,8 @@ export const RewardsSection: React.FC = () => {
         },
         {
             id: 'rw_2',
-            title: 'Voucher Giảm giá 100.000đ',
-            description: 'Giảm ngay 100.000đ khi thanh toán dịch vụ rửa xe',
+            title: '100.000đ Discount Voucher',
+            description: 'Get 100.000đ off on any service package',
             validDays: 60,
             requiredPts: 150,
             icon: <Ticket className="w-6 h-6" />,
@@ -50,8 +50,8 @@ export const RewardsSection: React.FC = () => {
         },
         {
             id: 'rw_3',
-            title: 'Đặt lịch Giờ vàng VIP',
-            description: 'Quyền ưu tiên lựa chọn và đặt trước các khung giờ cao điểm',
+            title: 'VIP Booking Slot',
+            description: 'Priority booking access for premium time slots',
             validDays: 90,
             requiredPts: 300,
             icon: <Star className="w-6 h-6" />,
@@ -60,8 +60,8 @@ export const RewardsSection: React.FC = () => {
         },
         {
             id: 'rw_4',
-            title: 'Rửa xe Cao cấp Miễn phí',
-            description: 'Đổi lấy một lượt rửa xe cao cấp (Premium) miễn phí',
+            title: 'Free Premium Wash',
+            description: 'Redeem for one complimentary premium car wash service',
             validDays: 30,
             requiredPts: 400,
             icon: <Sparkles className="w-6 h-6" />,
@@ -70,8 +70,8 @@ export const RewardsSection: React.FC = () => {
         },
         {
             id: 'rw_5',
-            title: 'Voucher Giảm giá 250.000đ',
-            description: 'Giảm ngay 250.000đ khi thanh toán dịch vụ rửa xe',
+            title: '250.000đ Discount Voucher',
+            description: 'Get 250.000đ off on any service package',
             validDays: 60,
             requiredPts: 350,
             icon: <Ticket className="w-6 h-6" />,
@@ -80,8 +80,8 @@ export const RewardsSection: React.FC = () => {
         },
         {
             id: 'rw_6',
-            title: 'Phủ Ceramic Miễn phí',
-            description: 'Đổi lấy gói dịch vụ phủ Ceramic bảo vệ sơn xe cao cấp',
+            title: 'Free Ceramic Coating',
+            description: 'Redeem for complimentary ceramic coating service',
             validDays: 30,
             requiredPts: 800,
             icon: <Sparkles className="w-6 h-6" />,
@@ -93,16 +93,16 @@ export const RewardsSection: React.FC = () => {
 
     const handleRedeemClick = async (rewardId: string, cost: number, title: string) => {
         if (availablePoints < cost) {
-            toast.error('Bạn không đủ điểm để đổi phần thưởng này!');
+            toast.error('You do not have enough points to redeem this reward!');
             return;
         }
         setRedeemingId(rewardId);
         try {
             await redeemVoucher(rewardId);
-            toast.success(`Đổi thành công: ${title}! Voucher đã được thêm vào tài khoản.`);
+            toast.success(`Successfully redeemed: ${title}! Voucher has been added to your account.`);
         } catch (err) {
             console.error(err);
-            toast.error('Đổi thưởng thất bại, vui lòng thử lại.');
+            toast.error('Redemption failed, please try again.');
         } finally {
             setRedeemingId(null);
         }
@@ -180,7 +180,7 @@ export const RewardsSection: React.FC = () => {
                                                 : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
                                         }`}
                                     >
-                                        {redeemingId === item.id ? 'Đang đổi...' : 'Đổi ngay'}
+                                        {redeemingId === item.id ? 'Redeeming...' : 'Redeem Now'}
                                     </button>
                                 </div>
                             </div>
@@ -198,7 +198,7 @@ export const RewardsSection: React.FC = () => {
 
                 <div className="divide-y divide-slate-100">
                     {vouchers.length === 0 ? (
-                        <p className="text-sm text-slate-400 font-medium text-center py-8">Chưa có lịch sử đổi thưởng nào.</p>
+                        <p className="text-sm text-slate-400 font-medium text-center py-8">No redemption history yet.</p>
                     ) : vouchers.map((v) => (
                         <div
                             key={v.id}
@@ -212,7 +212,7 @@ export const RewardsSection: React.FC = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-slate-800 text-base tracking-tight">{v.title}</h4>
-                                    <p className="text-sm text-slate-400 font-medium mt-1">Hạn dùng: {v.expiryDate} · Mã: <span className="font-mono">{v.code}</span></p>
+                                    <p className="text-sm text-slate-400 font-medium mt-1">Expires: {v.expiryDate} · Code: <span className="font-mono">{v.code}</span></p>
                                 </div>
                             </div>
 
@@ -227,7 +227,7 @@ export const RewardsSection: React.FC = () => {
                                             ? 'bg-slate-100 text-slate-600'
                                             : 'bg-rose-50 text-rose-600'
                                 }`}>
-                                    {v.status === 'Active' ? 'Khả dụng' : v.status === 'Used' ? 'Đã dùng' : 'Hết hạn'}
+                                    {v.status === 'Active' ? 'Active' : v.status === 'Used' ? 'Used' : 'Expired'}
                                 </span>
                             </div>
                         </div>

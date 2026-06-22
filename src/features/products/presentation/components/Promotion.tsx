@@ -41,18 +41,18 @@ export const Promotions: React.FC = () => {
             isFeatured: true
         },
         {
-            title: 'Khuyến mãi Gold: Hút bụi miễn phí',
-            description: 'Nâng cấp miễn phí phủ Ceramic khi đăng ký bất kỳ gói rửa xe Premium nào',
-            badgeText: 'Chỉ dành cho Gold',
+            title: 'Exclusive for Gold: Free Vacuuming',
+            description: 'Free ceramic coating upgrade with any premium wash',
+            badgeText: 'Gold Members Only',
             badgeBg: 'bg-pink-600',
             badgeColor: 'text-white',
-            dateText: 'Đến hết ngày 15 Tháng 6, 2026',
+            dateText: 'Until June 15, 2026',
             code: 'GOLDVIP',
-            conditions: ['Chỉ áp dụng cho thành viên Gold', 'Giới hạn 1 lần sử dụng mỗi tháng', 'Gói nâng cấp trị giá 400.000đ'],
+            conditions: ['Valid for Gold members only', 'Limited to one use per month', 'Upgrade worth 400.000đ'],
             icon: <Crown className="w-6 h-6" />,
             iconBg: 'bg-purple-50',
             iconColor: 'text-purple-600',
-            isFeatured: true
+            isFeatured: false
         }
     ];
 
