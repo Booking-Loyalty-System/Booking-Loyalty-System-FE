@@ -86,7 +86,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-[#e6f0fa] flex items-center justify-center p-6 overflow-hidden antialiased font-sans">
+    <div className="min-h-screen w-screen bg-[#e6f0fa] flex items-center justify-center p-6 overflow-y-auto overflow-x-hidden antialiased font-sans">
       <div className="w-full px-20 py-6 bg-transparent flex flex-row gap-6 h-full">
         {/* PANEL TRÁI: GIỚI THIỆU TÍNH NĂNG */}
         <div className="flex-1 bg-white rounded-2xl p-6 flex flex-col justify-between shadow-sm border border-white/40">
