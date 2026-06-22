@@ -39,8 +39,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
     const rewards: RewardItem[] = [
         {
             id: 'rw_1',
-            title: 'Free Basic Wash',
-            description: 'Redeem for one complimentary basic car wash service',
+            title: 'Rửa xe Cơ bản Miễn phí',
+            description: 'Đổi lấy một lượt rửa xe cơ bản hoàn toàn miễn phí',
             validDays: 30,
             requiredPts: 200,
             icon: <Gift className="w-6 h-6" />,
@@ -49,8 +49,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'rw_2',
-            title: '$10 Discount Voucher',
-            description: 'Get $10 off on any service package',
+            title: 'Voucher Giảm giá 100.000đ',
+            description: 'Giảm ngay 100.000đ khi thanh toán dịch vụ rửa xe',
             validDays: 60,
             requiredPts: 150,
             icon: <Ticket className="w-6 h-6" />,
@@ -59,8 +59,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'rw_3',
-            title: 'VIP Booking Slot',
-            description: 'Priority booking access for premium time slots',
+            title: 'Đặt lịch Giờ vàng VIP',
+            description: 'Quyền ưu tiên lựa chọn và đặt trước các khung giờ cao điểm',
             validDays: 90,
             requiredPts: 300,
             icon: <Star className="w-6 h-6" />,
@@ -69,8 +69,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'rw_4',
-            title: 'Free Premium Wash',
-            description: 'Redeem for one complimentary premium car wash service',
+            title: 'Rửa xe Cao cấp Miễn phí',
+            description: 'Đổi lấy một lượt rửa xe cao cấp (Premium) miễn phí',
             validDays: 30,
             requiredPts: 400,
             icon: <Sparkles className="w-6 h-6" />,
@@ -79,8 +79,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'rw_5',
-            title: '$25 Discount Voucher',
-            description: 'Get $25 off on any service package',
+            title: 'Voucher Giảm giá 250.000đ',
+            description: 'Giảm ngay 250.000đ khi thanh toán dịch vụ rửa xe',
             validDays: 60,
             requiredPts: 350,
             icon: <Ticket className="w-6 h-6" />,
@@ -89,8 +89,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'rw_6',
-            title: 'Free Ceramic Coating',
-            description: 'Redeem for complimentary ceramic coating service',
+            title: 'Phủ Ceramic Miễn phí',
+            description: 'Đổi lấy gói dịch vụ phủ Ceramic bảo vệ sơn xe cao cấp',
             validDays: 30,
             requiredPts: 800,
             icon: <Sparkles className="w-6 h-6" />,
@@ -104,8 +104,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
     const redeemedHistory: RedeemedHistory[] = [
         {
             id: 'hist_1',
-            title: 'Free Basic Wash',
-            redeemedDate: 'May 10, 2026',
+            title: 'Rửa xe Cơ bản Miễn phí',
+            redeemedDate: '10 Tháng 5, 2026',
             points: -200,
             status: 'Active',
             icon: <Gift className="w-6 h-6" />,
@@ -114,8 +114,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'hist_2',
-            title: '$10 Discount Voucher',
-            redeemedDate: 'April 25, 2026',
+            title: 'Voucher Giảm giá 100.000đ',
+            redeemedDate: '25 Tháng 4, 2026',
             points: -150,
             status: 'Used',
             icon: <Ticket className="w-6 h-6" />,
@@ -124,8 +124,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'hist_3',
-            title: 'VIP Booking Slot',
-            redeemedDate: 'April 15, 2026',
+            title: 'Đặt lịch Giờ vàng VIP',
+            redeemedDate: '15 Tháng 4, 2026',
             points: -300,
             status: 'Expired',
             icon: <Star className="w-6 h-6" />,

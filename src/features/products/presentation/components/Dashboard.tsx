@@ -3,14 +3,23 @@ import {
     Calendar, Star, Award, TrendingUp, Gift, CheckCircle2,
     Sparkles, Clock, XCircle, ArrowRight, Megaphone, History
 } from 'lucide-react';
+import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
 
 export const Dashboard: React.FC = () => {
-    // Giả lập dữ liệu từ hình ảnh
+    // 🌟 Lấy thông tin khách hàng đang đăng nhập từ Application Layer
+    const { customerMe } = useCustomerMe();
+
+    const displayName = customerMe?.fullName || 'John Doe';
+    const totalPoints = customerMe?.totalPoints ?? 850;
+    const tier = customerMe?.tier ?? 'Gold';
+    const washesCount = customerMe?.totalWashes ?? 5;
+
+    // Giả lập dữ liệu và điều chỉnh đơn vị tiền tệ sang VND
     const stats = [
         { id: 1, label: 'This Month', value: '8', sub: 'Total Bookings', icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
-        { id: 2, label: 'Loyalty', value: '850', sub: 'Total Points', icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
-        { id: 3, label: 'Status', value: 'Gold', sub: 'Membership Tier', icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
-        { id: 4, label: 'Savings', value: '$127', sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
+        { id: 2, label: 'Loyalty', value: totalPoints.toString(), sub: 'Total Points', icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
+        { id: 3, label: 'Status', value: tier, sub: 'Membership Tier', icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
+        { id: 4, label: 'Savings', value: '1.270.000đ', sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
     ];
 
     const quickActions = [
@@ -20,13 +29,16 @@ export const Dashboard: React.FC = () => {
         { name: 'History', desc: 'View past bookings', icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50' },
     ];
 
+    const remainingWashes = Math.max(0, 7 - washesCount);
+    const washProgressPercentage = Math.min(100, Math.round((washesCount / 7) * 100));
+
     return (
         <div className="space-y-8 max-w-7xl mx-auto pb-12 animate-fade-in">
 
             {/* WELCOME HEADER (image_6ebedd.png) */}
             <div className="space-y-1">
                 <h1 className="text-3xl font-extrabold text-[#0f172a] flex items-center gap-2">
-                    Welcome back, John Doe! <span className="animate-bounce">👋</span>
+                    Welcome back, {displayName}! <span className="animate-bounce">👋</span>
                 </h1>
                 <p className="text-sm text-[#64748b] font-medium">Here's what's happening with your account today.</p>
             </div>
@@ -62,34 +74,46 @@ export const Dashboard: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-right">
-                        <span className="block text-3xl font-black text-[#16a34a]">5/7</span>
+                        <span className="block text-3xl font-black text-[#16a34a]">{washesCount}/7</span>
                         <span className="text-[10px] text-[#166534] font-bold uppercase tracking-wider">Washes Done</span>
                     </div>
                 </div>
 
-                {/* Progress Bar 71% */}
+                {/* Progress Bar */}
                 <div className="w-full bg-[#dcfce7] h-6 rounded-full overflow-hidden relative flex items-center">
                     <div
                         className="bg-[#16a34a] h-full rounded-full flex items-center justify-end pr-3 transition-all duration-500"
-                        style={{ width: '71%' }}
+                        style={{ width: `${washProgressPercentage}%` }}
                     >
-                        <span className="text-[10px] font-bold text-white">71%</span>
+                        <span className="text-[10px] font-bold text-white">{washProgressPercentage}%</span>
                     </div>
                 </div>
 
                 {/* Chấm điểm mốc tròn (1-7) và text thông báo */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-1">
                     <p className="text-sm font-semibold text-[#166534]">
-                        <span className="text-[#16a34a] font-bold">2 more washes</span> to unlock your FREE wash reward!
+                        {remainingWashes > 0 ? (
+                            <>
+                                <span className="text-[#16a34a] font-bold">{remainingWashes} more washes</span> to unlock your FREE wash reward!
+                            </>
+                        ) : (
+                            <span className="text-[#16a34a] font-bold">You unlocked a FREE wash reward! 🎉</span>
+                        )}
                     </p>
 
                     {/* Badge đếm số từ 1 đến 7 */}
                     <div className="flex items-center gap-1.5">
-                        {[1, 2, 3, 4, 5].map((idx) => (
-                            <CheckCircle2 key={idx} className="w-6 h-6 text-[#16a34a] fill-white" />
-                        ))}
-                        <div className="w-6 h-6 rounded-full bg-[#e2e8f0] flex items-center justify-center text-xs font-bold text-[#94a3b8]">6</div>
-                        <div className="w-6 h-6 rounded-full bg-[#e2e8f0] flex items-center justify-center text-xs font-bold text-[#94a3b8]">7</div>
+                        {Array.from({ length: 7 }).map((_, idx) => {
+                            const step = idx + 1;
+                            if (step <= washesCount) {
+                                return <CheckCircle2 key={step} className="w-6 h-6 text-[#16a34a] fill-white" />;
+                            }
+                            return (
+                                <div key={step} className="w-6 h-6 rounded-full bg-[#e2e8f0] flex items-center justify-center text-xs font-bold text-[#94a3b8]">
+                                    {step}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -110,7 +134,7 @@ export const Dashboard: React.FC = () => {
                                 </div>
                                 <div>
                                     <span className="block text-xs text-blue-100 font-semibold tracking-wider uppercase">Current Tier</span>
-                                    <h2 className="text-3xl font-black tracking-tight">Gold Member</h2>
+                                    <h2 className="text-3xl font-black tracking-tight">{tier} Member</h2>
                                 </div>
                             </div>
                             <Sparkles className="w-8 h-8 text-blue-200 animate-pulse" />
@@ -119,14 +143,14 @@ export const Dashboard: React.FC = () => {
                         {/* Thanh Tiến Trình Lên Platinum */}
                         <div className="space-y-2">
                             <div className="flex justify-between text-xs font-bold text-blue-100">
-                                <span>Progress to Platinum</span>
-                                <span>850/1000 points</span>
+                                <span>Progress to Next Tier</span>
+                                <span>{totalPoints}/1000 points</span>
                             </div>
                             <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
-                                <div className="bg-white h-full rounded-full" style={{ width: '85%' }}></div>
+                                <div className="bg-white h-full rounded-full" style={{ width: `${Math.min(100, (totalPoints / 1000) * 100)}%` }}></div>
                             </div>
                             <p className="text-xs text-blue-100 font-medium pt-1">
-                                150 points to next tier <br />
+                                {Math.max(0, 1000 - totalPoints)} points to next tier <br />
                                 <span className="opacity-75 text-[11px]">Tiers are auto-reviewed monthly based on your past 3 months' data</span>
                             </p>
                         </div>
@@ -135,11 +159,11 @@ export const Dashboard: React.FC = () => {
                     {/* Hàng 3 khối thông số phụ nằm đáy card */}
                     <div className="grid grid-cols-3 gap-4 pt-6 mt-4 border-t border-white/10 relative z-10">
                         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-                            <span className="block text-xl font-black">850</span>
+                            <span className="block text-xl font-black">{totalPoints}</span>
                             <span className="text-[10px] text-blue-100 font-semibold uppercase">Total Points</span>
                         </div>
                         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-                            <span className="block text-xl font-black">2x</span>
+                            <span className="block text-xl font-black">{tier === 'Gold' ? '2x' : tier === 'Platinum' ? '3x' : '1.5x'}</span>
                             <span className="text-[10px] text-blue-100 font-semibold uppercase">Points Multiplier</span>
                         </div>
                         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
