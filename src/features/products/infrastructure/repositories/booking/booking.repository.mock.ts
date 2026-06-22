@@ -118,6 +118,17 @@ export class BookingRepositoryMock implements IBookingRepository {
             customer.totalPoints += pointsGained;
             customer.totalWashes += 1;
             customer.totalSpent += finalPrice;
+            
+            // Logic tự động thăng hạng (Tier Upgrade)
+            const getTierByPoints = (points: number) => {
+                if (points >= 2000) return 'Diamond';
+                if (points >= 1000) return 'Platinum';
+                if (points >= 500) return 'Gold';
+                return 'Silver';
+            };
+            
+            customer.tier = getTierByPoints(customer.totalPoints);
+            
             localStorage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify(customer));
             
             // Bắn event báo điểm thay đổi để UI cập nhật ngay

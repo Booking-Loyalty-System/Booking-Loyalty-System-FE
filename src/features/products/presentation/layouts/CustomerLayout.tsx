@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { SidebarItem } from '../components/SidebarItem';
 import { ProfileDropdown } from '../components/ProfileDropdown';
+import { TierUpgradeModal } from '../components/TierUpgradeModal';
 
 // Đưa các Hook chuẩn kiến trúc của bạn vào đây
 import { useAuth } from '../../application/useAuth.ts';
@@ -271,6 +272,9 @@ export const CustomerLayout: React.FC = () => {
                     <Outlet />
                 </main>
             </div>
+            
+            {/* Modal thông báo thăng hạng đặt ở Layout để luôn sẵn sàng */}
+            <TierUpgradeModal />
         </div>
     );
 };
