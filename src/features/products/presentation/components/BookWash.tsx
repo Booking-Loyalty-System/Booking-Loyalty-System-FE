@@ -23,6 +23,10 @@ import type {WashPackage} from "@/features/products/domain/models/wash-package/w
 import {useNavigate} from "react-router-dom";
 import {QRCodeSVG} from "qrcode.react";
 import {useTimeSlot} from "@/features/products/application/useTimeSlot.ts";
+import { useVoucher } from "@/features/products/application/useVoucher.ts";
+import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
+import { VoucherSelection } from "@/features/products/presentation/components/VoucherSelection.tsx";
+import type { Voucher } from "@/features/products/domain/models/voucher/voucher.model.ts";
 
 // Định nghĩa Interface dữ liệu trả về sau khi tạo thành công
 interface CreatedBookingData {
@@ -174,6 +178,8 @@ export const BookWash: React.FC = () => {
     const { vehicles, isLoading: isLoadingVehicles, createVehicle } = useVehicle();
     const { washPackages, isLoading: isLoadingPackages } = useWashPackage();
     const { createBooking, isBooking } = useBooking();
+    const { activeVouchers, useVoucher: markVoucherAsUsed } = useVoucher();
+    const { customerMe } = useCustomerMe();
 
     const dynamicDateSlots = generateUpcomingDates(7);
     const navigate = useNavigate();
@@ -193,6 +199,7 @@ export const BookWash: React.FC = () => {
     const [selectedPackageId, setSelectedPackageId] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>(dynamicDateSlots[0].apiDate);
     const [selectedTime, setSelectedTime] = useState<string>('');
+    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
 
     const {
         weeklySummary,
@@ -247,7 +254,13 @@ export const BookWash: React.FC = () => {
                 washPackageId: selectedPackageId,
                 bookingDate: selectedDate,
                 startTime: apiStartTime,
+                voucherId: selectedVoucher?.id || undefined
             });
+
+            // Nếu dùng voucher thành công, đánh dấu voucher đó là Used
+            if (selectedVoucher) {
+                await markVoucherAsUsed(selectedVoucher.id);
+            }
 
             setCreatedBooking(newBookingData as unknown as CreatedBookingData);
         } catch (err) {
@@ -303,10 +316,17 @@ export const BookWash: React.FC = () => {
                     onSelectBranch={setSelectedBranchId}
                 />
 
-                <WashPackageSelection
+                 <WashPackageSelection
                     washPackages={washPackages}
                     selectedPackageId={selectedPackageId}
                     onSelectPackage={setSelectedPackageId}
+                />
+
+                <VoucherSelection
+                    activeVouchers={activeVouchers}
+                    selectedVoucherId={selectedVoucher?.id || ''}
+                    onSelectVoucher={setSelectedVoucher}
+                    totalPoints={customerMe?.totalPoints || 0}
                 />
 
                 <DateTimeSelection
@@ -328,6 +348,7 @@ export const BookWash: React.FC = () => {
                 selectedDateSlot={selectedDateSlot}
                 isBooking={isBooking}
                 onConfirmBooking={handleConfirmBooking}
+                selectedVoucher={selectedVoucher}
             />
         </div>
     );

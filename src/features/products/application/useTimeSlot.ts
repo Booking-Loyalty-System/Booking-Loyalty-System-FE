@@ -1,8 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { TimeSlotRepositoryImplement } from '../infrastructure/repositories/time-slot/time-slot.repository.implement.ts';
+import { TimeSlotRepositoryMock } from '../infrastructure/repositories/time-slot/time-slot.repository.mock.ts';
 import type { DailyTimeSlotsSummaryDto } from '../domain/models/time-slot/time-slot.dto.ts';
 
-const timeSlotRepository = new TimeSlotRepositoryImplement();
+const useMock = import.meta.env.VITE_USE_MOCK === 'true';
+
+const timeSlotRepository = useMock
+    ? new TimeSlotRepositoryMock()
+    : new TimeSlotRepositoryImplement();
 
 interface UseTimeSlotProps {
     branchId: string | null | undefined;
