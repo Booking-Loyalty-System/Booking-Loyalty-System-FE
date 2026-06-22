@@ -36,11 +36,11 @@ export const NotificationCenter: React.FC = () => {
             {
                 id: 'LY7721',
                 type: 'loyalty',
-                title: 'Điểm tích lũy sắp hết hạn!',
-                message: '150 điểm tích lũy trị giá 100.000đ sẽ hết hạn vào ngày 1 tháng 6, 2026. Hãy đổi thưởng ngay trước khi chúng hết hạn!',
+                title: 'Points Expiring Soon!',
+                message: '150 loyalty points worth 100.000đ will expire on June 1, 2026. Redeem them before they expire!',
                 timeAgo: '5/25/2026',
                 isUnread: true,
-                actionLabel: 'Đổi ngay'
+                actionLabel: 'Redeem Now'
             },
             {
                 id: 'PR9910',
