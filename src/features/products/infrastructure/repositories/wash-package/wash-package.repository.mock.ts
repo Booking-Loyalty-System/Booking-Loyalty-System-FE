@@ -5,30 +5,30 @@ const MOCK_PACKAGES: WashPackage[] = [
     {
         id: "pkg_1",
         name: "Standard Wash",
-        description: "Rửa sạch cơ bản, hút bụi và lau khô nội thất",
+        description: "Basic wash, interior vacuuming and drying",
         price: 150000,
         durationMinutes: 30,
-        features: ["Rửa vỏ xe", "Hút bụi", "Lau khô"],
+        features: ["Exterior wash", "Vacuuming", "Drying"],
         vehicleType: "Small",
         isActive: true
     },
     {
         id: "pkg_2",
         name: "Premium Wash",
-        description: "Rửa sạch chuyên sâu, tẩy nhựa đường và làm bóng lốp",
+        description: "Deep clean, tar removal and tire shining",
         price: 250000,
         durationMinutes: 45,
-        features: ["Rửa vỏ xe", "Hút bụi chuyên sâu", "Làm bóng lốp", "Tẩy nhựa đường"],
+        features: ["Exterior wash", "Deep vacuuming", "Tire shining", "Tar removal"],
         vehicleType: "Medium",
         isActive: true
     },
     {
         id: "pkg_3",
         name: "Deluxe Coating",
-        description: "Rửa cao cấp kết hợp phủ ceramic bảo vệ bề mặt sơn",
+        description: "Premium wash with ceramic coating for paint protection",
         price: 400000,
         durationMinutes: 60,
-        features: ["Rửa vỏ xe", "Hút bụi chuyên sâu", "Phủ Ceramic", "Khử trùng Ozon"],
+        features: ["Exterior wash", "Deep vacuuming", "Ceramic coating", "Ozone disinfection"],
         vehicleType: "Large",
         isActive: true
     }

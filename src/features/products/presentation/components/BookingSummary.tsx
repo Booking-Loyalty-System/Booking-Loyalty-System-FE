@@ -57,7 +57,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                             {selectedVoucher && (
                                 <div className="flex justify-between items-center border-t border-[#f1f5f9] pt-3 text-emerald-600 font-medium">
                                     <div className="flex flex-col">
-                                        <span className="text-xs text-slate-400">Voucher áp dụng</span>
+                                        <span className="text-xs text-slate-400">Applied Voucher</span>
                                         <span className="text-xs font-bold truncate max-w-[150px]">{selectedVoucher.title}</span>
                                     </div>
                                     <span className="font-bold">-{discountAmount.toLocaleString('vi-VN')}đ</span>

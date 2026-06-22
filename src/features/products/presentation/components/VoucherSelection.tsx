@@ -24,35 +24,35 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     const quickRedeemList = [
         {
             id: 'rw_2',
-            title: 'Voucher Giảm giá 100.000đ',
+            title: '100.000đ Discount Voucher',
             requiredPts: 150,
             discount: 100000,
-            desc: 'Giảm 100k cho hóa đơn'
+            desc: 'Get 100.000đ off on any service'
         },
         {
             id: 'rw_5',
-            title: 'Voucher Giảm giá 250.000đ',
+            title: '250.000đ Discount Voucher',
             requiredPts: 350,
             discount: 250000,
-            desc: 'Giảm 250k cho hóa đơn'
+            desc: 'Get 250.000đ off on any service'
         }
     ];
 
     const handleQuickRedeem = async (rewardId: string, requiredPts: number, title: string) => {
         if (totalPoints < requiredPts) {
-            toast.error("Bạn không đủ điểm để đổi voucher này!");
+            toast.error("You do not have enough points to redeem this voucher!");
             return;
         }
 
         try {
             const newVoucher = await redeemVoucher(rewardId);
-            toast.success(`Đổi thành công: ${title}!`);
+            toast.success(`Successfully redeemed: ${title}!`);
             // Tự động chọn voucher vừa đổi
             onSelectVoucher(newVoucher);
             setShowQuickRedeem(false);
         } catch (error) {
             console.error(error);
-            toast.error("Đổi voucher thất bại, vui lòng thử lại.");
+            toast.error("Failed to redeem voucher, please try again.");
         }
     };
 
@@ -65,12 +65,12 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                         <Ticket className="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 className="text-base font-extrabold text-[#0f172a]">Khuyến Mãi & Voucher</h3>
-                        <p className="text-xs text-[#64748b] font-medium">Áp dụng voucher giảm giá cho lượt rửa xe này</p>
+                        <h3 className="text-base font-extrabold text-[#0f172a]">Promotions & Vouchers</h3>
+                        <p className="text-xs text-[#64748b] font-medium">Apply a discount voucher to your booking</p>
                     </div>
                 </div>
                 <div className="text-right">
-                    <span className="text-xs text-slate-400 font-bold uppercase block">Điểm hiện tại</span>
+                    <span className="text-xs text-slate-400 font-bold uppercase block">Current Points</span>
                     <span className="text-sm font-black text-emerald-600 flex items-center gap-1">
                         <Star className="w-4 h-4 fill-emerald-500 text-emerald-500" />
                         {totalPoints} pts
@@ -82,7 +82,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
             <div className="space-y-3">
                 {activeVouchers.length === 0 ? (
                     <div className="text-center py-6 bg-slate-50/50 rounded-2xl border border-dashed border-slate-100 p-4">
-                        <p className="text-sm text-slate-400 font-medium">Bạn chưa có voucher giảm giá nào khả dụng.</p>
+                        <p className="text-sm text-slate-400 font-medium">You don't have any available discount vouchers.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -105,8 +105,8 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                                     </div>
                                     <div className="space-y-1 pr-6">
                                         <h4 className="font-bold text-slate-800 text-sm tracking-tight">{voucher.title}</h4>
-                                        <p className="text-xs text-slate-400 font-semibold">Mã: {voucher.code}</p>
-                                        <p className="text-[10px] text-slate-400 font-medium">Hạn dùng: {voucher.expiryDate}</p>
+                                        <p className="text-xs text-slate-400 font-semibold">Code: {voucher.code}</p>
+                                        <p className="text-[10px] text-slate-400 font-medium">Expires: {voucher.expiryDate}</p>
                                     </div>
                                     {isSelected && (
                                         <div className="absolute top-4 right-4 bg-emerald-500 text-white rounded-full p-0.5">
@@ -128,17 +128,17 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                         className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors"
                     >
                         <Plus className="w-4 h-4" />
-                        Đổi điểm lấy thêm voucher mới
+                        Redeem points for a new voucher
                     </button>
                 ) : (
                     <div className="bg-slate-50 rounded-2xl p-4 space-y-4 animate-fade-in">
                         <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-slate-500">Đổi điểm nhanh nhận Voucher</span>
+                            <span className="text-xs font-bold text-slate-500">Quick Redeem Vouchers</span>
                             <button
                                 onClick={() => setShowQuickRedeem(false)}
                                 className="text-xs font-bold text-slate-400 hover:text-slate-600"
                             >
-                                Hủy
+                                Cancel
                             </button>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -164,7 +164,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                                                         : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                                                 }`}
                                             >
-                                                {isRedeeming ? 'Đang đổi...' : 'Đổi ngay'}
+                                                {isRedeeming ? 'Redeeming...' : 'Redeem Now'}
                                             </button>
                                         </div>
                                     </div>
