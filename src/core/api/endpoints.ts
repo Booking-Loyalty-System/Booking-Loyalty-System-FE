@@ -21,13 +21,13 @@ export const ENDPOINTS = {
         WASH_PACKAGE_DETAIL: (id: string) => `/wash-packages/${id}`
     },
 
-    BOOKING:{
+    BOOKING: {
         BOOKING: '/bookings',
         MY_BOOKING: '/bookings/my-bookings',
         CANCEL: (id: string) => `/bookings/${id}/cancel`,
     },
 
-    BRANCH:{
+    BRANCH: {
         BRANCH: '/admin/branches'
     },
 

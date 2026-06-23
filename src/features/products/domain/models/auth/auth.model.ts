@@ -35,4 +35,6 @@ export interface RegisterRequest {
     fullName: string;
     phoneNumber: string;
     dateOfBirth: string;
+    vehicleType: number;
+    licensePlate?: string;
 }

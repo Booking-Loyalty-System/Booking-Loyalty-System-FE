@@ -13,6 +13,8 @@ export const RegisterPage: React.FC = () => {
     const [fullName, setFullName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [vehicleType, setVehicleType] = useState<number>(0);
+    const [licensePlate, setLicensePlate] = useState('');
     const { register, registerWithPhone, isPending, isPendingPhone } = useAuth();
     const [registerMode, setRegisterMode] = useState<'email' | 'phone'>('email');
 
@@ -38,6 +40,8 @@ export const RegisterPage: React.FC = () => {
                 fullName,
                 phoneNumber,
                 dateOfBirth: new Date(dateOfBirth).toISOString(),
+                vehicleType,
+                licensePlate,
             });
             toast.success("Đăng ký tài khoản thành công!");
         } catch (error) {
@@ -160,11 +164,26 @@ export const RegisterPage: React.FC = () => {
                             {/* Input Fields */}
                             <InputField icon={<User />} label="Full Name" value={fullName} onChange={setFullName} placeholder="John Doe" />
                             <InputField icon={<Mail />} label="Email" value={email} onChange={setEmail} placeholder="john@example.com" type="email" />
-                            <InputField icon={<Phone />} label="Phone Number" value={phoneNumber} onChange={setPhoneNumber} placeholder="+1 234 567 8900" />
+                            <InputField icon={<Phone />} label="Phone Number" value={phoneNumber} onChange={setPhoneNumber} placeholder="0912345678" />
 
                             <div className="flex gap-4">
-                                <InputField icon={<Calendar />} label="DOB" value={dateOfBirth} onChange={setDateOfBirth} type="date" />
+                                <div className="flex-1">
+                                    <InputField icon={<Calendar />} label="DOB" value={dateOfBirth} onChange={setDateOfBirth} type="date" />
+                                </div>
+                                <div className="space-y-1.5 flex-1">
+                                    <label className="text-sm font-semibold text-[#334155]">Vehicle Type</label>
+                                    <select
+                                        value={vehicleType}
+                                        onChange={(e) => setVehicleType(Number(e.target.value))}
+                                        className="w-full px-4 py-2.5 bg-white border border-[#e2e8f0] rounded-xl text-base focus:border-[#4a90e2] outline-none transition-all h-[46px]"
+                                    >
+                                        <option value={0}>Small</option>
+                                        <option value={1}>Medium</option>
+                                        <option value={2}>Large</option>
+                                    </select>
+                                </div>
                             </div>
+                            <InputField icon={<User />} label="License Plate (Optional)" value={licensePlate} onChange={setLicensePlate} placeholder="e.g. 29A-12345" />
 
                             <InputField icon={<Lock />} label="Password" value={password} onChange={setPassword} type="password" placeholder="••••••••" />
                             <InputField icon={<Lock />} label="Confirm Password" value={confirmPassword} onChange={setConfirmPassword} type="password" placeholder="••••••••" />

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { 
-    LayoutDashboard, 
-    Car, 
-    Droplets, 
-    LogOut, 
-    Settings, 
-    Bell, 
+import {
+    LayoutDashboard,
+    Car,
+    Droplets,
+    LogOut,
+    Settings,
+    Bell,
     CheckCircle2,
     Coffee,
     ClipboardList,
@@ -66,8 +66,8 @@ export const StaffLayout: React.FC = () => {
                             </div>
                             <p className="text-sm font-bold truncate">Staff Member</p>
                             <p className="text-[10px] opacity-60 font-medium">Bay Operator #01</p>
-                            
-                            <button 
+
+                            <button
                                 onClick={() => setIsOnline(!isOnline)}
                                 className="mt-3 w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
                             >
@@ -88,11 +88,10 @@ export const StaffLayout: React.FC = () => {
                                 <NavLink
                                     key={link.to}
                                     to={link.to}
-                                    className={({ isActive }) => 
-                                        `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${
-                                            isActive
-                                                ? 'bg-blue-50 text-blue-600 shadow-sm'
-                                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                    className={({ isActive }) =>
+                                        `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${isActive
+                                            ? 'bg-blue-50 text-blue-600 shadow-sm'
+                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                                         }`
                                     }
                                 >
@@ -111,11 +110,10 @@ export const StaffLayout: React.FC = () => {
                                 <NavLink
                                     key={link.to}
                                     to={link.to}
-                                    className={({ isActive }) => 
-                                        `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${
-                                            isActive
-                                                ? 'bg-blue-50 text-blue-600 shadow-sm'
-                                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                    className={({ isActive }) =>
+                                        `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${isActive
+                                            ? 'bg-blue-50 text-blue-600 shadow-sm'
+                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                                         }`
                                     }
                                 >
@@ -128,7 +126,7 @@ export const StaffLayout: React.FC = () => {
                 </nav>
 
                 <div className="p-4 mt-auto">
-                    <button 
+                    <button
                         onClick={handleLogout}
                         className="flex w-full items-center gap-3 px-4 py-3 text-gray-500 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition-all font-bold text-sm"
                     >

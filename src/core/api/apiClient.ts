@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { AuthRepositoryImplement } from '@/features/products/infrastructure/repositories/auth/auth.repository.implement.ts';
-import type {AuthResponseData} from "@/features/products/domain/models/auth/auth.model.ts";
+import type { AuthResponseData } from "@/features/products/domain/models/auth/auth.model.ts";
 
 // Khởi tạo instance
 export const apiClient = axios.create({
