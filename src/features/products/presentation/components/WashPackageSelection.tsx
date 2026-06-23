@@ -40,7 +40,7 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                                     <p className="text-xs text-[#64748b] mt-1 font-medium line-clamp-2">{pkg.description}</p>
                                 </div>
                                 <div className="flex items-baseline gap-3 pt-2">
-                                    <span className="text-3xl font-extrabold text-[#0f172a]">${pkg.price}</span>
+                                    <span className="text-3xl font-extrabold text-[#0f172a]">{pkg.price.toLocaleString('vi-VN')}đ</span>
                                     <span className="text-xs text-[#64748b] font-semibold">⏱ {pkg.durationMinutes} min</span>
                                 </div>
                                 {pkg.features && pkg.features.length > 0 && (

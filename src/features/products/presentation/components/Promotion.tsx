@@ -48,11 +48,11 @@ export const Promotions: React.FC = () => {
             badgeColor: 'text-white',
             dateText: 'Until June 15, 2026',
             code: 'GOLDVIP',
-            conditions: ['Valid for Gold members only', 'Limited to one use per month', 'Upgrade worth $40'],
+            conditions: ['Valid for Gold members only', 'Limited to one use per month', 'Upgrade worth 400.000đ'],
             icon: <Crown className="w-6 h-6" />,
             iconBg: 'bg-purple-50',
             iconColor: 'text-purple-600',
-            isFeatured: true
+            isFeatured: false
         }
     ];
 

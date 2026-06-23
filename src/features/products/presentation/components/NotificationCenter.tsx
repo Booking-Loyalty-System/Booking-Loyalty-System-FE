@@ -37,7 +37,7 @@ export const NotificationCenter: React.FC = () => {
                 id: 'LY7721',
                 type: 'loyalty',
                 title: 'Points Expiring Soon!',
-                message: '0.25 loyalty points worth $2.50 will expire on June 1, 2026. Redeem them before they expire!',
+                message: '150 loyalty points worth 100.000đ will expire on June 1, 2026. Redeem them before they expire!',
                 timeAgo: '5/25/2026',
                 isUnread: true,
                 actionLabel: 'Redeem Now'

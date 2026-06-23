@@ -175,7 +175,7 @@ export const LoyaltyTier: React.FC = () => {
                         ))}
                     </div>
                     <p className="text-xs text-slate-400 mt-4 italic">
-                        Example: A $45 wash for Gold members = (45/1000) × 2 = 0.09 × 2 = 0.18 points
+                        Example: A 450.000đ wash for Gold members = (450.000 / 1.000) × 2 = 450 × 2 = 900 points
                     </p>
                 </div>
 

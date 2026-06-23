@@ -1,8 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { WashPackageRepositoryImplement } from '../infrastructure/repositories/wash-package/wash-package.repository.implement.ts';
+import { WashPackageRepositoryMock } from '../infrastructure/repositories/wash-package/wash-package.repository.mock.ts';
 import type { WashPackage } from '../domain/models/wash-package/wash-package.model.ts';
 
-const washPackageRepository = new WashPackageRepositoryImplement();
+const useMock = import.meta.env.VITE_USE_MOCK === 'true';
+
+const washPackageRepository = useMock
+    ? new WashPackageRepositoryMock()
+    : new WashPackageRepositoryImplement();
 
 export const useWashPackage = (packageId?: string) => {
     const {

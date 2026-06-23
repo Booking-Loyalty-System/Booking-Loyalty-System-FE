@@ -7,4 +7,5 @@ import type {
 export interface IBookingRepository {
     createBooking(bookingData: CreateBookingInput): Promise<BookingResponseData>;
     getMyBookings(): Promise<MyBookingRecord[]>;
+    cancelBooking(id: string, reason: string): Promise<void>;
 }

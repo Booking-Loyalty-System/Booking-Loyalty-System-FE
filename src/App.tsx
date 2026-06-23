@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./features/products/presentation/pages/LoginPage";
 import { RegisterPage } from "./features/products/presentation/pages/RegisterPage";
+import { LandingPage } from "./features/products/presentation/pages/LandingPage";
 import { AutoWashSimulation } from "@/shared/auto-wash-simulation.tsx";
 import { ProtectedRoute } from "@/core/guard/ProtectedRoute.tsx";
 import { CustomerLayout } from "./features/products/presentation/layouts/CustomerLayout.tsx";
@@ -36,7 +37,7 @@ function App() {
       <Toaster richColors position="top-right" />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<LandingPage />} />
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

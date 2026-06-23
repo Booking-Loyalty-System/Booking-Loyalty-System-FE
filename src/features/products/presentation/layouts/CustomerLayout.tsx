@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { SidebarItem } from '../components/SidebarItem';
 import { ProfileDropdown } from '../components/ProfileDropdown';
+import { TierUpgradeModal } from '../components/TierUpgradeModal';
 
 // Đưa các Hook chuẩn kiến trúc của bạn vào đây
 import { useAuth } from '../../application/useAuth.ts';
@@ -56,9 +57,9 @@ export const CustomerLayout: React.FC = () => {
                     const currentStatus = data?.status;
 
                     if (currentStatus === 'InProgress') {
-                        toast.success('Xe của bạn đã được đưa vào khoang dịch vụ! Đang mở Live Tracking...', { icon: '🚗' });
+                        toast.success('Your vehicle has entered the service bay! Opening Live Tracking...', { icon: '🚗' });
                     } else {
-                        toast.info(`Trạng thái đơn hàng hiện tại: ${currentStatus}`, { icon: 'ℹ️' });
+                        toast.info(`Current order status: ${currentStatus}`, { icon: 'ℹ️' });
                     }
                     console.log("🔄 Ép React Query gọi lại API getMyBookings...");
                     queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
@@ -271,6 +272,9 @@ export const CustomerLayout: React.FC = () => {
                     <Outlet />
                 </main>
             </div>
+            
+            {/* Modal thông báo thăng hạng đặt ở Layout để luôn sẵn sàng */}
+            <TierUpgradeModal />
         </div>
     );
 };
