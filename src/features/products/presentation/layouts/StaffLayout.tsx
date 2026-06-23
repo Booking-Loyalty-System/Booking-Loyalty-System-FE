@@ -5,17 +5,14 @@ import {
     Car,
     Droplets,
     LogOut,
-    Settings,
     Bell,
     CheckCircle2,
     Coffee,
     ClipboardList,
-    CheckSquare,
-    XCircle,
     LayoutGrid
 } from 'lucide-react';
 import { useAuth } from '../../application/useAuth';
-import {useNotification} from "@/features/products/application/useNotification.ts";
+import { useNotification } from "@/features/products/application/useNotification.ts";
 
 export const StaffLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -23,20 +20,16 @@ export const StaffLayout: React.FC = () => {
     const [isOnline, setIsOnline] = useState(true);
     const { unreadCount } = useNotification();
 
+    // Đã rút gọn: Chỉ giữ lại 1 cổng quản lý Bookings chung (Filter sẽ xử lý trong trang con)
     const staffLinks = [
         { to: '/staff/dashboard', icon: LayoutDashboard, label: 'Overview' },
         { to: '/staff/monitor', icon: LayoutGrid, label: "Queue Monitor" },
         { to: '/staff/queue', icon: Car, label: "Live Queue" },
-        { to: '/staff/total-bookings', icon: ClipboardList, label: "Total Bookings" },
-        { to: '/staff/completed-bookings', icon: CheckSquare, label: "Completed" },
-        { to: '/staff/cancelled-bookings', icon: XCircle, label: "Cancelled" },
-        { to: '/staff/notifications', icon: Bell, label: 'Notifications' },
-        { to: '/staff/settings', icon: Settings, label: 'Profile Settings' },
+        { to: '/staff/bookings', icon: ClipboardList, label: "Bookings" },
     ];
 
     const systemLinks = [
         { to: '/staff/notifications', icon: Bell, label: 'Notifications' },
-        { to: '/staff/settings', icon: Settings, label: 'Profile Settings' },
     ];
 
     const handleLogout = () => {
@@ -48,6 +41,7 @@ export const StaffLayout: React.FC = () => {
         <div className="h-screen w-screen bg-gray-50 flex overflow-hidden">
             {/* Sidebar */}
             <aside className="w-64 h-screen bg-white border-r border-gray-200 fixed left-0 top-0 flex flex-col shadow-sm">
+                {/* Logo Section */}
                 <div className="p-6">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
@@ -60,6 +54,7 @@ export const StaffLayout: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Staff Shift Status */}
                 <div className="px-4 mb-4">
                     <div className="bg-slate-900 rounded-2xl p-4 text-white relative overflow-hidden group">
                         <div className="relative z-10">
@@ -84,7 +79,9 @@ export const StaffLayout: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Navigation Links */}
                 <nav className="flex-1 px-4 space-y-6 overflow-y-auto pt-2">
+                    {/* Operations Group */}
                     <div>
                         <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Operations</p>
                         <div className="space-y-1">
@@ -107,6 +104,7 @@ export const StaffLayout: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* System Group */}
                     <div>
                         <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">System</p>
                         <div className="space-y-1">
@@ -136,6 +134,7 @@ export const StaffLayout: React.FC = () => {
                     </div>
                 </nav>
 
+                {/* Logout Button */}
                 <div className="p-4 mt-auto">
                     <button
                         onClick={handleLogout}
@@ -147,7 +146,7 @@ export const StaffLayout: React.FC = () => {
                 </div>
             </aside>
 
-            {/* ĐÃ XÓA pb-12 Ở ĐÂY */}
+            {/* Main Content View */}
             <main className="flex-1 ml-64 p-6 h-screen overflow-y-auto">
                 <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-right-4 duration-500">
                     <Outlet />

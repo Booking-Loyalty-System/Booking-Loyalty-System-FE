@@ -10,7 +10,6 @@ import { BookingTableRow } from "@/features/products/presentation/components/Boo
 import { CheckoutSummaryModal } from "@/features/products/presentation/components/staff/CheckoutSummaryModal.tsx";
 import type { BookingResponseData } from "@/features/products/domain/models/booking/booking.model.ts";
 import { QrScannerModal } from "@/features/products/presentation/components/QrScannerModal.tsx";
-// 🌟 1. Import thêm useQueryClient để quản lý làm mới dữ liệu
 import { useQueryClient } from '@tanstack/react-query';
 
 interface DashboardActions {

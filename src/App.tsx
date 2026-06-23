@@ -57,9 +57,7 @@ function App() {
                             <Route path="/staff/dashboard" element={<StaffDashboard />} />
                             <Route path="/staff/queue" element={<StaffQueuePage />} />
                             <Route path="/staff/monitor" element={<QueueMonitor />} />
-                            <Route path="/staff/total-bookings" element={<TotalBookings />} />
-                            <Route path="/staff/completed-bookings" element={<CompletedBookings />} />
-                            <Route path="/staff/cancelled-bookings" element={<CancelledBookings />} />
+                            <Route path="/staff/bookings" element={<TotalBookings />} />
                             <Route path="/staff/notifications" element={< NotificationCenter/>} />
                         </Route>
                     </Route>
