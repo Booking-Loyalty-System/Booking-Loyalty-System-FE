@@ -1,9 +1,10 @@
 export const ENDPOINTS = {
-    PRODUCTS: {
-        BASE: '/products',
-        DETAIL: (id: string) => `/products/${id}`,
+    NOTIFICATION: {
+        BASE: '/notification',
+        READ: (id: string) => `/notification/${id}/read`,
+        UNREAD_COUNT: '/notification/unread-count'
     },
-    // Thêm các feature khác ở đây sau này...
+
     AUTH: {
         LOGIN: '/auth/login',
         LOGOUT: '/auth/logout',
@@ -25,6 +26,15 @@ export const ENDPOINTS = {
         BOOKING: '/bookings',
         MY_BOOKING: '/bookings/my-bookings',
         CANCEL: (id: string) => `/bookings/${id}/cancel`,
+        CONFIRM: (id: string) => `/staff/bookings/${id}/confirm`,
+        CHECK_IN: (id: string) => `staff/bookings/${id}/check-in`,
+        QUEUE: (id: string) => `/staff/bookings/${id}/queue`,
+        START: (id: string) => `/staff/bookings/${id}/start`,
+        CHECKOUT: (id: string) => `/staff/bookings/${id}/checkout`,
+        STAFF_CANCEL: (id: string) => `/staff/bookings/${id}/cancel`,
+        NO_SHOW: (id: string) => `/staff/bookings/${id}/no-show`,
+        COMPLETED: (id: string) => `/staff/bookings/${id}/completed`,
+        QR: `/staff/bookings/scan-qr`,
     },
 
     BRANCH:{
@@ -45,6 +55,8 @@ export const ENDPOINTS = {
 
     STAFF: {
         BOOKINGS: '/staff/bookings',
+        PROFILE: '/staff/profile',
+        ID: (id: string) => `/staff/${id}`
     },
 
     LOYALTY: {
@@ -59,4 +71,8 @@ export const ENDPOINTS = {
         BRANCHES: '/admin/branches',
         BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
     },
+
+    WASH_BAY: {
+        BY_BRANCH: (id: string) => `/admin/wash-bays/by-branch/${id}`
+    }
 };

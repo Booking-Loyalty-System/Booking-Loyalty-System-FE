@@ -16,8 +16,13 @@ export interface BookingResponseData {
     washPackageId: string;
     bookingDate: string;
     startTime: string;
+    vehicleName: string
+    licensePlate: string;
+    serviceName: string;
+    totalAmount: number;
     status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
     createdAt: string;
+    bookingCode: string
 }
 
 export interface BookingSummaryProps {

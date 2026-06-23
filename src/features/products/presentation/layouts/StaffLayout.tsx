@@ -1,31 +1,37 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { 
-    LayoutDashboard, 
-    Car, 
-    Droplets, 
-    LogOut, 
-    Settings, 
-    Bell, 
+import {
+    LayoutDashboard,
+    Car,
+    Droplets,
+    LogOut,
+    Settings,
+    Bell,
     CheckCircle2,
     Coffee,
     ClipboardList,
     CheckSquare,
-    XCircle
+    XCircle,
+    LayoutGrid
 } from 'lucide-react';
 import { useAuth } from '../../application/useAuth';
+import {useNotification} from "@/features/products/application/useNotification.ts";
 
 export const StaffLayout: React.FC = () => {
     const navigate = useNavigate();
-    const { logout } = useAuth(); // Using logout from useAuth if available, or manual
+    const { logout } = useAuth();
     const [isOnline, setIsOnline] = useState(true);
+    const { unreadCount } = useNotification();
 
     const staffLinks = [
         { to: '/staff/dashboard', icon: LayoutDashboard, label: 'Overview' },
+        { to: '/staff/monitor', icon: LayoutGrid, label: "Queue Monitor" },
         { to: '/staff/queue', icon: Car, label: "Live Queue" },
         { to: '/staff/total-bookings', icon: ClipboardList, label: "Total Bookings" },
         { to: '/staff/completed-bookings', icon: CheckSquare, label: "Completed" },
         { to: '/staff/cancelled-bookings', icon: XCircle, label: "Cancelled" },
+        { to: '/staff/notifications', icon: Bell, label: 'Notifications' },
+        { to: '/staff/settings', icon: Settings, label: 'Profile Settings' },
     ];
 
     const systemLinks = [
@@ -39,7 +45,7 @@ export const StaffLayout: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="h-screen w-screen bg-gray-50 flex overflow-hidden">
             {/* Sidebar */}
             <aside className="w-64 h-screen bg-white border-r border-gray-200 fixed left-0 top-0 flex flex-col shadow-sm">
                 <div className="p-6">
@@ -54,7 +60,6 @@ export const StaffLayout: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Staff Status Card */}
                 <div className="px-4 mb-4">
                     <div className="bg-slate-900 rounded-2xl p-4 text-white relative overflow-hidden group">
                         <div className="relative z-10">
@@ -66,8 +71,8 @@ export const StaffLayout: React.FC = () => {
                             </div>
                             <p className="text-sm font-bold truncate">Staff Member</p>
                             <p className="text-[10px] opacity-60 font-medium">Bay Operator #01</p>
-                            
-                            <button 
+
+                            <button
                                 onClick={() => setIsOnline(!isOnline)}
                                 className="mt-3 w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
                             >
@@ -80,7 +85,6 @@ export const StaffLayout: React.FC = () => {
                 </div>
 
                 <nav className="flex-1 px-4 space-y-6 overflow-y-auto pt-2">
-                    {/* Operations Group */}
                     <div>
                         <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Operations</p>
                         <div className="space-y-1">
@@ -88,7 +92,7 @@ export const StaffLayout: React.FC = () => {
                                 <NavLink
                                     key={link.to}
                                     to={link.to}
-                                    className={({ isActive }) => 
+                                    className={({ isActive }) =>
                                         `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${
                                             isActive
                                                 ? 'bg-blue-50 text-blue-600 shadow-sm'
@@ -103,7 +107,6 @@ export const StaffLayout: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* System Group */}
                     <div>
                         <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">System</p>
                         <div className="space-y-1">
@@ -111,7 +114,7 @@ export const StaffLayout: React.FC = () => {
                                 <NavLink
                                     key={link.to}
                                     to={link.to}
-                                    className={({ isActive }) => 
+                                    className={({ isActive }) =>
                                         `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${
                                             isActive
                                                 ? 'bg-blue-50 text-blue-600 shadow-sm'
@@ -121,6 +124,12 @@ export const StaffLayout: React.FC = () => {
                                 >
                                     <link.icon className="w-5 h-5" />
                                     {link.label}
+
+                                    {link.label === 'Notifications' && unreadCount > 0 && (
+                                        <span className="bg-red-500 text-white text-[10px] py-0.5 px-2 rounded-full font-black">
+                                            {unreadCount > 99 ? '99+' : unreadCount}
+                                        </span>
+                                    )}
                                 </NavLink>
                             ))}
                         </div>
@@ -128,7 +137,7 @@ export const StaffLayout: React.FC = () => {
                 </nav>
 
                 <div className="p-4 mt-auto">
-                    <button 
+                    <button
                         onClick={handleLogout}
                         className="flex w-full items-center gap-3 px-4 py-3 text-gray-500 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition-all font-bold text-sm"
                     >
@@ -138,8 +147,8 @@ export const StaffLayout: React.FC = () => {
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 ml-64 p-8">
+            {/* ĐÃ XÓA pb-12 Ở ĐÂY */}
+            <main className="flex-1 ml-64 p-6 h-screen overflow-y-auto">
                 <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-right-4 duration-500">
                     <Outlet />
                 </div>

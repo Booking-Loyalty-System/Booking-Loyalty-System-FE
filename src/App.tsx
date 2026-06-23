@@ -12,7 +12,7 @@ import {MyVehicles} from "@/features/products/presentation/components/MyVehicle.
 import {Promotions} from "@/features/products/presentation/components/Promotion.tsx";
 import {BookingHistory} from "@/features/products/presentation/components/BookingHistory.tsx";
 import {ProfileSettings} from "@/features/products/presentation/components/ProfileSettings.tsx";
-import {NotificationCenter} from "@/features/products/presentation/components/NotificationCenter.tsx";
+import {NotificationCenter} from "@/features/products/presentation/components/Notification.tsx";
 import {Toaster} from "sonner";
 import {StaffLayout} from "@/features/products/presentation/layouts/StaffLayout.tsx";
 import {StaffDashboard} from "@/features/products/presentation/pages/staff/StaffDashboard.tsx";
@@ -22,7 +22,48 @@ import {TotalBookings} from "@/features/products/presentation/pages/staff/TotalB
 import {CompletedBookings} from "@/features/products/presentation/pages/staff/CompletedBookings.tsx";
 import {CancelledBookings} from "@/features/products/presentation/pages/staff/CancelledBookings.tsx";
 
+// import { AdminDashboard } from "@/features/products/presentation/pages/admin/AdminDashboard";
+// import { AdminAnalytics } from "@/features/products/presentation/pages/admin/AdminAnalytics";
+// import { AdminLoyalty } from "@/features/products/presentation/pages/admin/AdminLoyalty";
+// import { AdminPackages } from "@/features/products/presentation/pages/admin/AdminPackages";
+// import { AdminPromotions } from "@/features/products/presentation/pages/admin/AdminPromotions";
+// import { AdminReports } from "@/features/products/presentation/pages/admin/AdminReports";
+// import { AdminStaff } from "@/features/products/presentation/pages/admin/AdminStaff";
+// import { AdminBranches } from "@/features/products/presentation/pages/admin/AdminBranches";
+
+import {useEffect} from "react";
+import {useAuth} from "@/features/products/application/useAuth.ts";
+
+
 function App() {
+    const { isAuthenticated, tokenData, refreshToken } = useAuth();
+    useEffect(() => {
+        if (!isAuthenticated || !tokenData?.exp) return;
+
+        // CHẾ ĐỘ TEST: Đúng 1 phút đổi 1 lần
+        const expiryTime = tokenData.exp * 1000;
+        const bufferTime = 2 * 60 * 1000;
+        let delay = expiryTime - Date.now() - bufferTime;
+        if (delay <= 0) {
+            delay = 1000;
+        }
+        console.log(`⏱️ Đã lên lịch! Hệ thống sẽ tự động đổi token sau: ${Math.round(delay / 1000 / 60)} phút nữa.`);
+
+        const timerId = setTimeout(async () => {
+            try {
+                const currentRefreshToken = localStorage.getItem('refresh_token');
+                if (currentRefreshToken) {
+                    console.log("🔄 [SINGLE TIMER] Đang tiến hành đổi token duy nhất...");
+                    await refreshToken({ refreshToken: currentRefreshToken });
+                }
+            } catch (err) {
+                console.error("❌ Tự động đổi token thất bại:", err);
+            }
+        }, delay);
+
+        return () => clearTimeout(timerId);
+    }, [tokenData, isAuthenticated, refreshToken]);
+
     return (
         <>
             <Toaster richColors position="top-right" />
@@ -60,8 +101,20 @@ function App() {
                             <Route path="/staff/total-bookings" element={<TotalBookings />} />
                             <Route path="/staff/completed-bookings" element={<CompletedBookings />} />
                             <Route path="/staff/cancelled-bookings" element={<CancelledBookings />} />
+                            <Route path="/staff/notifications" element={< NotificationCenter/>} />
                         </Route>
                     </Route>
+
+                    {/*<Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>*/}
+                    {/*    <Route path="/admin" element={<AdminDashboard />} />*/}
+                    {/*    <Route path="/admin/packages" element={<AdminPackages />} />*/}
+                    {/*    <Route path="/admin/branches" element={<AdminBranches />} />*/}
+                    {/*    <Route path="/admin/loyalty" element={<AdminLoyalty />} />*/}
+                    {/*    <Route path="/admin/reports" element={<AdminReports />} />*/}
+                    {/*    <Route path="/admin/analytics" element={<AdminAnalytics />} />*/}
+                    {/*    <Route path="/admin/promotions" element={<AdminPromotions />} />*/}
+                    {/*    <Route path="/admin/staff" element={<AdminStaff />} />*/}
+                    {/*</Route>*/}
 
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>

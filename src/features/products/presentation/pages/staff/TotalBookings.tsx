@@ -383,11 +383,10 @@ export const TotalBookings: React.FC = () => {
                     <BookingDetailModal
                         booking={{
                             ...detailModalBooking,
-                            // Map các trường dữ liệu nếu tên khác nhau
                             vehiclePlate: detailModalBooking.licensePlate,
                             washPackageName: detailModalBooking.serviceName,
-                            endTime: "" // Nếu DashboardBooking không có endTime, bạn có thể để trống hoặc lấy từ nguồn khác
-                        } as any} // Dùng as any để bỏ qua lỗi type nếu interface chưa đồng nhất
+                            endTime: ""
+                        } as any}
                         onClose={() => setDetailModalBooking(null)}
                     />
                 )}

@@ -27,6 +27,8 @@ export const LoginPage: React.FC = () => {
                 // 3. Check role trên biến user sạch này là chuẩn 100%
                 if (user?.role === 'Staff') {
                     navigate('/staff/dashboard');
+                } else if(user?.role === 'Admin') {
+                    navigate('/dashboard');
                 } else {
                     navigate('/dashboard');
                 }
