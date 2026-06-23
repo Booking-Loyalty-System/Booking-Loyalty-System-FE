@@ -48,8 +48,8 @@ export const ENDPOINTS = {
     },
 
     LOYALTY: {
-        INFO: '/loyalty/info',
-        TRANSACTIONS: '/loyalty/transactions',
+        BALANCE: '/loyalty/balance',
+        HISTORY: '/loyalty/history',
         REDEEM: '/loyalty/redeem',
     },
 
