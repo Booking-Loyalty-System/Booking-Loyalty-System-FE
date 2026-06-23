@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { AuthRepositoryImplement } from '../infrastructure/repositories/auth/auth.repository.implement.ts';
-import { AuthRepositoryMock } from '../infrastructure/repositories/auth/auth.repository.mock.ts';
+
 import type {
     User,
     RefreshTokenRequest,
@@ -9,12 +9,7 @@ import type {
 } from '../domain/models/auth/auth.model.ts';
 import {toast} from "sonner";
 
-// Cờ useMock được cấu hình qua biến môi trường VITE_USE_MOCK (mặc định là false để chạy API thật)
-const useMock = import.meta.env.VITE_USE_MOCK === 'true';
-
-const authRepository = useMock
-    ? new AuthRepositoryMock()
-    : new AuthRepositoryImplement();
+const authRepository = new AuthRepositoryImplement();
 
 export interface CleanedTokenData {
     userId: string | null;

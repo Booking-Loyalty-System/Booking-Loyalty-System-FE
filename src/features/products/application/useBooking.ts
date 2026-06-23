@@ -1,13 +1,9 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import { BookingRepositoryImplement } from '../infrastructure/repositories/booking/booking.repository.implement.ts';
-import { BookingRepositoryMock } from '../infrastructure/repositories/booking/booking.repository.mock.ts';
+
 import type {CreateBookingInput, MyBookingRecord} from '../domain/models/booking/booking.model.ts';
 
-const useMock = import.meta.env.VITE_USE_MOCK === 'true';
-
-const bookingRepository = useMock
-    ? new BookingRepositoryMock()
-    : new BookingRepositoryImplement();
+const bookingRepository = new BookingRepositoryImplement();
 
 export const useBooking = () => {
     const queryClient = useQueryClient();

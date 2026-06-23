@@ -1,14 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { VoucherRepositoryImplement } from '../infrastructure/repositories/voucher/voucher.repository.implement.ts';
-import { VoucherRepositoryMock } from '../infrastructure/repositories/voucher/voucher.repository.mock.ts';
+
 import type { Voucher } from '../domain/models/voucher/voucher.model.ts';
 
-const useMock = import.meta.env.VITE_USE_MOCK === 'true';
-
-const voucherRepository = useMock 
-    ? new VoucherRepositoryMock() 
-    : new VoucherRepositoryImplement();
+const voucherRepository = new VoucherRepositoryImplement();
 
 export const useVoucher = () => {
     const queryClient = useQueryClient();
