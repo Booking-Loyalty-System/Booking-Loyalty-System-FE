@@ -31,12 +31,12 @@ export const ProfileDropdown: React.FC = () => {
         try {
             setIsDropdownOpen(false); // Đóng dropdown trước cho trải nghiệm mượt mà
             await logout();           // Đợi API logout chạy xong (clear cache và localStorage)
-            navigate('/login');       // Chuyển hướng về trang đăng nhập
+            navigate('/');       // Chuyển hướng về trang chủ
         } catch (error) {
             console.error("Logout failed:", error);
             // Kể cả lỗi thì useAuth của bạn vẫn clear client session,
-            // nên bạn vẫn có thể cho navigate về /login ở đây nếu muốn chắc chắn.
-            navigate('/login');
+            // nên bạn vẫn có thể cho navigate về / ở đây nếu muốn chắc chắn.
+            navigate('/');
         }
     };
 

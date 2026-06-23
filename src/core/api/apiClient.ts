@@ -71,7 +71,7 @@ const handleForceLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
-    if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+    if (window.location.pathname !== '/') {
+        window.location.href = '/';
     }
 };
