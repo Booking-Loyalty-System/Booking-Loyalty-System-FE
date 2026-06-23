@@ -33,7 +33,7 @@ export const ProfileSettings: React.FC = () => {
                         <div className="space-y-4">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
-                                <input type="text" readOnly value={customerMe?.fullName || 'John Doe'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                                <input type="text" readOnly value={customerMe?.fullName || 'Khách hàng'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>

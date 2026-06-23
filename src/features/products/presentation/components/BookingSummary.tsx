@@ -1,8 +1,8 @@
-import type {BookingSummaryProps} from "@/features/products/domain/models/booking/booking.model.ts";
+import type { BookingSummaryProps } from "@/features/products/domain/models/booking/booking.model.ts";
 
 export const BookingSummary: React.FC<BookingSummaryProps> = ({
-                                                                  selectedPackageId, selectedTime, currentVehicle, currentPackage, selectedDateSlot, isBooking, onConfirmBooking, selectedVoucher
-                                                              }) => {
+    selectedPackageId, selectedTime, currentVehicle, currentPackage, selectedDateSlot, isBooking, onConfirmBooking, selectedVoucher
+}) => {
     const originalPrice = currentPackage?.price || 0;
     let discountAmount = 0;
 
@@ -37,7 +37,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                                     <span className="text-xs font-bold bg-blue-50 text-[#1e6ffd] px-2 py-1 rounded-md">{currentVehicle.licensePlate}</span>
                                 </div>
                             )}
-                             {currentPackage && (
+                            {currentPackage && (
                                 <div className="flex justify-between items-center border-t border-[#f1f5f9] pt-3">
                                     <div>
                                         <span className="block text-xs text-[#94a3b8] font-medium">Wash Package</span>
@@ -49,7 +49,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                             <div className="flex flex-col gap-1 border-t border-[#f1f5f9] pt-3">
                                 <span className="block text-xs text-[#94a3b8] font-medium">Schedule Time</span>
                                 <span className="font-bold text-[#334155]">
-                                    {selectedDateSlot?.fullDate} {selectedTime ? `@ ${selectedTime}` : '(Please choose time)'}
+                                    {selectedDateSlot?.fullDate} {selectedTime ? `- ${selectedTime}` : '(Please choose time)'}
                                 </span>
                             </div>
 

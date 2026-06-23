@@ -3,18 +3,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDown, User, Settings, LogOut, Loader2 } from 'lucide-react';
 import { useAuth } from '@/features/products/application/useAuth';
 
+import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
+
 export const ProfileDropdown: React.FC = () => {
     const navigate = useNavigate();
 
     // 💡 LẤY THÔNG TIN USER VÀ TRẠNG THÁI LOGOUT TỪ HOOK
     const { user, logout, isLoggingOut } = useAuth();
+    const { customerMe } = useCustomerMe();
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Tính toán các thông tin hiển thị dựa trên state của useAuth
-    const fullName = user?.fullName || "John Doe";
-    const avatarFallback = fullName.split(" ").pop()?.substring(0, 2).toUpperCase() || "US";
+    // Tính toán các thông tin hiển thị dựa trên state của useAuth và customerMe
+    const fullName = customerMe?.fullName || user?.fullName || "Khách hàng";
+    const avatarFallback = fullName.split(" ").pop()?.substring(0, 2).toUpperCase() || "KH";
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

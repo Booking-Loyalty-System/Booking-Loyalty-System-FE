@@ -5,13 +5,15 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
+import { useAuth } from '@/features/products/application/useAuth.ts';
 
 export const Dashboard: React.FC = () => {
     // 🌟 Lấy thông tin khách hàng đang đăng nhập từ Application Layer
     const { customerMe } = useCustomerMe();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
-    const displayName = customerMe?.fullName || 'John Doe';
+    const displayName = customerMe?.fullName || user?.fullName || 'Khách hàng';
     const totalPoints = customerMe?.totalPoints ?? 850;
     const tier = customerMe?.tier ?? 'Gold';
     const washesCount = customerMe?.totalWashes ?? 5;
