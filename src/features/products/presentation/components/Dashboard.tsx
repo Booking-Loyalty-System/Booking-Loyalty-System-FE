@@ -31,8 +31,15 @@ export const Dashboard: React.FC = () => {
         { name: 'History', desc: 'View past bookings', icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50', path: '/booking-history' },
     ];
 
-    const remainingWashes = Math.max(0, 7 - washesCount);
-    const washProgressPercentage = Math.min(100, Math.round((washesCount / 7) * 100));
+    // Logic tính tiến trình rửa xe (cứ mỗi 7 lần thì đầy thanh)
+    let currentCycleWashes = washesCount % 7;
+    // Nếu chia hết cho 7 và lớn hơn 0 (ví dụ 7, 14, 21) thì hiển thị đầy thanh (7/7) thay vì (0/7)
+    if (currentCycleWashes === 0 && washesCount > 0) {
+        currentCycleWashes = 7;
+    }
+
+    const remainingWashes = 7 - currentCycleWashes;
+    const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
 
     return (
         <div className="space-y-8 max-w-7xl mx-auto pb-12 animate-fade-in">
@@ -76,7 +83,7 @@ export const Dashboard: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-right">
-                        <span className="block text-3xl font-black text-[#16a34a]">{washesCount}/7</span>
+                        <span className="block text-3xl font-black text-[#16a34a]">{currentCycleWashes}/7</span>
                         <span className="text-[10px] text-[#166534] font-bold uppercase tracking-wider">Washes Done</span>
                     </div>
                 </div>
@@ -107,7 +114,7 @@ export const Dashboard: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                         {Array.from({ length: 7 }).map((_, idx) => {
                             const step = idx + 1;
-                            if (step <= washesCount) {
+                            if (step <= currentCycleWashes) {
                                 return <CheckCircle2 key={step} className="w-6 h-6 text-[#16a34a] fill-white" />;
                             }
                             return (
