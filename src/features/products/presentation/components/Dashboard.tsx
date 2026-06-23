@@ -3,11 +3,13 @@ import {
     Calendar, Star, Award, TrendingUp, Gift, CheckCircle2,
     Sparkles, Clock, XCircle, ArrowRight, Megaphone, History
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
 
 export const Dashboard: React.FC = () => {
     // 🌟 Lấy thông tin khách hàng đang đăng nhập từ Application Layer
     const { customerMe } = useCustomerMe();
+    const navigate = useNavigate();
 
     const displayName = customerMe?.fullName || 'John Doe';
     const totalPoints = customerMe?.totalPoints ?? 850;
@@ -23,10 +25,10 @@ export const Dashboard: React.FC = () => {
     ];
 
     const quickActions = [
-        { name: 'Book Wash', desc: 'Schedule a new wash', icon: <Calendar className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50' },
-        { name: 'Rewards', desc: 'Redeem your points', icon: <Gift className="w-5 h-5 text-emerald-600" />, bg: 'bg-emerald-50' },
-        { name: 'Promotions', desc: 'View active deals', icon: <Megaphone className="w-5 h-5 text-purple-600" />, bg: 'bg-purple-50' },
-        { name: 'History', desc: 'View past bookings', icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50' },
+        { name: 'Book Wash', desc: 'Schedule a new wash', icon: <Calendar className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50', path: '/book-wash' },
+        { name: 'Rewards', desc: 'Redeem your points', icon: <Gift className="w-5 h-5 text-emerald-600" />, bg: 'bg-emerald-50', path: '/rewards' },
+        { name: 'Promotions', desc: 'View active deals', icon: <Megaphone className="w-5 h-5 text-purple-600" />, bg: 'bg-purple-50', path: '/promotions' },
+        { name: 'History', desc: 'View past bookings', icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50', path: '/booking-history' },
     ];
 
     const remainingWashes = Math.max(0, 7 - washesCount);
@@ -234,6 +236,7 @@ export const Dashboard: React.FC = () => {
                     {quickActions.map((action, i) => (
                         <div
                             key={i}
+                            onClick={() => navigate(action.path)}
                             className="bg-white border border-[#e2e8f0] hover:border-blue-200 rounded-2xl p-5 flex items-center gap-4 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
                         >
                             <div className={`w-12 h-12 ${action.bg} rounded-xl flex items-center justify-center shrink-0`}>
