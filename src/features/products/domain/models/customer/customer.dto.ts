@@ -11,3 +11,9 @@ export interface Customer {
     totalSaved: number;
     createdAt: string;     
 }
+
+export interface UpdateCustomerInput {
+    fullName?: string;
+    phoneNumber?: string;
+    dateOfBirth?: string | null;
+}

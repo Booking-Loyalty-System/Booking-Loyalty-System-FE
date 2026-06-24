@@ -1,8 +1,8 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { CustomerRepositoryImplement } from '../infrastructure/repositories/customer/customer.repository.implement.ts';
 
-import type { Customer } from '../domain/models/customer/customer.dto.ts';
+import type { Customer, UpdateCustomerInput } from '../domain/models/customer/customer.dto.ts';
 
 const customerRepository = new CustomerRepositoryImplement();
 
@@ -32,5 +32,22 @@ export const useCustomerMe = () => {
         customerMe,
         isLoading,
         error,
+    };
+};
+
+export const useUpdateCustomer = () => {
+    const queryClient = useQueryClient();
+
+    const updateCustomerMutation = useMutation({
+        mutationFn: (data: UpdateCustomerInput) => customerRepository.updateMe(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['customer_me'] });
+        },
+    });
+
+    return {
+        updateCustomer: updateCustomerMutation.mutateAsync,
+        isUpdating: updateCustomerMutation.isPending,
+        error: updateCustomerMutation.error,
     };
 };

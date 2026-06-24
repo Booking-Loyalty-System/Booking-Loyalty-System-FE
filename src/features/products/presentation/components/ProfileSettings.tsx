@@ -1,13 +1,59 @@
-import React, { useState } from 'react';
-import { User, Edit3, Lock, Bell, ShieldCheck, Download, ExternalLink, Trash2 } from 'lucide-react';
-import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
+import React, { useState, useEffect } from 'react';
+import { User, Edit3, Lock, Bell, ShieldCheck, Download, ExternalLink, Trash2, Check, X, Loader2 } from 'lucide-react';
+import { useCustomerMe, useUpdateCustomer } from '@/features/products/application/useCustomer.ts';
+import { toast } from 'sonner';
 
 export const ProfileSettings: React.FC = () => {
     const { customerMe } = useCustomerMe();
+    const { updateCustomer, isUpdating } = useUpdateCustomer();
+
     const [emailNotify, setEmailNotify] = useState(true);
     const [smsNotify, setSMSNotify] = useState(true);
     const [marketingEmail, setMarketingEmail] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
+
+    // Form state
+    const [isEditing, setIsEditing] = useState(false);
+    const [formData, setFormData] = useState({
+        fullName: '',
+        phoneNumber: '',
+    });
+
+    useEffect(() => {
+        if (customerMe && !isEditing) {
+            setFormData({
+                fullName: customerMe.fullName || '',
+                phoneNumber: customerMe.phoneNumber || '',
+            });
+        }
+    }, [customerMe, isEditing]);
+
+    const handleSave = async () => {
+        if (!formData.fullName.trim() || !formData.phoneNumber.trim()) {
+            toast.error('Please fill in all required fields');
+            return;
+        }
+
+        try {
+            await updateCustomer({
+                fullName: formData.fullName,
+                phoneNumber: formData.phoneNumber,
+            });
+            toast.success('Profile updated successfully!');
+            setIsEditing(false);
+        } catch (error) {
+            toast.error('Failed to update profile. Please try again.');
+            console.error('Update profile error:', error);
+        }
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        setFormData({
+            fullName: customerMe?.fullName || '',
+            phoneNumber: customerMe?.phoneNumber || '',
+        });
+    };
 
     return (
         <div className="w-full font-sans text-slate-800">
@@ -24,24 +70,66 @@ export const ProfileSettings: React.FC = () => {
                                 <User className="w-5 h-5 text-blue-600" />
                                 <span>Personal Information</span>
                             </div>
-                            <button className="inline-flex items-center gap-1 border-2 border-blue-600 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-blue-50 transition">
-                                <Edit3 className="w-3.5 h-3.5" />
-                                <span>Edit</span>
-                            </button>
+                            
+                            {!isEditing ? (
+                                <button 
+                                    onClick={() => setIsEditing(true)}
+                                    className="inline-flex items-center gap-1 border-2 border-blue-600 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-blue-50 transition"
+                                >
+                                    <Edit3 className="w-3.5 h-3.5" />
+                                    <span>Edit</span>
+                                </button>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={handleCancel}
+                                        disabled={isUpdating}
+                                        className="inline-flex items-center gap-1 border-2 border-slate-300 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-slate-50 transition disabled:opacity-50"
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                        <span>Cancel</span>
+                                    </button>
+                                    <button 
+                                        onClick={handleSave}
+                                        disabled={isUpdating}
+                                        className="inline-flex items-center gap-1 bg-blue-600 text-white border-2 border-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+                                    >
+                                        {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                                        <span>Save</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
-                                <input type="text" readOnly value={customerMe?.fullName || 'Khách hàng'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                                <input 
+                                    type="text" 
+                                    readOnly={!isEditing} 
+                                    value={isEditing ? formData.fullName : (customerMe?.fullName || 'Khách hàng')} 
+                                    onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                                    className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${isEditing ? 'bg-white border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100' : 'bg-slate-50/70 border-slate-200/60'}`} 
+                                />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
-                                <input type="text" readOnly value={customerMe?.phoneNumber || '0901234567'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                                <input 
+                                    type="text" 
+                                    readOnly={!isEditing} 
+                                    value={isEditing ? formData.phoneNumber : (customerMe?.phoneNumber || '0901234567')} 
+                                    onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                                    className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${isEditing ? 'bg-white border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100' : 'bg-slate-50/70 border-slate-200/60'}`} 
+                                />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
-                                <input type="email" readOnly value={customerMe?.email || 'john.doe@gmail.com'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address <span className="normal-case text-[10px] text-slate-400 font-medium">(Read-only)</span></label>
+                                <input 
+                                    type="email" 
+                                    readOnly 
+                                    value={customerMe?.email || 'john.doe@gmail.com'} 
+                                    className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 focus:outline-none cursor-not-allowed" 
+                                />
                             </div>
                         </div>
                     </div>
