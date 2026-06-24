@@ -72,7 +72,7 @@ export const ProfileDropdown: React.FC = () => {
 
                     <div className="p-1">
                         <Link
-                            to="/profile"
+                            to="/settings"
                             onClick={() => setIsDropdownOpen(false)}
                             className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-[#64748b] hover:bg-[#f1f5f9] hover:text-[#0f172a] transition-all"
                         >
