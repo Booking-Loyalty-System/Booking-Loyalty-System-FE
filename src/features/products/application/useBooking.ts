@@ -24,6 +24,8 @@ export const useBooking = () => {
             // Xóa cache cũ, buộc React Query phải gọi lại api getMyBookings
             // để bảng lịch sử có dữ liệu mới nhất
             queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
+            // Invalidate time slots để update lại số lượng slot còn trống
+            queryClient.invalidateQueries({ queryKey: ['time_slots_weekly'] });
         },
         onError: (error) => {
             console.error("Lỗi khi tạo booking:", error);
@@ -36,6 +38,8 @@ export const useBooking = () => {
         onSuccess: () => {
             // Tự động reload lại danh sách lịch sử bốc lịch
             queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
+            // Invalidate time slots để update lại số lượng slot còn trống
+            queryClient.invalidateQueries({ queryKey: ['time_slots_weekly'] });
         },
         onError: (error) => {
             console.error("Lỗi khi hủy đặt lịch:", error);
