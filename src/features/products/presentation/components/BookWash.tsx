@@ -27,6 +27,8 @@ import { useVoucher } from "@/features/products/application/useVoucher.ts";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { VoucherSelection } from "@/features/products/presentation/components/VoucherSelection.tsx";
 import type { Voucher } from "@/features/products/domain/models/voucher/voucher.model.ts";
+import { usePromotion } from "@/features/products/application/usePromotion.ts";
+import type { Promotion } from "@/features/products/domain/models/promotion/promotion.dto.ts";
 
 // Định nghĩa Interface dữ liệu trả về sau khi tạo thành công
 interface CreatedBookingData {
@@ -180,6 +182,7 @@ export const BookWash: React.FC = () => {
     const { createBooking, isBooking } = useBooking();
     const { activeVouchers, useVoucher: markVoucherAsUsed } = useVoucher();
     const { customerMe } = useCustomerMe();
+    const { validatePromotion } = usePromotion();
 
     const dynamicDateSlots = generateUpcomingDates(7);
     const navigate = useNavigate();
@@ -200,6 +203,7 @@ export const BookWash: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<string>(dynamicDateSlots[0].apiDate);
     const [selectedTime, setSelectedTime] = useState<string>('');
     const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+    const [appliedPromotion, setAppliedPromotion] = useState<Promotion | null>(null);
 
     const {
         weeklySummary,
@@ -254,7 +258,8 @@ export const BookWash: React.FC = () => {
                 washPackageId: selectedPackageId,
                 bookingDate: selectedDate,
                 startTime: apiStartTime,
-                voucherId: selectedVoucher?.id || undefined
+                voucherId: selectedVoucher?.id || undefined,
+                promoCode: appliedPromotion?.code || undefined
             });
 
             // Nếu dùng voucher thành công, đánh dấu voucher đó là Used
@@ -349,6 +354,16 @@ export const BookWash: React.FC = () => {
                 isBooking={isBooking}
                 onConfirmBooking={handleConfirmBooking}
                 selectedVoucher={selectedVoucher}
+                appliedPromotion={appliedPromotion}
+                onApplyPromotion={async (code) => {
+                    const res = await validatePromotion({ code, serviceId: selectedPackageId });
+                    if (res.isValid && res.promotion) {
+                        setAppliedPromotion(res.promotion);
+                        return true;
+                    }
+                    return res.errorMessage || "Invalid or expired promo code";
+                }}
+                onRemovePromotion={() => setAppliedPromotion(null)}
             />
         </div>
     );
