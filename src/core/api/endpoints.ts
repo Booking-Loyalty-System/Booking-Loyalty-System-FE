@@ -60,4 +60,9 @@ export const ENDPOINTS = {
         BRANCHES: '/admin/branches',
         BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
     },
+
+    PROMOTION: {
+        BASE: '/promotions',
+        VALIDATE: '/promotions/validate',
+    },
 };

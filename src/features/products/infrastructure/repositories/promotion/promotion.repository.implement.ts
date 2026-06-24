@@ -1,15 +1,17 @@
 import type { IPromotionRepository } from "./promotion.repository.interface.ts";
 import type { Promotion, ValidatePromotionRequest, ValidatePromotionResponse } from "../../../domain/models/promotion/promotion.dto.ts";
-import { apiClient } from "@/core/api/apiClient.ts";
+import { httpClient } from "@/core/http/httpClient.ts";
+import { ENDPOINTS } from "@/core/api/endpoints.ts";
+import type { ApiResponse } from "@/features/products/domain/apiResponse.ts";
 
 export class PromotionRepositoryImplement implements IPromotionRepository {
     async getPromotions(): Promise<Promotion[]> {
-        const response = await apiClient.get<{ data: Promotion[] }>('/api/promotions');
-        return response.data.data;
+        const response = await httpClient.get<ApiResponse<Promotion[]>>(ENDPOINTS.PROMOTION.BASE);
+        return response.data;
     }
 
     async validatePromotion(request: ValidatePromotionRequest): Promise<ValidatePromotionResponse> {
-        const response = await apiClient.post<{ data: ValidatePromotionResponse }>('/api/promotions/validate', request);
-        return response.data.data;
+        const response = await httpClient.post<ApiResponse<ValidatePromotionResponse>>(ENDPOINTS.PROMOTION.VALIDATE, request);
+        return response.data;
     }
 }
