@@ -17,13 +17,14 @@ export const Dashboard: React.FC = () => {
     const totalPoints = customerMe?.totalPoints ?? 850;
     const tier = customerMe?.tier ?? 'Gold';
     const washesCount = customerMe?.totalWashes ?? 5;
+    const totalSaved = customerMe?.totalSaved ?? 0;
 
     // Điều chỉnh dữ liệu để sử dụng thông tin thật từ khách hàng
     const stats = [
         { id: 1, label: 'All time', value: washesCount.toString(), sub: 'Total Bookings', icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
         { id: 2, label: 'Loyalty', value: totalPoints.toString(), sub: 'Total Points', icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
         { id: 3, label: 'Status', value: tier, sub: 'Membership Tier', icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
-        { id: 4, label: 'Savings', value: '1.270.000đ', sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
+        { id: 4, label: 'Savings', value: `${totalSaved.toLocaleString('vi-VN')}đ`, sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
     ];
 
     const quickActions = [

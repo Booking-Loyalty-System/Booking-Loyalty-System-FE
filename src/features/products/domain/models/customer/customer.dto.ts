@@ -8,5 +8,6 @@ export interface Customer {
     totalPoints: number;
     totalWashes: number;
     totalSpent: number;
+    totalSaved: number;
     createdAt: string;     
 }
