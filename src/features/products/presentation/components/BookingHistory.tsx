@@ -99,7 +99,7 @@ export const BookingHistory: React.FC = () => {
         { title: 'Total Bookings', value: sortedBookings.length.toString(), icon: <Calendar className="w-6 h-6 text-blue-600" />, bg: 'bg-blue-50/50' },
         { title: 'Points Earned', value: '850', icon: <Star className="w-6 h-6 text-emerald-600" />, bg: 'bg-emerald-50/50' },
         { title: 'Minutes Saved', value: '1,440', icon: <Clock className="w-6 h-6 text-purple-600" />, bg: 'bg-purple-50/50' },
-        { title: 'Total Spent', value: formatCurrency(sortedBookings.reduce((sum, b) => sum + b.totalPrice, 0)), icon: <DollarSign className="w-6 h-6 text-orange-600" />, bg: 'bg-orange-50/50' },
+        { title: 'Total Spent', value: formatCurrency(sortedBookings.filter(b => b.status !== 'Cancelled' && b.status !== 'Rejected').reduce((sum, b) => sum + b.totalPrice, 0)), icon: <DollarSign className="w-6 h-6 text-orange-600" />, bg: 'bg-orange-50/50' },
     ];
 
     const predefinedReasons = [
