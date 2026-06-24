@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { User, Edit3, Lock, Bell, ShieldCheck, Download, ExternalLink, Trash2, Check, X, Loader2 } from 'lucide-react';
 import { useCustomerMe, useUpdateCustomer } from '@/features/products/application/useCustomer.ts';
+import { useAuth } from '@/features/products/application/useAuth.ts';
 import { toast } from 'sonner';
 
 export const ProfileSettings: React.FC = () => {
     const { customerMe } = useCustomerMe();
     const { updateCustomer, isUpdating } = useUpdateCustomer();
+    const { changePassword, isChangingPassword } = useAuth();
 
     const [emailNotify, setEmailNotify] = useState(true);
     const [smsNotify, setSMSNotify] = useState(true);
     const [marketingEmail, setMarketingEmail] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
 
-    // Form state
+    // Form state for Profile
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
         phoneNumber: '',
+    });
+
+    // Form state for Password
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
     });
 
     useEffect(() => {
@@ -53,6 +62,34 @@ export const ProfileSettings: React.FC = () => {
             fullName: customerMe?.fullName || '',
             phoneNumber: customerMe?.phoneNumber || '',
         });
+    };
+
+    const handleChangePassword = async () => {
+        const { currentPassword, newPassword, confirmPassword } = passwordData;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            toast.error('Please fill in all password fields');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error('New passwords do not match');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            toast.error('Password must be at least 6 characters long');
+            return;
+        }
+
+        try {
+            await changePassword({ currentPassword, newPassword });
+            toast.success('Password updated successfully!');
+            setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (error) {
+            toast.error('Failed to change password. Please check your current password and try again.');
+            console.error('Change password error:', error);
+        }
     };
 
     return (
@@ -144,19 +181,42 @@ export const ProfileSettings: React.FC = () => {
                         <div className="space-y-4">
                             <div className="space-y-1.5 relative">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Current Password</label>
-                                <input type="password" value="••••••••" disabled className="w-full bg-slate-50/40 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono" />
+                                <input 
+                                    type="password" 
+                                    placeholder="Enter current password"
+                                    value={passwordData.currentPassword}
+                                    onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                                    className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all" 
+                                />
                             </div>
                             <div className="space-y-1.5 relative">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">New Password</label>
-                                <input type="password" value="••••••••" disabled className="w-full bg-slate-50/40 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono" />
+                                <input 
+                                    type="password" 
+                                    placeholder="Enter new password"
+                                    value={passwordData.newPassword}
+                                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                                    className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all" 
+                                />
                             </div>
                             <div className="space-y-1.5 relative">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Confirm New Password</label>
-                                <input type="password" value="••••••••" disabled className="w-full bg-slate-50/40 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono" />
+                                <input 
+                                    type="password" 
+                                    placeholder="Confirm new password"
+                                    value={passwordData.confirmPassword}
+                                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                    className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all" 
+                                />
                             </div>
 
-                            <button className="bg-blue-600 text-white text-sm font-bold w-full sm:w-auto px-6 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm">
-                                Update Password
+                            <button 
+                                onClick={handleChangePassword}
+                                disabled={isChangingPassword}
+                                className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-bold w-full sm:w-auto px-6 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm disabled:opacity-50"
+                            >
+                                {isChangingPassword && <Loader2 className="w-4 h-4 animate-spin" />}
+                                {isChangingPassword ? 'Updating...' : 'Update Password'}
                             </button>
 
                             <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4">

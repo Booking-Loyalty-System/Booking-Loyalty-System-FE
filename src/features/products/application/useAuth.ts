@@ -5,7 +5,8 @@ import type {
     User,
     RefreshTokenRequest,
     RegisterRequest,
-    PhoneRegisterRequest, AuthResponseData
+    PhoneRegisterRequest, AuthResponseData,
+    ChangePasswordRequest
 } from '../domain/models/auth/auth.model.ts';
 import {toast} from "sonner";
 
@@ -224,6 +225,10 @@ export const useAuth = () => {
         }
     });
 
+    const changePasswordMutation = useMutation({
+        mutationFn: (data: ChangePasswordRequest) => authRepository.changePassword(data),
+    });
+
     return {
         user,
         userId: tokenData?.userId || null,
@@ -236,13 +241,15 @@ export const useAuth = () => {
         isRefreshing: refreshTokenMutation.isPending,
         isPending: registerMutation.isPending,
         isPendingPhone: registerWithPhoneMutation.isPending,
+        isChangingPassword: changePasswordMutation.isPending,
 
-        error: loginMutation.error || logoutMutation.error || refreshTokenMutation.error,
+        error: loginMutation.error || logoutMutation.error || refreshTokenMutation.error || changePasswordMutation.error,
 
         login: loginMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
         register: registerMutation.mutateAsync,
         refreshToken: refreshTokenMutation.mutateAsync,
         registerWithPhone: registerWithPhoneMutation.mutateAsync,
+        changePassword: changePasswordMutation.mutateAsync,
     };
 };

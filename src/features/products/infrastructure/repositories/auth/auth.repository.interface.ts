@@ -1,7 +1,8 @@
 import type {
     LoginRequest,
     RefreshTokenRequest,
-    RegisterRequest
+    RegisterRequest,
+    ChangePasswordRequest
 } from '@/features/products/domain/models/auth/auth.model.ts';
 import type { AuthResponseData } from '../../../domain/models/auth/auth.model.ts';
 // import type {PhoneRegisterRequest} from "@/features/products/application/requests/PhoneRegisterRequest.ts";
@@ -13,4 +14,5 @@ export interface IAuthRepository {
     // registerWithPhone(data: PhoneRegisterRequest): Promise<AuthResponseData>;
 
     register(data: RegisterRequest): Promise<AuthResponseData>;
+    changePassword(data: ChangePasswordRequest): Promise<void>;
 }

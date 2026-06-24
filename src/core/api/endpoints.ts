@@ -10,6 +10,7 @@ export const ENDPOINTS = {
         REGISTER: '/auth/register',
         REFRESH_TOKEN: '/auth/refresh-token',
         REGISTER_WITH_PHONE: '/auth/verify-otp',
+        CHANGE_PASSWORD: '/auth/change-password',
     },
 
     VEHICLES: {

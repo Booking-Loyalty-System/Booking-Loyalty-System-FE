@@ -38,3 +38,8 @@ export interface RegisterRequest {
     vehicleType: number;
     licensePlate?: string;
 }
+
+export interface ChangePasswordRequest {
+    currentPassword?: string;
+    newPassword?: string;
+}
