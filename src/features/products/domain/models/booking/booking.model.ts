@@ -10,8 +10,8 @@ export interface CreateBookingInput {
     branchId: string;
     bookingDate: string;
     startTime: string;
-    voucherId?: string;
-    promoCode?: string;
+    rewardRedemptionId?: string;
+    promotionCode?: string;
 }
 
 export interface BookingResponseData {
