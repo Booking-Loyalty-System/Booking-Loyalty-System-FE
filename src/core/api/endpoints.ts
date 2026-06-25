@@ -1,5 +1,10 @@
 export const ENDPOINTS = {
-    // Thêm các feature khác ở đây sau này...
+    NOTIFICATION: {
+        BASE: '/notification',
+        READ: (id: string) => `/notification/${id}/read`,
+        UNREAD_COUNT: '/notification/unread-count'
+    },
+
     AUTH: {
         LOGIN: '/auth/login',
         LOGOUT: '/auth/logout',
@@ -22,6 +27,15 @@ export const ENDPOINTS = {
         BOOKING: '/bookings',
         MY_BOOKING: '/bookings/my-bookings',
         CANCEL: (id: string) => `/bookings/${id}/cancel`,
+        CONFIRM: (id: string) => `/staff/bookings/${id}/confirm`,
+        CHECK_IN: (id: string) => `staff/bookings/${id}/check-in`,
+        QUEUE: (id: string) => `/staff/bookings/${id}/queue`,
+        START: (id: string) => `/staff/bookings/${id}/start`,
+        CHECKOUT: (id: string) => `/staff/bookings/${id}/checkout`,
+        STAFF_CANCEL: (id: string) => `/staff/bookings/${id}/cancel`,
+        NO_SHOW: (id: string) => `/staff/bookings/${id}/no-show`,
+        COMPLETED: (id: string) => `/staff/bookings/${id}/completed`,
+        QR: `/staff/bookings/scan-qr`,
     },
 
     BRANCH: {
@@ -42,6 +56,8 @@ export const ENDPOINTS = {
 
     STAFF: {
         BOOKINGS: '/staff/bookings',
+        PROFILE: '/staff/profile',
+        ID: (id: string) => `/staff/${id}`
     },
 
     LOYALTY: {
@@ -66,4 +82,14 @@ export const ENDPOINTS = {
         REDEMPTION_HISTORY: '/rewards/me/redemptions',
     },
 
+    WASH_BAY: {
+        BY_BRANCH: (id: string) => `/admin/wash-bays/by-branch/${id}`
+    },
+
+    PAYMENT: {
+        BOOKINGS: (id: string) => `/payments/bookings/${id}/checkout`,
+        IPN: "/payments/vnpay/ipn",
+        RETURN: "/payments/vnpay/return",
+        CREATE_PAY_OS_URL: (id: string) => `/payments/payos/${id}/create-link`
+    }
 };

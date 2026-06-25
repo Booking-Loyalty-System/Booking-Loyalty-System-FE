@@ -13,15 +13,13 @@ import { MyVehicles } from "@/features/products/presentation/components/MyVehicl
 import { Promotions } from "@/features/products/presentation/components/Promotion.tsx";
 import { BookingHistory } from "@/features/products/presentation/components/BookingHistory.tsx";
 import { ProfileSettings } from "@/features/products/presentation/components/ProfileSettings.tsx";
-import { NotificationCenter } from "@/features/products/presentation/components/NotificationCenter.tsx";
+import { NotificationCenter } from "@/features/products/presentation/components/Notification.tsx";
 import { Toaster } from "sonner";
 import { StaffLayout } from "@/features/products/presentation/layouts/StaffLayout.tsx";
 import { StaffDashboard } from "@/features/products/presentation/pages/staff/StaffDashboard.tsx";
 import { StaffQueuePage } from "@/features/products/presentation/pages/staff/StaffQueue.tsx";
 import { QueueMonitor } from "@/features/products/presentation/pages/staff/QueueMonitor.tsx";
 import { TotalBookings } from "@/features/products/presentation/pages/staff/TotalBookings.tsx";
-import { CompletedBookings } from "@/features/products/presentation/pages/staff/CompletedBookings.tsx";
-import { CancelledBookings } from "@/features/products/presentation/pages/staff/CancelledBookings.tsx";
 import { AdminDashboard } from "@/features/products/presentation/pages/admin/AdminDashboard";
 import { AdminAnalytics } from "@/features/products/presentation/pages/admin/AdminAnalytics";
 import { AdminLoyalty } from "@/features/products/presentation/pages/admin/AdminLoyalty";
@@ -67,34 +65,26 @@ function App() {
             </Route>
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={["Staff", "Admin"]} />}>
-            <Route element={<StaffLayout />}>
-              <Route path="/staff/dashboard" element={<StaffDashboard />} />
-              <Route path="/staff/queue" element={<StaffQueuePage />} />
-              <Route path="/staff/monitor" element={<QueueMonitor />} />
-              <Route path="/staff/total-bookings" element={<TotalBookings />} />
-              <Route
-                path="/staff/completed-bookings"
-                element={<CompletedBookings />}
-              />
-              <Route
-                path="/staff/cancelled-bookings"
-                element={<CancelledBookings />}
-              />
+                    <Route element={<ProtectedRoute allowedRoles={["Staff", "Admin"]} />}>
+                        <Route element={<StaffLayout />}>
+                            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+                            <Route path="/staff/queue" element={<StaffQueuePage />} />
+                            <Route path="/staff/monitor" element={<QueueMonitor />} />
+                            <Route path="/staff/bookings" element={<TotalBookings />} />
+                            <Route path="/staff/notifications" element={< NotificationCenter/>} />
+                        </Route>
+                    </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/packages" element={<AdminPackages />} />
+                <Route path="/admin/branches" element={<AdminBranches />} />
+                <Route path="/admin/loyalty" element={<AdminLoyalty />} />
+                <Route path="/admin/reports" element={<AdminReports />} />
+                <Route path="/admin/analytics" element={<AdminAnalytics />} />
+                <Route path="/admin/promotions" element={<AdminPromotions />} />
+                <Route path="/admin/staff" element={<AdminStaff />} />
             </Route>
-          </Route>
-
-          <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/packages" element={<AdminPackages />} />
-            <Route path="/admin/branches" element={<AdminBranches />} />
-            <Route path="/admin/loyalty" element={<AdminLoyalty />} />
-            <Route path="/admin/reports" element={<AdminReports />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
-            <Route path="/admin/promotions" element={<AdminPromotions />} />
-            <Route path="/admin/staff" element={<AdminStaff />} />
-          </Route>
-
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

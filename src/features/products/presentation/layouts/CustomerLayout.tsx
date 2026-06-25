@@ -13,6 +13,7 @@ import { TierUpgradeModal } from '../components/TierUpgradeModal';
 // Đưa các Hook chuẩn kiến trúc của bạn vào đây
 import { useAuth } from '../../application/useAuth.ts';
 import { useBooking } from '../../application/useBooking.ts';
+import {useNotification} from "@/features/products/application/useNotification.ts";
 
 interface MenuItem {
     path: string;
@@ -28,7 +29,7 @@ export const CustomerLayout: React.FC = () => {
     // 🌟 Lấy dữ liệu từ các Application Hook chuẩn của hệ thống
     const { logout, userId } = useAuth();
     const { myBookings, isLoading } = useBooking();
-
+    const { unreadCount } = useNotification();
     // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
     const hasInProgressBooking = !isLoading && myBookings.some(booking => booking.status === 'InProgress');
 
@@ -36,7 +37,6 @@ export const CustomerLayout: React.FC = () => {
     useEffect(() => {
         if (!userId) return;
 
-        // Cấu hình endpoint kết nối tới cổng Hub của Backend
         const connection = new HubConnectionBuilder()
             .withUrl('https://localhost:7001/hubs/booking', {
                 accessTokenFactory: () => localStorage.getItem('access_token') || ''
@@ -48,10 +48,8 @@ export const CustomerLayout: React.FC = () => {
         const startSignalR = async () => {
             try {
                 await connection.start();
-                // Đăng ký định danh Client vào Group riêng trên Server
                 await connection.invoke('JoinCustomerGroup', userId);
 
-                // Lắng nghe tín hiệu thay đổi trạng thái tự động từ Backend gửi về
                 connection.on('BookingStatusChanged', (data: { bookingId: string, status: string }) => {
                     console.log("🔔 [SignalR] Nhận được tín hiệu thay đổi trạng thái:", data);
                     const currentStatus = data?.status;
@@ -61,20 +59,29 @@ export const CustomerLayout: React.FC = () => {
                     } else {
                         toast.info(`Current order status: ${currentStatus}`, { icon: 'ℹ️' });
                     }
-                    console.log("🔄 Ép React Query gọi lại API getMyBookings...");
                     queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
                 });
             } catch (err) {
-                console.error('SignalR Connection Error: ', err);
+                if (err instanceof Error) {
+                    if (err.name === 'AbortError' || err.message.includes('stopped during negotiation')) {
+                        console.log("⏱️ [SignalR] Tiến trình bắt tay cũ bị hủy do React Remount (Strict Mode), đang kết nối lại...");
+                    } else {
+                        console.error('❌ SignalR Connection Error thực sự: ', err);
+                    }
+                } else {
+                    console.error('❌ SignalR gặp lỗi lạ: ', err);
+                }
             }
         };
 
         startSignalR();
 
-        // Ngắt kết nối khi Component bị huỷ (Unmount) để tránh rò rỉ bộ nhớ
         return () => {
             connection.off('BookingStatusChanged');
-            connection.stop();
+            // 🔥 CHỈ GỌI STOP KHI ĐANG TRONG TRẠNG THÁI KẾT NỐI HỢP LỆ
+            if (connection.state === 'Connected' || connection.state === 'Connecting') {
+                connection.stop().catch(() => {});
+            }
         };
     }, [userId, queryClient]);
 
@@ -261,7 +268,11 @@ export const CustomerLayout: React.FC = () => {
                             className={`relative p-2 rounded-xl transition-all duration-200 focus:outline-none ${location.pathname === '/notifications' ? 'bg-[#f1f5f9] text-[#0f172a]' : 'text-[#64748b] hover:text-[#0f172a] hover:bg-[#f1f5f9]'}`}
                         >
                             <Bell className="w-5 h-5" />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                            {unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white shadow-sm">
+                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                </span>
+                            )}
                         </button>
 
                         <ProfileDropdown />

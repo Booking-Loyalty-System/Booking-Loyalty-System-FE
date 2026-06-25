@@ -4,9 +4,8 @@ import { OrbitControls, Stage } from '@react-three/drei';
 import { CarWithEffects } from "@/shared/car-with-effect.tsx";
 import { toast } from 'sonner';
 
-// 🌟 IMPORT THÊM CÁC HOOK CẦN THIẾT
-import { useStaffDashboard } from '../features/products/application/useStaffDashboard.ts';
-import { useBooking } from '../features/products/application/useBooking.ts'; // 🎯 Thêm hook này để lấy data lịch đặt
+// 🌟 Dùng trực tiếp useBooking (đã xóa useStaffDashboard vì không cần thiết nữa)
+import { useBooking } from '../features/products/application/useBooking.ts';
 
 const WASH_STEPS = [
     { id: 1, name: '1. Phun nước áp lực cao', desc: 'Hệ thống vòi phun cao áp xịt nước toàn thân xe.', camPos: [15, 6, 15] },
@@ -17,20 +16,18 @@ const WASH_STEPS = [
 ];
 
 interface AutoWashSimulationProps {
-    bookingId?: string;   // 🌟 Đổi thành optional (?) vì chạy từ Route sẽ không có prop này
+    bookingId?: string;
     staffId?: string;
 }
 
-export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingId: propBookingId, staffId }) => {
+export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingId: propBookingId }) => {
     const [activeStep, setActiveStep] = useState(WASH_STEPS[0]);
     const [showComplete, setShowComplete] = useState(false);
 
-    const { actions } = useStaffDashboard();
+    // 🌟 Lấy data và hook completedBooking từ useBooking của bạn
+    const { myBookings, completedBooking, isCompleted } = useBooking();
 
-    // 🌟 TỰ ĐỘNG DÒ ID KHI CHẠY DẠNG ROUTE ĐỘC LẬP
-    const { myBookings } = useBooking();
-
-    // Tìm lịch đặt xe đang chạy (Ưu tiên InProgress, hoặc Queued/Confirmed để tiện test máy)
+    // Tìm lịch đặt xe đang chạy
     const activeBooking = myBookings.find(b => b.status === 'InProgress');
 
     // Nếu có prop thì ưu tiên dùng prop, không thì lấy ID tự động tìm được
@@ -44,21 +41,16 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
         }
 
         try {
-            // Gọi API chuyển trạng thái (ví dụ sang Completed / CheckedOut tùy số targetStatus của ông)
-            await actions.updateStatus({
-                id: bookingId,
-                payload: {
-                    targetStatus: 3, // Giữ nguyên targetStatus gốc của ông
-                    staffId: staffId || undefined
-                }
-            });
-            toast.success("Hệ thống đã cập nhật trạng thái hoàn thành!");
+            // 🌟 SỬ DỤNG HÀM completedBooking MỚI CỦA BẠN TẠI ĐÂY
+            await completedBooking(bookingId);
+            toast.success("Hệ thống đã cập nhật trạng thái hoàn thành (Completed)!");
 
             // Cập nhật thành công mới đóng Modal và reset xe về bước 1
             setShowComplete(false);
             setActiveStep(WASH_STEPS[0]);
         } catch (error) {
             toast.error("Cập nhật trạng thái lên server thất bại. Vui lòng thử lại!");
+            console.error(error);
         }
     };
 
@@ -67,7 +59,7 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
         const currentIndex = WASH_STEPS.findIndex((s) => s.id === activeStep.id);
 
         if (currentIndex === WASH_STEPS.length - 1) {
-            // 🌟 THAY ĐỔI TẠI ĐÂY: Kích hoạt hiện Modal chúc mừng lên màn hình!
+            // Kích hoạt hiện Modal chúc mừng lên màn hình
             setShowComplete(true);
         } else {
             setActiveStep(WASH_STEPS[currentIndex + 1]);
@@ -85,7 +77,7 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
         return () => clearInterval(interval);
     }, [handleNextStep, showComplete]);
 
-    // 🌟 THÊM GIAO DIỆN CHỜ NẾU HỆ THỐNG CHƯA LOAD XONG ID HOẶC KHÔNG CÓ LỊCH ĐẶT
+    // GIAO DIỆN CHỜ
     if (!bookingId) {
         return (
             <div className="w-full max-w-[1100px] mx-auto bg-white rounded-3xl p-6 shadow-md flex items-center justify-center h-[600px]">
@@ -101,7 +93,6 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
 
     return (
         <div className="w-full max-w-[1100px] mx-auto bg-white rounded-3xl p-6 shadow-md flex flex-col md:flex-row gap-6 h-[600px] relative">
-            {/* ... Giữ nguyên toàn bộ phần giao diện return (Canvas, Panel Phải) bên dưới của ông ... */}
             <div className="flex-1 bg-slate-100 rounded-2xl overflow-hidden relative">
                 <Canvas camera={{ fov: 45, position: [15, 8, 15] }}>
                     <color attach="background" args={['#f1f5f9']} />
@@ -150,8 +141,8 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
 
                 <button
                     onClick={handleNextStep}
-                    disabled={showComplete}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl text-xs transition-colors shadow-md shadow-blue-100 text-center block mt-4"
+                    disabled={showComplete || isCompleted}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl text-xs transition-colors shadow-md shadow-blue-100 text-center block mt-4 disabled:opacity-50"
                 >
                     {activeStep.id === 5 ? "Hoàn Tất Quy Trình Rửa ✔" : "Kích Hoạt Bước Tiếp Theo →"}
                 </button>
@@ -164,9 +155,10 @@ export const AutoWashSimulation: React.FC<AutoWashSimulationProps> = ({ bookingI
                             <p className="text-slate-600 mt-2">Xe đã sạch bong sáng bóng và trạng thái đã được cập nhật.</p>
                             <button
                                 onClick={handleCloseModalAndUpdateStatus}
-                                className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg"
+                                disabled={isCompleted}
+                                className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
                             >
-                                Đóng
+                                {isCompleted ? 'Đang cập nhật...' : 'Đóng & Xác nhận'}
                             </button>
                         </div>
                     </div>
