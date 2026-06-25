@@ -277,8 +277,8 @@ export const BookWash: React.FC = () => {
     };
 
     // 5. Render
-    if (isLoadingVehicles || isLoadingPackages || (selectedBranchId && isLoadingSlots)) {
-        return <div className="p-10 text-center font-medium">Loading booking details and slot data...</div>;
+    if (isLoadingVehicles || isLoadingPackages) {
+        return <div className="p-10 text-center font-medium">Loading booking details...</div>;
     }
 
     if (createdBooking) {
@@ -341,6 +341,7 @@ export const BookWash: React.FC = () => {
                     onSelectDate={setSelectedDate}
                     selectedTime={selectedTime}
                     onSelectTime={setSelectedTime}
+                    isLoadingSlots={isLoadingSlots}
                 />
             </div>
 

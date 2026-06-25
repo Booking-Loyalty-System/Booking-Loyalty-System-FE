@@ -15,6 +15,7 @@ interface DateTimeSelectionProps {
     onSelectDate: (date: string) => void;
     selectedTime: string;
     onSelectTime: (time: string) => void;
+    isLoadingSlots?: boolean;
 }
 
 export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
@@ -23,7 +24,8 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                                                         selectedDate,
                                                                         onSelectDate,
                                                                         selectedTime,
-                                                                        onSelectTime
+                                                                        onSelectTime,
+                                                                        isLoadingSlots
                                                                     }) => {
 
     // 1. Tìm danh sách ca giờ thuộc riêng ngày đang được chọn trên UI (selectedDate)
@@ -94,7 +96,12 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             <div className="space-y-4 pt-2">
                 <h4 className="text-lg font-bold text-[#0f172a]">Available Time Slots</h4>
 
-                {activeTimeSlots.length === 0 ? (
+                {isLoadingSlots ? (
+                    <div className="text-sm font-medium text-blue-500 py-4 flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                        Đang tải dữ liệu ca trống...
+                    </div>
+                ) : activeTimeSlots.length === 0 ? (
                     <div className="text-sm font-medium text-slate-400 py-4 italic">
                         Vui lòng chọn chi nhánh để cập nhật ca trống...
                     </div>
