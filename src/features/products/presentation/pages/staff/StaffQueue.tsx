@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 import { useAuth } from '../../../application/useAuth';
+import { usePayment } from '../../../application/usePayment';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 import { toast } from 'sonner';
 import { CheckoutSummaryModal } from '../../components/staff/CheckoutSummaryModal';
@@ -19,6 +20,7 @@ type StaffAction = 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout';
 
 export const StaffQueuePage: React.FC = () => {
     const { user } = useAuth();
+    const { createPayOsUrl } = usePayment();
     // Đảm bảo lấy đúng kiểu dữ liệu từ hook
     const { bookings = [], isLoading, actions } = useStaffDashboard();
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
@@ -66,6 +68,23 @@ export const StaffQueuePage: React.FC = () => {
         } catch (error) {
             console.error(error);
             toast.error('Checkout failed');
+        }
+    };
+
+    const handleConfirmPayOS = async (): Promise<string> => {
+        if (!selectedBookingForCheckout) return '';
+        const toastId = toast.loading('Đang khởi tạo cổng thanh toán PayOS...');
+        try {
+            const response = await createPayOsUrl(selectedBookingForCheckout.id);
+            toast.dismiss(toastId);
+            if (response && typeof response === 'object' && 'checkoutUrl' in response) {
+                return (response as any).checkoutUrl;
+            }
+            return response as unknown as string;
+        } catch (error) {
+            console.error(error);
+            toast.error('Không thể kết nối đến cổng thanh toán PayOS', { id: toastId });
+            throw error;
         }
     };
 
@@ -228,7 +247,8 @@ export const StaffQueuePage: React.FC = () => {
                 <CheckoutSummaryModal
                     booking={selectedBookingForCheckout}
                     onClose={() => setSelectedBookingForCheckout(null)}
-                    onConfirm={confirmCheckout}
+                    onConfirmCash={confirmCheckout}
+                    onConfirmPayOS={handleConfirmPayOS}
                 />
             )}
         </div>
