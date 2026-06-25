@@ -1,0 +1,466 @@
+commit b07b763cebd8992fdf066d57702048ee6112a9c4
+Author: HideOnBushIsMe <bangnguyen290802@gmail.com>
+Date:   Mon Jun 22 18:48:02 2026 +0700
+
+    feat: initialize customer mock repository and localize currency to VND
+
+diff --git a/src/features/products/application/useCustomer.ts b/src/features/products/application/useCustomer.ts
+index 9260438..b7a49f5 100644
+--- a/src/features/products/application/useCustomer.ts
++++ b/src/features/products/application/useCustomer.ts
+@@ -1,8 +1,15 @@
+ import { useQuery } from '@tanstack/react-query';
+ import { CustomerRepositoryImplement } from '../infrastructure/repositories/customer/customer.repository.implement.ts';
++import { CustomerRepositoryMock } from '../infrastructure/repositories/customer/customer.repository.mock.ts';
+ import type { Customer } from '../domain/models/customer/customer.dto.ts';
+ 
+-const customerRepository = new CustomerRepositoryImplement();
++// Cờ useMock được cấu hình qua biến môi trường VITE_USE_MOCK (mặc định là false để chạy API thật)
++const useMock = import.meta.env.VITE_USE_MOCK === 'true';
++
++// Khởi tạo repository tương ứng tùy theo cờ useMock
++const customerRepository = useMock 
++    ? new CustomerRepositoryMock() 
++    : new CustomerRepositoryImplement();
+ 
+ export const useCustomerMe = () => {
+     const {
+diff --git a/src/features/products/infrastructure/repositories/customer/customer.repository.mock.ts b/src/features/products/infrastructure/repositories/customer/customer.repository.mock.ts
+new file mode 100644
+index 0000000..a61d0dd
+--- /dev/null
++++ b/src/features/products/infrastructure/repositories/customer/customer.repository.mock.ts
+@@ -0,0 +1,25 @@
++import type { Customer } from "@/features/products/domain/models/customer/customer.dto.ts";
++import type { ICustomerRepository } from "@/features/products/infrastructure/repositories/customer/customer.repository.interface.ts";
++
++// Class này giả lập các API liên quan tới Customer để chạy dưới client khi chưa có backend hoàn thiện.
++// Dùng tiếng Việt giải thích: Chọn giải pháp Mock này để phát triển nhanh UI/UX của cổng Customer Portal độc lập.
++export class CustomerRepositoryMock implements ICustomerRepository {
++    private mockCustomer: Customer = {
++        id: "cust_01",
++        email: "john.doe@gmail.com",
++        fullName: "John Doe",
++        phoneNumber: "0901234567",
++        dateOfBirth: "1995-10-15",
++        tier: "Gold",
++        totalPoints: 850,
++        totalWashes: 5,
++        totalSpent: 3175000, // Đơn vị VND (Ví dụ: 3,175,000đ)
++        createdAt: "2026-01-01T08:00:00Z"
++    };
++
++    async getMe(): Promise<Customer> {
++        // Giả lập độ trễ mạng 300ms
++        await new Promise(resolve => setTimeout(resolve, 300));
++        return { ...this.mockCustomer };
++    }
++}
+diff --git a/src/features/products/presentation/components/BookingSummary.tsx b/src/features/products/presentation/components/BookingSummary.tsx
+index 7193109..f10e4a8 100644
+--- a/src/features/products/presentation/components/BookingSummary.tsx
++++ b/src/features/products/presentation/components/BookingSummary.tsx
+@@ -24,13 +24,13 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
+                                     <span className="text-xs font-bold bg-blue-50 text-[#1e6ffd] px-2 py-1 rounded-md">{currentVehicle.licensePlate}</span>
+                                 </div>
+                             )}
+-                            {currentPackage && (
++                             {currentPackage && (
+                                 <div className="flex justify-between items-center border-t border-[#f1f5f9] pt-3">
+                                     <div>
+                                         <span className="block text-xs text-[#94a3b8] font-medium">Wash Package</span>
+                                         <span className="font-bold text-[#334155]">{currentPackage.name}</span>
+                                     </div>
+-                                    <span className="font-extrabold text-[#0f172a] text-lg">${currentPackage.price}</span>
++                                    <span className="font-extrabold text-[#0f172a] text-lg">{currentPackage.price.toLocaleString('vi-VN')}đ</span>
+                                 </div>
+                             )}
+                             <div className="flex flex-col gap-1 border-t border-[#f1f5f9] pt-3">
+@@ -42,7 +42,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
+ 
+                             <div className="border-t border-[#f1f5f9] pt-4 mt-2 flex justify-between items-baseline">
+                                 <span className="font-bold text-[#0f172a] text-base">Total Estimated:</span>
+-                                <span className="font-black text-[#1e6ffd] text-2xl">${currentPackage?.price}</span>
++                                <span className="font-black text-[#1e6ffd] text-2xl">{currentPackage?.price.toLocaleString('vi-VN')}đ</span>
+                             </div>
+                         </div>
+                     )}
+diff --git a/src/features/products/presentation/components/Dashboard.tsx b/src/features/products/presentation/components/Dashboard.tsx
+index 0a1acd8..615190c 100644
+--- a/src/features/products/presentation/components/Dashboard.tsx
++++ b/src/features/products/presentation/components/Dashboard.tsx
+@@ -3,14 +3,23 @@ import {
+     Calendar, Star, Award, TrendingUp, Gift, CheckCircle2,
+     Sparkles, Clock, XCircle, ArrowRight, Megaphone, History
+ } from 'lucide-react';
++import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
+ 
+ export const Dashboard: React.FC = () => {
+-    // Giả lập dữ liệu từ hình ảnh
++    // 🌟 Lấy thông tin khách hàng đang đăng nhập từ Application Layer
++    const { customerMe } = useCustomerMe();
++
++    const displayName = customerMe?.fullName || 'John Doe';
++    const totalPoints = customerMe?.totalPoints ?? 850;
++    const tier = customerMe?.tier ?? 'Gold';
++    const washesCount = customerMe?.totalWashes ?? 5;
++
++    // Giả lập dữ liệu và điều chỉnh đơn vị tiền tệ sang VND
+     const stats = [
+         { id: 1, label: 'This Month', value: '8', sub: 'Total Bookings', icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
+-        { id: 2, label: 'Loyalty', value: '850', sub: 'Total Points', icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
+-        { id: 3, label: 'Status', value: 'Gold', sub: 'Membership Tier', icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
+-        { id: 4, label: 'Savings', value: '$127', sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
++        { id: 2, label: 'Loyalty', value: totalPoints.toString(), sub: 'Total Points', icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
++        { id: 3, label: 'Status', value: tier, sub: 'Membership Tier', icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
++        { id: 4, label: 'Savings', value: '1.270.000đ', sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
+     ];
+ 
+     const quickActions = [
+@@ -20,13 +29,16 @@ export const Dashboard: React.FC = () => {
+         { name: 'History', desc: 'View past bookings', icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50' },
+     ];
+ 
++    const remainingWashes = Math.max(0, 7 - washesCount);
++    const washProgressPercentage = Math.min(100, Math.round((washesCount / 7) * 100));
++
+     return (
+         <div className="space-y-8 max-w-7xl mx-auto pb-12 animate-fade-in">
+ 
+             {/* WELCOME HEADER (image_6ebedd.png) */}
+             <div className="space-y-1">
+                 <h1 className="text-3xl font-extrabold text-[#0f172a] flex items-center gap-2">
+-                    Welcome back, John Doe! <span className="animate-bounce">👋</span>
++                    Welcome back, {displayName}! <span className="animate-bounce">👋</span>
+                 </h1>
+                 <p className="text-sm text-[#64748b] font-medium">Here's what's happening with your account today.</p>
+             </div>
+@@ -62,34 +74,46 @@ export const Dashboard: React.FC = () => {
+                         </div>
+                     </div>
+                     <div className="text-right">
+-                        <span className="block text-3xl font-black text-[#16a34a]">5/7</span>
++                        <span className="block text-3xl font-black text-[#16a34a]">{washesCount}/7</span>
+                         <span className="text-[10px] text-[#166534] font-bold uppercase tracking-wider">Washes Done</span>
+                     </div>
+                 </div>
+ 
+-                {/* Progress Bar 71% */}
++                {/* Progress Bar */}
+                 <div className="w-full bg-[#dcfce7] h-6 rounded-full overflow-hidden relative flex items-center">
+                     <div
+                         className="bg-[#16a34a] h-full rounded-full flex items-center justify-end pr-3 transition-all duration-500"
+-                        style={{ width: '71%' }}
++                        style={{ width: `${washProgressPercentage}%` }}
+                     >
+-                        <span className="text-[10px] font-bold text-white">71%</span>
++                        <span className="text-[10px] font-bold text-white">{washProgressPercentage}%</span>
+                     </div>
+                 </div>
+ 
+                 {/* Chấm điểm mốc tròn (1-7) và text thông báo */}
+                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-1">
+                     <p className="text-sm font-semibold text-[#166534]">
+-                        <span className="text-[#16a34a] font-bold">2 more washes</span> to unlock your FREE wash reward!
++                        {remainingWashes > 0 ? (
++                            <>
++                                <span className="text-[#16a34a] font-bold">{remainingWashes} more washes</span> to unlock your FREE wash reward!
++                            </>
++                        ) : (
++                            <span className="text-[#16a34a] font-bold">You unlocked a FREE wash reward! 🎉</span>
++                        )}
+                     </p>
+ 
+                     {/* Badge đếm số từ 1 đến 7 */}
+                     <div className="flex items-center gap-1.5">
+-                        {[1, 2, 3, 4, 5].map((idx) => (
+-                            <CheckCircle2 key={idx} className="w-6 h-6 text-[#16a34a] fill-white" />
+-                        ))}
+-                        <div className="w-6 h-6 rounded-full bg-[#e2e8f0] flex items-center justify-center text-xs font-bold text-[#94a3b8]">6</div>
+-                        <div className="w-6 h-6 rounded-full bg-[#e2e8f0] flex items-center justify-center text-xs font-bold text-[#94a3b8]">7</div>
++                        {Array.from({ length: 7 }).map((_, idx) => {
++                            const step = idx + 1;
++                            if (step <= washesCount) {
++                                return <CheckCircle2 key={step} className="w-6 h-6 text-[#16a34a] fill-white" />;
++                            }
++                            return (
++                                <div key={step} className="w-6 h-6 rounded-full bg-[#e2e8f0] flex items-center justify-center text-xs font-bold text-[#94a3b8]">
++                                    {step}
++                                </div>
++                            );
++                        })}
+                     </div>
+                 </div>
+             </div>
+@@ -110,7 +134,7 @@ export const Dashboard: React.FC = () => {
+                                 </div>
+                                 <div>
+                                     <span className="block text-xs text-blue-100 font-semibold tracking-wider uppercase">Current Tier</span>
+-                                    <h2 className="text-3xl font-black tracking-tight">Gold Member</h2>
++                                    <h2 className="text-3xl font-black tracking-tight">{tier} Member</h2>
+                                 </div>
+                             </div>
+                             <Sparkles className="w-8 h-8 text-blue-200 animate-pulse" />
+@@ -119,14 +143,14 @@ export const Dashboard: React.FC = () => {
+                         {/* Thanh Tiến Trình Lên Platinum */}
+                         <div className="space-y-2">
+                             <div className="flex justify-between text-xs font-bold text-blue-100">
+-                                <span>Progress to Platinum</span>
+-                                <span>850/1000 points</span>
++                                <span>Progress to Next Tier</span>
++                                <span>{totalPoints}/1000 points</span>
+                             </div>
+                             <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+-                                <div className="bg-white h-full rounded-full" style={{ width: '85%' }}></div>
++                                <div className="bg-white h-full rounded-full" style={{ width: `${Math.min(100, (totalPoints / 1000) * 100)}%` }}></div>
+                             </div>
+                             <p className="text-xs text-blue-100 font-medium pt-1">
+-                                150 points to next tier <br />
++                                {Math.max(0, 1000 - totalPoints)} points to next tier <br />
+                                 <span className="opacity-75 text-[11px]">Tiers are auto-reviewed monthly based on your past 3 months' data</span>
+                             </p>
+                         </div>
+@@ -135,11 +159,11 @@ export const Dashboard: React.FC = () => {
+                     {/* Hàng 3 khối thông số phụ nằm đáy card */}
+                     <div className="grid grid-cols-3 gap-4 pt-6 mt-4 border-t border-white/10 relative z-10">
+                         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+-                            <span className="block text-xl font-black">850</span>
++                            <span className="block text-xl font-black">{totalPoints}</span>
+                             <span className="text-[10px] text-blue-100 font-semibold uppercase">Total Points</span>
+                         </div>
+                         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+-                            <span className="block text-xl font-black">2x</span>
++                            <span className="block text-xl font-black">{tier === 'Gold' ? '2x' : tier === 'Platinum' ? '3x' : '1.5x'}</span>
+                             <span className="text-[10px] text-blue-100 font-semibold uppercase">Points Multiplier</span>
+                         </div>
+                         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+diff --git a/src/features/products/presentation/components/LoyaltyTier.tsx b/src/features/products/presentation/components/LoyaltyTier.tsx
+index b5c1a3f..beb0f6f 100644
+--- a/src/features/products/presentation/components/LoyaltyTier.tsx
++++ b/src/features/products/presentation/components/LoyaltyTier.tsx
+@@ -175,7 +175,7 @@ export const LoyaltyTier: React.FC = () => {
+                         ))}
+                     </div>
+                     <p className="text-xs text-slate-400 mt-4 italic">
+-                        Example: A $45 wash for Gold members = (45/1000) × 2 = 0.09 × 2 = 0.18 points
++                        Ví dụ: Giao dịch rửa xe trị giá 450.000đ cho thành viên Gold = (450.000 / 1.000) × 2 = 450 × 2 = 900 điểm
+                     </p>
+                 </div>
+ 
+diff --git a/src/features/products/presentation/components/NotificationCenter.tsx b/src/features/products/presentation/components/NotificationCenter.tsx
+index 7fc67c5..9866edb 100644
+--- a/src/features/products/presentation/components/NotificationCenter.tsx
++++ b/src/features/products/presentation/components/NotificationCenter.tsx
+@@ -36,11 +36,11 @@ export const NotificationCenter: React.FC = () => {
+             {
+                 id: 'LY7721',
+                 type: 'loyalty',
+-                title: 'Points Expiring Soon!',
+-                message: '0.25 loyalty points worth $2.50 will expire on June 1, 2026. Redeem them before they expire!',
++                title: 'Điểm tích lũy sắp hết hạn!',
++                message: '150 điểm tích lũy trị giá 100.000đ sẽ hết hạn vào ngày 1 tháng 6, 2026. Hãy đổi thưởng ngay trước khi chúng hết hạn!',
+                 timeAgo: '5/25/2026',
+                 isUnread: true,
+-                actionLabel: 'Redeem Now'
++                actionLabel: 'Đổi ngay'
+             },
+             {
+                 id: 'PR9910',
+diff --git a/src/features/products/presentation/components/ProfileSettings.tsx b/src/features/products/presentation/components/ProfileSettings.tsx
+index 04a1b41..6c3f18b 100644
+--- a/src/features/products/presentation/components/ProfileSettings.tsx
++++ b/src/features/products/presentation/components/ProfileSettings.tsx
+@@ -1,7 +1,9 @@
+ import React, { useState } from 'react';
+ import { User, Edit3, Lock, Bell, ShieldCheck, Download, ExternalLink, Trash2 } from 'lucide-react';
++import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
+ 
+ export const ProfileSettings: React.FC = () => {
++    const { customerMe } = useCustomerMe();
+     const [emailNotify, setEmailNotify] = useState(true);
+     const [smsNotify, setSMSNotify] = useState(true);
+     const [marketingEmail, setMarketingEmail] = useState(false);
+@@ -31,15 +33,15 @@ export const ProfileSettings: React.FC = () => {
+                         <div className="space-y-4">
+                             <div className="space-y-1.5">
+                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
+-                                <input type="text" readOnly value="John Doe" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
++                                <input type="text" readOnly value={customerMe?.fullName || 'John Doe'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                             </div>
+                             <div className="space-y-1.5">
+                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
+-                                <input type="text" readOnly value="+1 234-567-8900" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
++                                <input type="text" readOnly value={customerMe?.phoneNumber || '0901234567'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                             </div>
+                             <div className="space-y-1.5">
+                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+-                                <input type="email" readOnly value="john.doe@example.com" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
++                                <input type="email" readOnly value={customerMe?.email || 'john.doe@gmail.com'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                             </div>
+                         </div>
+                     </div>
+@@ -102,11 +104,21 @@ export const ProfileSettings: React.FC = () => {
+                             </div>
+                         </div>
+                         <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
+-                            <div className="flex justify-between opacity-90"><span>Total Bookings:</span><span className="font-bold">28</span></div>
+-                            <div className="flex justify-between opacity-90"><span>Total Spent:</span><span className="font-bold">$1,245.50</span></div>
++                            <div className="flex justify-between opacity-90">
++                                <span>Total Bookings:</span>
++                                <span className="font-bold">{customerMe?.totalWashes ?? 5}</span>
++                            </div>
++                            <div className="flex justify-between opacity-90">
++                                <span>Total Spent:</span>
++                                <span className="font-bold">
++                                    {(customerMe?.totalSpent ?? 3175000).toLocaleString('vi-VN')}đ
++                                </span>
++                            </div>
+                             <div className="flex justify-between items-baseline">
+                                 <span>Points Balance:</span>
+-                                <span className="text-base font-black text-amber-300">2.45 pts</span>
++                                <span className="text-base font-black text-amber-300">
++                                    {customerMe?.totalPoints ?? 850} pts
++                                </span>
+                             </div>
+                         </div>
+                     </div>
+diff --git a/src/features/products/presentation/components/Promotion.tsx b/src/features/products/presentation/components/Promotion.tsx
+index 0880c1e..20d76a5 100644
+--- a/src/features/products/presentation/components/Promotion.tsx
++++ b/src/features/products/presentation/components/Promotion.tsx
+@@ -41,14 +41,14 @@ export const Promotions: React.FC = () => {
+             isFeatured: true
+         },
+         {
+-            title: 'Exclusive for Gold: Free Vacuuming',
+-            description: 'Free ceramic coating upgrade with any premium wash',
+-            badgeText: 'Gold Members Only',
++            title: 'Khuyến mãi Gold: Hút bụi miễn phí',
++            description: 'Nâng cấp miễn phí phủ Ceramic khi đăng ký bất kỳ gói rửa xe Premium nào',
++            badgeText: 'Chỉ dành cho Gold',
+             badgeBg: 'bg-pink-600',
+             badgeColor: 'text-white',
+-            dateText: 'Until June 15, 2026',
++            dateText: 'Đến hết ngày 15 Tháng 6, 2026',
+             code: 'GOLDVIP',
+-            conditions: ['Valid for Gold members only', 'Limited to one use per month', 'Upgrade worth $40'],
++            conditions: ['Chỉ áp dụng cho thành viên Gold', 'Giới hạn 1 lần sử dụng mỗi tháng', 'Gói nâng cấp trị giá 400.000đ'],
+             icon: <Crown className="w-6 h-6" />,
+             iconBg: 'bg-purple-50',
+             iconColor: 'text-purple-600',
+diff --git a/src/features/products/presentation/components/RewardsSection.tsx b/src/features/products/presentation/components/RewardsSection.tsx
+index 7109840..fd16c5a 100644
+--- a/src/features/products/presentation/components/RewardsSection.tsx
++++ b/src/features/products/presentation/components/RewardsSection.tsx
+@@ -39,8 +39,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+     const rewards: RewardItem[] = [
+         {
+             id: 'rw_1',
+-            title: 'Free Basic Wash',
+-            description: 'Redeem for one complimentary basic car wash service',
++            title: 'Rửa xe Cơ bản Miễn phí',
++            description: 'Đổi lấy một lượt rửa xe cơ bản hoàn toàn miễn phí',
+             validDays: 30,
+             requiredPts: 200,
+             icon: <Gift className="w-6 h-6" />,
+@@ -49,8 +49,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+         },
+         {
+             id: 'rw_2',
+-            title: '$10 Discount Voucher',
+-            description: 'Get $10 off on any service package',
++            title: 'Voucher Giảm giá 100.000đ',
++            description: 'Giảm ngay 100.000đ khi thanh toán dịch vụ rửa xe',
+             validDays: 60,
+             requiredPts: 150,
+             icon: <Ticket className="w-6 h-6" />,
+@@ -59,8 +59,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+         },
+         {
+             id: 'rw_3',
+-            title: 'VIP Booking Slot',
+-            description: 'Priority booking access for premium time slots',
++            title: 'Đặt lịch Giờ vàng VIP',
++            description: 'Quyền ưu tiên lựa chọn và đặt trước các khung giờ cao điểm',
+             validDays: 90,
+             requiredPts: 300,
+             icon: <Star className="w-6 h-6" />,
+@@ -69,8 +69,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+         },
+         {
+             id: 'rw_4',
+-            title: 'Free Premium Wash',
+-            description: 'Redeem for one complimentary premium car wash service',
++            title: 'Rửa xe Cao cấp Miễn phí',
++            description: 'Đổi lấy một lượt rửa xe cao cấp (Premium) miễn phí',
+             validDays: 30,
+             requiredPts: 400,
+             icon: <Sparkles className="w-6 h-6" />,
+@@ -79,8 +79,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+         },
+         {
+             id: 'rw_5',
+-            title: '$25 Discount Voucher',
+-            description: 'Get $25 off on any service package',
++            title: 'Voucher Giảm giá 250.000đ',
++            description: 'Giảm ngay 250.000đ khi thanh toán dịch vụ rửa xe',
+             validDays: 60,
+             requiredPts: 350,
+             icon: <Ticket className="w-6 h-6" />,
+@@ -89,8 +89,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+         },
+         {
+             id: 'rw_6',
+-            title: 'Free Ceramic Coating',
+-            description: 'Redeem for complimentary ceramic coating service',
++            title: 'Phủ Ceramic Miễn phí',
++            description: 'Đổi lấy gói dịch vụ phủ Ceramic bảo vệ sơn xe cao cấp',
+             validDays: 30,
+             requiredPts: 800,
+             icon: <Sparkles className="w-6 h-6" />,
+@@ -104,8 +104,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+     const redeemedHistory: RedeemedHistory[] = [
+         {
+             id: 'hist_1',
+-            title: 'Free Basic Wash',
+-            redeemedDate: 'May 10, 2026',
++            title: 'Rửa xe Cơ bản Miễn phí',
++            redeemedDate: '10 Tháng 5, 2026',
+             points: -200,
+             status: 'Active',
+             icon: <Gift className="w-6 h-6" />,
+@@ -114,8 +114,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+         },
+         {
+             id: 'hist_2',
+-            title: '$10 Discount Voucher',
+-            redeemedDate: 'April 25, 2026',
++            title: 'Voucher Giảm giá 100.000đ',
++            redeemedDate: '25 Tháng 4, 2026',
+             points: -150,
+             status: 'Used',
+             icon: <Ticket className="w-6 h-6" />,
+@@ -124,8 +124,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
+         },
+         {
+             id: 'hist_3',
+-            title: 'VIP Booking Slot',
+-            redeemedDate: 'April 15, 2026',
++            title: 'Đặt lịch Giờ vàng VIP',
++            redeemedDate: '15 Tháng 4, 2026',
+             points: -300,
+             status: 'Expired',
+             icon: <Star className="w-6 h-6" />,
+diff --git a/src/features/products/presentation/components/WashPackageSelection.tsx b/src/features/products/presentation/components/WashPackageSelection.tsx
+index bc2e529..978d550 100644
+--- a/src/features/products/presentation/components/WashPackageSelection.tsx
++++ b/src/features/products/presentation/components/WashPackageSelection.tsx
+@@ -40,7 +40,7 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
+                                     <p className="text-xs text-[#64748b] mt-1 font-medium line-clamp-2">{pkg.description}</p>
+                                 </div>
+                                 <div className="flex items-baseline gap-3 pt-2">
+-                                    <span className="text-3xl font-extrabold text-[#0f172a]">${pkg.price}</span>
++                                    <span className="text-3xl font-extrabold text-[#0f172a]">{pkg.price.toLocaleString('vi-VN')}đ</span>
+                                     <span className="text-xs text-[#64748b] font-semibold">⏱ {pkg.durationMinutes} min</span>
+                                 </div>
+                                 {pkg.features && pkg.features.length > 0 && (

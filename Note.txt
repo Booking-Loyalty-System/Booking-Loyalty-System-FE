@@ -1,0 +1,77 @@
+/Ghi chú 19-05-2026 rv1
+
+1. Làm rõ thêm chỗ scope?
+KH đăng kí thông tin, đăng nhập, đặt lịch chọn giờ, check in, đưa xe vào rửa, thanh toán, tích điểm, check out.
+
+2. Bổ sung phần tự động của app. App tự động ở chỗ nào? (Đây là AutoWash, chưa cần quan tâm tới quá trình rửa xe tự động nó rửa chiếc xe như nào. Nhưng quan tâm tới đoạn hệ thống đưa xe vào buồng rửa xe đang ở trạng thái trống như nào): 
+
+- tự động cập nhật trạng thái khung giờ đang trống có thể đặt lịch, khung giờ đã kín,..để trong quá trình booking thì khách có thể chủ động tuỳ chọn và quyết định giờ đến rửa xe.
+- check-in-out bằng QR hoặc mã KH ở địa điểm rửa xe (nhân viên hỗ trợ làm thủ công và có thiết bị scan tự động?)
+- tự động check trạng thái các buồng rửa và đẩy xe vào buồng rửa đang trống.
+- tự động tích điểm thành viên sau mỗi lần thanh toán rửa xe.
+- tự động lên hạng khi đạt đủ điều kiện điểm tích luỹ.
+- tự động miễn phí lượt rửa xe cho KH? Ví dụ: tự động tặng 1 lần rửa xe free sau 7 lần sử dụng dịch vụ.
+
+- cơ cấu lựa chọn đổi điểm thưởng: voucher, quà,...
+- các phân khúc hạng: có các hạng như mem-silver-gold-platium, chi tiết quyền lợi của từng hạng. 
+- chi tiết từng gói rửa xe để khách dễ chọn.
+
+
+29/05: figma rv2
+Bổ sung địa điểm, chi nhánh, phân loại staff theo địa điểm
+check-in-out bằng QR hoặc mã KH ở địa điểm rửa xe (nhân viên hỗ trợ làm thủ công và có thiết bị scan tự động?)
+thêm voucher ở phần booking
+bổ sung Payment cho staff, hiển thị QR, hoặc là thanh toán tiền mặt
+
+05/06/2026: ERD
+
+Chỉnh sửa các đồ thị:
+Hạn chế cắt nhau các đường nối
+Bổ sung biểu đồ State
+
+Điều chỉnh bổ sung lại phần booking, time slot:
+
+'branch có nhiều wash bay
+booking trong time slot nào
+Xử lí để biết booking của chi nhánh nào'
+
+19/06/2026: Demo luồng chính:
+
+Landing page
+
+Trang customer:
++ Điều chỉnh đơn vị tiền
++ Code local: 
++ Signal: loại bỏ nếu không cần thiết (hoặc k biết dùng để làm gì)
++ 
+Bổ sung cơ chế voucher, điểm thưởng
+
+Staff đưa xe vào wash bay hàng đợi? Branch có nhiều wash bay, nếu wash bay đó đang được dụng, thì gán vào hàng chờ đợi tới lượt, (đếm ngược thời gian?)
+
++ 1 danh sách hàng chờ, nếu trống thì staff có thể đẩy xe vào bay
+
++ cập nhật trạng thái 
+
++ Staff cho từng chi nhánh 
+
+Khách hàng thanh toán, tự động cộng điểm thưởng dựa trên số tiền thanh toán của khách hàng.
+Khách hàng đang book thì sẽ tự động add voucher vào tổng hoá đơn trước khi khách bấm confirm booking, (dùng điểm thưởng đổi voucher )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Ticket, Gift, Star, Plus, Check } from 'lucide-react';
 import type { Voucher } from '../../domain/models/voucher/voucher.model.ts';
-import { useVoucher } from '../../application/useVoucher.ts';
+import { useReward } from '../../application/useReward.ts';
 import { toast } from 'sonner';
 
 interface VoucherSelectionProps {
@@ -17,26 +17,11 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     onSelectVoucher,
     totalPoints
 }) => {
-    const { redeemVoucher, isRedeeming } = useVoucher();
+    const { redeemReward: redeemVoucher, isRedeeming, availableRewards } = useReward();
     const [showQuickRedeem, setShowQuickRedeem] = useState(false);
 
-    // Danh sách phần thưởng quy đổi nhanh trong màn hình đặt lịch
-    const quickRedeemList = [
-        {
-            id: 'rw_2',
-            title: '100.000đ Discount Voucher',
-            requiredPts: 150,
-            discount: 100000,
-            desc: 'Get 100.000đ off on any service'
-        },
-        {
-            id: 'rw_5',
-            title: '250.000đ Discount Voucher',
-            requiredPts: 350,
-            discount: 250000,
-            desc: 'Get 250.000đ off on any service'
-        }
-    ];
+    // Danh sách phần thưởng quy đổi nhanh trong màn hình đặt lịch lấy từ API (giới hạn 4 món)
+    const quickRedeemList = availableRewards.slice(0, 4);
 
     const handleQuickRedeem = async (rewardId: string, requiredPts: number, title: string) => {
         if (totalPoints < requiredPts) {
@@ -143,20 +128,20 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {quickRedeemList.map((reward) => {
-                                const canRedeem = totalPoints >= reward.requiredPts;
+                                const canRedeem = totalPoints >= reward.pointsCost;
                                 return (
                                     <div
                                         key={reward.id}
                                         className="bg-white border border-[#e2e8f0] rounded-xl p-3.5 flex flex-col justify-between gap-3 shadow-xs"
                                     >
                                         <div>
-                                            <h5 className="font-bold text-slate-800 text-xs">{reward.title}</h5>
-                                            <p className="text-[10px] text-slate-400 mt-0.5">{reward.desc}</p>
+                                            <h5 className="font-bold text-slate-800 text-xs">{reward.name}</h5>
+                                            <p className="text-[10px] text-slate-400 mt-0.5">{reward.description}</p>
                                         </div>
                                         <div className="flex items-center justify-between border-t border-slate-50 pt-2">
-                                            <span className="text-xs font-black text-slate-700">{reward.requiredPts} pts</span>
+                                            <span className="text-xs font-black text-slate-700">{reward.pointsCost} pts</span>
                                             <button
-                                                onClick={() => handleQuickRedeem(reward.id, reward.requiredPts, reward.title)}
+                                                onClick={() => handleQuickRedeem(reward.id, reward.pointsCost, reward.name)}
                                                 disabled={isRedeeming || !canRedeem}
                                                 className={`text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm ${
                                                     canRedeem 

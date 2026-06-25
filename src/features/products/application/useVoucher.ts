@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { VoucherRepositoryImplement } from '../infrastructure/repositories/voucher/voucher.repository.implement.ts';
 
-import type { Voucher, RewardDto } from '../domain/models/voucher/voucher.model.ts';
+import type { Voucher } from '../domain/models/voucher/voucher.model.ts';
 
 const voucherRepository = new VoucherRepositoryImplement();
 
@@ -16,15 +16,6 @@ export const useVoucher = () => {
         staleTime: 1000 * 60 * 5, // Cache trong 5 phút
     });
 
-    // 2. Mutation đổi voucher từ điểm tích lũy
-    const redeemVoucherMutation = useMutation({
-        mutationFn: (rewardId: string) => voucherRepository.redeemVoucher(rewardId),
-        onSuccess: () => {
-            // Invalidate cache để cập nhật danh sách voucher và số điểm
-            queryClient.invalidateQueries({ queryKey: ['my_vouchers'] });
-            queryClient.invalidateQueries({ queryKey: ['customer_me'] });
-        }
-    });
 
     // 3. Mutation sử dụng voucher
     const useVoucherMutation = useMutation({
@@ -46,22 +37,11 @@ export const useVoucher = () => {
         };
     }, [queryClient]);
 
-    // 4. Query danh sách phần thưởng có thể đổi
-    const availableRewardsQuery = useQuery<RewardDto[]>({
-        queryKey: ['available_rewards'],
-        queryFn: () => voucherRepository.getAvailableRewards(),
-        staleTime: 1000 * 60 * 5, // Cache trong 5 phút
-    });
-
     return {
         vouchers: myVouchersQuery.data || [],
         activeVouchers: (myVouchersQuery.data || []).filter(v => v.status === 'Active'),
         isLoading: myVouchersQuery.isLoading,
-        redeemVoucher: redeemVoucherMutation.mutateAsync,
-        isRedeeming: redeemVoucherMutation.isPending,
         useVoucher: useVoucherMutation.mutateAsync,
-        isUsing: useVoucherMutation.isPending,
-        availableRewards: availableRewardsQuery.data || [],
-        isLoadingRewards: availableRewardsQuery.isLoading
+        isUsing: useVoucherMutation.isPending
     };
 };

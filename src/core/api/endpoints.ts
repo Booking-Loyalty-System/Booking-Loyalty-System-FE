@@ -47,9 +47,6 @@ export const ENDPOINTS = {
     LOYALTY: {
         BALANCE: '/loyalty/balance',
         HISTORY: '/loyalty/history',
-        REWARDS: '/rewards',
-        MY_REDEMPTIONS: '/rewards/me/redemptions',
-        REDEEM: (id: string) => `/rewards/${id}/redeem`,
     },
 
     ADMIN: {
@@ -63,4 +60,10 @@ export const ENDPOINTS = {
         BASE: '/promotions',
         VALIDATE: '/promotions/validate',
     },
+    REWARDS: {
+        BASE: '/rewards',
+        REWARD_DETAIL: (id: string) => `/rewards/${id}/redeem`,
+        REDEMPTION_HISTORY: '/rewards/me/redemptions',
+    },
+
 };

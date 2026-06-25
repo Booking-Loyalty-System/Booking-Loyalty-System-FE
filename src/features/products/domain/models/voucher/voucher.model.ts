@@ -13,10 +13,33 @@ export interface Voucher {
 
 export interface RewardDto {
     id: string;
-    title: string;
+    name: string;
     description: string;
     validDays: number;
-    requiredPts: number;
+    pointsCost: number;
+    isActive: boolean;
+    discountAmount: number;
     iconType?: 'GIFT' | 'TICKET' | 'STAR' | 'SPARKLES';
-    comingSoon?: boolean;
+}
+
+export interface RedemptionDto {
+    id: string;
+    rewardId: string;
+    rewardName: string;
+    pointsSpent: number;
+    status: 'Pending' | 'Active' | 'Fulfilled' | 'Used' | string;
+    balanceAfter: number;
+    createdAt: string;
+    fulfilledAt: string | null;
+}
+
+export interface MappedVoucher {
+    id: string;
+    code: string;
+    title: string;
+    description: string;
+    status: string;
+    discountValue: number;
+    expiryDate: string;
+    isRewardItem: boolean;
 }
