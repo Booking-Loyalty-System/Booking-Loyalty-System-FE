@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Layout } from "../../components/layout/Layout";
 import {
   MapPin,
@@ -13,42 +13,27 @@ import {
   XCircle,
   Building2,
 } from "lucide-react";
-import { AdminBranchRepositoryImplement } from "../../../infrastructure/repositories/admin-branch/admin-branch.repository.implement";
-import type {
-  BranchResponseData,
-  //CreateBranchInput,
-} from "../../../domain/models/admin-branch/admin-branch.model";
-
-const branchRepo = new AdminBranchRepositoryImplement();
+import {
+  useBranch,
+  type BranchResponseData,
+} from "../../../application/useAdminBranch";
 
 export function AdminBranches() {
-  const [branches, setBranches] = useState<BranchResponseData[]>([]);
+  const {
+    branches,
+    isLoading,
+    createBranch,
+    updateBranch,
+    deleteBranch,
+    toggleStatus,
+  } = useBranch();
+
+  // State chỉ còn dùng để quản lý Form (UI)
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editForm, setEditForm] = useState<Partial<BranchResponseData> | null>(
     null,
   );
-  const [isLoading, setIsLoading] = useState(false);
-
-  const fetchBranches = async () => {
-    try {
-      setIsLoading(true);
-      const data = await branchRepo.getAll();
-      setBranches(data);
-    } catch (error) {
-      console.error("Failed to fetch branches:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const loadBranches = async () => {
-      await fetchBranches();
-    };
-
-    loadBranches();
-  }, []);
 
   const handleEdit = (branch: BranchResponseData) => {
     setIsEditing(branch.id);
@@ -68,65 +53,35 @@ export function AdminBranches() {
 
   const handleSave = async () => {
     if (editForm && isEditing) {
-      try {
-        await branchRepo.update(isEditing, {
+      await updateBranch({
+        id: isEditing,
+        data: {
           branchName: editForm.branchName!,
           address: editForm.address!,
           hotline: editForm.hotline!,
           operatingHours: editForm.operatingHours!,
           status: editForm.status as "Active" | "Inactive",
-        });
-        await fetchBranches();
-        handleCancel();
-      } catch (error) {
-        console.error("Failed to update branch:", error);
-        alert("Có lỗi xảy ra khi cập nhật chi nhánh!");
-      }
+        },
+      });
+      handleCancel();
     }
   };
 
   const handleCreate = async () => {
     if (editForm && editForm.branchName && editForm.address) {
-      try {
-        await branchRepo.create({
-          branchName: editForm.branchName,
-          address: editForm.address,
-          hotline: editForm.hotline || "",
-          operatingHours: editForm.operatingHours || "8am-8pm",
-        });
-        await fetchBranches();
-        handleCancel();
-      } catch (error) {
-        console.error("Failed to create branch:", error);
-        alert("Có lỗi xảy ra khi tạo chi nhánh mới!");
-      }
+      await createBranch({
+        branchName: editForm.branchName,
+        address: editForm.address,
+        hotline: editForm.hotline || "",
+        operatingHours: editForm.operatingHours || "8am-8pm",
+      });
+      handleCancel();
     }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this branch?")) {
-      try {
-        await branchRepo.delete(id);
-        await fetchBranches();
-      } catch (error) {
-        console.error("Failed to delete branch:", error);
-        alert("Có lỗi xảy ra khi xóa chi nhánh!");
-      }
-    }
-  };
-
-  const handleToggleStatus = async (branch: BranchResponseData) => {
-    try {
-      await branchRepo.update(branch.id, {
-        branchName: branch.branchName,
-        address: branch.address,
-        hotline: branch.hotline,
-        operatingHours: branch.operatingHours,
-        status: branch.status === "Active" ? "Inactive" : "Active",
-      });
-      await fetchBranches();
-    } catch (error) {
-      console.error("Failed to toggle status:", error);
+      await deleteBranch(id);
     }
   };
 
@@ -183,7 +138,6 @@ export function AdminBranches() {
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    {/* Bỏ comment nếu muốn dùng tính năng Xóa cứng (Hard Delete) */}
                     <button
                       onClick={() => handleDelete(branch.id)}
                       className="p-2 text-gray-400 hover:text-red-600 transition-colors"
@@ -223,7 +177,7 @@ export function AdminBranches() {
 
                 {/* Status Toggle */}
                 <button
-                  onClick={() => handleToggleStatus(branch)}
+                  onClick={() => toggleStatus(branch)}
                   className={`w-full py-2 rounded-lg font-semibold transition-colors ${
                     branch.status === "Active"
                       ? "bg-green-100 text-green-700 hover:bg-green-200"
