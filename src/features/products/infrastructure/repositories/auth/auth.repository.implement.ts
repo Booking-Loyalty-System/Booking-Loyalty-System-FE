@@ -4,7 +4,7 @@ import type { ApiResponse } from '../../../domain/apiResponse.ts';
 import type { LoginRequest } from '@/features/products/domain/models/auth/auth.model.ts';
 import { httpClient } from '@/core/http/httpClient.ts';
 import { ENDPOINTS } from '@/core/api/endpoints';
-import type {PhoneRegisterRequest} from "@/features/products/domain/models/auth/auth.model.ts";
+import type {PhoneRegisterRequest, ChangePasswordRequest} from "@/features/products/domain/models/auth/auth.model.ts";
 
 export class AuthRepositoryImplement implements IAuthRepository {
     async login(credentials: LoginRequest): Promise<AuthResponseData> {
@@ -50,5 +50,12 @@ export class AuthRepositoryImplement implements IAuthRepository {
         );
 
         return response.data;
+    }
+
+    async changePassword(data: ChangePasswordRequest): Promise<void> {
+        await httpClient.put<ApiResponse<void>>(
+            ENDPOINTS.AUTH.CHANGE_PASSWORD,
+            data
+        );
     }
 }

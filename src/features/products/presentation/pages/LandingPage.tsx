@@ -4,6 +4,7 @@ import {
   Droplets, Sparkles, Star, Crown, Gem, Award, 
   CheckCircle, ArrowRight, MapPin, Phone, Clock, Map 
 } from 'lucide-react';
+import { LandingInteractiveMap } from '../components/LandingInteractiveMap';
 import { useBranch } from "@/features/products/application/useBranch.ts";
 import { useWashPackage } from "@/features/products/application/useWashPackage.ts";
 import { MapModal } from "@/features/products/presentation/components/MapModal.tsx";
@@ -47,23 +48,6 @@ const tiers = [
     bgColor: 'from-purple-500 to-purple-600',
   },
 ];
-
-// Hàm phụ để tính toán vị trí tương đối trên bản đồ giả lập của HCMC dựa theo tọa độ thật
-const getRelativePosition = (lat: number, lon: number) => {
-  // Khoảng tọa độ bao quanh TP.HCM
-  const minLat = 10.70;
-  const maxLat = 10.85;
-  const minLon = 106.60;
-  const maxLon = 106.75;
-  
-  const x = ((lon - minLon) / (maxLon - minLon)) * 100;
-  const y = (1 - (lat - minLat) / (maxLat - minLat)) * 100;
-  
-  return {
-    left: `${Math.min(90, Math.max(10, x))}%`,
-    top: `${Math.min(90, Math.max(10, y))}%`
-  };
-};
 
 export const LandingPage: React.FC = () => {
   const { branches, isLoading: isLoadingBranches } = useBranch();
@@ -377,53 +361,16 @@ export const LandingPage: React.FC = () => {
                 </button>
               </div>
 
-              <div className="relative w-full h-[400px] bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-50 rounded-2xl overflow-hidden border border-slate-200 flex-1">
-                {/* Background Grid SVG */}
-                <div className="absolute inset-0 opacity-10">
-                  <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#2563eb" strokeWidth="1"/>
-                    </pattern>
-                    <rect width="100%" height="100%" fill="url(#grid)" />
-                  </svg>
-                </div>
-
-                {/* Stylized Saigon River */}
-                <div className="absolute bottom-0 left-0 w-full h-1/3 bg-blue-200 opacity-25 rounded-t-[100px]"></div>
-
-                {/* Dynamic branch positioning based on real coordinates */}
-                {!isLoadingBranches && branches.map((branch) => {
-                  const pos = getRelativePosition(branch.latitude, branch.longitude);
-                  const isSelected = selectedBranchId === branch.id;
-                  
-                  return (
-                    <div 
-                      key={branch.id} 
-                      className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 z-10"
-                      style={{ left: pos.left, top: pos.top }}
-                      onClick={() => setSelectedBranchId(branch.id)}
-                    >
-                      <div className="relative group flex flex-col items-center">
-                        <MapPin className={`w-10 h-10 filter drop-shadow-md transition-transform hover:scale-110 ${
-                          isSelected ? 'text-blue-600 scale-110' : 'text-slate-500'
-                        }`} fill={isSelected ? '#2563eb' : '#94a3b8'} />
-                        <div className="absolute -bottom-8 whitespace-nowrap bg-slate-900/90 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-lg opacity-90">
-                          {branch.branchName.replace("AutoWash ", "")}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* City Label */}
-                <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3.5 py-2 rounded-xl shadow-md border border-slate-100">
-                  <p className="text-xs font-black text-slate-800">Ho Chi Minh City</p>
-                  <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{branches.length} Active Branches</p>
-                </div>
+              <div className="relative w-full h-[400px] flex-1">
+                <LandingInteractiveMap 
+                  branches={branches} 
+                  selectedBranchId={selectedBranchId} 
+                  onSelectBranch={setSelectedBranchId} 
+                />
               </div>
               
               <p className="text-xs text-slate-400 mt-4 text-center font-medium italic">
-                Click on "Detailed Digital Map" to open the full interactive GPS tracking system
+                Drag and zoom to explore branches, or click "Detailed Digital Map" for routing and directions.
               </p>
             </div>
           </div>

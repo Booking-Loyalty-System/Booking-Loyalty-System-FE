@@ -9,19 +9,11 @@ export class VoucherRepositoryImplement implements IVoucherRepository {
         // Gọi API lấy danh sách voucher cá nhân
         // Dùng tiếng Việt giải thích: Dùng httpClient gửi GET request lên backend.
         const response = await httpClient.get<ApiResponse<Voucher[]>>(
-            "/loyalty/my-vouchers"
+            ENDPOINTS.REWARDS.REDEMPTION_HISTORY
         );
         return response.data;
     }
 
-    async redeemVoucher(rewardId: string): Promise<Voucher> {
-        // Gửi request đổi voucher bằng điểm thưởng
-        const response = await httpClient.post<ApiResponse<Voucher>>(
-            ENDPOINTS.LOYALTY.REDEEM,
-            { rewardId }
-        );
-        return response.data;
-    }
 
     async useVoucher(voucherId: string): Promise<void> {
         // API để thông báo sử dụng voucher (thường Backend sẽ tự xử lý khi Confirm Booking,

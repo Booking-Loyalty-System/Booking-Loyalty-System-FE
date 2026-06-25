@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {XCircle, Calendar, Star, Clock, DollarSign, AlertTriangle} from 'lucide-react';
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import type { MyBookingRecord } from "@/features/products/domain/models/booking/booking.model.ts";
+import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
 import { BookingDetailModal } from '@/features/products/presentation/components/BookingDetailModal';
 import {BookingSuccessCard} from "@/features/products/presentation/components/BookingSuccessCard.tsx";
 import {useLocation} from "react-router-dom";
@@ -19,6 +20,7 @@ export const BookingHistory: React.FC = () => {
     const [rescheduleData, setRescheduleData] = useState<{ date: string; slotId: string; timeLabel: string } | null>(null);
 
     const { myBookings, isFetchingBookings, error, cancelBooking, isCanceling } = useBooking();
+    const { customerMe } = useCustomerMe();
 
     // Ép kiểu an toàn từ dữ liệu navigate gửi qua (nếu có)
     const newBooking = location.state?.newBooking as MyBookingRecord | undefined;
@@ -95,11 +97,12 @@ export const BookingHistory: React.FC = () => {
     if (isFetchingBookings) return <div className="p-10 text-center font-medium text-slate-500">Loading history...</div>;
     if (error) return <div className="p-10 text-center font-medium text-red-500">An error occurred!</div>;
 
+    const completedBookings = sortedBookings.filter(b => b.status === 'Completed');
     const stats = [
         { title: 'Total Bookings', value: sortedBookings.length.toString(), icon: <Calendar className="w-6 h-6 text-blue-600" />, bg: 'bg-blue-50/50' },
-        { title: 'Points Earned', value: '850', icon: <Star className="w-6 h-6 text-emerald-600" />, bg: 'bg-emerald-50/50' },
-        { title: 'Minutes Saved', value: '1,440', icon: <Clock className="w-6 h-6 text-purple-600" />, bg: 'bg-purple-50/50' },
-        { title: 'Total Spent', value: formatCurrency(sortedBookings.reduce((sum, b) => sum + b.totalPrice, 0)), icon: <DollarSign className="w-6 h-6 text-orange-600" />, bg: 'bg-orange-50/50' },
+        { title: 'Points Earned', value: (customerMe?.totalPoints || 0).toLocaleString('en-US'), icon: <Star className="w-6 h-6 text-emerald-600" />, bg: 'bg-emerald-50/50' },
+        { title: 'Minutes Saved', value: completedBookings.reduce((sum, b) => sum + (b.durationMinutes || 0), 0).toLocaleString('en-US'), icon: <Clock className="w-6 h-6 text-purple-600" />, bg: 'bg-purple-50/50' },
+        { title: 'Total Spent', value: formatCurrency(completedBookings.reduce((sum, b) => sum + b.totalPrice, 0)), icon: <DollarSign className="w-6 h-6 text-orange-600" />, bg: 'bg-orange-50/50' },
     ];
 
     const predefinedReasons = [

@@ -5,23 +5,26 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
+import { useAuth } from '@/features/products/application/useAuth.ts';
 
 export const Dashboard: React.FC = () => {
     // 🌟 Lấy thông tin khách hàng đang đăng nhập từ Application Layer
     const { customerMe } = useCustomerMe();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
-    const displayName = customerMe?.fullName || 'John Doe';
+    const displayName = customerMe?.fullName || user?.fullName || 'Khách hàng';
     const totalPoints = customerMe?.totalPoints ?? 850;
     const tier = customerMe?.tier ?? 'Gold';
     const washesCount = customerMe?.totalWashes ?? 5;
+    const totalSaved = customerMe?.totalSaved ?? 0;
 
-    // Giả lập dữ liệu và điều chỉnh đơn vị tiền tệ sang VND
+    // Điều chỉnh dữ liệu để sử dụng thông tin thật từ khách hàng
     const stats = [
-        { id: 1, label: 'This Month', value: '8', sub: 'Total Bookings', icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
+        { id: 1, label: 'All time', value: washesCount.toString(), sub: 'Total Bookings', icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
         { id: 2, label: 'Loyalty', value: totalPoints.toString(), sub: 'Total Points', icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
         { id: 3, label: 'Status', value: tier, sub: 'Membership Tier', icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
-        { id: 4, label: 'Savings', value: '1.270.000đ', sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
+        { id: 4, label: 'Savings', value: `${totalSaved.toLocaleString('vi-VN')}đ`, sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
     ];
 
     const quickActions = [
@@ -31,8 +34,15 @@ export const Dashboard: React.FC = () => {
         { name: 'History', desc: 'View past bookings', icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50', path: '/booking-history' },
     ];
 
-    const remainingWashes = Math.max(0, 7 - washesCount);
-    const washProgressPercentage = Math.min(100, Math.round((washesCount / 7) * 100));
+    // Logic tính tiến trình rửa xe (cứ mỗi 7 lần thì đầy thanh)
+    let currentCycleWashes = washesCount % 7;
+    // Nếu chia hết cho 7 và lớn hơn 0 (ví dụ 7, 14, 21) thì hiển thị đầy thanh (7/7) thay vì (0/7)
+    if (currentCycleWashes === 0 && washesCount > 0) {
+        currentCycleWashes = 7;
+    }
+
+    const remainingWashes = 7 - currentCycleWashes;
+    const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
 
     return (
         <div className="space-y-8 max-w-7xl mx-auto pb-12 animate-fade-in">
@@ -76,7 +86,7 @@ export const Dashboard: React.FC = () => {
                         </div>
                     </div>
                     <div className="text-right">
-                        <span className="block text-3xl font-black text-[#16a34a]">{washesCount}/7</span>
+                        <span className="block text-3xl font-black text-[#16a34a]">{currentCycleWashes}/7</span>
                         <span className="text-[10px] text-[#166534] font-bold uppercase tracking-wider">Washes Done</span>
                     </div>
                 </div>
@@ -107,7 +117,7 @@ export const Dashboard: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                         {Array.from({ length: 7 }).map((_, idx) => {
                             const step = idx + 1;
-                            if (step <= washesCount) {
+                            if (step <= currentCycleWashes) {
                                 return <CheckCircle2 key={step} className="w-6 h-6 text-[#16a34a] fill-white" />;
                             }
                             return (

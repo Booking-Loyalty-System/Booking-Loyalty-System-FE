@@ -35,4 +35,11 @@ export interface RegisterRequest {
     fullName: string;
     phoneNumber: string;
     dateOfBirth: string;
+    vehicleType: number;
+    licensePlate?: string;
+}
+
+export interface ChangePasswordRequest {
+    currentPassword?: string;
+    newPassword?: string;
 }

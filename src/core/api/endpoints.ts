@@ -11,6 +11,7 @@ export const ENDPOINTS = {
         REGISTER: '/auth/register',
         REFRESH_TOKEN: '/auth/refresh-token',
         REGISTER_WITH_PHONE: '/auth/verify-otp',
+        CHANGE_PASSWORD: '/auth/change-password',
     },
 
     VEHICLES: {
@@ -22,7 +23,7 @@ export const ENDPOINTS = {
         WASH_PACKAGE_DETAIL: (id: string) => `/wash-packages/${id}`
     },
 
-    BOOKING:{
+    BOOKING: {
         BOOKING: '/bookings',
         MY_BOOKING: '/bookings/my-bookings',
         CANCEL: (id: string) => `/bookings/${id}/cancel`,
@@ -37,7 +38,7 @@ export const ENDPOINTS = {
         QR: `/staff/bookings/scan-qr`,
     },
 
-    BRANCH:{
+    BRANCH: {
         BRANCH: '/admin/branches'
     },
 
@@ -60,9 +61,8 @@ export const ENDPOINTS = {
     },
 
     LOYALTY: {
-        INFO: '/loyalty/info',
-        TRANSACTIONS: '/loyalty/transactions',
-        REDEEM: '/loyalty/redeem',
+        BALANCE: '/loyalty/balance',
+        HISTORY: '/loyalty/history',
     },
 
     ADMIN: {
@@ -70,6 +70,16 @@ export const ENDPOINTS = {
         WASH_PACKAGE_DETAIL: (id: string) => `/admin/wash-packages/${id}`,
         BRANCHES: '/admin/branches',
         BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
+    },
+
+    PROMOTION: {
+        BASE: '/promotions',
+        VALIDATE: '/promotions/validate',
+    },
+    REWARDS: {
+        BASE: '/rewards',
+        REWARD_DETAIL: (id: string) => `/rewards/${id}/redeem`,
+        REDEMPTION_HISTORY: '/rewards/me/redemptions',
     },
 
     WASH_BAY: {

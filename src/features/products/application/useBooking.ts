@@ -25,6 +25,12 @@ export const useBooking = (options?: { loadMyBookings?: boolean }) => {
         mutationFn: (bookingData: CreateBookingInput) => bookingRepository.createBooking(bookingData),
         onSuccess: (data) => {
             console.log("Đặt lịch thành công:", data);
+
+            // Xóa cache cũ, buộc React Query phải gọi lại api getMyBookings
+            // để bảng lịch sử có dữ liệu mới nhất
+            queryClient.invalidateQueries({ queryKey: ['my_bookings'] });
+            // Invalidate time slots để update lại số lượng slot còn trống
+            queryClient.invalidateQueries({ queryKey: ['time_slots_weekly'] });
             invalidateBookings();
         },
         onError: (error) => console.error("Lỗi khi tạo booking:", error)

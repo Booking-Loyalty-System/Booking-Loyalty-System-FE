@@ -1,23 +1,10 @@
 import React, { useState } from 'react';
-import { Tag, Crown, Sparkles, Calendar, Copy, Check } from 'lucide-react';
-
-interface PromoCardProps {
-    title: string;
-    description: string;
-    badgeText: string;
-    badgeBg: string;
-    badgeColor: string;
-    dateText: string;
-    code: string;
-    conditions: string[];
-    icon: React.ReactNode;
-    iconBg: string;
-    iconColor: string;
-    isFeatured?: boolean;
-}
+import { Tag, Sparkles, Calendar, Copy, Check } from 'lucide-react';
+import { usePromotion } from '@/features/products/application/usePromotion.ts';
 
 export const Promotions: React.FC = () => {
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
+    const { promotions, isLoading } = usePromotion();
 
     const handleCopyCode = (code: string) => {
         navigator.clipboard.writeText(code);
@@ -25,42 +12,13 @@ export const Promotions: React.FC = () => {
         setTimeout(() => setCopiedCode(null), 2000);
     };
 
-    const featuredPromos: PromoCardProps[] = [
-        {
-            title: 'Weekend Special - 30% Off',
-            description: 'Get 30% off on all premium wash services every weekend',
-            badgeText: 'All Members',
-            badgeBg: 'bg-blue-50',
-            badgeColor: 'text-blue-600',
-            dateText: 'Until May 31, 2026',
-            code: 'WEEKEND30',
-            conditions: ['Valid on Saturdays and Sundays', 'Cannot be combined with other offers', 'Booking required in advance'],
-            icon: <Tag className="w-6 h-6" />,
-            iconBg: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-            isFeatured: true
-        },
-        {
-            title: 'Exclusive for Gold: Free Vacuuming',
-            description: 'Free ceramic coating upgrade with any premium wash',
-            badgeText: 'Gold Members Only',
-            badgeBg: 'bg-pink-600',
-            badgeColor: 'text-white',
-            dateText: 'Until June 15, 2026',
-            code: 'GOLDVIP',
-            conditions: ['Valid for Gold members only', 'Limited to one use per month', 'Upgrade worth 400.000đ'],
-            icon: <Crown className="w-6 h-6" />,
-            iconBg: 'bg-purple-50',
-            iconColor: 'text-purple-600',
-            isFeatured: false
-        }
-    ];
+    if (isLoading) {
+        return <div className="p-10 text-center font-medium text-slate-500">Loading promotions...</div>;
+    }
 
-    const activePromos = [
-        { title: 'Refer a Friend', desc: 'Refer a friend and both get 500 bonus points', code: 'REFER500', date: 'Ongoing', icon: <Sparkles className="text-blue-600" />, bg: 'bg-blue-50' },
-        { title: 'Early Bird Special', desc: '20% off on bookings before 9 AM', code: 'EARLY20', date: 'May 25, 2026', icon: <Tag className="text-emerald-600" />, bg: 'bg-emerald-50' },
-        { title: 'Birthday Month Bonus', desc: 'Double points on all services during your birthday month', code: 'BDAY2X', date: 'Ongoing', icon: <Sparkles className="text-blue-600" />, bg: 'bg-blue-50' }
-    ];
+    // Lọc data theo một số điều kiện mẫu (hoặc backend tự trả về isFeatured)
+    const featuredPromos = promotions.filter(p => p.discountValue >= 30 || p.targetTiers.includes('Gold'));
+    const activePromos = promotions.filter(p => !featuredPromos.find(f => f.id === p.id));
 
     return (
         <div className="w-full space-y-8 font-sans antialiased text-slate-800">
@@ -99,19 +57,19 @@ export const Promotions: React.FC = () => {
                             </div>
                             <div>
                                 <div className="flex items-start gap-4">
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${promo.iconBg} ${promo.iconColor}`}>
-                                        {promo.icon}
+                                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-blue-50 text-blue-600">
+                                        <Tag className="w-6 h-6" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <h3 className="text-lg font-bold text-slate-900 tracking-tight">{promo.title}</h3>
                                         <p className="text-sm text-slate-500 font-medium leading-relaxed">{promo.description}</p>
                                         <div className="flex flex-wrap items-center gap-3 pt-1">
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${promo.badgeBg} ${promo.badgeColor}`}>
-                        {promo.badgeText}
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">
+                        {promo.targetTiers.join(', ')}
                       </span>
                                             <div className="flex items-center gap-1 text-xs text-slate-400 font-semibold">
                                                 <Calendar className="w-3.5 h-3.5" />
-                                                <span>{promo.dateText}</span>
+                                                <span>Until {new Date(promo.endDate).toLocaleDateString('vi-VN')}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -161,15 +119,15 @@ export const Promotions: React.FC = () => {
                     {activePromos.map((item, idx) => (
                         <div key={idx} className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                             <div className="space-y-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${item.bg}`}>
-                                    {item.icon}
+                                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600">
+                                    <Sparkles className="w-6 h-6" />
                                 </div>
                                 <div className="space-y-1">
                                     <h3 className="text-base font-bold text-slate-900 tracking-tight">{item.title}</h3>
                                     <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-md mt-1">
-                    All Members
+                    {item.targetTiers.join(', ')}
                   </span>
-                                    <p className="text-sm text-slate-500 font-medium pt-2 leading-relaxed">{item.desc}</p>
+                                    <p className="text-sm text-slate-500 font-medium pt-2 leading-relaxed">{item.description}</p>
                                 </div>
                                 <div className="bg-slate-50 rounded-xl p-3">
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Code</p>
@@ -179,7 +137,7 @@ export const Promotions: React.FC = () => {
                             <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
                                 <div className="flex items-center gap-1.5 text-slate-400">
                                     <Calendar className="w-3.5 h-3.5" />
-                                    <span>{item.date}</span>
+                                    <span>Until {new Date(item.endDate).toLocaleDateString('vi-VN')}</span>
                                 </div>
                                 <button className="text-blue-600 hover:text-blue-700 flex items-center gap-1 font-bold">
                                     <span>View Details</span>

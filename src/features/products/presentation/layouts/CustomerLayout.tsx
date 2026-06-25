@@ -199,7 +199,7 @@ export const CustomerLayout: React.FC = () => {
 
     const handleLogout = async () => {
         await logout();
-        navigate('/login');
+        navigate('/');
     };
 
     return (
@@ -283,7 +283,7 @@ export const CustomerLayout: React.FC = () => {
                     <Outlet />
                 </main>
             </div>
-            
+
             {/* Modal thông báo thăng hạng đặt ở Layout để luôn sẵn sàng */}
             <TierUpgradeModal />
         </div>

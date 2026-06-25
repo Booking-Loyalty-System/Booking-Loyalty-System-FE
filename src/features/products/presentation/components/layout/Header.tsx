@@ -189,7 +189,7 @@ export function Header({
         <LogoutModal
           onConfirm={() => {
             setShowLogout(false);
-            navigate("/login");
+            navigate("/");
           }}
           onCancel={() => setShowLogout(false)}
         />

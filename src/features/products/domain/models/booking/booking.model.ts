@@ -10,7 +10,8 @@ export interface CreateBookingInput {
     branchId: string;
     bookingDate: string;
     startTime: string;
-    voucherId?: string;
+    rewardRedemptionId?: string;
+    promotionCode?: string;
 }
 
 export interface BookingResponseData {
@@ -40,6 +41,9 @@ export interface BookingSummaryProps {
     isBooking: boolean;
     onConfirmBooking: () => void;
     selectedVoucher?: Voucher | null;
+    appliedPromotion?: any | null; // using any temporarily to avoid import loops if needed, or import Promotion
+    onApplyPromotion?: (code: string) => Promise<boolean | string>;
+    onRemovePromotion?: () => void;
 }
 
 export interface MyBookingRecord {

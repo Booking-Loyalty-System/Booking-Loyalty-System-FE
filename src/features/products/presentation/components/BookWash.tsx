@@ -1,355 +1,454 @@
-import React, { useState, useEffect } from 'react';
-import confetti from 'canvas-confetti';
-import { CheckCircle2, Calendar, Clock, Car, CreditCard, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import confetti from "canvas-confetti";
+import {
+  CheckCircle2,
+  Calendar,
+  Clock,
+  Car,
+  CreditCard,
+  ArrowRight,
+} from "lucide-react";
 import { useVehicle } from "@/features/products/application/useVehicle.ts";
 import { useWashPackage } from "@/features/products/application/useWashPackage.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import { VehicleFormModal } from "@/features/products/presentation/components/VehicleFormModal.tsx";
-import type {Vehicle, VehicleFormData, VehicleItem} from "@/features/products/domain/models/vehicle/vehicle.model.ts";
-import { detectVehicleType, VEHICLE_NAMES_BY_BRAND } from '@/shared/constants/vehicle-data';
+import type {
+  Vehicle,
+  VehicleFormData,
+  VehicleItem,
+} from "@/features/products/domain/models/vehicle/vehicle.model.ts";
+import {
+  detectVehicleType,
+  VEHICLE_NAMES_BY_BRAND,
+} from "@/shared/constants/vehicle-data";
 
 // Import UI Components
 import { TierPriorityWindow } from "@/features/products/presentation/components/TierPriorityWindow.tsx";
 import { VehicleSelection } from "@/features/products/presentation/components/VehicleSelection.tsx";
-import { NearestBranches } from './NearestBranches';
+import { NearestBranches } from "./NearestBranches";
 import { WashPackageSelection } from "@/features/products/presentation/components/WashPackageSelection.tsx";
 import { DateTimeSelection } from "@/features/products/presentation/components/DateTimeSelection.tsx";
 import { BookingSummary } from "@/features/products/presentation/components/BookingSummary.tsx";
 
 // Import Utils & Constants
-import { generateUpcomingDates, convertTo24HourFormat } from '@/shared/constants/booking-data.ts';
-import {toast} from "sonner";
-import type {WashPackage} from "@/features/products/domain/models/wash-package/wash-package.model.ts";
-import {useNavigate} from "react-router-dom";
-import {QRCodeSVG} from "qrcode.react";
-import {useTimeSlot} from "@/features/products/application/useTimeSlot.ts";
-import { useVoucher } from "@/features/products/application/useVoucher.ts";
+import {
+  generateUpcomingDates,
+  convertTo24HourFormat,
+} from "@/shared/constants/booking-data.ts";
+import { toast } from "sonner";
+import type { WashPackage } from "@/features/products/domain/models/wash-package/wash-package.model.ts";
+import { useNavigate } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
+import { useTimeSlot } from "@/features/products/application/useTimeSlot.ts";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { VoucherSelection } from "@/features/products/presentation/components/VoucherSelection.tsx";
 import type { Voucher } from "@/features/products/domain/models/voucher/voucher.model.ts";
+import { usePromotion } from "@/features/products/application/usePromotion.ts";
+import type { Promotion } from "@/features/products/domain/models/promotion/promotion.dto.ts";
 
-// Định nghĩa Interface dữ liệu trả về sau khi tạo thành công
+// 🌟 IMPORT HOOK REWARD
+import { useReward } from "@/features/products/application/useReward.ts";
+
 interface CreatedBookingData {
-    id: string;
-    bookingCode: string;
-    bookingDate: string;
-    startTime: string;
-    totalPrice: number;
-    washPackageName?: string;
-    vehiclePlate?: string;
-    vehicleName?: string;
+  id: string;
+  bookingCode: string;
+  bookingDate: string;
+  startTime: string;
+  totalPrice: number;
+  washPackageName?: string;
+  vehiclePlate?: string;
+  vehicleName?: string;
 }
 
-// --- COMPONENT CON: MÀN HÌNH XÁC NHẬN THÀNH CÔNG (CHỨA PHÁO HOA) ---
 interface SuccessScreenProps {
-    booking: CreatedBookingData;
-    vehicleInfo?: Vehicle;
-    packageInfo?: WashPackage;
-    onContinue: () => void;
+  booking: CreatedBookingData;
+  vehicleInfo?: Vehicle;
+  packageInfo?: WashPackage;
+  onContinue: () => void;
 }
 
-const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({ booking, vehicleInfo, packageInfo, onContinue }) => {
-    useEffect(() => {
-        const duration = 3000;
-        const end = Date.now() + duration;
-
-        const frame = () => {
-            confetti({
-                particleCount: 6,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0, y: 0.8 },
-                colors: ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6']
-            });
-            confetti({
-                particleCount: 6,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1, y: 0.8 },
-                colors: ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6']
-            });
-
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
-        };
-        frame();
-    }, [booking]);
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+// --- SCREEN CON: THÀNH CÔNG ---
+const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
+  booking,
+  vehicleInfo,
+  packageInfo,
+  onContinue,
+}) => {
+  useEffect(() => {
+    const duration = 3000;
+    const end = Date.now() + duration;
+    const frame = () => {
+      confetti({
+        particleCount: 6,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.8 },
+        colors: ["#3b82f6", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6"],
+      });
+      confetti({
+        particleCount: 6,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.8 },
+        colors: ["#3b82f6", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6"],
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
     };
+    frame();
+  }, [booking]);
 
-    const qrValue = booking.bookingCode || booking.id;
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  };
 
-    return (
-        <div className="max-w-2xl mx-auto my-8 bg-white border border-slate-100 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
-            {/* Icon & Tiêu đề chính */}
-            <div className="flex flex-col items-center justify-center space-y-3 mb-6">
-                <div className="p-4 bg-emerald-50 rounded-full text-emerald-500">
-                    <CheckCircle2 className="w-16 h-16" />
-                </div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Đặt Lịch Thành Công!</h1>
-                <p className="text-sm font-medium text-slate-400">Vui lòng kiểm tra lại thông tin biên nhận cuối cùng của bạn dưới đây.</p>
-            </div>
+  const qrValue = booking.bookingCode || booking.id;
 
-            {/* Cụm Mã đặt chỗ & QR Code được gộp chung và căn giữa */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-8 flex flex-col items-center justify-center">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Mã Đặt Lịch (Booking Code)</span>
-                <span className="text-3xl font-mono font-black text-blue-600 tracking-wider mb-6 block">
-                    {qrValue}
-                </span>
-
-                <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm inline-block">
-                    <QRCodeSVG
-                        value={qrValue}
-                        size={160}
-                        level="H"
-                        includeMargin={false}
-                    />
-                </div>
-
-                <p className="text-xs font-medium text-slate-500 mt-4 text-center">
-                    Đưa mã này cho nhân viên quét khi bạn đến cửa hàng nhé!
-                </p>
-            </div>
-
-            {/* Chi tiết nội dung */}
-            <div className="text-left space-y-4 border-b border-dashed border-slate-200 pb-6 mb-6 px-4">
-                <div className="flex items-start gap-3">
-                    <Car className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Thông Tin Xe</p>
-                        <p className="text-sm font-extrabold text-slate-800 mt-0.5">
-                            {booking.vehiclePlate || vehicleInfo?.licensePlate}
-                            <span className="text-slate-400 font-medium ml-2">({booking.vehicleName || vehicleInfo?.vehicleName})</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                    <CreditCard className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Gói Dịch Vụ Đã Chọn</p>
-                        <p className="text-sm font-extrabold text-slate-800 mt-0.5">
-                            {booking.washPackageName || packageInfo?.name}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                    <Calendar className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ngày Hẹn</p>
-                        <p className="text-sm font-extrabold text-slate-800 mt-0.5">{booking.bookingDate}</p>
-                    </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Khung Giờ</p>
-                        <p className="text-sm font-extrabold text-slate-800 mt-0.5">{booking.startTime}</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Tổng số tiền thanh toán */}
-            <div className="flex items-center justify-between p-2 px-4 mb-8">
-                <span className="text-base font-bold text-slate-500">Tổng chi phí thanh toán:</span>
-                <span className="text-2xl font-black text-slate-900">{formatCurrency(booking.totalPrice)}</span>
-            </div>
-
-            {/* Nút hành động chính */}
-            <button
-                onClick={onContinue}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
-            >
-                <span>Xem Lịch Sử Đặt Lịch</span>
-                <ArrowRight className="w-5 h-5" />
-            </button>
+  return (
+    <div className="max-w-2xl mx-auto my-8 bg-white border border-slate-100 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
+      <div className="flex flex-col items-center justify-center space-y-3 mb-6">
+        <div className="p-4 bg-emerald-50 rounded-full text-emerald-500">
+          <CheckCircle2 className="w-16 h-16" />
         </div>
-    );
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+          Đặt Lịch Thành Công!
+        </h1>
+        <p className="text-sm font-medium text-slate-400">
+          Vui lòng kiểm tra lại thông tin biên nhận cuối cùng của bạn dưới đây.
+        </p>
+      </div>
+
+      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-8 flex flex-col items-center justify-center">
+        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
+          Mã Đặt Lịch (Booking Code)
+        </span>
+        <span className="text-3xl font-mono font-black text-blue-600 tracking-wider mb-6 block">
+          {qrValue}
+        </span>
+        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm inline-block">
+          <QRCodeSVG
+            value={qrValue}
+            size={160}
+            level="H"
+            includeMargin={false}
+          />
+        </div>
+        <p className="text-xs font-medium text-slate-500 mt-4 text-center">
+          Đưa mã này cho nhân viên quét khi bạn đến cửa hàng nhé!
+        </p>
+      </div>
+
+      <div className="text-left space-y-4 border-b border-dashed border-slate-200 pb-6 mb-6 px-4">
+        <div className="flex items-start gap-3">
+          <Car className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Thông Tin Xe
+            </p>
+            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+              {booking.vehiclePlate || vehicleInfo?.licensePlate}
+              <span className="text-slate-400 font-medium ml-2">
+                ({booking.vehicleName || vehicleInfo?.vehicleName})
+              </span>
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3">
+          <CreditCard className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Gói Dịch Vụ Đã Chọn
+            </p>
+            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+              {booking.washPackageName || packageInfo?.name}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3">
+          <Calendar className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Ngày Hẹn
+            </p>
+            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+              {booking.bookingDate}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3">
+          <Clock className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Khung Giờ
+            </p>
+            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+              {booking.startTime}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between p-2 px-4 mb-8">
+        <span className="text-base font-bold text-slate-500">
+          Tổng chi phí thanh toán:
+        </span>
+        <span className="text-2xl font-black text-slate-900">
+          {formatCurrency(booking.totalPrice)}
+        </span>
+      </div>
+
+      <button
+        onClick={onContinue}
+        className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
+      >
+        <span>Xem Lịch Sử Đặt Lịch</span>
+        <ArrowRight className="w-5 h-5" />
+      </button>
+    </div>
+  );
 };
 
 // --- COMPONENT CHÍNH ---
 export const BookWash: React.FC = () => {
-    // 1. API & Data Hooks
-    const { vehicles, isLoading: isLoadingVehicles, createVehicle } = useVehicle();
-    const { washPackages, isLoading: isLoadingPackages } = useWashPackage();
-    const { createBooking, isBooking } = useBooking();
-    const { activeVouchers, useVoucher: markVoucherAsUsed } = useVoucher();
-    const { customerMe } = useCustomerMe();
+  // 1. API & Data Hooks
+  const {
+    vehicles,
+    isLoading: isLoadingVehicles,
+    createVehicle,
+  } = useVehicle();
+  const { washPackages, isLoading: isLoadingPackages } = useWashPackage();
+  const { createBooking, isBooking } = useBooking();
+  const { customerMe } = useCustomerMe();
+  const { validatePromotion } = usePromotion();
 
-    const dynamicDateSlots = generateUpcomingDates(7);
-    const navigate = useNavigate();
+  // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
+  const { redeemedVouchersOnly, isLoadingRedemptions } = useReward();
 
-    // 2. Local States
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
-    const [vehicleFormData, setVehicleFormData] = useState<VehicleFormData>({
-        licensePlate: '', brand: '', vehicleName: '', model: '', color: '', type: 'Small', isPrimary: false
+  const dynamicDateSlots = generateUpcomingDates(7);
+  const navigate = useNavigate();
+
+  // 2. Local States
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [vehicleFormData, setVehicleFormData] = useState<VehicleFormData>({
+    licensePlate: "",
+    brand: "",
+    vehicleName: "",
+    model: "",
+    color: "",
+    type: "Small",
+    isPrimary: false,
+  });
+  const [createdBooking, setCreatedBooking] =
+    useState<CreatedBookingData | null>(null);
+
+  // 3. Selection States
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
+  const [selectedBranchId, setSelectedBranchId] = useState<string>("");
+  const [selectedPackageId, setSelectedPackageId] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>(
+    dynamicDateSlots[0].apiDate,
+  );
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+  const [appliedPromotion, setAppliedPromotion] = useState<Promotion | null>(
+    null,
+  );
+
+  const { weeklySummary, isLoading: isLoadingSlots } = useTimeSlot({
+    branchId: selectedBranchId,
+    startDate: dynamicDateSlots[0]?.apiDate,
+  });
+
+  // 4. Derived states
+  const selectedDateSlot = dynamicDateSlots.find(
+    (d) => d.apiDate === selectedDate,
+  );
+  const currentVehicle = vehicles.find(
+    (v: Vehicle) => v.id === selectedVehicleId,
+  );
+  const currentPackage = washPackages.find(
+    (p: WashPackage) => p.id === selectedPackageId,
+  );
+
+  // 5. Handlers
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value, type } = e.target;
+    setVehicleFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]:
+          type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      };
+      if (name === "brand") {
+        updated.vehicleName = "";
+        updated.type = "Small";
+      }
+      if (name === "vehicleName") {
+        updated.type = detectVehicleType(updated.brand, value);
+      }
+      return updated;
     });
+  };
 
-    const [createdBooking, setCreatedBooking] = useState<CreatedBookingData | null>(null);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreating(true);
+    try {
+      await createVehicle({
+        ...vehicleFormData,
+        vehicleType: vehicleFormData.type,
+      });
+      setVehicleFormData({
+        licensePlate: "",
+        type: "Small",
+        vehicleName: "",
+        brand: "",
+        model: "",
+        color: "",
+        isPrimary: false,
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Lỗi khi tạo xe:", error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
-    // 3. Selection States
-    const [selectedVehicleId, setSelectedVehicleId] = useState<string>('');
-    const [selectedBranchId, setSelectedBranchId] = useState<string>('');
-    const [selectedPackageId, setSelectedPackageId] = useState<string>('');
-    const [selectedDate, setSelectedDate] = useState<string>(dynamicDateSlots[0].apiDate);
-    const [selectedTime, setSelectedTime] = useState<string>('');
-    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+  const handleConfirmBooking = async () => {
+    if (!selectedVehicleId) return toast.error("Vui lòng chọn xe của bạn!");
+    if (!selectedBranchId) return toast.error("Vui lòng chọn chi nhánh!");
+    if (!selectedPackageId) return toast.error("Vui lòng chọn gói rửa xe!");
+    if (!selectedTime) return toast.error("Vui lòng chọn khung giờ!");
 
-    const {
-        weeklySummary,
-        isLoading: isLoadingSlots
-    } = useTimeSlot({
+    setIsCreating(true);
+    try {
+      const apiStartTime = convertTo24HourFormat(selectedTime);
+
+      const newBookingData = await createBooking({
+        vehicleId: selectedVehicleId,
         branchId: selectedBranchId,
-        startDate: dynamicDateSlots[0]?.apiDate
-    });
+        washPackageId: selectedPackageId,
+        bookingDate: selectedDate,
+        startTime: apiStartTime,
+        rewardRedemptionId: selectedVoucher?.id || undefined,
+        promotionCode: appliedPromotion?.code || undefined,
+      });
 
-    // Derived states cho Summary & Success View
-    const selectedDateSlot = dynamicDateSlots.find(d => d.apiDate === selectedDate);
-    const currentVehicle = vehicles.find((v: Vehicle) => v.id === selectedVehicleId);
-    const currentPackage = washPackages.find((p: WashPackage) => p.id === selectedPackageId);
-
-    // 4. Handlers
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        setVehicleFormData(prev => {
-            const updated = { ...prev, [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value };
-            if (name === 'brand') { updated.vehicleName = ''; updated.type = 'Small'; }
-            if (name === 'vehicleName') { updated.type = detectVehicleType(updated.brand, value); }
-            return updated;
-        });
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsCreating(true);
-        try {
-            await createVehicle({ ...vehicleFormData, vehicleType: vehicleFormData.type });
-            setVehicleFormData({ licensePlate: '', type: 'Small', vehicleName: '', brand: '', model: '', color: '', isPrimary: false });
-            setIsModalOpen(false);
-        } catch (error) {
-            console.error("Lỗi khi tạo xe:", error);
-        } finally {
-            setIsCreating(false);
-        }
-    };
-
-    const handleConfirmBooking = async () => {
-        if (!selectedVehicleId) return toast.error("Vui lòng chọn xe của bạn!");
-        if (!selectedBranchId) return toast.error("Vui lòng chọn chi nhánh!");
-        if (!selectedPackageId) return toast.error("Vui lòng chọn gói rửa xe!");
-        if (!selectedTime) return toast.error("Vui lòng chọn khung giờ!");
-
-        setIsCreating(true);
-        try {
-            const apiStartTime = convertTo24HourFormat(selectedTime);
-            const newBookingData = await createBooking({
-                vehicleId: selectedVehicleId,
-                branchId: selectedBranchId,
-                washPackageId: selectedPackageId,
-                bookingDate: selectedDate,
-                startTime: apiStartTime,
-                voucherId: selectedVoucher?.id || undefined
-            });
-
-            // Nếu dùng voucher thành công, đánh dấu voucher đó là Used
-            if (selectedVoucher) {
-                await markVoucherAsUsed(selectedVoucher.id);
-            }
-
-            setCreatedBooking(newBookingData as unknown as CreatedBookingData);
-        } catch (err) {
-            console.error("Booking failed:", err);
-            alert("Đã xảy ra lỗi, vui lòng thử lại.");
-        } finally {
-            setIsCreating(false);
-        }
-    };
-
-    // 5. Render
-    if (isLoadingVehicles || isLoadingPackages || (selectedBranchId && isLoadingSlots)) {
-        return <div className="p-10 text-center font-medium">Loading booking details and slot data...</div>;
+      setCreatedBooking(newBookingData as unknown as CreatedBookingData);
+    } catch (err) {
+      console.error("Booking failed:", err);
+      toast.error("Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại.");
+    } finally {
+      setIsCreating(false);
     }
+  };
 
-    if (createdBooking) {
-        return (
-            <BookingSuccessScreen
-                booking={createdBooking}
-                vehicleInfo={currentVehicle}
-                packageInfo={currentPackage}
-                onContinue={() => navigate('/booking-history')}
-            />
-        );
-    }
-
+  // 6. Renders
+  if (isLoadingVehicles || isLoadingPackages || isLoadingRedemptions) {
     return (
-        <div className="flex flex-col lg:flex-row gap-8 items-start max-w-7xl mx-auto pb-12">
-            {/* CỘT TRÁI */}
-            <div className="flex-1 space-y-10 w-full">
-                <TierPriorityWindow />
-
-                <VehicleSelection
-                    vehicles={vehicles as unknown as VehicleItem[]}
-                    selectedVehicleId={selectedVehicleId}
-                    onSelectVehicle={setSelectedVehicleId}
-                    onAddNewVehicle={() => setIsModalOpen(true)}
-                />
-
-                <VehicleFormModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    formData={vehicleFormData}
-                    setFormData={setVehicleFormData}
-                    handleInputChange={handleInputChange}
-                    onSubmit={handleSubmit}
-                    isCreating={isCreating}
-                    currentVehicleNames={VEHICLE_NAMES_BY_BRAND[vehicleFormData.brand] || []}
-                />
-
-                <NearestBranches
-                    selectedBranchId={selectedBranchId}
-                    onSelectBranch={setSelectedBranchId}
-                />
-
-                 <WashPackageSelection
-                    washPackages={washPackages}
-                    selectedPackageId={selectedPackageId}
-                    onSelectPackage={setSelectedPackageId}
-                />
-
-                <VoucherSelection
-                    activeVouchers={activeVouchers}
-                    selectedVoucherId={selectedVoucher?.id || ''}
-                    onSelectVoucher={setSelectedVoucher}
-                    totalPoints={customerMe?.totalPoints || 0}
-                />
-
-                <DateTimeSelection
-                    dynamicDateSlots={dynamicDateSlots}
-                    weeklySummary={weeklySummary} // Bắn cục summary nhận từ React Query xuống
-                    selectedDate={selectedDate}
-                    onSelectDate={setSelectedDate}
-                    selectedTime={selectedTime}
-                    onSelectTime={setSelectedTime}
-                />
-            </div>
-
-            {/* CỘT PHẢI - Bảng tóm tắt hóa đơn */}
-            <BookingSummary
-                selectedPackageId={selectedPackageId}
-                selectedTime={selectedTime}
-                currentVehicle={currentVehicle}
-                currentPackage={currentPackage}
-                selectedDateSlot={selectedDateSlot}
-                isBooking={isBooking}
-                onConfirmBooking={handleConfirmBooking}
-                selectedVoucher={selectedVoucher}
-            />
-        </div>
+      <div className="p-10 text-center font-medium">
+        Đang tải thông tin đặt lịch...
+      </div>
     );
+  }
+
+  if (createdBooking) {
+    return (
+      <BookingSuccessScreen
+        booking={createdBooking}
+        vehicleInfo={currentVehicle}
+        packageInfo={currentPackage}
+        onContinue={() => navigate("/booking-history")}
+      />
+    );
+  }
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-8 items-start max-w-7xl mx-auto pb-12">
+      {/* CỘT TRÁI */}
+      <div className="flex-1 space-y-10 w-full">
+        <TierPriorityWindow />
+
+        <VehicleSelection
+          vehicles={vehicles as unknown as VehicleItem[]}
+          selectedVehicleId={selectedVehicleId}
+          onSelectVehicle={setSelectedVehicleId}
+          onAddNewVehicle={() => setIsModalOpen(true)}
+        />
+
+        <VehicleFormModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          formData={vehicleFormData}
+          setFormData={setVehicleFormData}
+          handleInputChange={handleInputChange}
+          onSubmit={handleSubmit}
+          isCreating={isCreating}
+          currentVehicleNames={
+            VEHICLE_NAMES_BY_BRAND[vehicleFormData.brand] || []
+          }
+        />
+
+        <NearestBranches
+          selectedBranchId={selectedBranchId}
+          onSelectBranch={setSelectedBranchId}
+        />
+
+        <WashPackageSelection
+          washPackages={washPackages}
+          selectedPackageId={selectedPackageId}
+          onSelectPackage={setSelectedPackageId}
+        />
+
+        {/* 🌟 VOUCHER SELECTION ĐÃ ĐƯỢC DỌN DẸP, CHỈ TRUYỀN HÀM ĐỒNG BỘ SET VOUCHER */}
+        <VoucherSelection
+          activeVouchers={redeemedVouchersOnly as any}
+          selectedVoucherId={selectedVoucher?.id || ""}
+          onSelectVoucher={setSelectedVoucher} // Truyền thẳng hàm gốc vào, không dùng async
+          totalPoints={customerMe?.totalPoints || 0}
+        />
+
+        <DateTimeSelection
+          dynamicDateSlots={dynamicDateSlots}
+          weeklySummary={weeklySummary}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+          selectedTime={selectedTime}
+          onSelectTime={setSelectedTime}
+          isLoadingSlots={isLoadingSlots}
+        />
+      </div>
+
+      {/* CỘT PHẢI - Bảng tóm tắt hóa đơn */}
+      <BookingSummary
+        selectedPackageId={selectedPackageId}
+        selectedTime={selectedTime}
+        currentVehicle={currentVehicle}
+        currentPackage={currentPackage}
+        selectedDateSlot={selectedDateSlot}
+        isBooking={isBooking || isCreating}
+        onConfirmBooking={handleConfirmBooking}
+        selectedVoucher={selectedVoucher}
+        appliedPromotion={appliedPromotion}
+        onApplyPromotion={async (code) => {
+          const res = await validatePromotion({
+            code,
+            serviceId: selectedPackageId,
+          });
+          if (res.isValid && res.promotion) {
+            setAppliedPromotion(res.promotion);
+            return true;
+          }
+          return res.errorMessage || "Mã giảm giá không hợp lệ";
+        }}
+        onRemovePromotion={() => setAppliedPromotion(null)}
+      />
+    </div>
+  );
 };

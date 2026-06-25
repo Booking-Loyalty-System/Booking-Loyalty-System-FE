@@ -1,14 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { VoucherRepositoryImplement } from '../infrastructure/repositories/voucher/voucher.repository.implement.ts';
-import { VoucherRepositoryMock } from '../infrastructure/repositories/voucher/voucher.repository.mock.ts';
+
 import type { Voucher } from '../domain/models/voucher/voucher.model.ts';
 
-const useMock = import.meta.env.VITE_USE_MOCK === 'true';
-
-const voucherRepository = useMock 
-    ? new VoucherRepositoryMock() 
-    : new VoucherRepositoryImplement();
+const voucherRepository = new VoucherRepositoryImplement();
 
 export const useVoucher = () => {
     const queryClient = useQueryClient();
@@ -20,15 +16,6 @@ export const useVoucher = () => {
         staleTime: 1000 * 60 * 5, // Cache trong 5 phút
     });
 
-    // 2. Mutation đổi voucher từ điểm tích lũy
-    const redeemVoucherMutation = useMutation({
-        mutationFn: (rewardId: string) => voucherRepository.redeemVoucher(rewardId),
-        onSuccess: () => {
-            // Invalidate cache để cập nhật danh sách voucher và số điểm
-            queryClient.invalidateQueries({ queryKey: ['my_vouchers'] });
-            queryClient.invalidateQueries({ queryKey: ['customer_me'] });
-        }
-    });
 
     // 3. Mutation sử dụng voucher
     const useVoucherMutation = useMutation({
@@ -54,8 +41,6 @@ export const useVoucher = () => {
         vouchers: myVouchersQuery.data || [],
         activeVouchers: (myVouchersQuery.data || []).filter(v => v.status === 'Active'),
         isLoading: myVouchersQuery.isLoading,
-        redeemVoucher: redeemVoucherMutation.mutateAsync,
-        isRedeeming: redeemVoucherMutation.isPending,
         useVoucher: useVoucherMutation.mutateAsync,
         isUsing: useVoucherMutation.isPending
     };
