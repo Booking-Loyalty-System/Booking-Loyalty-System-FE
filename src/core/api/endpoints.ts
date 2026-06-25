@@ -47,7 +47,9 @@ export const ENDPOINTS = {
     LOYALTY: {
         BALANCE: '/loyalty/balance',
         HISTORY: '/loyalty/history',
-        REDEEM: '/loyalty/redeem',
+        REWARDS: '/rewards',
+        MY_REDEMPTIONS: '/rewards/me/redemptions',
+        REDEEM: (id: string) => `/rewards/${id}/redeem`,
     },
 
     ADMIN: {

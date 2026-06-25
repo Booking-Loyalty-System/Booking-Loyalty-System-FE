@@ -10,3 +10,13 @@ export interface Voucher {
     isFreeWash?: boolean; // Cờ đánh dấu đây là voucher miễn phí rửa xe
     washPackageId?: string; // Gói dịch vụ áp dụng (nếu chỉ áp dụng cho một gói cụ thể)
 }
+
+export interface RewardDto {
+    id: string;
+    title: string;
+    description: string;
+    validDays: number;
+    requiredPts: number;
+    iconType?: 'GIFT' | 'TICKET' | 'STAR' | 'SPARKLES';
+    comingSoon?: boolean;
+}

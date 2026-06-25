@@ -21,75 +21,30 @@ export const RewardsSection: React.FC = () => {
     // 🌟 Dùng useCustomerMe để lấy số điểm thật của khách hàng đang đăng nhập
     const { customerMe } = useCustomerMe();
     // 🌟 Dùng useVoucher để lấy danh sách voucher thật và hàm đổi voucher
-    const { vouchers, redeemVoucher, isRedeeming } = useVoucher();
+    const { vouchers, redeemVoucher, isRedeeming, availableRewards, isLoadingRewards } = useVoucher();
 
     const availablePoints = customerMe?.totalPoints ?? 0;
     const [redeemingId, setRedeemingId] = useState<string | null>(null);
 
-    // --- Cấu hình danh sách phần thưởng dựa theo ảnh UI ---
-    const rewards: RewardItem[] = [
-        {
-            id: 'rw_1',
-            title: 'Free Basic Wash',
-            description: 'Redeem for one complimentary basic car wash service',
-            validDays: 30,
-            requiredPts: 200,
-            icon: <Gift className="w-6 h-6" />,
-            iconBg: 'bg-blue-50',
-            iconColor: 'text-blue-600',
-        },
-        {
-            id: 'rw_2',
-            title: '100.000đ Discount Voucher',
-            description: 'Get 100.000đ off on any service package',
-            validDays: 60,
-            requiredPts: 150,
-            icon: <Ticket className="w-6 h-6" />,
-            iconBg: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-        },
-        {
-            id: 'rw_3',
-            title: 'VIP Booking Slot',
-            description: 'Priority booking access for premium time slots',
-            validDays: 90,
-            requiredPts: 300,
-            icon: <Star className="w-6 h-6" />,
-            iconBg: 'bg-purple-50',
-            iconColor: 'text-purple-600',
-        },
-        {
-            id: 'rw_4',
-            title: 'Free Premium Wash',
-            description: 'Redeem for one complimentary premium car wash service',
-            validDays: 30,
-            requiredPts: 400,
-            icon: <Sparkles className="w-6 h-6" />,
-            iconBg: 'bg-amber-50',
-            iconColor: 'text-amber-500',
-        },
-        {
-            id: 'rw_5',
-            title: '250.000đ Discount Voucher',
-            description: 'Get 250.000đ off on any service package',
-            validDays: 60,
-            requiredPts: 350,
-            icon: <Ticket className="w-6 h-6" />,
-            iconBg: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-        },
-        {
-            id: 'rw_6',
-            title: 'Free Ceramic Coating',
-            description: 'Redeem for complimentary ceramic coating service',
-            validDays: 30,
-            requiredPts: 800,
-            icon: <Sparkles className="w-6 h-6" />,
-            iconBg: 'bg-amber-50',
-            iconColor: 'text-amber-500',
-            comingSoon: true,
-        },
-    ];
+    const iconMap: Record<string, { icon: React.ReactNode, iconBg: string, iconColor: string }> = {
+        'GIFT': { icon: <Gift className="w-6 h-6" />, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+        'TICKET': { icon: <Ticket className="w-6 h-6" />, iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
+        'STAR': { icon: <Star className="w-6 h-6" />, iconBg: 'bg-purple-50', iconColor: 'text-purple-600' },
+        'SPARKLES': { icon: <Sparkles className="w-6 h-6" />, iconBg: 'bg-amber-50', iconColor: 'text-amber-500' },
+    };
+
+    const rewards: RewardItem[] = availableRewards.map(reward => {
+        const iconConfig = (reward.iconType && iconMap[reward.iconType]) ? iconMap[reward.iconType] : iconMap['GIFT'];
+        return {
+            id: reward.id,
+            title: reward.title,
+            description: reward.description,
+            validDays: reward.validDays,
+            requiredPts: reward.requiredPts,
+            comingSoon: reward.comingSoon,
+            ...iconConfig
+        };
+    });
 
     const handleRedeemClick = async (rewardId: string, cost: number, title: string) => {
         if (availablePoints < cost) {
@@ -135,7 +90,15 @@ export const RewardsSection: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {rewards.map((item) => {
+                    {isLoadingRewards ? (
+                        <div className="col-span-full py-12 flex justify-center items-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+                        </div>
+                    ) : rewards.length === 0 ? (
+                        <div className="col-span-full py-12 text-center text-slate-400 font-medium">
+                            No rewards available at the moment.
+                        </div>
+                    ) : rewards.map((item) => {
                         const canAfford = availablePoints >= item.requiredPts;
 
                         return (
