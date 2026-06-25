@@ -2,12 +2,15 @@ import type {DateSlot} from "../time-slot/time-slot.dto.ts";
 import type {Vehicle} from "@/features/products/domain/models/vehicle/vehicle.model.ts";
 import type {WashPackage} from "@/features/products/domain/models/wash-package/wash-package.model.ts";
 
+import type { Voucher } from "../voucher/voucher.model.ts";
+
 export interface CreateBookingInput {
     vehicleId: string;
     washPackageId: string;
     branchId: string;
     bookingDate: string;
     startTime: string;
+    voucherId?: string;
 }
 
 export interface BookingResponseData {
@@ -22,6 +25,9 @@ export interface BookingResponseData {
     totalAmount: number;
     status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
     createdAt: string;
+    voucherId?: string;
+    discountAmount?: number;
+    totalPrice?: number;
     bookingCode: string
 }
 
@@ -33,6 +39,7 @@ export interface BookingSummaryProps {
     selectedDateSlot?: DateSlot;
     isBooking: boolean;
     onConfirmBooking: () => void;
+    selectedVoucher?: Voucher | null;
 }
 
 export interface MyBookingRecord {

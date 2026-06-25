@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { User, Edit3, Lock, Bell, ShieldCheck, Download, ExternalLink, Trash2 } from 'lucide-react';
+import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
 
 export const ProfileSettings: React.FC = () => {
+    const { customerMe } = useCustomerMe();
     const [emailNotify, setEmailNotify] = useState(true);
     const [smsNotify, setSMSNotify] = useState(true);
     const [marketingEmail, setMarketingEmail] = useState(false);
@@ -31,15 +33,15 @@ export const ProfileSettings: React.FC = () => {
                         <div className="space-y-4">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
-                                <input type="text" readOnly value="John Doe" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                                <input type="text" readOnly value={customerMe?.fullName || 'John Doe'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
-                                <input type="text" readOnly value="+1 234-567-8900" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                                <input type="text" readOnly value={customerMe?.phoneNumber || '0901234567'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
-                                <input type="email" readOnly value="john.doe@example.com" className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
+                                <input type="email" readOnly value={customerMe?.email || 'john.doe@gmail.com'} className="w-full bg-slate-50/70 border border-slate-200/60 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none" />
                             </div>
                         </div>
                     </div>
@@ -102,11 +104,21 @@ export const ProfileSettings: React.FC = () => {
                             </div>
                         </div>
                         <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
-                            <div className="flex justify-between opacity-90"><span>Total Bookings:</span><span className="font-bold">28</span></div>
-                            <div className="flex justify-between opacity-90"><span>Total Spent:</span><span className="font-bold">$1,245.50</span></div>
+                            <div className="flex justify-between opacity-90">
+                                <span>Total Bookings:</span>
+                                <span className="font-bold">{customerMe?.totalWashes ?? 5}</span>
+                            </div>
+                            <div className="flex justify-between opacity-90">
+                                <span>Total Spent:</span>
+                                <span className="font-bold">
+                                    {(customerMe?.totalSpent ?? 3175000).toLocaleString('vi-VN')}đ
+                                </span>
+                            </div>
                             <div className="flex justify-between items-baseline">
                                 <span>Points Balance:</span>
-                                <span className="text-base font-black text-amber-300">2.45 pts</span>
+                                <span className="text-base font-black text-amber-300">
+                                    {customerMe?.totalPoints ?? 850} pts
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -13,7 +13,7 @@ export const BookingHistory: React.FC = () => {
     const [selectedBooking, setSelectedBooking] = useState<MyBookingRecord | null>(null);
 
     const [bookingToCancel, setBookingToCancel] = useState<MyBookingRecord | null>(null);
-    const [cancelReason, setCancelReason] = useState<string>('Thay đổi kế hoạch cá nhân');
+    const [cancelReason, setCancelReason] = useState<string>('Change of personal plans');
     const [customReason, setCustomReason] = useState<string>('');
 
     const [rescheduleData, setRescheduleData] = useState<{ date: string; slotId: string; timeLabel: string } | null>(null);
@@ -27,7 +27,7 @@ export const BookingHistory: React.FC = () => {
         setBookingToCancel(null);
         setCustomReason('');
         setRescheduleData(null);
-        setCancelReason('Thay đổi kế hoạch cá nhân');
+        setCancelReason('Change of personal plans');
     };
 
     const sortedBookings = [...myBookings].sort((a, b) => {
@@ -58,23 +58,23 @@ export const BookingHistory: React.FC = () => {
         if (!bookingToCancel) return;
 
         // 1. Validation cho option Đổi Ngày Giờ
-        if (cancelReason === 'Muốn đổi sang khung giờ hoặc ngày khác') {
+        if (cancelReason === 'Want to change to another time slot or date') {
             if (!rescheduleData) {
-                return toast.error("Vui lòng chọn đầy đủ Ngày & Giờ muốn đổi sang!");
+                return toast.error("Please select the date and time you want to change to!");
             }
         }
 
         // 2. Validation cho option Lý do khác
-        if (cancelReason === 'Lý do khác' && !customReason.trim()) {
-            return toast.error("Vui lòng điền lý do cụ thể vào ô trống!");
+        if (cancelReason === 'Other reason' && !customReason.trim()) {
+            return toast.error("Please specify the reason in the text box!");
         }
 
         // 3. Chuẩn hóa Lý do cuối cùng để gửi lên API
         let finalReason = cancelReason;
-        if (cancelReason === 'Lý do khác') {
+        if (cancelReason === 'Other reason') {
             finalReason = customReason;
-        } else if (cancelReason === 'Muốn đổi sang khung giờ hoặc ngày khác' && rescheduleData) {
-            finalReason = `Yêu cầu đổi lịch sang ngày ${rescheduleData.date} (Ca: ${rescheduleData.timeLabel})`;
+        } else if (cancelReason === 'Want to change to another time slot or date' && rescheduleData) {
+            finalReason = `Requested to reschedule to ${rescheduleData.date} (Slot: ${rescheduleData.timeLabel})`;
         }
 
         try {
@@ -84,16 +84,16 @@ export const BookingHistory: React.FC = () => {
                 reason: finalReason
             });
 
-            toast.success(`Đã xử lý thành công mã đặt lịch ${bookingToCancel.bookingCode}`);
+            toast.success(`Successfully processed booking code ${bookingToCancel.bookingCode}`);
             closeCancelModal();
         } catch (err) {
             console.error("Xử lý đơn thất bại:", err);
-            toast.error("Không thể hoàn tất thao tác, vui lòng thử lại sau.");
+            toast.error("Could not complete the operation, please try again later.");
         }
     };
 
-    if (isFetchingBookings) return <div className="p-10 text-center font-medium text-slate-500">Đang tải lịch sử...</div>;
-    if (error) return <div className="p-10 text-center font-medium text-red-500">Có lỗi xảy ra!</div>;
+    if (isFetchingBookings) return <div className="p-10 text-center font-medium text-slate-500">Loading history...</div>;
+    if (error) return <div className="p-10 text-center font-medium text-red-500">An error occurred!</div>;
 
     const stats = [
         { title: 'Total Bookings', value: sortedBookings.length.toString(), icon: <Calendar className="w-6 h-6 text-blue-600" />, bg: 'bg-blue-50/50' },
@@ -103,10 +103,10 @@ export const BookingHistory: React.FC = () => {
     ];
 
     const predefinedReasons = [
-        "Thay đổi kế hoạch cá nhân",
-        "Muốn đổi sang khung giờ hoặc ngày khác",
-        "Chọn nhầm chi nhánh / gói dịch vụ",
-        "Lý do khác"
+        "Change of personal plans",
+        "Want to change to another time slot or date",
+        "Selected wrong branch / service package",
+        "Other reason"
     ];
 
     return (
@@ -129,11 +129,11 @@ export const BookingHistory: React.FC = () => {
                             <div className="p-2 bg-amber-50 rounded-xl">
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 tracking-tight">Xác nhận hủy lịch hẹn</h3>
+                            <h3 className="text-xl font-black text-slate-900 tracking-tight">Confirm Cancellation</h3>
                         </div>
 
                         <p className="text-sm font-medium text-slate-400 leading-relaxed">
-                            Bạn đang yêu cầu hủy lịch <span className="font-mono font-bold text-blue-600">{bookingToCancel.bookingCode}</span>. Hành động này không thể hoàn tác. Vui lòng chọn lý do:
+                            You are requesting to cancel booking <span className="font-mono font-bold text-blue-600">{bookingToCancel.bookingCode}</span>. This action cannot be undone. Please select a reason:
                         </p>
 
                         {/* Danh sách lý do dạng Radio Buttons */}
@@ -152,7 +152,7 @@ export const BookingHistory: React.FC = () => {
                             ))}
                         </div>
 
-                        {cancelReason === 'Muốn đổi sang khung giờ hoặc ngày khác' && (
+                        {cancelReason === 'Want to change to another time slot or date' && (
                             <div className="mt-3">
                                 <ReschedulePicker
                                     branchId={bookingToCancel.branchId} // Truyền branchId của đơn hiện tại vào
@@ -164,11 +164,11 @@ export const BookingHistory: React.FC = () => {
                         )}
 
                         {/* Textarea nhập tay nếu tích chọn 'Lý do khác' */}
-                        {cancelReason === 'Lý do khác' && (
+                        {cancelReason === 'Other reason' && (
                             <textarea
                                 value={customReason}
                                 onChange={(e) => setCustomReason(e.target.value)}
-                                placeholder="Vui lòng nhập lý do chi tiết tại đây..."
+                                placeholder="Please enter detailed reason here..."
                                 rows={3}
                                 className="w-full border border-slate-200 rounded-2xl p-3.5 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
                             />
@@ -181,14 +181,14 @@ export const BookingHistory: React.FC = () => {
                                 disabled={isCanceling}
                                 className="border border-slate-200 hover:bg-slate-50 text-slate-600 font-extrabold py-3 px-4 rounded-xl text-sm transition-all"
                             >
-                                Quay lại
+                                Back
                             </button>
                             <button
                                 onClick={handleConfirmCancel}
                                 disabled={isCanceling}
                                 className="bg-rose-500 hover:bg-rose-600 text-white font-extrabold py-3 px-4 rounded-xl text-sm shadow-md hover:shadow-lg transition-all disabled:opacity-50"
                             >
-                                {isCanceling ? 'Đang hủy...' : 'Xác nhận hủy'}
+                                {isCanceling ? 'Canceling...' : 'Confirm Cancel'}
                             </button>
                         </div>
                     </div>
@@ -226,7 +226,7 @@ export const BookingHistory: React.FC = () => {
                         <tbody className="divide-y divide-slate-100 text-sm font-medium text-slate-600">
                         {sortedBookings.length === 0 ? (
                             <tr>
-                                <td colSpan={7} className="py-8 text-center text-slate-400">Chưa có lịch sử đặt trước nào.</td>
+                                <td colSpan={7} className="py-8 text-center text-slate-400">No booking history yet.</td>
                             </tr>
                         ) : (
                             sortedBookings.map((item) => (

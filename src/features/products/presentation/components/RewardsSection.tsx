@@ -1,12 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Gift, Ticket, Star, Sparkles, CheckCircle, Info, History } from 'lucide-react';
+import { useVoucher } from '@/features/products/application/useVoucher.ts';
+import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
+import { toast } from 'sonner';
 
-// --- Khai báo Interface cho Props của Component ---
-interface RewardsSectionProps {
-    availablePoints?: number;
-    onRedeemSuccess?: (pointsLeft: number, rewardTitle: string) => void;
-}
-
+// --- Interface phụ cho danh sách phần thưởng UI ---
 interface RewardItem {
     id: string;
     title: string;
@@ -19,21 +17,14 @@ interface RewardItem {
     comingSoon?: boolean;
 }
 
-interface RedeemedHistory {
-    id: string;
-    title: string;
-    redeemedDate: string;
-    points: number;
-    status: 'Active' | 'Used' | 'Expired';
-    icon: React.ReactNode;
-    iconBg: string;
-    iconColor: string;
-}
+export const RewardsSection: React.FC = () => {
+    // 🌟 Dùng useCustomerMe để lấy số điểm thật của khách hàng đang đăng nhập
+    const { customerMe } = useCustomerMe();
+    // 🌟 Dùng useVoucher để lấy danh sách voucher thật và hàm đổi voucher
+    const { vouchers, redeemVoucher, isRedeeming } = useVoucher();
 
-export const RewardsSection: React.FC<RewardsSectionProps> = ({
-                                                                  availablePoints = 0,
-                                                                  onRedeemSuccess
-                                                              }) => {
+    const availablePoints = customerMe?.totalPoints ?? 0;
+    const [redeemingId, setRedeemingId] = useState<string | null>(null);
 
     // --- Cấu hình danh sách phần thưởng dựa theo ảnh UI ---
     const rewards: RewardItem[] = [
@@ -49,8 +40,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'rw_2',
-            title: '$10 Discount Voucher',
-            description: 'Get $10 off on any service package',
+            title: '100.000đ Discount Voucher',
+            description: 'Get 100.000đ off on any service package',
             validDays: 60,
             requiredPts: 150,
             icon: <Ticket className="w-6 h-6" />,
@@ -79,8 +70,8 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
         {
             id: 'rw_5',
-            title: '$25 Discount Voucher',
-            description: 'Get $25 off on any service package',
+            title: '250.000đ Discount Voucher',
+            description: 'Get 250.000đ off on any service package',
             validDays: 60,
             requiredPts: 350,
             icon: <Ticket className="w-6 h-6" />,
@@ -100,45 +91,20 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
         },
     ];
 
-    // --- Dữ liệu lịch sử đổi thưởng gần đây ---
-    const redeemedHistory: RedeemedHistory[] = [
-        {
-            id: 'hist_1',
-            title: 'Free Basic Wash',
-            redeemedDate: 'May 10, 2026',
-            points: -200,
-            status: 'Active',
-            icon: <Gift className="w-6 h-6" />,
-            iconBg: 'bg-blue-50',
-            iconColor: 'text-blue-600',
-        },
-        {
-            id: 'hist_2',
-            title: '$10 Discount Voucher',
-            redeemedDate: 'April 25, 2026',
-            points: -150,
-            status: 'Used',
-            icon: <Ticket className="w-6 h-6" />,
-            iconBg: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-        },
-        {
-            id: 'hist_3',
-            title: 'VIP Booking Slot',
-            redeemedDate: 'April 15, 2026',
-            points: -300,
-            status: 'Expired',
-            icon: <Star className="w-6 h-6" />,
-            iconBg: 'bg-purple-50',
-            iconColor: 'text-purple-600',
-        },
-    ];
-
-    const handleRedeemClick = (title: string, cost: number) => {
-        if (availablePoints >= cost) {
-            if (onRedeemSuccess) {
-                onRedeemSuccess(availablePoints - cost, title);
-            }
+    const handleRedeemClick = async (rewardId: string, cost: number, title: string) => {
+        if (availablePoints < cost) {
+            toast.error('You do not have enough points to redeem this reward!');
+            return;
+        }
+        setRedeemingId(rewardId);
+        try {
+            await redeemVoucher(rewardId);
+            toast.success(`Successfully redeemed: ${title}! Voucher has been added to your account.`);
+        } catch (err) {
+            console.error(err);
+            toast.error('Redemption failed, please try again.');
+        } finally {
+            setRedeemingId(null);
         }
     };
 
@@ -206,15 +172,15 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
                                     </div>
 
                                     <button
-                                        onClick={() => handleRedeemClick(item.title, item.requiredPts)}
-                                        disabled={item.comingSoon || !canAfford}
+                                        onClick={() => handleRedeemClick(item.id, item.requiredPts, item.title)}
+                                        disabled={item.comingSoon || !canAfford || isRedeeming || redeemingId === item.id}
                                         className={`font-bold text-sm px-6 py-2.5 rounded-xl shadow-sm transition-all ${
                                             !item.comingSoon && canAfford
                                                 ? 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
                                                 : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
                                         }`}
                                     >
-                                        Redeem
+                                        {redeemingId === item.id ? 'Redeeming...' : 'Redeem Now'}
                                     </button>
                                 </div>
                             </div>
@@ -231,35 +197,38 @@ export const RewardsSection: React.FC<RewardsSectionProps> = ({
                 </div>
 
                 <div className="divide-y divide-slate-100">
-                    {redeemedHistory.map((historyItem) => (
+                    {vouchers.length === 0 ? (
+                        <p className="text-sm text-slate-400 font-medium text-center py-8">No redemption history yet.</p>
+                    ) : vouchers.map((v) => (
                         <div
-                            key={historyItem.id}
+                            key={v.id}
                             className="p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
                         >
                             <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${historyItem.iconBg} ${historyItem.iconColor}`}>
-                                    {historyItem.icon}
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                                    v.isFreeWash ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
+                                }`}>
+                                    {v.isFreeWash ? <Gift className="w-6 h-6" /> : <Ticket className="w-6 h-6" />}
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-800 text-base tracking-tight">{historyItem.title}</h4>
-                                    <p className="text-sm text-slate-400 font-medium mt-1">Redeemed on {historyItem.redeemedDate}</p>
+                                    <h4 className="font-bold text-slate-800 text-base tracking-tight">{v.title}</h4>
+                                    <p className="text-sm text-slate-400 font-medium mt-1">Expires: {v.expiryDate} · Code: <span className="font-mono">{v.code}</span></p>
                                 </div>
                             </div>
 
                             <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
                                 <p className="text-lg font-black text-slate-800 tracking-tight">
-                                    {historyItem.points} <span className="text-xs font-bold text-slate-500">pts</span>
+                                    -{v.requiredPoints} <span className="text-xs font-bold text-slate-500">pts</span>
                                 </p>
-
                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
-                                    historyItem.status === 'Active'
+                                    v.status === 'Active'
                                         ? 'bg-emerald-50 text-emerald-700'
-                                        : historyItem.status === 'Used'
+                                        : v.status === 'Used'
                                             ? 'bg-slate-100 text-slate-600'
                                             : 'bg-rose-50 text-rose-600'
                                 }`}>
-                  {historyItem.status}
-                </span>
+                                    {v.status === 'Active' ? 'Active' : v.status === 'Used' ? 'Used' : 'Expired'}
+                                </span>
                             </div>
                         </div>
                     ))}

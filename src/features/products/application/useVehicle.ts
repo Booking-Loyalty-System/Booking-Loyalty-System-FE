@@ -1,8 +1,13 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { VehicleRepositoryImplement } from '../infrastructure/repositories/vehicle/vehicle.repository.implement.ts';
+import { VehicleRepositoryMock } from '../infrastructure/repositories/vehicle/vehicle.repository.mock.ts';
 import type { Vehicle, CreateVehicleInput } from '../domain/models/vehicle/vehicle.model.ts';
 
-const vehicleRepository = new VehicleRepositoryImplement();
+const useMock = import.meta.env.VITE_USE_MOCK === 'true';
+
+const vehicleRepository = useMock
+    ? new VehicleRepositoryMock()
+    : new VehicleRepositoryImplement();
 
 export const useVehicle = () => {
     const queryClient = useQueryClient();

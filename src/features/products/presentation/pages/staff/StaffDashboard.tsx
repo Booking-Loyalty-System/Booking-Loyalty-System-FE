@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStaffDashboard } from "@/features/products/application/useStaffDashboard.ts";
 import { useStaff } from "@/features/products/application/useStaff.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
+import { usePayment } from "@/features/products/application/usePayment.ts";
 import { toast } from "sonner";
 import {Car, MapPin, User, X} from "lucide-react";
 import { type DashboardBooking, DashboardStats } from "@/features/products/presentation/components/DashboardStats.tsx";
@@ -48,6 +49,8 @@ export const StaffDashboard: React.FC = () => {
         noShowBooking
     } = useBooking({ loadMyBookings: false });
 
+    const { createPayOsUrl } = usePayment();
+
     const actions: DashboardActions = {
         confirm: confirmBooking,
         checkIn: checkInBooking,
@@ -72,15 +75,13 @@ export const StaffDashboard: React.FC = () => {
     });
 
     const handleQrScanSuccess = async (decodedText: string) => {
-        setIsQrModalOpen(false); // Tắt modal camera ngay lập tức
+        setIsQrModalOpen(false);
 
         const loadToastId = toast.loading('Đang xác thực mã QR...');
 
         try {
-            // Gọi xuống Backend để kiểm tra chuỗi QR
             const bookingData = await scanQr(decodedText);
 
-            // Nếu Backend trả về data của xe, lấy mã BookingCode điền vào ô tìm kiếm
             if (bookingData && bookingData.bookingCode) {
                 setSearchTerm(bookingData.bookingCode);
                 setStatusFilter('All');
@@ -137,18 +138,37 @@ export const StaffDashboard: React.FC = () => {
         }
     };
 
-    const confirmCheckout = async () => {
+    const handleConfirmCash = async () => {
         if (!selectedBookingForCheckout) return;
         try {
             await actions.checkout(selectedBookingForCheckout.id);
-            toast.success('Thanh toán thành công!');
+            toast.success('Thanh toán tiền mặt thành công!');
             setSelectedBookingForCheckout(null);
-
-            // 🌟 4. Tự động làm mới sau khi thanh toán xong
-            queryClient.invalidateQueries();
+            queryClient.invalidateQueries(); // Làm mới danh sách
         } catch (error) {
             console.error(error);
-            toast.error('Thanh toán thất bại');
+            toast.error('Xử lý thu tiền mặt thất bại');
+        }
+    };
+
+    const handleConfirmPayOS = async (): Promise<string> => {
+        if (!selectedBookingForCheckout) return '';
+        const toastId = toast.loading('Đang khởi tạo cổng thanh toán PayOS...');
+        try {
+            const response = await createPayOsUrl(selectedBookingForCheckout.id);
+            toast.dismiss(toastId); // Tắt hiệu ứng loading
+
+            // 🛠️ FIX TẠI ĐÂY: Kiểm tra nếu phản hồi là Object thì bóc lấy thuộc tính checkoutUrl
+            if (response && typeof response === 'object' && 'checkoutUrl' in response) {
+                return (response as any).checkoutUrl;
+            }
+
+            // Trường hợp tầng Repository của bạn đã bóc sẵn ra chuỗi string trước đó rồi
+            return response as unknown as string;
+        } catch (error) {
+            console.error(error);
+            toast.error('Không thể kết nối đến cổng thanh toán PayOS', { id: toastId });
+            throw error;
         }
     };
 
@@ -238,7 +258,8 @@ export const StaffDashboard: React.FC = () => {
                 <CheckoutSummaryModal
                     booking={selectedBookingForCheckout as BookingResponseData}
                     onClose={() => setSelectedBookingForCheckout(null)}
-                    onConfirm={confirmCheckout}
+                    onConfirmCash={handleConfirmCash}
+                    onConfirmPayOS={handleConfirmPayOS}
                 />
             )}
 
@@ -249,11 +270,10 @@ export const StaffDashboard: React.FC = () => {
                 />
             )}
 
+            {/* Modal chi tiết lịch đặt */}
             {selectedBookingDetail && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in">
                     <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden flex flex-col">
-
-                        {/* Header */}
                         <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold">
@@ -266,15 +286,11 @@ export const StaffDashboard: React.FC = () => {
                                     </p>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setSelectedBookingDetail(null)}
-                                className="p-2 hover:bg-slate-200/70 text-slate-400 hover:text-slate-700 rounded-xl transition-all"
-                            >
+                            <button onClick={() => setSelectedBookingDetail(null)} className="p-2 hover:bg-slate-200/70 text-slate-400 hover:text-slate-700 rounded-xl transition-all">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        {/* Body */}
                         <div className="p-6 space-y-5">
                             <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100/50">
                                 <div>
@@ -294,25 +310,17 @@ export const StaffDashboard: React.FC = () => {
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
                                     <span className="text-sm font-medium text-slate-500">Khung giờ:</span>
-                                    <span className="text-sm font-bold text-slate-900">
-                                        {selectedBookingDetail.startTime} - {selectedBookingDetail.bookingDate}
-                                    </span>
+                                    <span className="text-sm font-bold text-slate-900">{selectedBookingDetail.startTime} - {selectedBookingDetail.bookingDate}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
                                     <span className="text-sm font-medium text-slate-500">Trạng thái:</span>
-                                    <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded uppercase tracking-wider">
-                                        {selectedBookingDetail.status}
-                                    </span>
+                                    <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded uppercase tracking-wider">{selectedBookingDetail.status}</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Footer */}
                         <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
-                            <button
-                                onClick={() => setSelectedBookingDetail(null)}
-                                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-colors"
-                            >
+                            <button onClick={() => setSelectedBookingDetail(null)} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-colors">
                                 Đóng
                             </button>
                         </div>

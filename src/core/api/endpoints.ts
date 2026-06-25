@@ -74,5 +74,12 @@ export const ENDPOINTS = {
 
     WASH_BAY: {
         BY_BRANCH: (id: string) => `/admin/wash-bays/by-branch/${id}`
+    },
+
+    PAYMENT: {
+        BOOKINGS: (id: string) => `/payments/bookings/${id}/checkout`,
+        IPN: "/payments/vnpay/ipn",
+        RETURN: "/payments/vnpay/return",
+        CREATE_PAY_OS_URL: (id: string) => `/payments/payos/${id}/create-link`
     }
 };

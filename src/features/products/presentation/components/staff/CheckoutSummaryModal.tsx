@@ -1,28 +1,56 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Receipt, Car, PenTool } from 'lucide-react';
+import { X, Sparkles, Car, PenTool, Banknote, QrCode } from 'lucide-react';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 
 interface CheckoutSummaryModalProps {
     booking: BookingResponseData;
     onClose: () => void;
-    onConfirm: () => Promise<void>;
+    onConfirmCash: () => Promise<void>;
+    onConfirmPayOS: () => Promise<string>; // Đổi thành PayOS: Trả về checkoutUrl
 }
 
-export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({ booking, onClose, onConfirm }) => {
+export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
+                                                                              booking,
+                                                                              onClose,
+                                                                              onConfirmCash,
+                                                                              onConfirmPayOS
+                                                                          }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [step, setStep] = useState<'summary' | 'methods'>('summary');
 
-    const handleConfirm = async () => {
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
+    // Xử lý thu tiền mặt
+    const handleCashPayment = async () => {
         setIsSubmitting(true);
         try {
-            await onConfirm();
+            await onConfirmCash();
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Hàm format tiền tệ VNĐ
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    // Xử lý PayOS
+    const handlePayOSPayment = async () => {
+        setIsSubmitting(true);
+        try {
+            // Gọi API tạo link PayOS
+            const checkoutUrl = await onConfirmPayOS();
+
+            if (checkoutUrl) {
+                // Có link chuẩn thì chuyển hướng (giữ nguyên loading để chờ nhảy trang)
+                window.location.href = checkoutUrl;
+            } else {
+                // ⚠️ Phát hiện phản hồi trống: Tắt loading và cảnh báo ngay
+                console.warn("⚠️ Hàm onConfirmPayOS không trả về checkoutUrl. Kiểm tra lại Component cha!");
+                setIsSubmitting(false);
+            }
+        } catch (error) {
+            console.error("Lỗi tạo link PayOS:", error);
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -42,7 +70,6 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({ book
                 </div>
 
                 <div className="space-y-5 mb-6">
-
                     {/* Mã Code */}
                     <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100 flex justify-between items-center">
                         <p className="text-sm font-semibold text-blue-600">Mã lịch đặt</p>
@@ -72,7 +99,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({ book
                         </div>
                     </div>
 
-                    {/* Tổng tiền từ API */}
+                    {/* Tổng tiền */}
                     <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
                         <div className="flex justify-between items-center">
                             <span className="font-bold text-slate-600">Tổng thanh toán</span>
@@ -96,36 +123,58 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({ book
                     </div>
                 </div>
 
-                {/* Ghi chú */}
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6">
-                    <p className="text-xs text-amber-800 flex items-center gap-2 font-medium">
-                        <Receipt className="w-4 h-4 shrink-0" />
-                        <span>Hệ thống sẽ tự động cộng điểm và cập nhật hạng thành viên (nếu đủ điều kiện) sau khi bạn xác nhận.</span>
-                    </p>
-                </div>
-
                 {/* Nút hành động */}
-                <div className="flex gap-3">
-                    <button
-                        onClick={onClose}
-                        className="flex-1 py-3 px-4 border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 hover:text-slate-800 transition-colors"
-                        disabled={isSubmitting}
-                    >
-                        Hủy bỏ
-                    </button>
-                    <button
-                        onClick={handleConfirm}
-                        className="flex-[2] py-3 px-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex justify-center items-center gap-2"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                                Đang xử lý...
-                            </>
-                        ) : 'Xác nhận thu tiền'}
-                    </button>
-                </div>
+                {step === 'summary' ? (
+                    <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-2">
+                        <button
+                            onClick={onClose}
+                            className="flex-1 py-3 px-4 border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 hover:text-slate-800 transition-colors"
+                        >
+                            Hủy bỏ
+                        </button>
+                        <button
+                            onClick={() => setStep('methods')}
+                            className="flex-[2] py-3 px-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 shadow-md transition-all active:scale-95 flex justify-center items-center gap-2"
+                        >
+                            Thanh toán
+                        </button>
+                    </div>
+                ) : (
+                    <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
+                        <p className="text-center text-sm font-bold text-slate-500 mb-2">Chọn phương thức thanh toán</p>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleCashPayment}
+                                disabled={isSubmitting}
+                                className="flex-1 flex flex-col items-center justify-center gap-2 p-4 border-2 border-emerald-500 bg-emerald-50 text-emerald-700 rounded-xl font-bold hover:bg-emerald-100 transition-colors disabled:opacity-50"
+                            >
+                                <Banknote className="w-6 h-6" />
+                                Tiền mặt
+                            </button>
+
+                            <button
+                                onClick={handlePayOSPayment}
+                                disabled={isSubmitting}
+                                className="flex-1 flex flex-col items-center justify-center gap-2 p-4 border-2 border-blue-500 bg-blue-50 text-blue-700 rounded-xl font-bold hover:bg-blue-100 transition-colors disabled:opacity-50"
+                            >
+                                <QrCode className="w-6 h-6" />
+                                PAYOS
+                            </button>
+                        </div>
+
+                        <div className="text-center mt-2">
+                            {isSubmitting ? (
+                                <p className="text-sm font-semibold text-slate-500 animate-pulse">Đang xử lý giao dịch...</p>
+                            ) : (
+                                <button onClick={() => setStep('summary')} className="text-sm font-semibold text-slate-400 hover:text-slate-600 underline">
+                                    Quay lại
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
             </div>
         </div>
     );
