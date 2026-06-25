@@ -4,6 +4,7 @@ import {User, Phone, Lock, Droplets, CheckCircle2, Mail, Calendar, KeyRound} fro
 import {useAuth} from "@/features/products/application/useAuth.ts";
 import { auth } from "@/firebase-config.ts";
 import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
+import { Link } from 'react-router-dom';
 
 export const RegisterPage: React.FC = () => {
     // 1. Thêm các state mới để khớp với RegisterRequest
@@ -106,11 +107,12 @@ export const RegisterPage: React.FC = () => {
     };
 
     return (
-        <div className="h-screen w-screen bg-[#e6f0fa] flex items-center justify-center p-6 overflow-hidden antialiased font-sans">
-            <div className="w-full px-20 py-6 bg-transparent flex flex-row gap-6 h-full">
+        <div className="min-h-screen w-full bg-[#e6f0fa] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto">
+            <div className="flex-grow"></div>
+            <div className="w-full max-w-6xl mx-auto bg-transparent flex flex-col lg:flex-row gap-5 h-auto">
 
                 {/* PANEL TRÁI: GIỮ NGUYÊN HOÀN TOÀN */}
-                <div className="flex-1 bg-white rounded-2xl p-8 flex flex-col justify-between shadow-sm border border-white/40">
+                <div className="flex-1 bg-white rounded-2xl p-6 md:p-8 flex flex-col justify-center shadow-sm border border-white/40">
                     <div>
                         <div className="flex items-center gap-3 mb-5">
                             <div className="w-14 h-14 bg-[#4a90e2] rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-200">
@@ -137,8 +139,8 @@ export const RegisterPage: React.FC = () => {
                 </div>
 
                 {/* PANEL PHẢI: GIỮ NGUYÊN CẤU TRÚC, CHỈ THÊM INPUT */}
-                <div className="flex-1 bg-white rounded-2xl pt-8 pb-10 px-10 flex flex-col justify-start shadow-sm border border-white/40 overflow-y-auto">
-                    <div className="w-full max-w-[460px] mx-auto">
+                <div className="flex-1 bg-white rounded-2xl p-6 md:p-8 flex flex-col justify-start shadow-sm border border-white/40 overflow-y-auto">
+                    <div className="w-full max-w-md mx-auto">
                         <div className="mb-5">
                             <h2 className="text-4xl font-bold text-[#0f172a] mb-1.5 tracking-tight">Create Account</h2>
                             <p className="text-[#64748b] text-base">Get started with AutoWash Pro</p>
@@ -194,6 +196,12 @@ export const RegisterPage: React.FC = () => {
                             >
                                 {isPending ? "Đang xử lý..." : "Create Account"}
                             </button>
+                            <div className="text-center text-sm text-[#475569] pt-2">
+                                Already have an account?{" "}
+                                <Link to="/login" className="text-[#4a90e2] hover:underline font-semibold">
+                                    Sign In
+                                </Link>
+                            </div>
                         </form>
                             )}
 
@@ -248,11 +256,18 @@ export const RegisterPage: React.FC = () => {
                                         </button>
                                     </>
                                 )}
+                                <div className="text-center text-sm text-[#475569] pt-2">
+                                    Already have an account?{" "}
+                                    <Link to="/login" className="text-[#4a90e2] hover:underline font-semibold">
+                                        Sign In
+                                    </Link>
+                                </div>
                             </form>
                         )}
                     </div>
                 </div>
             </div>
+            <div className="flex-grow"></div>
         </div>
     );
 };
