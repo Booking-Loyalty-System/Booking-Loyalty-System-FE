@@ -9,6 +9,10 @@ import { useAuth } from "@/features/products/application/useAuth.ts";
 import * as signalR from "@microsoft/signalr";
 import {useQueryClient} from "@tanstack/react-query";
 import {BookingDetailModal} from "@/features/products/presentation/components/BookingDetailModal.tsx";
+// 🌟 IMPORT THÊM: Dùng useBooking để gọi các endpoint chuyên biệt của Staff
+// (confirm, checkIn, checkout, staffCancel...) thay vì endpoint generic /status
+import { useBooking } from "@/features/products/application/useBooking.ts";
+import { useStaff } from "@/features/products/application/useStaff.ts";
 
 interface DashboardBooking {
     id: string;
@@ -27,24 +31,31 @@ interface DashboardBooking {
     createdAt: string;
 }
 
-interface DashboardActions {
-    updateStatus: (params: {
-        id: string;
-        payload: { targetStatus: number; reason?: string; staffId?: string }
-    }) => Promise<unknown>;
-}
-
 export const TotalBookings: React.FC = () => {
-    const { userId } = useAuth();
+    // useAuth chỉ cần để lấy userId nếu cần trong tương lai
+    const { userId: _userId } = useAuth();
     const queryClient = useQueryClient();
 
-    const { bookings = [], isLoading, selectedDate, setSelectedDate, actions } = useStaffDashboard() as unknown as {
+    // 🌟 useStaffDashboard: Chỉ dùng để LẤY DANH SÁCH booking và quản lý selectedDate
+    // Không dùng actions.updateStatus từ hook này vì endpoint /status bị backend từ chối
+    const { bookings = [], isLoading, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
         bookings: DashboardBooking[];
         isLoading: boolean;
         selectedDate: string;
         setSelectedDate: (date: string) => void;
-        actions: DashboardActions;
     };
+
+    // 🌟 useBooking: Dùng các mutation CHUYÊN BIỆT (confirm, checkIn, checkout, staffCancel)
+    // Đây là cùng cơ chế với StaffDashboard — mỗi action gọi đúng endpoint riêng của nó
+    const {
+        confirmBooking,
+        checkInBooking,
+        checkoutBooking,
+        staffCancelBooking,
+    } = useBooking({ loadMyBookings: false });
+
+    // 🌟 useStaff: Lấy thông tin staff để có staffId cho checkIn
+    const { staffProfile } = useStaff();
 
     const [detailModalBooking, setDetailModalBooking] = useState<DashboardBooking | null>(null);
 
@@ -104,56 +115,41 @@ export const TotalBookings: React.FC = () => {
         };
     }, [selectedDate, staffBranchId, queryClient]);
 
-    // Xử lý logic gọi chung hàm updateStatus với payload tương ứng
+    // 🌟 REFACTORED: handleStatusUpdate giờ gọi đúng endpoint chuyên biệt
+    // thay vì endpoint generic /status (bị backend từ chối thay đổi trạng thái)
     const handleStatusUpdate = async (bookingId: string, type: 'confirm' | 'cancel' | 'checkin' | 'checkout' | 'start', method?: 'Cash' | 'Transfer') => {
         setActionLoadingId(bookingId);
         try {
-            if (type === 'start') {
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: {
-                        targetStatus: 2, // ĐÚNG enum InProgress là 2
-                        staffId: userId! // Đảm bảo staffId được truyền
-                    }
-                });
-                toast.success('Đã đưa xe vào khoang rửa! Trạng thái đang là In Progress.');
-            }
-            if (type === 'checkin') {
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: {
-                        targetStatus: 5,
-                        staffId: userId || undefined
-                    }
-                });
-                toast.success('Đã check-in xe vào tiệm thành công!');
-            } else if (type === 'confirm') {
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: { targetStatus: 1 }
-                });
+            if (type === 'confirm') {
+                // ✅ Gọi PATCH /staff/bookings/{id}/confirm — giống StaffDashboard
+                await confirmBooking(bookingId);
                 toast.success('Đã xác nhận lịch đặt thành công!');
+            } else if (type === 'checkin') {
+                // ✅ Gọi PATCH /staff/bookings/{id}/check-in với staffId query param
+                if (!staffProfile?.id) {
+                    toast.error('Không tìm thấy thông tin nhân viên, vui lòng tải lại trang!');
+                    return;
+                }
+                await checkInBooking({ id: bookingId, staffId: staffProfile.id });
+                toast.success('Đã check-in xe vào tiệm thành công!');
             } else if (type === 'cancel') {
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: {
-                        targetStatus: 8, // ⚠️ LƯU Ý: Nếu CheckedOut là 7, ông kiểm tra xem Cancelled ở C# là số mấy (ví dụ: 8) thì điền vào đây nhé!
-                        reason: 'Staff cancelled from dashboard'
-                    }
-                });
+                // ✅ Gọi PATCH /staff/bookings/{id}/cancel với reason query param
+                const reason = window.prompt('Vui lòng nhập lý do hủy lịch:');
+                if (!reason) return;
+                await staffCancelBooking({ id: bookingId, cancel: reason });
                 toast.success('Đã hủy lịch đặt thành công.');
             } else if (type === 'checkout') {
-                // 🌟 ĐÃ CẬP NHẬT: Sửa thành số 7 chuẩn theo Backend của ông
-                await actions.updateStatus({
-                    id: bookingId,
-                    payload: {
-                        targetStatus: 7,
-                        reason: `Paid via ${method === 'Cash' ? 'Cash' : 'Bank Transfer'}`
-                    }
-                });
+                // ✅ Gọi PATCH /staff/bookings/{id}/checkout — endpoint chuyên biệt
+                await checkoutBooking(bookingId);
                 toast.success(`Đã thanh toán bằng ${method === 'Cash' ? 'Tiền mặt' : 'Chuyển khoản'} & Xuất xưởng thành công! 🎉`);
                 setPaymentModalBooking(null); // Đóng modal
+            } else if (type === 'start') {
+                // ℹ️ start (InProgress) chưa có trong useBooking chuyên biệt;
+                // hiện tại không hiển thị nút này trong TotalBookings nên giữ nguyên
+                toast.info('Chức năng này được quản lý tại trang Queue Monitor.');
             }
+            // 🌟 Sau mỗi thao tác thành công: ép React Query refresh lại danh sách
+            queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
         } catch (error) {
             console.error('Update status failed:', error);
             toast.error('Cập nhật trạng thái thất bại, vui lòng thử lại.');
