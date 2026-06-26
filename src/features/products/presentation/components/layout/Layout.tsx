@@ -19,7 +19,7 @@ export function Layout({
     <div className="min-h-screen bg-gray-50">
       <Sidebar role={role} />
       <Header title={title} userName={userName} role={role} />
-      <main className="ml-64 pt-16">
+      <main className="ml-64 pt-16 h-screen overflow-y-auto">
         <div className="p-8">{children}</div>
       </main>
     </div>
