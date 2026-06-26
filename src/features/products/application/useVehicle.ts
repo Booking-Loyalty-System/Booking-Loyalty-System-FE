@@ -24,11 +24,19 @@ export const useVehicle = () => {
         },
     });
 
+    const deleteVehicleMutation = useMutation({
+        mutationFn: (id: string) => vehicleRepository.deleteVehicle(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my_vehicles'] });
+        },
+    });
+
     return {
         vehicles,
         isLoading: isLoadingVehicles,
         isCreating: createVehicleMutation.isPending,
         error: fetchError || createVehicleMutation.error,
         createVehicle: createVehicleMutation.mutateAsync,
+        deleteVehicle: deleteVehicleMutation.mutateAsync,
     };
 };

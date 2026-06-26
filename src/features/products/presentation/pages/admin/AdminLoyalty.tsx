@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Layout } from "../../components/layout/Layout";
-import { Award, Save, Gift, Star, Crown, Gem, Loader2 } from "lucide-react";
+import { Award, Save, Star, Crown, Gem, Loader2 } from "lucide-react";
 import { useAdminTier } from "../../../application/useAdminTier";
 import { toast } from "sonner";
 
