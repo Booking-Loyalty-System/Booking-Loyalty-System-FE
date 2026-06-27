@@ -4,6 +4,7 @@ import {
     Sparkles, Clock, XCircle, ArrowRight, Megaphone, History
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
 import { useAuth } from '@/features/products/application/useAuth.ts';
 
@@ -12,6 +13,7 @@ export const Dashboard: React.FC = () => {
     const { customerMe } = useCustomerMe();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { t } = useTranslation('customer');
 
     const displayName = customerMe?.fullName || user?.fullName || 'Khách hàng';
     const totalPoints = customerMe?.totalPoints ?? 850;
@@ -21,17 +23,17 @@ export const Dashboard: React.FC = () => {
 
     // Điều chỉnh dữ liệu để sử dụng thông tin thật từ khách hàng
     const stats = [
-        { id: 1, label: 'All time', value: washesCount.toString(), sub: 'Total Bookings', icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
-        { id: 2, label: 'Loyalty', value: totalPoints.toString(), sub: 'Total Points', icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
-        { id: 3, label: 'Status', value: tier, sub: 'Membership Tier', icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
-        { id: 4, label: 'Savings', value: `${totalSaved.toLocaleString('vi-VN')}đ`, sub: 'Total Saved', icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
+        { id: 1, label: t('dashboard.stats.allTime'), value: washesCount.toString(), sub: t('dashboard.stats.totalBookings'), icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
+        { id: 2, label: t('dashboard.stats.loyalty'), value: totalPoints.toString(), sub: t('dashboard.stats.totalPoints'), icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
+        { id: 3, label: t('dashboard.stats.status'), value: tier, sub: t('dashboard.stats.membershipTier'), icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
+        { id: 4, label: t('dashboard.stats.savings'), value: `${totalSaved.toLocaleString('vi-VN')}đ`, sub: t('dashboard.stats.totalSaved'), icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
     ];
 
     const quickActions = [
-        { name: 'Book Wash', desc: 'Schedule a new wash', icon: <Calendar className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50', path: '/book-wash' },
-        { name: 'Rewards', desc: 'Redeem your points', icon: <Gift className="w-5 h-5 text-emerald-600" />, bg: 'bg-emerald-50', path: '/rewards' },
-        { name: 'Promotions', desc: 'View active deals', icon: <Megaphone className="w-5 h-5 text-purple-600" />, bg: 'bg-purple-50', path: '/promotions' },
-        { name: 'History', desc: 'View past bookings', icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50', path: '/booking-history' },
+        { name: t('dashboard.quickActions.bookWash'), desc: t('dashboard.quickActions.bookWashDesc'), icon: <Calendar className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50', path: '/book-wash' },
+        { name: t('dashboard.quickActions.rewards'), desc: t('dashboard.quickActions.rewardsDesc'), icon: <Gift className="w-5 h-5 text-emerald-600" />, bg: 'bg-emerald-50', path: '/rewards' },
+        { name: t('dashboard.quickActions.promotions'), desc: t('dashboard.quickActions.promotionsDesc'), icon: <Megaphone className="w-5 h-5 text-purple-600" />, bg: 'bg-purple-50', path: '/promotions' },
+        { name: t('dashboard.quickActions.history'), desc: t('dashboard.quickActions.historyDesc'), icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50', path: '/booking-history' },
     ];
 
     // Logic tính tiến trình rửa xe (cứ mỗi 7 lần thì đầy thanh)
@@ -50,9 +52,9 @@ export const Dashboard: React.FC = () => {
             {/* WELCOME HEADER (image_6ebedd.png) */}
             <div className="space-y-1">
                 <h1 className="text-3xl font-extrabold text-[#0f172a] flex items-center gap-2">
-                    Welcome back, {displayName}! <span className="animate-bounce">👋</span>
+                    {t('dashboard.welcomeBack')} {displayName}! <span className="animate-bounce">👋</span>
                 </h1>
-                <p className="text-sm text-[#64748b] font-medium">Here's what's happening with your account today.</p>
+                <p className="text-sm text-[#64748b] font-medium">{t('dashboard.accountToday')}</p>
             </div>
 
             {/* 4 THẺ THỐNG KÊ (STATS CARDS) */}
