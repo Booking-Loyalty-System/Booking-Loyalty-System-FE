@@ -23,17 +23,17 @@ export const Dashboard: React.FC = () => {
 
     // Điều chỉnh dữ liệu để sử dụng thông tin thật từ khách hàng
     const stats = [
-        { id: 1, label: t('dashboard.stats.allTime'), value: washesCount.toString(), sub: t('dashboard.stats.totalBookings'), icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50' },
-        { id: 2, label: t('dashboard.stats.loyalty'), value: totalPoints.toString(), sub: t('dashboard.stats.totalPoints'), icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50' },
-        { id: 3, label: t('dashboard.stats.status'), value: tier, sub: t('dashboard.stats.membershipTier'), icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50' },
-        { id: 4, label: t('dashboard.stats.savings'), value: `${totalSaved.toLocaleString('vi-VN')}đ`, sub: t('dashboard.stats.totalSaved'), icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50' },
+        { id: 1, label: t('dashboard.stats.allTime'), value: washesCount.toString(), sub: t('dashboard.stats.totalBookings'), icon: <Calendar className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-50 dark:bg-blue-950/30' },
+        { id: 2, label: t('dashboard.stats.loyalty'), value: totalPoints.toString(), sub: t('dashboard.stats.totalPoints'), icon: <Star className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
+        { id: 3, label: t('dashboard.stats.status'), value: tier, sub: t('dashboard.stats.membershipTier'), icon: <Award className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-50 dark:bg-purple-950/30' },
+        { id: 4, label: t('dashboard.stats.savings'), value: `${totalSaved.toLocaleString('vi-VN')}đ`, sub: t('dashboard.stats.totalSaved'), icon: <TrendingUp className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-50 dark:bg-orange-950/30' },
     ];
 
     const quickActions = [
-        { name: t('dashboard.quickActions.bookWash'), desc: t('dashboard.quickActions.bookWashDesc'), icon: <Calendar className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50', path: '/book-wash' },
-        { name: t('dashboard.quickActions.rewards'), desc: t('dashboard.quickActions.rewardsDesc'), icon: <Gift className="w-5 h-5 text-emerald-600" />, bg: 'bg-emerald-50', path: '/rewards' },
-        { name: t('dashboard.quickActions.promotions'), desc: t('dashboard.quickActions.promotionsDesc'), icon: <Megaphone className="w-5 h-5 text-purple-600" />, bg: 'bg-purple-50', path: '/promotions' },
-        { name: t('dashboard.quickActions.history'), desc: t('dashboard.quickActions.historyDesc'), icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50', path: '/booking-history' },
+        { name: t('dashboard.quickActions.bookWash'), desc: t('dashboard.quickActions.bookWashDesc'), icon: <Calendar className="w-5 h-5 text-blue-600" />, bg: 'bg-blue-50 dark:bg-blue-950/30', path: '/book-wash' },
+        { name: t('dashboard.quickActions.rewards'), desc: t('dashboard.quickActions.rewardsDesc'), icon: <Gift className="w-5 h-5 text-emerald-600" />, bg: 'bg-emerald-50 dark:bg-emerald-950/30', path: '/rewards' },
+        { name: t('dashboard.quickActions.promotions'), desc: t('dashboard.quickActions.promotionsDesc'), icon: <Megaphone className="w-5 h-5 text-purple-600" />, bg: 'bg-purple-50 dark:bg-purple-950/30', path: '/promotions' },
+        { name: t('dashboard.quickActions.history'), desc: t('dashboard.quickActions.historyDesc'), icon: <History className="w-5 h-5 text-orange-600" />, bg: 'bg-orange-50 dark:bg-orange-950/30', path: '/booking-history' },
     ];
 
     // Logic tính tiến trình rửa xe (cứ mỗi 7 lần thì đầy thanh)
@@ -47,54 +47,54 @@ export const Dashboard: React.FC = () => {
     const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto pb-12 animate-fade-in">
+        <div className="space-y-8 max-w-7xl mx-auto pb-12 animate-fade-in text-slate-800 dark:text-slate-100">
 
             {/* WELCOME HEADER (image_6ebedd.png) */}
             <div className="space-y-1">
-                <h1 className="text-3xl font-extrabold text-[#0f172a] flex items-center gap-2">
+                <h1 className="text-3xl font-extrabold text-[#0f172a] dark:text-white flex items-center gap-2">
                     {t('dashboard.welcomeBack')} {displayName}! <span className="animate-bounce">👋</span>
                 </h1>
-                <p className="text-sm text-[#64748b] font-medium">{t('dashboard.accountToday')}</p>
+                <p className="text-sm text-[#64748b] dark:text-slate-400 font-medium">{t('dashboard.accountToday')}</p>
             </div>
 
-            {/* 4 THẺ THỐNG KÊ (STATS CARDS) */}
+            {/* 4 THỂ THỐNG KÊ (STATS CARGS) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat) => (
-                    <div key={stat.id} className="bg-white border border-[#e2e8f0] rounded-2xl p-6 flex flex-col justify-between min-h-[140px] relative group hover:shadow-sm transition-all">
+                    <div key={stat.id} className="bg-white dark:bg-slate-900 border border-[#e2e8f0] dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between min-h-[140px] relative group hover:shadow-sm transition-all">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-[#94a3b8] font-bold tracking-wide uppercase">{stat.label}</span>
+                            <span className="text-xs text-[#94a3b8] dark:text-slate-500 font-bold tracking-wide uppercase">{stat.label}</span>
                             <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center`}>
                                 {stat.icon}
                             </div>
                         </div>
                         <div className="mt-4">
-                            <span className="block text-3xl font-black text-[#0f172a]">{stat.value}</span>
-                            <span className="text-xs text-[#64748b] font-semibold">{stat.sub}</span>
+                            <span className="block text-3xl font-black text-[#0f172a] dark:text-white">{stat.value}</span>
+                            <span className="text-xs text-[#64748b] dark:text-slate-400 font-semibold">{stat.sub}</span>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* FREE WASH REWARD PROGRESS (Thanh tiến trình màu xanh lá) */}
-            <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-2xl p-6 space-y-4">
+            <div className="bg-[#f0fdf4] dark:bg-emerald-950/10 border border-[#bbf7d0] dark:border-emerald-900/30 rounded-2xl p-6 space-y-4">
                 <div className="flex justify-between items-start">
                     <div className="flex gap-4 items-center">
                         <div className="w-12 h-12 bg-[#16a34a] rounded-xl flex items-center justify-center text-white shadow-sm">
                             <Gift className="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-[#14532d]">Free Wash Reward Progress</h3>
-                            <p className="text-xs text-[#166534] font-medium">Complete 7 washes to earn a FREE wash!</p>
+                            <h3 className="text-lg font-bold text-[#14532d] dark:text-emerald-400">Free Wash Reward Progress</h3>
+                            <p className="text-xs text-[#166534] dark:text-emerald-500 font-medium">Complete 7 washes to earn a FREE wash!</p>
                         </div>
                     </div>
                     <div className="text-right">
                         <span className="block text-3xl font-black text-[#16a34a]">{currentCycleWashes}/7</span>
-                        <span className="text-[10px] text-[#166534] font-bold uppercase tracking-wider">Washes Done</span>
+                        <span className="text-[10px] text-[#166534] dark:text-emerald-500 font-bold uppercase tracking-wider">Washes Done</span>
                     </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-[#dcfce7] h-6 rounded-full overflow-hidden relative flex items-center">
+                <div className="w-full bg-[#dcfce7] dark:bg-slate-800 h-6 rounded-full overflow-hidden relative flex items-center">
                     <div
                         className="bg-[#16a34a] h-full rounded-full flex items-center justify-end pr-3 transition-all duration-500"
                         style={{ width: `${washProgressPercentage}%` }}
@@ -105,7 +105,7 @@ export const Dashboard: React.FC = () => {
 
                 {/* Chấm điểm mốc tròn (1-7) và text thông báo */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-1">
-                    <p className="text-sm font-semibold text-[#166534]">
+                    <p className="text-sm font-semibold text-[#166534] dark:text-emerald-400/90">
                         {remainingWashes > 0 ? (
                             <>
                                 <span className="text-[#16a34a] font-bold">{remainingWashes} more washes</span> to unlock your FREE wash reward!
@@ -120,10 +120,10 @@ export const Dashboard: React.FC = () => {
                         {Array.from({ length: 7 }).map((_, idx) => {
                             const step = idx + 1;
                             if (step <= currentCycleWashes) {
-                                return <CheckCircle2 key={step} className="w-6 h-6 text-[#16a34a] fill-white" />;
+                                return <CheckCircle2 key={step} className="w-6 h-6 text-[#16a34a] fill-white dark:fill-slate-900" />;
                             }
                             return (
-                                <div key={step} className="w-6 h-6 rounded-full bg-[#e2e8f0] flex items-center justify-center text-xs font-bold text-[#94a3b8]">
+                                <div key={step} className="w-6 h-6 rounded-full bg-[#e2e8f0] dark:bg-slate-850 flex items-center justify-center text-xs font-bold text-[#94a3b8] dark:text-slate-500">
                                     {step}
                                 </div>
                             );
@@ -188,51 +188,51 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* CỘT PHẢI: UPCOMING BOOKING (Bản hẹp 1 phần) */}
-                <div className="bg-white border border-[#e2e8f0] rounded-3xl p-6 shadow-sm flex flex-col justify-between min-h-[340px]">
+                <div className="bg-white dark:bg-slate-900 border border-[#e2e8f0] dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between min-h-[340px]">
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
-                            <h3 className="text-base font-bold text-[#0f172a] flex items-center gap-2">
+                        <div className="flex items-center justify-between border-b border-[#f1f5f9] dark:border-slate-800 pb-3">
+                            <h3 className="text-base font-bold text-[#0f172a] dark:text-white flex items-center gap-2">
                                 Upcoming Booking
                             </h3>
-                            <Clock className="w-4 h-4 text-[#94a3b8]" />
+                            <Clock className="w-4 h-4 text-[#94a3b8] dark:text-slate-500" />
                         </div>
 
                         {/* Thẻ chi tiết lịch hẹn */}
-                        <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 space-y-4">
+                        <div className="bg-blue-50/50 dark:bg-blue-950/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl p-4 space-y-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white">
                                     <Calendar className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-[#0f172a] text-sm">Premium Wash</h4>
-                                    <p className="text-xs text-[#64748b] font-semibold">May 18, 2026</p>
+                                    <h4 className="font-bold text-[#0f172a] dark:text-white text-sm">Premium Wash</h4>
+                                    <p className="text-xs text-[#64748b] dark:text-slate-400 font-semibold">May 18, 2026</p>
                                 </div>
                             </div>
 
                             <div className="space-y-2 text-xs font-semibold pt-1">
                                 <div className="flex justify-between">
-                                    <span className="text-[#94a3b8]">Time</span>
-                                    <span className="text-[#0f172a]">10:00 AM</span>
+                                    <span className="text-[#94a3b8] dark:text-slate-500">Time</span>
+                                    <span className="text-[#0f172a] dark:text-slate-300">10:00 AM</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-[#94a3b8]">Vehicle</span>
-                                    <span className="text-[#0f172a]">ABC-1234</span>
+                                    <span className="text-[#94a3b8] dark:text-slate-500">Vehicle</span>
+                                    <span className="text-[#0f172a] dark:text-slate-300">ABC-1234</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[#94a3b8]">Status</span>
-                                    <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Confirmed</span>
+                                    <span className="text-[#94a3b8] dark:text-slate-500">Status</span>
+                                    <span className="bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md text-[10px] font-bold">Confirmed</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Khu vực nút hành động ở đáy */}
-                    <div className="flex items-center justify-between pt-4 border-t border-[#f1f5f9] mt-4">
-                        <button className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-xl text-xs font-bold transition-colors">
+                    <div className="flex items-center justify-between pt-4 border-t border-[#f1f5f9] dark:border-slate-800 mt-4">
+                        <button className="flex items-center gap-1.5 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 px-3 py-2 rounded-xl text-xs font-bold transition-colors">
                             <XCircle className="w-4 h-4" />
                             Cancel Booking
                         </button>
-                        <button className="flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                        <button className="flex items-center gap-1 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                             View All
                             <ArrowRight className="w-4 h-4" />
                         </button>
@@ -243,20 +243,20 @@ export const Dashboard: React.FC = () => {
 
             {/* SECTION: QUICK ACTIONS */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold text-[#0f172a]">Quick Actions</h3>
+                <h3 className="text-xl font-bold text-[#0f172a] dark:text-white">Quick Actions</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {quickActions.map((action, i) => (
                         <div
                             key={i}
                             onClick={() => navigate(action.path)}
-                            className="bg-white border border-[#e2e8f0] hover:border-blue-200 rounded-2xl p-5 flex items-center gap-4 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
+                            className="bg-white dark:bg-slate-900 border border-[#e2e8f0] dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 rounded-2xl p-5 flex items-center gap-4 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group"
                         >
                             <div className={`w-12 h-12 ${action.bg} rounded-xl flex items-center justify-center shrink-0`}>
                                 {action.icon}
                             </div>
                             <div>
-                                <h4 className="font-bold text-[#0f172a] text-sm group-hover:text-blue-600 transition-colors">{action.name}</h4>
-                                <p className="text-xs text-[#94a3b8] font-medium mt-0.5">{action.desc}</p>
+                                <h4 className="font-bold text-[#0f172a] dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{action.name}</h4>
+                                <p className="text-xs text-[#94a3b8] dark:text-slate-500 font-medium mt-0.5">{action.desc}</p>
                             </div>
                         </div>
                     ))}
