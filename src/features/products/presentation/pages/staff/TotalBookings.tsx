@@ -288,16 +288,16 @@ export const TotalBookings: React.FC = () => {
 
                                     <td className="py-4 px-6">
                                         <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                            b.status === 'Pending' ? 'bg-amber-100 text-amber-700' :
                                             b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' :
-                                                b.status === 'CheckedIn' ? 'bg-purple-100 text-purple-700' :
-                                                    b.status === 'Queued' ? 'bg-indigo-100 text-indigo-700' :
-                                                        b.status === 'InProgress' ? 'bg-amber-100 text-amber-700' :
+                                                b.status === 'CheckedIn' ? 'bg-indigo-100 text-indigo-700' :
+                                                    b.status === 'Queued' ? 'bg-cyan-100 text-cyan-700' :
+                                                        b.status === 'InProgress' ? 'bg-purple-100 text-purple-700' :
                                                             b.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
-                                                                b.status === 'CheckedOut' ? 'bg-green-100 text-green-700' :
-                                                                    b.status === 'Cancelled' ? 'bg-rose-100 text-rose-700' :
-                                                                        b.status === 'NoShow' ? 'bg-orange-100 text-orange-700' :
-                                                                            b.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                                                'bg-gray-100 text-gray-700'
+                                                                b.status === 'CheckedOut' ? 'bg-teal-100 text-teal-700' :
+                                                                    b.status === 'Cancelled' || b.status === 'Rejected' ? 'bg-rose-100 text-rose-700' :
+                                                                        b.status === 'NoShow' ? 'bg-slate-100 text-slate-700' :
+                                                                            'bg-slate-100 text-slate-700'
                                         }`}>
                                             {b.status}
                                         </span>
