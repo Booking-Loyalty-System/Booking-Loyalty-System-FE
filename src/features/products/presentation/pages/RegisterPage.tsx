@@ -1,4 +1,5 @@
 import React, {useRef, useState} from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import {User, Phone, Lock, Droplets, CheckCircle2, Mail, Calendar, KeyRound} from 'lucide-react';
 import {useAuth} from "@/features/products/application/useAuth.ts";
@@ -7,6 +8,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } fro
 import { Link } from 'react-router-dom';
 
 export const RegisterPage: React.FC = () => {
+    const { t } = useTranslation('customer');
     // 1. Thêm các state mới để khớp với RegisterRequest
     const [email, setEmail] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
@@ -31,7 +33,7 @@ export const RegisterPage: React.FC = () => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            toast.error("Mật khẩu xác nhận không khớp!");
+            toast.error(t('auth.register.toastPasswordMismatch', { defaultValue: "Mật khẩu xác nhận không khớp!" }));
             return;
         }
         try {
@@ -44,7 +46,7 @@ export const RegisterPage: React.FC = () => {
                 vehicleType,
                 licensePlate,
             });
-            toast.success("Đăng ký tài khoản thành công!");
+            toast.success(t('auth.register.toastSuccess', { defaultValue: "Đăng ký tài khoản thành công!" }));
         } catch (error) {
             console.error("Đăng nhập email thất bại:", error);
         }
@@ -60,14 +62,14 @@ export const RegisterPage: React.FC = () => {
 
     const handleSendOTP = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (!phoneNumber) return toast.warning("Vui lòng nhập số điện thoại");
+        if (!phoneNumber) return toast.warning(t('auth.register.toastPhoneRequired', { defaultValue: "Vui lòng nhập số điện thoại" }));
 
         try {
             setupRecaptcha();
             const appVerifier = recaptchaVerifierRef.current;
 
             if (!appVerifier) {
-                toast.error("Không thể khởi tạo bộ xác thực reCaptcha.");
+                toast.error(t('auth.register.toastRecaptchaError', { defaultValue: "Không thể khởi tạo bộ xác thực reCaptcha." }));
                 return;
             }
 
@@ -76,7 +78,7 @@ export const RegisterPage: React.FC = () => {
             const result = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
             setConfirmResult(result);
             setIsOtpSent(true);
-            toast.success("Đã gửi mã OTP thành công!");
+            toast.success(t('auth.register.toastOtpSent', { defaultValue: "Đã gửi mã OTP thành công!" }));
         } catch (error) {
             const err = error as Error;
             console.error("Lỗi gửi OTP:", err);
@@ -99,10 +101,10 @@ export const RegisterPage: React.FC = () => {
                 phoneNumber: verifiedPhone,
                 idToken: idToken
             });
-            toast.success("Xác thực OTP thành công! Đang đăng nhập...");
+            toast.success(t('auth.register.toastOtpSuccess', { defaultValue: "Xác thực OTP thành công! Đang đăng nhập..." }));
         } catch (error) {
             console.error("Sai OTP:", error);
-            toast.error("Mã OTP không chính xác hoặc đã hết hạn!");
+            toast.error(t('auth.register.toastOtpInvalid', { defaultValue: "Mã OTP không chính xác hoặc đã hết hạn!" }));
         }
     };
 
@@ -119,20 +121,20 @@ export const RegisterPage: React.FC = () => {
                                 <Droplets className="w-8 h-7" strokeWidth={1.5} />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold text-[#0f172a] leading-tight tracking-tight">AutoWash Pro</h1>
-                                <p className="text-base text-[#64748b] font-medium mt-0.5">Join our community</p>
+                                <h1 className="text-3xl font-bold text-[#0f172a] leading-tight tracking-tight">{t('auth.register.appName')}</h1>
+                                <p className="text-base text-[#64748b] font-medium mt-0.5">{t('auth.register.appTagline')}</p>
                             </div>
                         </div>
                         <div className="w-full overflow-hidden rounded-xl mb-6 aspect-[16/9] max-h-[300px]">
                             <img src="https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&q=80&w=1000" alt="Car Wash Foam" className="w-full h-full object-cover" />
                         </div>
                         <div className="bg-[#f0f6fe] rounded-2xl pt-4 pb-6 px-6">
-                            <h3 className="font-bold text-[#0f172a] text-xl mb-4 ">Membership Benefits</h3>
+                            <h3 className="font-bold text-[#0f172a] text-xl mb-4 ">{t('auth.register.membershipBenefitsTitle')}</h3>
                             <ul className="space-y-3">
-                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>Earn loyalty points on every wash</span></li>
-                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>Priority booking for VIP members</span></li>
-                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>Exclusive discounts and promotions</span></li>
-                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>Track your booking history</span></li>
+                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>{t('auth.register.benefit1')}</span></li>
+                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>{t('auth.register.benefit2')}</span></li>
+                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>{t('auth.register.benefit3')}</span></li>
+                                <li className="flex items-center gap-3 text-base text-[#334155]"><CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white" /><span>{t('auth.register.benefit4')}</span></li>
                             </ul>
                         </div>
                     </div>
@@ -142,8 +144,8 @@ export const RegisterPage: React.FC = () => {
                 <div className="flex-1 bg-white rounded-2xl p-6 md:p-8 flex flex-col justify-start shadow-sm border border-white/40 overflow-y-auto">
                     <div className="w-full max-w-md mx-auto">
                         <div className="mb-5">
-                            <h2 className="text-4xl font-bold text-[#0f172a] mb-1.5 tracking-tight">Create Account</h2>
-                            <p className="text-[#64748b] text-base">Get started with AutoWash Pro</p>
+                            <h2 className="text-4xl font-bold text-[#0f172a] mb-1.5 tracking-tight">{t('auth.register.formHeading')}</h2>
+                            <p className="text-[#64748b] text-base">{t('auth.register.formSubtitle')}</p>
                         </div>
 
                         <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
@@ -151,55 +153,55 @@ export const RegisterPage: React.FC = () => {
                                 onClick={() => setRegisterMode('email')}
                                 className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${registerMode === 'email' ? 'bg-white shadow text-[#4a90e2]' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                Bằng Email
+                                {t('auth.register.tabEmail')}
                             </button>
                             <button
                                 onClick={() => setRegisterMode('phone')}
                                 className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${registerMode === 'phone' ? 'bg-white shadow text-[#4a90e2]' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                Bằng SĐT (OTP)
+                                {t('auth.register.tabPhone')}
                             </button>
                         </div>
 
                         {registerMode === 'email' && (
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {/* Input Fields */}
-                            <InputField icon={<User />} label="Full Name" value={fullName} onChange={setFullName} placeholder="John Doe" />
-                            <InputField icon={<Mail />} label="Email" value={email} onChange={setEmail} placeholder="john@example.com" type="email" />
-                            <InputField icon={<Phone />} label="Phone Number" value={phoneNumber} onChange={setPhoneNumber} placeholder="0912345678" />
+                            <InputField icon={<User />} label={t('auth.register.labelFullName')} value={fullName} onChange={setFullName} placeholder="John Doe" />
+                            <InputField icon={<Mail />} label={t('auth.register.labelEmail')} value={email} onChange={setEmail} placeholder="john@example.com" type="email" />
+                            <InputField icon={<Phone />} label={t('auth.register.labelPhoneNumber')} value={phoneNumber} onChange={setPhoneNumber} placeholder="0912345678" />
 
                             <div className="flex gap-4">
                                 <div className="flex-1">
-                                    <InputField icon={<Calendar />} label="DOB" value={dateOfBirth} onChange={setDateOfBirth} type="date" />
+                                    <InputField icon={<Calendar />} label={t('auth.register.labelDOB')} value={dateOfBirth} onChange={setDateOfBirth} type="date" />
                                 </div>
                                 <div className="space-y-1.5 flex-1">
-                                    <label className="text-sm font-semibold text-[#334155]">Vehicle Type</label>
+                                    <label className="text-sm font-semibold text-[#334155]">{t('auth.register.labelVehicleType')}</label>
                                     <select
                                         value={vehicleType}
                                         onChange={(e) => setVehicleType(Number(e.target.value))}
                                         className="w-full px-4 py-2.5 bg-white border border-[#e2e8f0] rounded-xl text-base focus:border-[#4a90e2] outline-none transition-all h-[46px]"
                                     >
-                                        <option value={0}>Small</option>
-                                        <option value={1}>Medium</option>
-                                        <option value={2}>Large</option>
+                                        <option value={0}>{t('auth.register.optionSmall')}</option>
+                                        <option value={1}>{t('auth.register.optionMedium')}</option>
+                                        <option value={2}>{t('auth.register.optionLarge')}</option>
                                     </select>
                                 </div>
                             </div>
-                            <InputField icon={<User />} label="License Plate (Optional)" value={licensePlate} onChange={setLicensePlate} placeholder="e.g. 29A-12345" />
+                            <InputField icon={<User />} label={t('auth.register.labelLicensePlate')} value={licensePlate} onChange={setLicensePlate} placeholder="e.g. 29A-12345" />
 
-                            <InputField icon={<Lock />} label="Password" value={password} onChange={setPassword} type="password" placeholder="••••••••" />
-                            <InputField icon={<Lock />} label="Confirm Password" value={confirmPassword} onChange={setConfirmPassword} type="password" placeholder="••••••••" />
+                            <InputField icon={<Lock />} label={t('auth.register.labelPassword')} value={password} onChange={setPassword} type="password" placeholder="••••••••" />
+                            <InputField icon={<Lock />} label={t('auth.register.labelConfirmPassword')} value={confirmPassword} onChange={setConfirmPassword} type="password" placeholder="••••••••" />
                             <button
                                 type="submit"
                                 disabled={isPending} // Disable nút khi đang loading
                                 className="w-full bg-[#4a90e2] text-white py-2.5 rounded-xl font-semibold hover:bg-[#357abd]"
                             >
-                                {isPending ? "Đang xử lý..." : "Create Account"}
+                                {isPending ? t('auth.register.processing', { defaultValue: "Đang xử lý..." }) : t('auth.register.btnCreateAccount')}
                             </button>
                             <div className="text-center text-sm text-[#475569] pt-2">
-                                Already have an account?{" "}
+                                {t('auth.register.alreadyHaveAccount')}{" "}
                                 <Link to="/login" className="text-[#4a90e2] hover:underline font-semibold">
-                                    Sign In
+                                    {t('auth.register.linkSignIn')}
                                 </Link>
                             </div>
                         </form>
@@ -208,7 +210,7 @@ export const RegisterPage: React.FC = () => {
                         {registerMode === 'phone' && (
                             <form onSubmit={handlePhoneSubmit} className="space-y-4 animate-in fade-in zoom-in duration-300">
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-semibold text-[#334155]">Phone Number</label>
+                                    <label className="text-sm font-semibold text-[#334155]">{t('auth.register.labelPhoneNumber')}</label>
                                     <div className="flex gap-2">
                                         <div className="relative flex-1">
                                             <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#94a3b8]">
@@ -229,7 +231,7 @@ export const RegisterPage: React.FC = () => {
                                                 onClick={handleSendOTP}
                                                 className="bg-slate-900 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-slate-800 whitespace-nowrap"
                                             >
-                                                Gửi mã
+                                                {t('auth.register.sendCode', { defaultValue: "Gửi mã" })}
                                             </button>
                                         )}
                                     </div>
@@ -241,10 +243,10 @@ export const RegisterPage: React.FC = () => {
                                     <>
                                         <InputField
                                             icon={<KeyRound />}
-                                            label="Mã OTP"
+                                            label={t('auth.register.labelOtp', { defaultValue: "Mã OTP" })}
                                             value={otp}
                                             onChange={setOtp}
-                                            placeholder="Nhập 6 số OTP..."
+                                            placeholder={t('auth.register.placeholderOtp', { defaultValue: "Nhập 6 số OTP..." })}
                                             type="text"
                                         />
                                         <button
@@ -252,14 +254,14 @@ export const RegisterPage: React.FC = () => {
                                             disabled={isPendingPhone}
                                             className="w-full bg-emerald-500 text-white py-2.5 rounded-xl font-semibold hover:bg-emerald-600 mt-4 transition-colors"
                                         >
-                                            {isPendingPhone ? "Đang xác thực..." : "Xác nhận & Đăng ký"}
+                                            {isPendingPhone ? t('auth.register.verifying', { defaultValue: "Đang xác thực..." }) : t('auth.register.confirmAndRegister', { defaultValue: "Xác nhận & Đăng ký" })}
                                         </button>
                                     </>
                                 )}
                                 <div className="text-center text-sm text-[#475569] pt-2">
-                                    Already have an account?{" "}
+                                    {t('auth.register.alreadyHaveAccount')}{" "}
                                     <Link to="/login" className="text-[#4a90e2] hover:underline font-semibold">
-                                        Sign In
+                                        {t('auth.register.linkSignIn')}
                                     </Link>
                                 </div>
                             </form>
