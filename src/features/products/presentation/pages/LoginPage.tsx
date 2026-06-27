@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Mail, Lock, Droplets, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Droplets, Eye, EyeOff, Sun, Moon } from "lucide-react";
 import { useAuth } from "../../application/useAuth.ts";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { CarScene } from "@/shared/car-scene.tsx";
 import { toast } from "sonner";
+import { useTheme } from '@/core/context/ThemeContext.tsx';
+import { useLanguage } from '@/core/context/LanguageContext.tsx';
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation('customer');
+  const { isDark, toggleTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -88,69 +92,98 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#e6f0fa] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto">
+    <div className="min-h-screen w-full bg-[#e6f0fa] dark:bg-slate-950 flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-200">
+      
+      {/* Theme & Language Switchers */}
+      <div className="absolute top-4 right-4 flex items-center gap-2 z-50">
+        <button
+          id="theme-toggle-login"
+          type="button"
+          onClick={toggleTheme}
+          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="flex items-center justify-center p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200 cursor-pointer shadow-sm"
+        >
+          {isDark ? (
+            <Sun className="w-4 h-4 text-amber-500" />
+          ) : (
+            <Moon className="w-4 h-4 text-blue-600" />
+          )}
+        </button>
+
+        <button
+          id="language-toggle-login"
+          type="button"
+          onClick={toggleLanguage}
+          title={language === 'en' ? "Switch to Vietnamese" : "Switch to English"}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200 shadow-sm"
+        >
+          <span className="text-sm leading-none">{language === 'en' ? '🇺🇸' : '🇻🇳'}</span>
+          <span className="uppercase tracking-wide">{language === 'en' ? 'EN' : 'VI'}</span>
+        </button>
+      </div>
+
       <div className="flex-grow"></div>
       <div className="w-full max-w-6xl mx-auto bg-transparent flex flex-col lg:flex-row gap-5 h-auto">
         {/* PANEL TRÁI: GIỚI THIỆU TÍNH NĂNG */}
-        <div className="flex-1 bg-white rounded-2xl p-6 md:p-8 flex flex-col shadow-sm border border-white/40">
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 flex flex-col shadow-sm border border-white/40 dark:border-slate-800/80 transition-colors duration-200">
           <div className="flex flex-col h-full justify-center">
             {/* LOGO & BRANDING */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-[#4a90e2] rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-200">
+              <div className="w-12 h-12 bg-[#4a90e2] rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-200 dark:shadow-none">
                 <Droplets className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#0f172a] leading-tight tracking-tight">
+                <h1 className="text-2xl font-bold text-[#0f172a] dark:text-slate-100 leading-tight tracking-tight">
                   {t('auth.login.appName')}
                 </h1>
-                <p className="text-sm text-[#64748b] font-medium mt-0.5">
+                <p className="text-sm text-[#64748b] dark:text-slate-400 font-medium mt-0.5">
                   {t('auth.login.appTagline')}
                 </p>
               </div>
             </div>
 
             {/* BANNER 3D SCENE */}
-            <div className="w-full overflow-hidden rounded-xl mb-5 aspect-video max-h-64">
+            <div className="w-full overflow-hidden rounded-xl mb-5 aspect-video max-h-64 border border-slate-100 dark:border-slate-800">
               <CarScene />
             </div>
 
             {/* DANH SÁCH TÍNH NĂNG NỔI BẬT */}
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#e6f0fa] text-[#1e6ffd] font-bold text-xl flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-10 h-10 rounded-lg bg-[#e6f0fa] dark:bg-slate-800 text-[#1e6ffd] dark:text-blue-400 font-bold text-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors">
                   1
                 </div>
                 <div>
-                  <h3 className="font-bold text-[#0f172a] text-base">
+                  <h3 className="font-bold text-[#0f172a] dark:text-slate-200 text-base">
                     {t('auth.login.feature1Title')}
                   </h3>
-                  <p className="text-sm text-[#64748b] mt-0.5">
+                  <p className="text-sm text-[#64748b] dark:text-slate-400 mt-0.5">
                     {t('auth.login.feature1Desc')}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#e6f0fa] text-[#1e6ffd] font-bold text-xl flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-10 h-10 rounded-lg bg-[#e6f0fa] dark:bg-slate-800 text-[#1e6ffd] dark:text-blue-400 font-bold text-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors">
                   2
                 </div>
                 <div>
-                  <h3 className="font-bold text-[#0f172a] text-base">
+                  <h3 className="font-bold text-[#0f172a] dark:text-slate-200 text-base">
                     {t('auth.login.feature2Title')}
                   </h3>
-                  <p className="text-sm text-[#64748b] mt-0.5">
+                  <p className="text-sm text-[#64748b] dark:text-slate-400 mt-0.5">
                     {t('auth.login.feature2Desc')}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#e6f0fa] text-[#1e6ffd] font-bold text-xl flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-10 h-10 rounded-lg bg-[#e6f0fa] dark:bg-slate-800 text-[#1e6ffd] dark:text-blue-400 font-bold text-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors">
                   3
                 </div>
                 <div>
-                  <h3 className="font-bold text-[#0f172a] text-base">
+                  <h3 className="font-bold text-[#0f172a] dark:text-slate-200 text-base">
                     {t('auth.login.feature3Title')}
                   </h3>
-                  <p className="text-sm text-[#64748b] mt-0.5">
+                  <p className="text-sm text-[#64748b] dark:text-slate-400 mt-0.5">
                     {t('auth.login.feature3Desc')}
                   </p>
                 </div>
@@ -160,14 +193,14 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* PANEL PHẢI: FORM ĐĂNG NHẬP */}
-        <div className="flex-1 bg-white rounded-2xl p-6 md:p-8 flex flex-col justify-start shadow-sm border border-white/40">
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 flex flex-col justify-start shadow-sm border border-white/40 dark:border-slate-800/80 transition-colors duration-200">
           <div className="w-full max-w-md mx-auto">
             {/* TIÊU ĐỀ FORM */}
             <div className="mb-5">
-              <h2 className="text-3xl font-bold text-[#0f172a] mb-1 tracking-tight">
+              <h2 className="text-3xl font-bold text-[#0f172a] dark:text-slate-100 mb-1 tracking-tight">
                 {t('auth.login.formHeading')}
               </h2>
-              <p className="text-[#64748b] text-sm">
+              <p className="text-[#64748b] dark:text-slate-400 text-sm">
                 {t('auth.login.formSubtitle')}
               </p>
             </div>
@@ -176,7 +209,7 @@ export const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* EMAIL */}
               <div className="space-y-1.5">
-                <label className="text-base font-semibold text-[#334155]">
+                <label className="text-base font-semibold text-[#334155] dark:text-slate-350">
                   {t('auth.login.labelEmail')}
                 </label>
                 <div className="relative">
@@ -189,14 +222,14 @@ export const LoginPage: React.FC = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={t('auth.login.placeholderEmail')}
                     required
-                    className="w-full pl-9 pr-4 py-2 bg-white border border-[#e2e8f0] rounded-xl text-sm text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:border-[#4a90e2] focus:ring-1 focus:ring-[#4a90e2] transition-all"
+                    className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl text-sm text-[#0f172a] dark:text-slate-100 placeholder-[#94a3b8] focus:outline-none focus:border-[#4a90e2] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#4a90e2] transition-all"
                   />
                 </div>
               </div>
 
               {/* MẬT KHẨU */}
               <div className="space-y-1.5">
-                <label className="text-base font-semibold text-[#334155]">
+                <label className="text-base font-semibold text-[#334155] dark:text-slate-350">
                   {t('auth.login.labelPassword')}
                 </label>
                 <div className="relative">
@@ -209,7 +242,7 @@ export const LoginPage: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-9 pr-10 py-2 bg-white border border-[#e2e8f0] rounded-xl text-sm text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:border-[#4a90e2] focus:ring-1 focus:ring-[#4a90e2] transition-all"
+                    className="w-full pl-9 pr-10 py-2 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl text-sm text-[#0f172a] dark:text-slate-100 placeholder-[#94a3b8] focus:outline-none focus:border-[#4a90e2] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#4a90e2] transition-all"
                   />
                   {/* 🌟 Nút bấm ẩn/hiện mật khẩu */}
                   <button
@@ -228,16 +261,16 @@ export const LoginPage: React.FC = () => {
 
               {/* GHI NHỚ & QUÊN MẬT KHẨU */}
               <div className="flex items-center justify-between text-sm pt-1">
-                <label className="flex items-center gap-2 text-[#475569] cursor-pointer select-none font-medium">
+                <label className="flex items-center gap-2 text-[#475569] dark:text-slate-300 cursor-pointer select-none font-medium">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 rounded border-[#cbd5e1] text-[#4a90e2] focus:ring-[#4a90e2]"
+                    className="w-4 h-4 rounded border-[#cbd5e1] dark:border-slate-700 text-[#4a90e2] dark:bg-slate-800 focus:ring-[#4a90e2]"
                   />
                   {t('auth.login.checkboxRememberMe')}
                 </label>
                 <a
                   href="#"
-                  className="text-[#4a90e2] hover:underline font-semibold"
+                  className="text-[#4a90e2] dark:text-blue-400 hover:underline font-semibold"
                 >
                   {t('auth.login.linkForgotPassword')}
                 </a>
@@ -245,7 +278,7 @@ export const LoginPage: React.FC = () => {
 
               {/* LỖI ĐĂNG NHẬP */}
               {error && (
-                <div className="text-xs text-red-500 bg-red-50 border border-red-100 p-2 rounded-lg font-medium">
+                <div className="text-xs text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 p-2 rounded-lg font-medium">
                   {t('auth.login.toastFailed', { defaultValue: "Đăng nhập thất bại. Vui lòng thử lại!" })}
                 </div>
               )}
@@ -267,7 +300,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => triggerGoogleLogin()}
-                className="w-full bg-white border border-[#e2e8f0] text-[#334155] font-semibold py-2 px-4 rounded-xl hover:bg-[#f8fafc] active:scale-[0.99] transition-all text-sm shadow-sm flex items-center justify-center gap-2"
+                className="w-full bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 text-[#334155] dark:text-slate-200 font-semibold py-2 px-4 rounded-xl hover:bg-[#f8fafc] dark:hover:bg-slate-750 active:scale-[0.99] transition-all text-sm shadow-sm flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -279,43 +312,43 @@ export const LoginPage: React.FC = () => {
               </button>
 
               {/* CHUYỂN TRANG ĐĂNG KÝ */}
-              <div className="text-center text-sm text-[#475569] pt-1">
+              <div className="text-center text-sm text-[#475569] dark:text-slate-400 pt-1">
                 {t('auth.login.noAccount')}{" "}
                 <Link
                   to="/register"
-                  className="text-[#4a90e2] hover:underline font-semibold"
+                  className="text-[#4a90e2] dark:text-blue-400 hover:underline font-semibold"
                 >
                   {t('auth.login.linkCreateAccount')}
                 </Link>
               </div>
             </form>
 
-            <div className="border-t border-[#f1f5f9] my-4"></div>
+            <div className="border-t border-[#f1f5f9] dark:border-slate-800 my-4"></div>
 
             {/* QUICK ACCESS (DEMO) */}
             <div className="text-center">
-              <span className="text-[10px] font-semibold text-[#94a3b8] uppercase tracking-wider block mb-2">
+              <span className="text-[10px] font-semibold text-[#94a3b8] dark:text-slate-500 uppercase tracking-wider block mb-2">
                 {t('auth.login.quickAccessLabel')}
               </span>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => handleQuickAccess("customer")}
-                  className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
+                  className="bg-[#f1f5f9] dark:bg-slate-800 hover:bg-[#e2e8f0] dark:hover:bg-slate-700 text-[#475569] dark:text-slate-350 font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
                 >
                   {t('auth.login.quickAccessCustomer')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickAccess("staff")}
-                  className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
+                  className="bg-[#f1f5f9] dark:bg-slate-800 hover:bg-[#e2e8f0] dark:hover:bg-slate-700 text-[#475569] dark:text-slate-350 font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
                 >
                   {t('auth.login.quickAccessStaff')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickAccess("admin")}
-                  className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
+                  className="bg-[#f1f5f9] dark:bg-slate-800 hover:bg-[#e2e8f0] dark:hover:bg-slate-700 text-[#475569] dark:text-slate-350 font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
                 >
                   {t('auth.login.quickAccessAdmin')}
                 </button>
