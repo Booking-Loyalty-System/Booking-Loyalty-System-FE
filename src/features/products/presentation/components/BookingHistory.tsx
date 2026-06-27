@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {XCircle, Calendar, Star, Clock, DollarSign, AlertTriangle} from 'lucide-react';
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import type { MyBookingRecord } from "@/features/products/domain/models/booking/booking.model.ts";
@@ -10,6 +11,7 @@ import {toast} from "sonner";
 import {ReschedulePicker} from "@/features/products/presentation/components/ReschedulePicker.tsx";
 
 export const BookingHistory: React.FC = () => {
+    const { t } = useTranslation('customer');
     const location = useLocation();
     const [selectedBooking, setSelectedBooking] = useState<MyBookingRecord | null>(null);
 
@@ -217,19 +219,19 @@ export const BookingHistory: React.FC = () => {
                     <table className="w-full text-left border-collapse">
                         <thead>
                         <tr className="bg-slate-50/70 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                            <th className="py-4 px-6">Booking Code</th>
-                            <th className="py-4 px-6">Service</th>
-                            <th className="py-4 px-6">Date & Time</th>
-                            <th className="py-4 px-6">Vehicle</th>
-                            <th className="py-4 px-6">Status</th>
-                            <th className="py-4 px-6">Amount</th>
-                            <th className="py-4 px-6 text-right">Action</th>
+                            <th className="py-4 px-6">{t('bookingHistory.table.id')}</th>
+                            <th className="py-4 px-6">{t('bookingHistory.table.package')}</th>
+                            <th className="py-4 px-6">{t('bookingHistory.table.dateTime')}</th>
+                            <th className="py-4 px-6">{t('bookingHistory.table.vehicle')}</th>
+                            <th className="py-4 px-6">{t('bookingHistory.table.status')}</th>
+                            <th className="py-4 px-6">{t('bookingHistory.table.price')}</th>
+                            <th className="py-4 px-6 text-right">{t('bookingHistory.table.actions')}</th>
                         </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-sm font-medium text-slate-600">
                         {sortedBookings.length === 0 ? (
                             <tr>
-                                <td colSpan={7} className="py-8 text-center text-slate-400">No booking history yet.</td>
+                                <td colSpan={7} className="py-8 text-center text-slate-400">{t('bookingHistory.empty.title')}</td>
                             </tr>
                         ) : (
                             sortedBookings.map((item) => (
@@ -246,7 +248,7 @@ export const BookingHistory: React.FC = () => {
                                     </td>
                                     <td className="py-4 px-6">
                                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${getStatusStyles(item.status)}`}>
-                                            {item.status}
+                                            {t(`bookingHistory.status.${item.status.replace(' ', '')}` as any, { defaultValue: item.status })}
                                           </span>
                                     </td>
                                     <td className="py-4 px-6 font-extrabold text-slate-900">{formatCurrency(item.totalPrice)}</td>
@@ -255,7 +257,7 @@ export const BookingHistory: React.FC = () => {
                                             onClick={() => setSelectedBooking(item)}
                                             className="text-blue-600 hover:text-blue-700 font-bold text-xs"
                                         >
-                                            View Details
+                                            {t('bookingHistory.actions.viewDetails')}
                                         </button>
                                         {(item.status === 'Confirmed' || item.status === 'Pending') && (
                                             <button
@@ -263,7 +265,7 @@ export const BookingHistory: React.FC = () => {
                                                 className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
                                             >
                                                 <XCircle className="w-3.5 h-3.5" />
-                                                <span>Cancel</span>
+                                                <span>{t('bookingHistory.actions.cancel')}</span>
                                             </button>
                                         )}
                                     </td>
