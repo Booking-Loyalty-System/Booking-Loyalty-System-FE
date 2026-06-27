@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin, Clock, Phone, Map, Loader2, Navigation, CheckCircle2 } from 'lucide-react';
 import { MapModal } from './MapModal';
 import { useBranch } from '../../application/useBranch';
 import type { NearestBranchesProps } from "@/features/products/domain/models/branch/branch.model.ts";
 
 export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranchId, onSelectBranch }) => {
+    const { t } = useTranslation('customer');
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [userLocation, setUserLocation] = useState<{ lat: number, lon: number } | null>(null);
     const [modalActiveBranchId, setModalActiveBranchId] = useState<string>('');
@@ -53,7 +55,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
                 <Loader2 className="w-9 h-9 text-[#1e6ffd] animate-spin" />
-                <p className="text-slate-500 text-sm font-medium">Finding the nearest branches...</p>
+                <p className="text-slate-500 text-sm font-medium">{t('bookWash.branch.findingNearest', { defaultValue: "Finding the nearest branches..." })}</p>
             </div>
         );
     }
@@ -61,8 +63,8 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
     if (error) {
         return (
             <div className="text-center p-8 bg-red-50 border border-red-100 rounded-2xl max-w-4xl mx-auto my-6 shadow-sm">
-                <p className="text-red-600 font-bold text-lg">Data Connection Failed</p>
-                <p className="text-red-400 text-sm mt-1">Please check your network connection or backend system.</p>
+                <p className="text-red-600 font-bold text-lg">{t('bookWash.branch.connectionFailed', { defaultValue: "Data Connection Failed" })}</p>
+                <p className="text-red-400 text-sm mt-1">{t('bookWash.branch.connectionFailedDesc', { defaultValue: "Please check your network connection or backend system." })}</p>
             </div>
         );
     }
@@ -70,7 +72,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
     if (branches.length === 0) {
         return (
             <div className="text-center p-12 bg-slate-50 border border-slate-200 rounded-2xl max-w-4xl mx-auto my-6">
-                <p className="text-slate-500 font-medium text-lg">No active branches found at the moment.</p>
+                <p className="text-slate-500 font-medium text-lg">{t('bookWash.branch.noActiveBranches', { defaultValue: "No active branches found at the moment." })}</p>
             </div>
         );
     }
@@ -80,15 +82,15 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
-                    <h2 className="text-xl font-bold text-slate-800 tracking-tight">Select Branch</h2>
-                    <p className="text-xs text-slate-400 mt-0.5">Automatically sorted based on your proximity</p>
+                    <h2 className="text-xl font-bold text-slate-800 tracking-tight">{t('bookWash.branch.selectTitle', { defaultValue: "Select Branch" })}</h2>
+                    <p className="text-xs text-slate-400 mt-0.5">{t('bookWash.branch.sortedByProximity', { defaultValue: "Automatically sorted based on your proximity" })}</p>
                 </div>
                 <button
                     type="button"
                     onClick={() => handleOpenMap()}
                     className="flex items-center justify-center gap-2 bg-[#1e6ffd] hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold shadow-md shadow-blue-500/10 active:scale-95 transition-all text-xs self-start sm:self-center"
                 >
-                    <Map className="w-3.5 h-3.5" /> Overview Map
+                    <Map className="w-3.5 h-3.5" /> {t('bookWash.branch.overviewMap', { defaultValue: "Overview Map" })}
                 </button>
             </div>
 
@@ -124,7 +126,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                                             ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                                             : 'bg-slate-100 text-slate-500'
                                     }`}>
-                                        {branch.status === 'Active' ? 'Open' : 'Closed'}
+                                        {branch.status === 'Active' ? t('bookWash.branch.statusOpen', { defaultValue: 'Open' }) : t('bookWash.branch.statusClosed', { defaultValue: 'Closed' })}
                                     </span>
                                 </div>
 
@@ -132,7 +134,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                                 {distance && (
                                     <div className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 bg-blue-50 rounded-md text-[11px] font-bold text-blue-600 border border-blue-100">
                                         <Navigation className="w-2.5 h-2.5 fill-current" />
-                                        {distance} km away
+                                        {t('bookWash.branch.kmAway', { n: distance, defaultValue: `${distance} km away` })}
                                     </div>
                                 )}
 
@@ -166,7 +168,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                                         : 'bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100'
                                 }`}
                             >
-                                View on Map
+                                {t('bookWash.branch.viewOnMap', { defaultValue: "View on Map" })}
                             </button>
                         </div>
                     );
