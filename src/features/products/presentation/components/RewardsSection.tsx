@@ -36,7 +36,7 @@ export const RewardsSection: React.FC = () => {
     isLoadingRewards,
   } = useReward();
 
-  const availablePoints = customerMe?.totalPoints ?? 0;
+  const availablePoints = customerMe?.availablePoint ?? 0;
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
 
   // Bảng cấu hình icon mẫu

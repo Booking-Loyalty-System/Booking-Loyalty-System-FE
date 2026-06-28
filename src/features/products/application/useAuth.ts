@@ -188,12 +188,9 @@ export const useAuth = () => {
                 queryClient.setQueryData(['current_user'], synthesizedUser);
             }
             console.log("Đăng ký thành công, Token đã lưu:", data);
-
-            // 2. Chuyển hướng người dùng về trang chủ hoặc dashboard
-            window.location.href = '/dashboard';
         },
         onError: (error) => {
-            alert("Đăng ký thất bại: " + error.message);
+            console.error("Lỗi đăng ký:", error);
         }
     });
 
@@ -218,10 +215,10 @@ export const useAuth = () => {
             }
 
             console.log("Đăng ký bằng SĐT thành công!");
-            window.location.href = '/dashboard';
+            
         },
         onError: (error) => {
-            alert("Đăng ký bằng SĐT thất bại: " + error.message);
+            console.error("Lỗi đăng ký SĐT:", error);
         }
     });
 

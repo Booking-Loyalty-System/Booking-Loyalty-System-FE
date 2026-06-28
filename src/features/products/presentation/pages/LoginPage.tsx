@@ -18,6 +18,7 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error } = useAuth();
   const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -32,7 +33,7 @@ export const LoginPage: React.FC = () => {
       setTimeout(() => {
         // 3. Check role trên biến user sạch này là chuẩn 100%
         if (user?.role === "Admin") {
-          navigate("/admin"); // 🌟 Thêm đường dẫn tới trang Admin của bạn ở đây
+          navigate("/admin");
         } else if (user?.role === "Staff") {
           navigate("/staff/dashboard");
         } else {
@@ -52,9 +53,9 @@ export const LoginPage: React.FC = () => {
     try {
       // 🔥 Truyền code trực tiếp vào URL parameters gửi lên API .NET Core
       const response = await fetch(
-        `https://localhost:7001/api/auth/google-login?code=${encodeURIComponent(authCode)}`,
+        `${import.meta.env.VITE_API_BASE_URL}/auth/google-login?code=${encodeURIComponent(authCode)}`,
         {
-          method: "POST", // Giữ POST hoặc đổi sang GET tùy theo cấu hình Endpoint [HttpPost] hay [HttpGet] ở Backend
+          method: "POST",
           headers: { "Content-Type": "application/json" },
         },
       );
@@ -64,7 +65,6 @@ export const LoginPage: React.FC = () => {
         localStorage.setItem("accessToken", data.token); // Lưu token hệ thống cấp phát
         alert(t("auth.login.toastGoogleSuccess", { defaultValue: "Đăng nhập bằng Google thành công!" }));
         navigate("/auto-wash-simulation");
-        // window.location.href = '/dashboard';
       } else {
         alert(t("auth.login.toastGoogleBackendFail", { defaultValue: "Backend xác thực Google code thất bại." }));
       }
@@ -77,7 +77,7 @@ export const LoginPage: React.FC = () => {
   const triggerGoogleLogin = useGoogleLogin({
     onSuccess: handleGoogleSuccess,
     onError: () => console.log("Google Đăng nhập thất bại"),
-    flow: "auth-code", // 🔥 Bắt buộc cấu hình flow này để nhận chuỗi 'code' thay vì idToken
+    flow: "auth-code",
   });
 
   const handleQuickAccess = (role: "customer" | "staff" | "admin") => {
@@ -209,7 +209,7 @@ export const LoginPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* EMAIL */}
               <div className="space-y-1.5">
-                <label className="text-base font-semibold text-[#334155] dark:text-slate-350">
+                <label className="text-base font-semibold text-[#334155] dark:text-slate-300">
                   {t('auth.login.labelEmail')}
                 </label>
                 <div className="relative">
@@ -229,7 +229,7 @@ export const LoginPage: React.FC = () => {
 
               {/* MẬT KHẨU */}
               <div className="space-y-1.5">
-                <label className="text-base font-semibold text-[#334155] dark:text-slate-350">
+                <label className="text-base font-semibold text-[#334155] dark:text-slate-300">
                   {t('auth.login.labelPassword')}
                 </label>
                 <div className="relative">
@@ -237,14 +237,13 @@ export const LoginPage: React.FC = () => {
                     <Lock className="w-4 h-4" />
                   </span>
                   <input
-                    type={showPassword ? "text" : "password"} // 🌟 Thay đổi kiểu input dựa trên state
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
                     className="w-full pl-9 pr-10 py-2 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl text-sm text-[#0f172a] dark:text-slate-100 placeholder-[#94a3b8] focus:outline-none focus:border-[#4a90e2] dark:focus:border-blue-500 focus:ring-1 focus:ring-[#4a90e2] transition-all"
                   />
-                  {/* 🌟 Nút bấm ẩn/hiện mật khẩu */}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -296,7 +295,7 @@ export const LoginPage: React.FC = () => {
                 )}
               </button>
 
-              {/* 🌟 NÚT GOOGLE CUSTOM MỚI (Đồng bộ thiết kế UI với form và gọi trigger hook) */}
+              {/* NÚT GOOGLE */}
               <button
                 type="button"
                 onClick={() => triggerGoogleLogin()}
