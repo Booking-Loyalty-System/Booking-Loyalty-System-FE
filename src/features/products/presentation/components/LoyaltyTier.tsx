@@ -6,6 +6,7 @@ import {
   Award,
   Calendar,
   History,
+  Gem,
 } from "lucide-react";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { useLoyaltyHistory } from "@/features/products/application/useLoyalty.ts";
@@ -32,7 +33,7 @@ export const LoyaltyTier: React.FC = () => {
   // Tách biệt hai loại điểm theo cấu trúc mới của API
   const availablePoints = customerMe?.availablePoint || 0; // Dùng để hiển thị số dư tiêu dùng
   const totalPoints = customerMe?.totalPoint || 0; // Dùng để xét hạng
-  const currentTierName = customerMe?.tier || "Member";
+  const currentTierName = customerMe?.tier || "Bronze";
 
   // Tính toán target dựa trên mức TỔNG ĐIỂM (totalPoints)
   let targetPoints = 300;
@@ -54,7 +55,7 @@ export const LoyaltyTier: React.FC = () => {
 
   const baseTiers: MembershipTier[] = [
     {
-      name: "Member",
+      name: "Bronze",
       pointsRange: "0 - 299 points",
       discount: "5%",
       multiplier: "1x",
@@ -85,7 +86,7 @@ export const LoyaltyTier: React.FC = () => {
       advanceBooking: 12,
       benefits: ["Priority booking", "Free wash on birthday"],
       isCurrent: false,
-      colorClass: "border-amber-400 ring-2 ring-amber-400 text-amber-500",
+      colorClass: "border-amber-200 text-amber-500",
       bgClass: "bg-amber-50",
       icon: <Crown className="w-6 h-6 text-amber-500" />,
     },
@@ -99,7 +100,7 @@ export const LoyaltyTier: React.FC = () => {
       isCurrent: false,
       colorClass: "border-purple-200 text-purple-600",
       bgClass: "bg-purple-50",
-      icon: <Gift className="w-6 h-6 text-purple-600" />,
+      icon: <Gem className="w-6 h-6 text-purple-600" />,
     },
   ];
 
@@ -107,7 +108,8 @@ export const LoyaltyTier: React.FC = () => {
     ...t,
     isCurrent:
       t.name.toLowerCase() === currentTierName.toLowerCase() ||
-      (t.name === "Member" && !currentTierName),
+      (t.name === "Bronze" &&
+        (!currentTierName || currentTierName.toLowerCase() === "member")),
   }));
 
   const currentTierInfo = tiers.find((t) => t.isCurrent) || tiers[0];
@@ -123,9 +125,6 @@ export const LoyaltyTier: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans antialiased text-slate-800">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* =========================================================================
-            HEADER BANNER (Thông tin hạng hiện tại & Tiến trình)
-           ========================================================================= */}
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-2xl p-6 md:p-8 shadow-lg">
           <div className="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
             <div>
@@ -197,9 +196,6 @@ export const LoyaltyTier: React.FC = () => {
           </div>
         </div>
 
-        {/* =========================================================================
-            HOW YOU EARN POINTS (Quy tắc tính điểm)
-           ========================================================================= */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
@@ -220,11 +216,11 @@ export const LoyaltyTier: React.FC = () => {
             {tiers.map((t) => (
               <div
                 key={t.name}
-                className={`p-4 rounded-xl text-center border ${t.isCurrent ? "bg-amber-50/30 border-amber-200" : "bg-slate-50/50 border-slate-100"}`}
+                className={`p-4 rounded-xl text-center border ${t.isCurrent ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500" : "bg-slate-50/50 border-slate-100"}`}
               >
                 <p className="text-sm font-medium text-slate-500">{t.name}</p>
                 <p
-                  className={`text-2xl font-black mt-1 ${t.isCurrent ? "text-amber-600" : "text-blue-600"}`}
+                  className={`text-2xl font-black mt-1 ${t.isCurrent ? "text-blue-700" : "text-blue-600"}`}
                 >
                   {t.multiplier}
                 </p>
@@ -237,18 +233,19 @@ export const LoyaltyTier: React.FC = () => {
           </p>
         </div>
 
-        {/* =========================================================================
-            MEMBERSHIP TIERS (Chi tiết quyền lợi từng hạng)
-           ========================================================================= */}
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-6">
+          <h2 className="text-2xl font-bold text-slate-800 mb-8">
             Membership Tiers
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`relative bg-white rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${tier.colorClass} shadow-sm hover:shadow-md`}
+                className={`relative bg-white rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${tier.colorClass} ${
+                  tier.isCurrent
+                    ? "ring-2 ring-blue-500 shadow-md scale-[1.02] border-blue-500"
+                    : "shadow-sm hover:shadow-md border-slate-100"
+                }`}
               >
                 {tier.isCurrent && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
@@ -306,9 +303,6 @@ export const LoyaltyTier: React.FC = () => {
           </div>
         </div>
 
-        {/* =========================================================================
-            STATS & TRANSACTION HISTORY (Thống kê & Lịch sử)
-           ========================================================================= */}
         <div className="space-y-6">
           {/* Hộp chỉ số Thống kê tháng */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
