@@ -70,6 +70,45 @@ export const ENDPOINTS = {
         WASH_PACKAGE_DETAIL: (id: string) => `/admin/wash-packages/${id}`,
         BRANCHES: '/admin/branches',
         BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
+    // Promotions
+        PROMOTIONS: '/admin/promotions',
+        PROMOTION_DETAIL: (id: string) => `/admin/promotions/${id}`,
+
+        // Add-ons
+        ADD_ONS: '/admin/add-ons',
+        ADD_ON_DETAIL: (id: string) => `/admin/add-ons/${id}`,
+
+        // Bookings
+        BOOKINGS_COMPLETE: (id: string) => `/admin/bookings/${id}/complete`,
+
+        // Rewards
+        REWARDS: '/admin/rewards',
+        REWARD_DETAIL: (id: string) => `/admin/rewards/${id}`,
+        REWARD_FULFILL: (id: string) => `/admin/rewards/redemptions/${id}/fulfill`,
+
+        // Statistics
+        STATISTICS: {
+            OVERVIEW: '/admin/statistics/overview',
+            REVENUE: '/admin/statistics/revenue',
+            BOOKINGS: '/admin/statistics/bookings',
+            TOP_CUSTOMERS: '/admin/statistics/top-customers',
+            BRANCH_PERFORMANCE: '/admin/statistics/branch-performance',
+            TIER_DISTRIBUTION: '/admin/statistics/tier-distribution',
+        },
+
+        // Tiers
+        TIERS: '/admin/tiers',
+        TIER_DETAIL: (id: string) => `/admin/tiers/${id}`,
+
+        // Users
+        USERS: '/admin/users',
+        USER_STATUS: (id: string) => `/admin/users/${id}/status`,
+        USER_ROLE: (id: string) => `/admin/users/${id}/role`,
+
+        // Wash Bays
+        WASH_BAYS: '/admin/wash-bays',
+        WASH_BAY_DETAIL: (id: string) => `/admin/wash-bays/${id}`,
+        WASH_BAY_BY_BRANCH: (id: string) => `/admin/wash-bays/by-branch/${id}`,
     },
 
     PROMOTION: {

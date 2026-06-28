@@ -50,6 +50,7 @@ export function Sidebar({ role = "customer" }: SidebarProps) {
     { to: "/admin/branches", icon: Building2, label: "Branches" },
     { to: "/admin/packages", icon: Package, label: "Wash Packages" },
     { to: "/admin/loyalty", icon: Award, label: "Loyalty Tiers" },
+    { to: "/admin/rewards", icon: Gift, label: "Rewards Management" },
     { to: "/admin/reports", icon: FileText, label: "Reports & Analytics" },
     { to: "/admin/analytics", icon: BarChart3, label: "Customer Analytics" },
     { to: "/admin/promotions", icon: Megaphone, label: "Promotions" },

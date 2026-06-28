@@ -9,7 +9,9 @@ export interface Customer {
     totalWashes: number;
     totalSpent: number;
     totalSaved: number;
-    createdAt: string;     
+    createdAt: string;   
+    availablePoint: number;  
+    totalPoint: number;
 }
 
 export interface UpdateCustomerInput {

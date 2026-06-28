@@ -6,6 +6,7 @@ import {
   Award,
   Calendar,
   History,
+  Gem,
 } from "lucide-react";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { useLoyaltyHistory } from "@/features/products/application/useLoyalty.ts";
@@ -29,31 +30,32 @@ export const LoyaltyTier: React.FC = () => {
   const { data: historyData, isLoading: isLoadingHistory } =
     useLoyaltyHistory();
 
-  // Lấy dữ liệu thật từ customerMe, nếu chưa có thì fallback
-  const currentPoints = customerMe?.totalPoints || 0;
-  const currentTierName = customerMe?.tier || "Member";
+  // Tách biệt hai loại điểm theo cấu trúc mới của API
+  const availablePoints = customerMe?.availablePoint || 0; // Dùng để hiển thị số dư tiêu dùng
+  const totalPoints = customerMe?.totalPoint || 0; // Dùng để xét hạng
+  const currentTierName = customerMe?.tier || "Bronze";
 
-  // Tính toán target dựa trên mức điểm hiện tại
+  // Tính toán target dựa trên mức TỔNG ĐIỂM (totalPoints)
   let targetPoints = 300;
   let nextTierName = "Silver";
-  if (currentPoints >= 300 && currentPoints < 600) {
+  if (totalPoints >= 300 && totalPoints < 600) {
     targetPoints = 600;
     nextTierName = "Gold";
-  } else if (currentPoints >= 600 && currentPoints < 1000) {
+  } else if (totalPoints >= 600 && totalPoints < 1000) {
     targetPoints = 1000;
     nextTierName = "Platinum";
-  } else if (currentPoints >= 1000) {
-    targetPoints = currentPoints;
+  } else if (totalPoints >= 1000) {
+    targetPoints = totalPoints;
     nextTierName = "Max Tier";
   }
 
-  const pointsToGo = Math.max(0, targetPoints - currentPoints);
+  const pointsToGo = Math.max(0, targetPoints - totalPoints);
   const progressPercentage =
-    currentPoints >= 1000 ? 100 : (currentPoints / targetPoints) * 100;
+    totalPoints >= 1000 ? 100 : (totalPoints / targetPoints) * 100;
 
   const baseTiers: MembershipTier[] = [
     {
-      name: "Member",
+      name: "Bronze",
       pointsRange: "0 - 299 points",
       discount: "5%",
       multiplier: "1x",
@@ -84,7 +86,7 @@ export const LoyaltyTier: React.FC = () => {
       advanceBooking: 12,
       benefits: ["Priority booking", "Free wash on birthday"],
       isCurrent: false,
-      colorClass: "border-amber-400 ring-2 ring-amber-400 text-amber-500",
+      colorClass: "border-amber-200 text-amber-500",
       bgClass: "bg-amber-50",
       icon: <Crown className="w-6 h-6 text-amber-500" />,
     },
@@ -98,7 +100,7 @@ export const LoyaltyTier: React.FC = () => {
       isCurrent: false,
       colorClass: "border-purple-200 text-purple-600",
       bgClass: "bg-purple-50",
-      icon: <Gift className="w-6 h-6 text-purple-600" />,
+      icon: <Gem className="w-6 h-6 text-purple-600" />,
     },
   ];
 
@@ -106,18 +108,16 @@ export const LoyaltyTier: React.FC = () => {
     ...t,
     isCurrent:
       t.name.toLowerCase() === currentTierName.toLowerCase() ||
-      (t.name === "Member" && !currentTierName),
+      (t.name === "Bronze" &&
+        (!currentTierName || currentTierName.toLowerCase() === "member")),
   }));
 
   const currentTierInfo = tiers.find((t) => t.isCurrent) || tiers[0];
 
-  // Sử dụng dữ liệu history từ API (nếu có)
   const transactions: LoyaltyTransaction[] = historyData?.transactions || [];
 
-  // Ưu tiên dùng dữ liệu thật từ customerMe cho các thống kê tổng quan
-  // Note: Dùng totalPoints làm Points Earned tạm thời, Redeemed = 0 do BE chưa có trường này
-  const totalEarned =
-    customerMe?.totalPoints || historyData?.totalEarnedThisMonth || 0;
+  // Sử dụng totalPoints cho tổng điểm đã tích luỹ (Points Earned)
+  const totalEarned = totalPoints || historyData?.totalEarnedThisMonth || 0;
   const totalRedeemed = historyData?.totalRedeemedThisMonth || 0;
   const totalBookings =
     customerMe?.totalWashes || historyData?.totalBookingsThisMonth || 0;
@@ -125,9 +125,6 @@ export const LoyaltyTier: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans antialiased text-slate-800">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* =========================================================================
-            HEADER BANNER (Thông tin hạng hiện tại & Tiến trình)
-           ========================================================================= */}
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-2xl p-6 md:p-8 shadow-lg">
           <div className="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
             <div>
@@ -142,8 +139,9 @@ export const LoyaltyTier: React.FC = () => {
                   </span>
                 )}
               </h1>
+              {/* Hiển thị số dư khả dụng ở Banner */}
               <p className="text-xl font-semibold text-blue-50 mt-2">
-                {currentPoints} Total Points
+                {totalPoints} Points Earned
               </p>
             </div>
 
@@ -154,12 +152,12 @@ export const LoyaltyTier: React.FC = () => {
             </div>
           </div>
 
-          {/* Thanh Tiến trình (Progress Bar) */}
+          {/* Thanh Tiến trình (Progress Bar) - Tính dựa trên totalPoints */}
           <div className="mt-8 relative z-10">
             <div className="flex justify-between text-sm font-medium text-blue-100 mb-2">
               <span>Progress to {nextTierName}</span>
               <span>
-                {currentPoints >= 1000
+                {totalPoints >= 1000
                   ? "Max Tier Reached"
                   : `${pointsToGo} points to go`}
               </span>
@@ -172,7 +170,8 @@ export const LoyaltyTier: React.FC = () => {
             </div>
             <p className="text-xs text-blue-200 mt-2 italic">
               Tiers are auto-reviewed & upgraded/downgraded monthly based on
-              your past 3 months' data
+              your past 3 months' data. Progression is based on Total Points (
+              {totalPoints}).
             </p>
           </div>
 
@@ -180,8 +179,9 @@ export const LoyaltyTier: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/10 relative z-10">
             <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl text-center border border-white/5">
               <TrendingUp className="w-5 h-5 mx-auto mb-1 text-blue-200" />
-              <p className="text-2xl font-bold">{currentPoints}</p>
-              <p className="text-xs text-blue-200">Total Points</p>
+              {/* Hiển thị Available Points ở Tóm tắt nhanh */}
+              <p className="text-2xl font-bold">{availablePoints}</p>
+              <p className="text-xs text-blue-200">Available Points</p>
             </div>
             <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl text-center border border-white/5">
               <Gift className="w-5 h-5 mx-auto mb-1 text-blue-200" />
@@ -196,9 +196,6 @@ export const LoyaltyTier: React.FC = () => {
           </div>
         </div>
 
-        {/* =========================================================================
-            HOW YOU EARN POINTS (Quy tắc tính điểm)
-           ========================================================================= */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
@@ -219,11 +216,11 @@ export const LoyaltyTier: React.FC = () => {
             {tiers.map((t) => (
               <div
                 key={t.name}
-                className={`p-4 rounded-xl text-center border ${t.isCurrent ? "bg-amber-50/30 border-amber-200" : "bg-slate-50/50 border-slate-100"}`}
+                className={`p-4 rounded-xl text-center border ${t.isCurrent ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500" : "bg-slate-50/50 border-slate-100"}`}
               >
                 <p className="text-sm font-medium text-slate-500">{t.name}</p>
                 <p
-                  className={`text-2xl font-black mt-1 ${t.isCurrent ? "text-amber-600" : "text-blue-600"}`}
+                  className={`text-2xl font-black mt-1 ${t.isCurrent ? "text-blue-700" : "text-blue-600"}`}
                 >
                   {t.multiplier}
                 </p>
@@ -236,18 +233,19 @@ export const LoyaltyTier: React.FC = () => {
           </p>
         </div>
 
-        {/* =========================================================================
-            MEMBERSHIP TIERS (Chi tiết quyền lợi từng hạng)
-           ========================================================================= */}
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-6">
+          <h2 className="text-2xl font-bold text-slate-800 mb-8">
             Membership Tiers
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`relative bg-white rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${tier.colorClass} shadow-sm hover:shadow-md`}
+                className={`relative bg-white rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${tier.colorClass} ${
+                  tier.isCurrent
+                    ? "ring-2 ring-blue-500 shadow-md scale-[1.02] border-blue-500"
+                    : "shadow-sm hover:shadow-md border-slate-100"
+                }`}
               >
                 {tier.isCurrent && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
@@ -305,17 +303,15 @@ export const LoyaltyTier: React.FC = () => {
           </div>
         </div>
 
-        {/* =========================================================================
-            STATS & TRANSACTION HISTORY (Thống kê & Lịch sử)
-           ========================================================================= */}
         <div className="space-y-6">
           {/* Hộp chỉ số Thống kê tháng */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-slate-500">
-                  Points Earned
+                  Available Points
                 </p>
+                {/* Sử dụng Total Earned dựa trên Total Points */}
                 <p className="text-3xl font-bold text-slate-800 mt-1">
                   {totalEarned}
                 </p>

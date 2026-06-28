@@ -46,7 +46,7 @@ export const LoginPage: React.FC = () => {
     try {
       // 🔥 Truyền code trực tiếp vào URL parameters gửi lên API .NET Core
       const response = await fetch(
-        `https://localhost:7001/api/auth/google-login?code=${encodeURIComponent(authCode)}`,
+        `${import.meta.env.VITE_API_BASE_URL}/auth/google-login?code=${encodeURIComponent(authCode)}`,
         {
           method: "POST", // Giữ POST hoặc đổi sang GET tùy theo cấu hình Endpoint [HttpPost] hay [HttpGet] ở Backend
           headers: { "Content-Type": "application/json" },
@@ -289,36 +289,6 @@ export const LoginPage: React.FC = () => {
             </form>
 
             <div className="border-t border-[#f1f5f9] my-4"></div>
-
-            {/* QUICK ACCESS (DEMO) */}
-            <div className="text-center">
-              <span className="text-[10px] font-semibold text-[#94a3b8] uppercase tracking-wider block mb-2">
-                Quick Access (Demo)
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleQuickAccess("customer")}
-                  className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
-                >
-                  Customer
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickAccess("staff")}
-                  className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
-                >
-                  Staff
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickAccess("admin")}
-                  className="bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-semibold text-xs py-1.5 px-3 rounded-lg transition-colors"
-                >
-                  Admin
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
