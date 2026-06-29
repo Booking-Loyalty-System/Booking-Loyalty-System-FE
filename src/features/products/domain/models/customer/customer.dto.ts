@@ -12,6 +12,7 @@ export interface Customer {
     createdAt: string;   
     availablePoint: number;  
     totalPoint: number;
+    totalBookings?: number;
 }
 
 export interface UpdateCustomerInput {
