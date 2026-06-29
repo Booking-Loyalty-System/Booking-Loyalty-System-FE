@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminPromotionRepositoryImplement } from '../infrastructure/repositories/admin-promotion/admin-promotion.repository.implement';
 import { toast } from 'sonner';
-
-import type { 
-    PromotionResponseData, 
-    CreatePromotionInput, 
-    UpdatePromotionInput 
+import type {
+    AdminPromotionResponseData,
+    CreateAdminPromotionInput,
+    UpdateAdminPromotionInput,
 } from '../domain/models/admin-promotion/admin-promotion.model';
 
-export type { PromotionResponseData, CreatePromotionInput, UpdatePromotionInput };
+export type { AdminPromotionResponseData, CreateAdminPromotionInput, UpdateAdminPromotionInput };
 
 const promotionRepo = new AdminPromotionRepositoryImplement();
 
@@ -21,36 +20,46 @@ export const useAdminPromotion = () => {
     });
 
     const createMutation = useMutation({
-        mutationFn: (data: CreatePromotionInput) => promotionRepo.create(data),
+        mutationFn: (data: CreateAdminPromotionInput) => promotionRepo.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin_promotions'] });
-            toast.success("Tạo chiến dịch khuyến mãi thành công!");
+            toast.success('Thêm khuyến mãi thành công!');
         },
-        onError: (error: any) => toast.error("Lỗi khi tạo: " + error.message)
+        onError: (error: Error) => toast.error('Lỗi khi thêm: ' + error.message),
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: string; data: UpdatePromotionInput }) => promotionRepo.update(id, data),
+        mutationFn: ({ id, data }: { id: string; data: UpdateAdminPromotionInput }) =>
+            promotionRepo.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin_promotions'] });
-            toast.success("Cập nhật khuyến mãi thành công!");
+            toast.success('Cập nhật khuyến mãi thành công!');
         },
-        onError: (error: any) => toast.error("Lỗi cập nhật: " + error.message)
+        onError: (error: Error) => toast.error('Lỗi cập nhật: ' + error.message),
     });
 
     const deleteMutation = useMutation({
         mutationFn: (id: string) => promotionRepo.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin_promotions'] });
-            toast.success("Xóa khuyến mãi thành công!");
+            toast.success('Xóa khuyến mãi thành công!');
         },
-        onError: (error: any) => toast.error("Lỗi xóa: " + error.message)
+        onError: (error: Error) => toast.error('Lỗi xóa: ' + error.message),
     });
 
-    const toggleStatus = async (promo: PromotionResponseData) => {
+    const toggleStatus = async (promotion: AdminPromotionResponseData) => {
         await updateMutation.mutateAsync({
-            id: promo.id,
-            data: { isActive: !promo.isActive }
+            id: promotion.id,
+            data: {
+                description: promotion.description,
+                discountType: promotion.discountType,
+                discountValue: promotion.discountValue,
+                startDate: promotion.startDate,
+                endDate: promotion.endDate,
+                maxUses: promotion.maxUses,
+                minSpend: promotion.minSpend,
+                isActive: !promotion.isActive,
+            },
         });
     };
 
@@ -62,5 +71,8 @@ export const useAdminPromotion = () => {
         updatePromotion: updateMutation.mutateAsync,
         deletePromotion: deleteMutation.mutateAsync,
         toggleStatus,
+        isCreating: createMutation.isPending,
+        isUpdating: updateMutation.isPending,
+        isDeleting: deleteMutation.isPending,
     };
 };

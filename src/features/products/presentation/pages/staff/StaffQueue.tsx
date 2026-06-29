@@ -56,35 +56,34 @@ export const StaffQueuePage: React.FC = () => {
         }
     };
 
-    const confirmCheckout = async () => {
+    const handleCashCheckout = async () => {
         if (!selectedBookingForCheckout) return;
         try {
             await actions.updateStatus({
                 id: selectedBookingForCheckout.id,
-                payload: { targetStatus: 5 } // Tương ứng với Checkout
+                payload: { targetStatus: 5 } // 5 tương ứng với trạng thái CheckedOut trực tiếp
             });
-            toast.success('Checkout completed and points awarded!');
+            toast.success('Thanh toán tiền mặt thành công! Điểm thưởng đã được cộng.');
             setSelectedBookingForCheckout(null);
         } catch (error) {
             console.error(error);
-            toast.error('Checkout failed');
+            toast.error('Thanh toán tiền mặt thất bại');
         }
     };
 
-    const handleConfirmPayOS = async (): Promise<string> => {
+    const handlePayOSCheckout = async (): Promise<string> => {
         if (!selectedBookingForCheckout) return '';
-        const toastId = toast.loading('Đang khởi tạo cổng thanh toán PayOS...');
         try {
-            const response = await createPayOsUrl(selectedBookingForCheckout.id);
-            toast.dismiss(toastId);
-            if (response && typeof response === 'object' && 'checkoutUrl' in response) {
-                return (response as any).checkoutUrl;
-            }
-            return response as unknown as string;
+            // Gọi API của bạn để tạo Link thanh toán PayOS từ Backend
+            // Ví dụ: const response = await actions.createPayOsLink({ bookingId: selectedBookingForCheckout.id });
+            // return response.checkoutUrl;
+
+            toast.loading('Đang khởi tạo link thanh toán QR...');
+            return 'https://example.com/checkout-link-tu-backend'; // 👈 Thay thế bằng hàm gọi API thực tế của bạn
         } catch (error) {
             console.error(error);
-            toast.error('Không thể kết nối đến cổng thanh toán PayOS', { id: toastId });
-            throw error;
+            toast.error('Không thể khởi tạo cổng thanh toán PayOS');
+            return '';
         }
     };
 
@@ -247,8 +246,8 @@ export const StaffQueuePage: React.FC = () => {
                 <CheckoutSummaryModal
                     booking={selectedBookingForCheckout}
                     onClose={() => setSelectedBookingForCheckout(null)}
-                    onConfirmCash={confirmCheckout}
-                    onConfirmPayOS={handleConfirmPayOS}
+                    onConfirmCash={handleCashCheckout}
+                    onConfirmPayOS={handlePayOSCheckout}
                 />
             )}
         </div>

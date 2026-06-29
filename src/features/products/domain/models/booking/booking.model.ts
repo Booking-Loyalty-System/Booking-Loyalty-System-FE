@@ -1,6 +1,6 @@
-import type {DateSlot} from "../time-slot/time-slot.dto.ts";
-import type {Vehicle} from "@/features/products/domain/models/vehicle/vehicle.model.ts";
-import type {WashPackage} from "@/features/products/domain/models/wash-package/wash-package.model.ts";
+import type { DateSlot } from "../time-slot/time-slot.dto.ts";
+import type { Vehicle } from "@/features/products/domain/models/vehicle/vehicle.model.ts";
+import type { WashPackage } from "@/features/products/domain/models/wash-package/wash-package.model.ts";
 
 import type { Voucher } from "../voucher/voucher.model.ts";
 
@@ -62,4 +62,5 @@ export interface MyBookingRecord {
     status: string;
     qrData: string | null;
     createdAt: string;
+    features: string | string[];
 }

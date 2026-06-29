@@ -1,31 +1,60 @@
-import { useState } from "react";
-import { Layout } from "../../components/layout/Layout";
+import { useState, useMemo } from "react";
 import {
   Megaphone,
   Plus,
+  Calendar,
   Trash2,
   Edit2,
-  CheckCircle,
+  CheckCircle2,
   XCircle,
-  Loader2,
+  X,
 } from "lucide-react";
-import { useAdminPromotion } from "../../../application/useAdminPromotion";
-import type {
-  PromotionResponseData,
-  CreatePromotionInput,
+import {
+  useAdminPromotion,
+  type AdminPromotionResponseData,
+  type CreateAdminPromotionInput,
+  type UpdateAdminPromotionInput,
 } from "../../../application/useAdminPromotion";
+import type { DiscountType } from "../../../domain/models/admin-promotion/admin-promotion.model";
 
-const defaultFormState: CreatePromotionInput = {
+const emptyPromotionForm: CreateAdminPromotionInput = {
   code: "",
   description: "",
   discountType: "Percentage",
   discountValue: 0,
-  startDate: new Date().toISOString().split("T")[0],
-  endDate: new Date().toISOString().split("T")[0],
+  startDate: new Date().toISOString().slice(0, 10),
+  endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10),
   maxUses: null,
   minSpend: null,
-  isActive: true,
 };
+
+function toDateInputValue(isoDate: string) {
+  return isoDate.slice(0, 10);
+}
+
+function toIsoDate(dateStr: string) {
+  return new Date(dateStr + "T00:00:00Z").toISOString();
+}
+
+function formatDiscount(promo: AdminPromotionResponseData) {
+  if (promo.discountType === "Percentage") {
+    return `${promo.discountValue}%`;
+  }
+  return `${promo.discountValue.toLocaleString("vi-VN")}đ`;
+}
+
+function formatDiscountType(type: DiscountType) {
+  return type === "Percentage" ? "Phần trăm" : "Số tiền cố định";
+}
+
+function formatUsage(promo: AdminPromotionResponseData) {
+  if (promo.maxUses == null) {
+    return `${promo.usedCount} / Không giới hạn`;
+  }
+  return `${promo.usedCount}/${promo.maxUses}`;
+}
 
 export function AdminPromotions() {
   const {
@@ -35,307 +64,345 @@ export function AdminPromotions() {
     updatePromotion,
     deletePromotion,
     toggleStatus,
+    isCreating,
+    isUpdating,
   } = useAdminPromotion();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState<string | null>(null);
-  const [editForm, setEditForm] =
-    useState<CreatePromotionInput>(defaultFormState);
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<
+    (CreateAdminPromotionInput & { isActive?: boolean }) | null
+  >(null);
 
-  // --- Xử lý tính toán thống kê (Dựa trên dữ liệu thật) ---
-  const activePromosCount = promotions.filter((p) => p.isActive).length;
-  const totalRedeemed = promotions.reduce(
-    (acc, curr) => acc + curr.usedCount,
-    0,
-  );
+  const stats = useMemo(() => {
+    const activeCount = promotions.filter((p) => p.isActive).length;
+    const totalUsed = promotions.reduce((sum, p) => sum + p.usedCount, 0);
+    return { activeCount, totalUsed, total: promotions.length };
+  }, [promotions]);
 
-  const handleOpenCreate = () => {
-    setIsEditing(null);
-    setEditForm(defaultFormState);
-    setIsModalOpen(true);
+  const handleAdd = () => {
+    setIsAdding(true);
+    setEditingId(null);
+    setForm({ ...emptyPromotionForm });
   };
 
-  const handleOpenEdit = (promo: PromotionResponseData) => {
-    setIsEditing(promo.id);
-    setEditForm({
+  const handleEdit = (promo: AdminPromotionResponseData) => {
+    setEditingId(promo.id);
+    setIsAdding(false);
+    setForm({
       code: promo.code,
       description: promo.description,
       discountType: promo.discountType,
       discountValue: promo.discountValue,
-      startDate: promo.startDate.split("T")[0],
-      endDate: promo.endDate.split("T")[0],
+      startDate: toDateInputValue(promo.startDate),
+      endDate: toDateInputValue(promo.endDate),
       maxUses: promo.maxUses,
       minSpend: promo.minSpend,
       isActive: promo.isActive,
     });
-    setIsModalOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (isEditing) {
-        await updatePromotion({ id: isEditing, data: editForm });
-      } else {
-        await createPromotion(editForm);
-      }
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error(error);
+  const handleCancel = () => {
+    setIsAdding(false);
+    setEditingId(null);
+    setForm(null);
+  };
+
+  const handleCreate = async () => {
+    if (form && form.code && form.description) {
+      await createPromotion({
+        code: form.code,
+        description: form.description,
+        discountType: form.discountType,
+        discountValue: form.discountValue,
+        startDate: toIsoDate(form.startDate),
+        endDate: toIsoDate(form.endDate),
+        maxUses: form.maxUses ?? null,
+        minSpend: form.minSpend ?? null,
+      });
+      handleCancel();
+    }
+  };
+
+  const handleSave = async () => {
+    if (form && editingId) {
+      const updateData: UpdateAdminPromotionInput = {
+        description: form.description,
+        discountType: form.discountType,
+        discountValue: form.discountValue,
+        startDate: toIsoDate(form.startDate),
+        endDate: toIsoDate(form.endDate),
+        maxUses: form.maxUses ?? null,
+        minSpend: form.minSpend ?? null,
+        isActive: form.isActive ?? true,
+      };
+      await updatePromotion({ id: editingId, data: updateData });
+      handleCancel();
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Bạn có chắc chắn muốn xóa khuyến mãi này?")) {
+    if (confirm("Bạn có chắc muốn xóa khuyến mãi này?")) {
       await deletePromotion(id);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN");
+  const updateField = <
+    K extends keyof (CreateAdminPromotionInput & { isActive?: boolean }),
+  >(
+    field: K,
+    value: (CreateAdminPromotionInput & { isActive?: boolean })[K],
+  ) => {
+    if (form) {
+      setForm({ ...form, [field]: value });
+    }
   };
 
+  const showModal = (isAdding || editingId) && form;
+
   return (
-    <Layout title="Promotions Management" userName="Admin" role="admin">
-      <div className="space-y-8">
-        {/* Header Actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900">Campaigns</h3>
-            <p className="text-gray-500">
-              Create and manage marketing promotions
-            </p>
-          </div>
-          <button
-            onClick={handleOpenCreate}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-          >
-            <Plus className="w-5 h-5" />
-            New Promotion
-          </button>
+    <div className="p-6 space-y-8 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900">Khuyến mãi</h3>
+          <p className="text-gray-500">
+            Tạo và quản lý mã giảm giá, chiến dịch marketing
+          </p>
         </div>
+        <button
+          onClick={handleAdd}
+          className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all"
+        >
+          <Plus className="w-5 h-5" /> Thêm khuyến mãi
+        </button>
+      </div>
 
-        {/* Promotion Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">Active Promotions</p>
-            <p className="text-3xl font-bold text-gray-900">
-              {activePromosCount}
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">Total Redeemed</p>
-            <p className="text-3xl font-bold text-blue-600">{totalRedeemed}</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">Total Campaigns</p>
-            <p className="text-3xl font-bold text-green-600">
-              {promotions.length}
-            </p>
-          </div>
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <p className="text-sm text-gray-500 mb-1">Đang hoạt động</p>
+          <p className="text-3xl font-bold text-gray-900">{stats.activeCount}</p>
         </div>
-
-        {/* Promotions List */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            </div>
-          ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                    Code & Info
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                    Type / Value
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                    Usage
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                    Expiry
-                  </th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {promotions.map((promo) => (
-                  <tr key={promo.id} className="hover:bg-gray-50 group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${promo.isActive ? "bg-blue-100" : "bg-gray-100"}`}
-                        >
-                          <Megaphone
-                            className={`w-5 h-5 ${promo.isActive ? "text-blue-600" : "text-gray-400"}`}
-                          />
-                        </div>
-                        <div>
-                          <span className="font-bold text-gray-900 block">
-                            {promo.code}
-                          </span>
-                          <span className="text-xs text-gray-500 line-clamp-1">
-                            {promo.description}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium w-max mb-1">
-                          {promo.discountType}
-                        </span>
-                        <span className="text-sm font-semibold text-blue-600">
-                          {promo.discountType === "Percentage"
-                            ? `${promo.discountValue}%`
-                            : `${promo.discountValue.toLocaleString()}đ`}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => toggleStatus(promo)}
-                        className="flex items-center gap-1.5 hover:opacity-80 transition-opacity cursor-pointer"
-                      >
-                        {promo.isActive ? (
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <XCircle className="w-4 h-4 text-gray-400" />
-                        )}
-                        <span
-                          className={`text-sm font-medium ${promo.isActive ? "text-green-600" : "text-gray-500"}`}
-                        >
-                          {promo.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </button>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 font-medium">
-                      {promo.usedCount} / {promo.maxUses ? promo.maxUses : "∞"}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {formatDate(promo.endDate)}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => handleOpenEdit(promo)}
-                          className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(promo.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <p className="text-sm text-gray-500 mb-1">Tổng lượt sử dụng</p>
+          <p className="text-3xl font-bold text-blue-600">{stats.totalUsed}</p>
+        </div>
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <p className="text-sm text-gray-500 mb-1">Tổng khuyến mãi</p>
+          <p className="text-3xl font-bold text-green-600">{stats.total}</p>
         </div>
       </div>
 
-      {/* Cập nhật Form Create/Edit */}
-      {isModalOpen && (
+      {/* Promotions List */}
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <p className="text-gray-500">Đang tải khuyến mãi...</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Mã / Mô tả
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Loại giảm
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Giá trị
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Trạng thái
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Lượt dùng
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Hết hạn
+                </th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
+                  Thao tác
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {promotions.map((promo) => (
+                <tr key={promo.id} className="hover:bg-gray-50 group">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          promo.isActive ? "bg-blue-100" : "bg-gray-100"
+                        }`}
+                      >
+                        <Megaphone
+                          className={`w-5 h-5 ${
+                            promo.isActive ? "text-blue-600" : "text-gray-400"
+                          }`}
+                        />
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-900 block">
+                          {promo.code}
+                        </span>
+                        <span className="text-xs text-gray-500 line-clamp-1">
+                          {promo.description}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                      {formatDiscountType(promo.discountType)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                    {formatDiscount(promo)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => toggleStatus(promo)}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
+                        promo.isActive
+                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                      }`}
+                    >
+                      {promo.isActive ? (
+                        <>
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Hoạt động
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-3.5 h-3.5" />
+                          Tắt
+                        </>
+                      )}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {formatUsage(promo)}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {toDateInputValue(promo.endDate)}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => handleEdit(promo)}
+                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(promo.id)}
+                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Create / Edit Modal */}
+      {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-end z-50">
-          <div className="bg-white w-full max-w-lg h-full p-8 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300">
+          <div className="bg-white w-full max-w-lg h-full p-8 shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
               <h4 className="text-2xl font-bold text-gray-900">
-                {isEditing ? "Edit Campaign" : "New Campaign"}
+                {isAdding ? "Thêm khuyến mãi" : "Chỉnh sửa khuyến mãi"}
               </h4>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={handleCancel}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
-                <XCircle className="w-6 h-6 text-gray-400" />
+                <X className="w-6 h-6 text-gray-400" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Promo Code
-                </label>
-                <input
-                  required
-                  type="text"
-                  value={editForm.code}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      code: e.target.value.toUpperCase(),
-                    })
-                  }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none uppercase"
-                  placeholder="e.g. SUMMER20"
-                />
-              </div>
+            <div className="space-y-6">
+              {isAdding && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Mã khuyến mãi
+                  </label>
+                  <input
+                    type="text"
+                    value={form.code}
+                    onChange={(e) =>
+                      updateField("code", e.target.value.toUpperCase())
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+                    placeholder="VD: SUMMER-20"
+                  />
+                </div>
+              )}
+
+              {!isAdding && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Mã khuyến mãi
+                  </label>
+                  <input
+                    type="text"
+                    value={form.code}
+                    disabled
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 uppercase"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
+                  Mô tả
                 </label>
                 <textarea
-                  required
-                  value={editForm.description}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, description: e.target.value })
-                  }
+                  value={form.description}
+                  onChange={(e) => updateField("description", e.target.value)}
+                  rows={3}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                  rows={2}
-                  placeholder="Mô tả chiến dịch..."
+                  placeholder="Mô tả chi tiết khuyến mãi..."
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Type
+                    Loại giảm giá
                   </label>
                   <select
-                    value={editForm.discountType}
+                    value={form.discountType}
                     onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        discountType: e.target.value as
-                          | "Percentage"
-                          | "FixedAmount",
-                      })
+                      updateField("discountType", e.target.value as DiscountType)
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                   >
-                    <option value="Percentage">Percentage (%)</option>
-                    <option value="FixedAmount">Fixed Amount (VND)</option>
+                    <option value="Percentage">Phần trăm (%)</option>
+                    <option value="FixedAmount">Số tiền cố định (đ)</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Value
+                    Giá trị giảm
                   </label>
                   <input
-                    required
                     type="number"
-                    min="0"
-                    value={editForm.discountValue || ""}
+                    value={form.discountValue}
                     onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        discountValue: Number(e.target.value),
-                      })
+                      updateField(
+                        "discountValue",
+                        parseFloat(e.target.value) || 0,
+                      )
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    placeholder="20 hoặc 50000"
+                    placeholder={form.discountType === "Percentage" ? "20" : "50000"}
                   />
                 </div>
               </div>
@@ -343,103 +410,110 @@ export function AdminPromotions() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Min Spend (VND)
+                    Ngày bắt đầu
                   </label>
-                  <input
-                    type="number"
-                    value={editForm.minSpend || ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        minSpend: e.target.value
-                          ? Number(e.target.value)
-                          : null,
-                      })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    placeholder="Không bắt buộc"
-                  />
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                    <input
+                      type="date"
+                      value={form.startDate}
+                      onChange={(e) => updateField("startDate", e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Max Uses
+                    Ngày kết thúc
                   </label>
-                  <input
-                    type="number"
-                    value={editForm.maxUses || ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        maxUses: e.target.value ? Number(e.target.value) : null,
-                      })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    placeholder="Không giới hạn"
-                  />
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                    <input
+                      type="date"
+                      value={form.endDate}
+                      onChange={(e) => updateField("endDate", e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Start Date
+                    Giới hạn lượt dùng
                   </label>
                   <input
-                    required
-                    type="date"
-                    value={editForm.startDate}
+                    type="number"
+                    value={form.maxUses ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, startDate: e.target.value })
+                      updateField(
+                        "maxUses",
+                        e.target.value === ""
+                          ? null
+                          : parseInt(e.target.value) || 0,
+                      )
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="Để trống = không giới hạn"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    End Date
+                    Chi tiêu tối thiểu (đ)
                   </label>
                   <input
-                    required
-                    type="date"
-                    value={editForm.endDate}
+                    type="number"
+                    value={form.minSpend ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, endDate: e.target.value })
+                      updateField(
+                        "minSpend",
+                        e.target.value === ""
+                          ? null
+                          : parseInt(e.target.value) || 0,
+                      )
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="Để trống = không yêu cầu"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={editForm.isActive}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, isActive: e.target.checked })
-                  }
-                  className="w-4 h-4 text-blue-600 rounded border-gray-300"
-                />
-                <label
-                  htmlFor="isActive"
-                  className="text-sm font-semibold text-gray-700 cursor-pointer"
-                >
-                  Kích hoạt chiến dịch ngay lập tức
-                </label>
-              </div>
+              {editingId && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="promo-active"
+                    checked={form.isActive ?? true}
+                    onChange={(e) => updateField("isActive", e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="promo-active"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Đang hoạt động
+                  </label>
+                </div>
+              )}
 
-              <div className="pt-8">
+              <div className="pt-4">
                 <button
-                  type="submit"
-                  className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                  onClick={isAdding ? handleCreate : handleSave}
+                  disabled={isCreating || isUpdating}
+                  className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
                 >
-                  {isEditing ? "Save Changes" : "Launch Campaign"}
+                  {isCreating || isUpdating
+                    ? "Đang lưu..."
+                    : isAdding
+                      ? "Tạo khuyến mãi"
+                      : "Lưu thay đổi"}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
-    </Layout>
+    </div>
   );
 }

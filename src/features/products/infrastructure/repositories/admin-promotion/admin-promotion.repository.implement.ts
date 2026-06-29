@@ -1,38 +1,39 @@
 import { httpClient } from '@/core/http/httpClient';
+import { ENDPOINTS } from '@/core/api/endpoints';
 import type { ApiResponse } from '../../../domain/apiResponse';
-import type { IAdminPromotionRepository } from './admin-promotion.repository.interface';
-import type { 
-    PromotionResponseData, 
-    CreatePromotionInput, 
-    UpdatePromotionInput 
+import type {
+    AdminPromotionResponseData,
+    CreateAdminPromotionInput,
+    UpdateAdminPromotionInput,
 } from '../../../domain/models/admin-promotion/admin-promotion.model';
+import type { IAdminPromotionRepository } from './admin-promotion.repository.interface';
 
 export class AdminPromotionRepositoryImplement implements IAdminPromotionRepository {
-    async getAll(): Promise<PromotionResponseData[]> {
-        const response = await httpClient.get<ApiResponse<PromotionResponseData[]>>(
-            '/admin/promotions'
+    async getAll(): Promise<AdminPromotionResponseData[]> {
+        const response = await httpClient.get<ApiResponse<AdminPromotionResponseData[]>>(
+            ENDPOINTS.ADMIN.PROMOTIONS
         );
         return response.data;
     }
 
-    async getById(id: string): Promise<PromotionResponseData> {
-        const response = await httpClient.get<ApiResponse<PromotionResponseData>>(
-            `/admin/promotions/${id}`
+    async getById(id: string): Promise<AdminPromotionResponseData> {
+        const response = await httpClient.get<ApiResponse<AdminPromotionResponseData>>(
+            ENDPOINTS.ADMIN.PROMOTION_DETAIL(id)
         );
         return response.data;
     }
 
-    async create(data: CreatePromotionInput): Promise<PromotionResponseData> {
-        const response = await httpClient.post<ApiResponse<PromotionResponseData>>(
-            '/admin/promotions',
+    async create(data: CreateAdminPromotionInput): Promise<AdminPromotionResponseData> {
+        const response = await httpClient.post<ApiResponse<AdminPromotionResponseData>>(
+            ENDPOINTS.ADMIN.PROMOTIONS,
             data
         );
         return response.data;
     }
 
-    async update(id: string, data: UpdatePromotionInput): Promise<PromotionResponseData> {
-        const response = await httpClient.put<ApiResponse<PromotionResponseData>>(
-            `/admin/promotions/${id}`,
+    async update(id: string, data: UpdateAdminPromotionInput): Promise<AdminPromotionResponseData> {
+        const response = await httpClient.put<ApiResponse<AdminPromotionResponseData>>(
+            ENDPOINTS.ADMIN.PROMOTION_DETAIL(id),
             data
         );
         return response.data;
@@ -40,7 +41,7 @@ export class AdminPromotionRepositoryImplement implements IAdminPromotionReposit
 
     async delete(id: string): Promise<void> {
         await httpClient.delete<ApiResponse<unknown>>(
-            `/admin/promotions/${id}`
+            ENDPOINTS.ADMIN.PROMOTION_DETAIL(id)
         );
     }
 }

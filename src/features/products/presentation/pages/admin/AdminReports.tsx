@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "../../components/layout/Layout";
 import {
   TrendingUp,
   Clock,
@@ -153,7 +152,7 @@ export function AdminReports() {
   );
 
   return (
-    <Layout title="Reports & Analytics" userName="Admin" role="admin">
+      <div className="p-6 space-y-8 animate-fade-in">
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -580,6 +579,6 @@ export function AdminReports() {
           </div>
         </div>
       </div>
-    </Layout>
+      </div>
   );
 }

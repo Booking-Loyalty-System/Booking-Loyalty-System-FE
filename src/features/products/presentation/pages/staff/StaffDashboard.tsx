@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStaffDashboard } from "@/features/products/application/useStaffDashboard.ts";
 import { useStaff } from "@/features/products/application/useStaff.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import { usePayment } from "@/features/products/application/usePayment.ts";
 import { toast } from "sonner";
-import {Car, MapPin, User, X} from "lucide-react";
+import * as signalR from "@microsoft/signalr";
+import { Car, MapPin, User, X } from "lucide-react";
 import { type DashboardBooking, DashboardStats } from "@/features/products/presentation/components/DashboardStats.tsx";
 import { BookingTableFilters } from "@/features/products/presentation/components/BookingTableFilters.tsx";
 import { BookingTableRow } from "@/features/products/presentation/components/BookingTableRow.tsx";
@@ -97,7 +98,7 @@ export const StaffDashboard: React.FC = () => {
 
     const handleAction = async (id: string, action: 'confirm' | 'checkIn' | 'checkout' | 'staffCancel' | 'noShow') => {
         try {
-            switch(action) {
+            switch (action) {
                 case 'confirm':
                     await actions.confirm(id);
                     break;
@@ -158,8 +159,11 @@ export const StaffDashboard: React.FC = () => {
             const response = await createPayOsUrl(selectedBookingForCheckout.id);
             toast.dismiss(toastId); // Tắt hiệu ứng loading
 
+            if (!response) {
+                throw new Error("Không nhận được phản hồi từ máy chủ");
+            }
             // 🛠️ FIX TẠI ĐÂY: Kiểm tra nếu phản hồi là Object thì bóc lấy thuộc tính checkoutUrl
-            if (response && typeof response === 'object' && 'checkoutUrl' in response) {
+            if (typeof response === 'object' && 'checkoutUrl' in response) {
                 return (response as any).checkoutUrl;
             }
 
@@ -171,6 +175,40 @@ export const StaffDashboard: React.FC = () => {
             throw error;
         }
     };
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('paymentStatus');
+
+        if (paymentStatus === 'cancel') {
+            queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
+
+            toast.error(`Hủy thanh toán!`, {
+                description: `Giao dịch link thanh toán đã bị hủy bỏ hoặc hết hạn.`,
+                duration: 10000,
+            });
+
+            // 🎯 THỦ THUẬT: Đợi 500ms để trang ổn định, rồi mới phát âm thanh
+            setTimeout(() => {
+                const audioCancel = new Audio('/sound/payment.mp3');
+
+                // Dùng hàm promise để kiểm tra nếu bị chặn
+                audioCancel.play().catch(() => {
+                    console.log("Bị trình duyệt chặn, đang chờ thao tác click...");
+
+                    // Gài "bẫy" click: Chỉ cần nhân viên click vào bất cứ đâu (để tắt toast, để chọn bảng, để làm việc...)
+                    // Âm thanh sẽ nổ lên ngay lập tức mà không cần click vào nút "Nghe lại"
+                    const playOnFirstClick = () => {
+                        audioCancel.play().catch(e => console.error(e));
+                        window.removeEventListener('click', playOnFirstClick);
+                    };
+                    window.addEventListener('click', playOnFirstClick);
+                });
+            }, 500);
+
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, [queryClient]);
 
     if (isStaffLoading) return (
         <div className="p-8 space-y-8 max-w-7xl mx-auto">
@@ -235,18 +273,18 @@ export const StaffDashboard: React.FC = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-white border-b border-slate-200">
-                            <tr>
-                                <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mã Code</th>
-                                <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Khách & Xe</th>
-                                <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Dịch vụ</th>
-                                <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái</th>
-                                <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Thao tác</th>
-                            </tr>
+                                <tr>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mã Code</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Khách & Xe</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Dịch vụ</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Thao tác</th>
+                                </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 bg-white">
-                            {filteredBookings.map(b => (
-                                <BookingTableRow key={b.id} booking={b} handleAction={handleAction} onViewDetail={() => setSelectedBookingDetail(b)} />
-                            ))}
+                                {filteredBookings.map(b => (
+                                    <BookingTableRow key={b.id} booking={b} handleAction={handleAction} onViewDetail={() => setSelectedBookingDetail(b)} />
+                                ))}
                             </tbody>
                         </table>
                     </div>

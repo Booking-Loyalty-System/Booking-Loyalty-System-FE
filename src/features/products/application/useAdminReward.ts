@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminRewardRepositoryImplement } from '../infrastructure/repositories/admin-reward/admin-reward.repository.implement';
 import { toast } from 'sonner';
-
-import type { 
-    RewardResponseData, 
-    CreateRewardInput, 
-    UpdateRewardInput 
+import type {
+    AdminRewardResponseData,
+    CreateAdminRewardInput,
+    UpdateAdminRewardInput,
 } from '../domain/models/admin-reward/admin-reward.model';
 
-export type { RewardResponseData, CreateRewardInput, UpdateRewardInput };
+export type { AdminRewardResponseData, CreateAdminRewardInput, UpdateAdminRewardInput };
 
 const rewardRepo = new AdminRewardRepositoryImplement();
 
@@ -21,36 +20,43 @@ export const useAdminReward = () => {
     });
 
     const createMutation = useMutation({
-        mutationFn: (data: CreateRewardInput) => rewardRepo.create(data),
+        mutationFn: (data: CreateAdminRewardInput) => rewardRepo.create(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin_rewards'] });
-            toast.success("Thêm phần thưởng thành công!");
+            toast.success('Thêm phần thưởng thành công!');
         },
-        onError: (error: any) => toast.error("Lỗi khi thêm: " + error.message)
+        onError: (error: Error) => toast.error('Lỗi khi thêm: ' + error.message),
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: string; data: UpdateRewardInput }) => rewardRepo.update(id, data),
+        mutationFn: ({ id, data }: { id: string; data: UpdateAdminRewardInput }) =>
+            rewardRepo.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin_rewards'] });
-            toast.success("Cập nhật phần thưởng thành công!");
+            toast.success('Cập nhật phần thưởng thành công!');
         },
-        onError: (error: any) => toast.error("Lỗi cập nhật: " + error.message)
+        onError: (error: Error) => toast.error('Lỗi cập nhật: ' + error.message),
     });
 
     const deleteMutation = useMutation({
         mutationFn: (id: string) => rewardRepo.delete(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin_rewards'] });
-            toast.success("Xóa phần thưởng thành công!");
+            toast.success('Xóa phần thưởng thành công!');
         },
-        onError: (error: any) => toast.error("Lỗi xóa: " + error.message)
+        onError: (error: Error) => toast.error('Lỗi xóa: ' + error.message),
     });
 
-    const toggleStatus = async (reward: RewardResponseData) => {
+    const toggleStatus = async (reward: AdminRewardResponseData) => {
         await updateMutation.mutateAsync({
             id: reward.id,
-            data: { isActive: !reward.isActive }
+            data: {
+                name: reward.name,
+                description: reward.description,
+                pointsCost: reward.pointsCost,
+                discountAmount: reward.discountAmount,
+                isActive: !reward.isActive,
+            },
         });
     };
 
@@ -62,5 +68,8 @@ export const useAdminReward = () => {
         updateReward: updateMutation.mutateAsync,
         deleteReward: deleteMutation.mutateAsync,
         toggleStatus,
+        isCreating: createMutation.isPending,
+        isUpdating: updateMutation.isPending,
+        isDeleting: deleteMutation.isPending,
     };
 };
