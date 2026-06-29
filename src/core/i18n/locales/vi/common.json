@@ -41,5 +41,100 @@
     "en": "English",
     "vi": "Tiếng Việt",
     "switchTo": "Chuyển sang"
+  },
+  "liveTracking": {
+    "noActiveWash": "Hiện tại bạn không có xe nào đang được phục vụ tại trạm.",
+    "washingCount": "Xe Đang Rửa ({{count}})",
+    "licensePlate": "BIỂN SỐ",
+    "overallProgress": "Tiến độ tổng thể",
+    "washProcess": "Quy Trình Rửa",
+    "washStep": "BƯỚC {{step}}",
+    "customPackage": "Tùy biến",
+    "packageLabel": "Gói: {{name}}",
+    "btnNext": "Bước Tiếp Theo →",
+    "btnComplete": "Hoàn Tất Xe Này ✔",
+    "btnSaving": "Đang lưu kết quả...",
+    "btnConfirmAndUpdate": "Xác nhận & Cập nhật",
+    "modalTitle": "Hoàn tất rửa xe!",
+    "modalDesc": "Quy trình cho xe biển số {{plate}} đã hoàn thành.",
+    "toastErrorNoBooking": "Không tìm thấy mã đặt lịch hợp lệ!",
+    "toastSuccessComplete": "Đã hoàn thành xe {{plate}}!",
+    "toastErrorServer": "Cập nhật lên máy chủ thất bại!",
+    "hud": {
+      "nozzleSystem": "Hệ thống vòi phun",
+      "pressure": "Áp lực",
+      "flow": "Lưu lượng",
+      "brushSystem": "Chổi lô thông minh",
+      "mechanism": "Cơ chế",
+      "reverseRotation": "Xoay đảo chiều liên tục",
+      "foamSol": "Dung dịch bọt",
+      "interiorSim": "Đang mô phỏng mở cửa xe và thao tác khu vực nội thất...",
+      "windowCleaning": "🧽 Đang vệ sinh các mặt kính xe...",
+      "vacuum": "Hút bụi chân không",
+      "vacuumDesc": "Hút sạch bụi bẩn sàn xe, thảm để chân và các khe hở.",
+      "polish": "Dưỡng bóng Taplo",
+      "polishDesc": "Lau dọn và phủ lớp dưỡng bóng bề mặt bảng điều khiển.",
+      "leather": "Bảo dưỡng Ghế Da",
+      "leatherDesc": "Thoa kem dưỡng chuyên dụng chống nứt nẻ cho ghế da.",
+      "freshener": "Khử mùi Nội thất",
+      "freshenerDesc": "Khử khuẩn và phun tinh dầu hương thơm tự nhiên.",
+      "wax": "✨ Kích hoạt cánh tay phủ màng sáp bóng Wax sơn...",
+      "ceramic": "🛡️ Phun dung dịch tạo lớp bảo vệ Ceramic...",
+      "engine": "⚙️ Đang dọn dẹp khoang động cơ bằng hơi nước nóng..."
+    },
+    "steps": {
+      "exteriorWash": {
+        "name": "Rửa ngoại thất",
+        "desc": "Xịt nước áp lực cao sạch bụi bẩn bề mặt sơn."
+      },
+      "interiorVacuum": {
+        "name": "Hút bụi nội thất",
+        "desc": "Hút sạch bụi bẩn sàn xe, thảm để chân và các khe hở."
+      },
+      "dashboardPolish": {
+        "name": "Đánh bóng taplo",
+        "desc": "Lau dọn và phủ lớp dưỡng bóng bề mặt bảng điều khiển."
+      },
+      "airFreshener": {
+        "name": "Xịt thơm khử mùi",
+        "desc": "Khử khuẩn và phun tinh dầu hương thơm tự nhiên."
+      },
+      "tireCleaning": {
+        "name": "Vệ sinh lốp xe",
+        "desc": "Chà rửa mâm lốp và làm sạch hệ thống phanh."
+      },
+      "windowCleaning": {
+        "name": "Vệ sinh kính xe",
+        "desc": "Lau sạch các bề mặt kính lái, kính hông và gương."
+      },
+      "fullExteriorWash": {
+        "name": "Rửa ngoại thất toàn diện",
+        "desc": "Rửa sạch sâu vỏ xe, gầm xe và các hốc bánh."
+      },
+      "interiorDeepClean": {
+        "name": "Vệ sinh nội thất chuyên sâu",
+        "desc": "Giặt sấy thảm, vệ sinh trần xe, sàn xe và các cửa gió điều hòa."
+      },
+      "waxCoating": {
+        "name": "Phủ sáp bóng sơn (Wax)",
+        "desc": "Tạo lớp sáp bảo vệ tăng độ sâu và độ bóng cho màu sơn."
+      },
+      "leatherConditioning": {
+        "name": "Bảo dưỡng bề mặt da",
+        "desc": "Thoa kem dưỡng chuyên dụng chống nứt nẻ cho ghế da."
+      },
+      "engineBayCleaning": {
+        "name": "Vệ sinh khoang máy",
+        "desc": "Dọn sạch bụi, lá cây và dưỡng các đường ống cao su trong capo."
+      },
+      "ceramicSpray": {
+        "name": "Xịt phủ Ceramic",
+        "desc": "Xịt phủ dung dịch tạo hiệu ứng lá sen kháng nước vượt trội."
+      },
+      "tireShine": {
+        "name": "Làm bóng lốp",
+        "desc": "Quét dung dịch bảo dưỡng giúp lốp đen bóng như mới."
+      }
+    }
   }
 }
