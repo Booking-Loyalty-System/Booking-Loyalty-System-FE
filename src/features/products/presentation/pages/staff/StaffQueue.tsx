@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 import { useAuth } from '../../../application/useAuth';
+import { usePayment } from '../../../application/usePayment';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 import { toast } from 'sonner';
 import { CheckoutSummaryModal } from '../../components/staff/CheckoutSummaryModal';
@@ -19,6 +20,7 @@ type StaffAction = 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout';
 
 export const StaffQueuePage: React.FC = () => {
     const { user } = useAuth();
+    const { createPayOsUrl } = usePayment();
     // Đảm bảo lấy đúng kiểu dữ liệu từ hook
     const { bookings = [], isLoading, actions } = useStaffDashboard();
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
@@ -71,16 +73,23 @@ export const StaffQueuePage: React.FC = () => {
 
     const handlePayOSCheckout = async (): Promise<string> => {
         if (!selectedBookingForCheckout) return '';
+        const toastId = toast.loading('Đang khởi tạo link thanh toán QR...');
         try {
-            // Gọi API của bạn để tạo Link thanh toán PayOS từ Backend
-            // Ví dụ: const response = await actions.createPayOsLink({ bookingId: selectedBookingForCheckout.id });
-            // return response.checkoutUrl;
+            const response = await createPayOsUrl(selectedBookingForCheckout.id);
+            toast.dismiss(toastId);
 
-            toast.loading('Đang khởi tạo link thanh toán QR...');
-            return 'https://example.com/checkout-link-tu-backend'; // 👈 Thay thế bằng hàm gọi API thực tế của bạn
+            if (!response) {
+                throw new Error("Không nhận được phản hồi từ máy chủ");
+            }
+
+            if (typeof response === 'object' && 'checkoutUrl' in response) {
+                return (response as any).checkoutUrl;
+            }
+
+            return response as unknown as string;
         } catch (error) {
             console.error(error);
-            toast.error('Không thể khởi tạo cổng thanh toán PayOS');
+            toast.error('Không thể khởi tạo cổng thanh toán PayOS', { id: toastId });
             return '';
         }
     };
