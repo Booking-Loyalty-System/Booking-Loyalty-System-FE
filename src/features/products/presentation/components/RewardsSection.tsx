@@ -23,6 +23,7 @@ interface RewardItem {
   iconBg: string;
   iconColor: string;
   comingSoon?: boolean;
+  isFreeWashReward?: boolean; // Cờ nhận diện quà rửa xe
 }
 
 export const RewardsSection: React.FC = () => {
@@ -37,7 +38,23 @@ export const RewardsSection: React.FC = () => {
   } = useReward();
 
   const availablePoints = customerMe?.availablePoint ?? 0;
+  const totalBookings = customerMe?.totalWashes ?? 0; // Lấy tổng số lượt rửa
+  const REQUIRED_WASHES = 7;
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
+
+  // 1. Đếm tổng số lần đã từng đổi "Phần thưởng Rửa Xe Miễn Phí" trong lịch sử
+  const totalRedemedFreeWash = useMemo(() => {
+    if (!Array.isArray(redemptions)) return 0;
+    return redemptions.filter(
+      (v) => v && v.rewardName === "Phần thưởng Rửa Xe Miễn Phí",
+    ).length;
+  }, [redemptions]);
+
+  // 2. Tính số lượt rửa khả dụng trong chu kỳ 7 lượt hiện tại
+  const currentCycleWashes = useMemo(() => {
+    const remaining = totalBookings - totalRedemedFreeWash * REQUIRED_WASHES;
+    return remaining < 0 ? 0 : remaining;
+  }, [totalBookings, totalRedemedFreeWash]);
 
   // Bảng cấu hình icon mẫu
   const iconMap = {
@@ -63,7 +80,6 @@ export const RewardsSection: React.FC = () => {
     },
   };
 
-  // 🌟 Kiểm tra nghiêm ngặt dữ liệu và chuyển đổi đúng tên thuộc tính (name -> title, pointsCost -> requiredPts)
   const rewards: RewardItem[] = useMemo(() => {
     if (!Array.isArray(availableRewards)) return [];
 
@@ -71,7 +87,9 @@ export const RewardsSection: React.FC = () => {
       .map((reward) => {
         if (!reward) return null;
 
-        // Tự động phân phối icon dựa vào giá trị discountAmount nếu API không trả về iconType cụ thể
+        // Nhận diện voucher Rửa Xe
+        const isFreeWashReward = reward.name === "Phần thưởng Rửa Xe Miễn Phí";
+
         let iconConfig = iconMap.GIFT;
         if (reward.discountAmount >= 200) {
           iconConfig = iconMap.SPARKLES;
@@ -83,32 +101,50 @@ export const RewardsSection: React.FC = () => {
 
         return {
           id: reward.id,
-          title: reward.name ?? "Voucher đặc biệt", // Map đúng trường "name" từ API mới
+          title: reward.name ?? "Voucher đặc biệt",
           description:
             reward.description ?? "Đổi điểm để nhận ưu đãi giảm giá.",
-          validDays: reward.validDays ?? 30, // Fallback mặc định 30 ngày nếu API trống
-          requiredPts: reward.pointsCost ?? 0, // Map đúng trường "pointsCost" từ API mới
-          comingSoon: !reward.isActive, // Nếu isActive = false thì coi như chưa mở
+          validDays: reward.validDays ?? 30,
+          requiredPts: reward.pointsCost ?? 0,
+          comingSoon: !reward.isActive,
+          isFreeWashReward,
           ...iconConfig,
         };
       })
       .filter((item) => item !== null) as RewardItem[];
   }, [availableRewards]);
 
-  // Tính toán số lượng phần thưởng người dùng có thể đổi dựa trên số điểm thật
+  // 3. Tính toán số lượng phần thưởng khả dụng (Áp dụng currentCycleWashes)
   const redeemableCount = useMemo(() => {
-    return rewards.filter(
-      (r) => !r.comingSoon && availablePoints >= r.requiredPts,
-    ).length;
-  }, [rewards, availablePoints]);
+    return rewards.filter((r) => {
+      if (r.comingSoon) return false;
+      if (r.isFreeWashReward) return currentCycleWashes >= REQUIRED_WASHES;
+      return availablePoints >= r.requiredPts;
+    }).length;
+  }, [rewards, availablePoints, currentCycleWashes]);
 
   const handleRedeemClick = async (
     rewardId: string,
     cost: number,
     title: string,
+    isFreeWash: boolean = false,
   ) => {
-    if (availablePoints < cost) {
-      toast.error(t("rewards.toastNotEnoughPoints", { defaultValue: "Bạn không đủ điểm tích lũy để đổi phần thưởng này!" }));
+    if (isFreeWash && currentCycleWashes < REQUIRED_WASHES) {
+      toast.error(
+        t("rewards.toastNotEnoughWashes", {
+          n: REQUIRED_WASHES - currentCycleWashes,
+          defaultValue: `Bạn cần tích lũy thêm ${REQUIRED_WASHES - currentCycleWashes} lượt rửa nữa để đổi phần thưởng này!`,
+        })
+      );
+      return;
+    }
+
+    if (!isFreeWash && availablePoints < cost) {
+      toast.error(
+        t("rewards.toastNotEnoughPoints", {
+          defaultValue: "Bạn không đủ điểm tích lũy để đổi phần thưởng này!",
+        })
+      );
       return;
     }
 
@@ -116,11 +152,18 @@ export const RewardsSection: React.FC = () => {
     try {
       await redeemReward(rewardId);
       toast.success(
-        t("rewards.redeemSuccess", { defaultValue: `Đổi thành công: ${title}! Voucher đã được thêm vào tài khoản của bạn.` })
+        t("rewards.redeemSuccess", {
+          title,
+          defaultValue: `Đổi thành công: ${title}! Voucher đã được thêm vào tài khoản của bạn.`,
+        })
       );
     } catch (err) {
       console.error("Lỗi đổi thưởng:", err);
-      toast.error(t("rewards.toastRedeemFailed", { defaultValue: "Đổi quà thất bại, vui lòng thử lại sau." }));
+      toast.error(
+        t("rewards.toastRedeemFailed", {
+          defaultValue: "Đổi quà thất bại, vui lòng thử lại sau.",
+        })
+      );
     } finally {
       setRedeemingId(null);
     }
@@ -138,7 +181,9 @@ export const RewardsSection: React.FC = () => {
             {t("rewards.infoTitle", { defaultValue: "Tự động áp dụng khi đặt lịch" })}
           </h4>
           <p className="text-sm text-emerald-800 leading-relaxed">
-            {t("rewards.infoDesc", { defaultValue: "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!" })}
+            {t("rewards.infoDesc", {
+              defaultValue: "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!",
+            })}
           </p>
         </div>
       </div>
@@ -151,7 +196,12 @@ export const RewardsSection: React.FC = () => {
           </h2>
           <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
             <CheckCircle className="w-4 h-4 text-slate-400" />
-            <span>{t("rewards.redeemableCountMsg", { n: redeemableCount, defaultValue: `Bạn có thể đổi được ${redeemableCount} phần thưởng` })}</span>
+            <span>
+              {t("rewards.redeemableCountMsg", {
+                n: redeemableCount,
+                defaultValue: `Bạn có thể đổi được ${redeemableCount} phần thưởng`,
+              })}
+            </span>
           </div>
         </div>
 
@@ -166,7 +216,11 @@ export const RewardsSection: React.FC = () => {
             </div>
           ) : (
             rewards.map((item) => {
-              const canAfford = availablePoints >= item.requiredPts;
+              const isEligibleForFreeWash =
+                currentCycleWashes >= REQUIRED_WASHES;
+              const canAfford = item.isFreeWashReward
+                ? isEligibleForFreeWash
+                : availablePoints >= item.requiredPts;
 
               return (
                 <div
@@ -197,7 +251,12 @@ export const RewardsSection: React.FC = () => {
 
                     <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mt-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                      <span>{t("rewards.validDaysLabel", { n: item.validDays, defaultValue: `Hạn dùng ${item.validDays} ngày sau khi đổi` })}</span>
+                      <span>
+                        {t("rewards.validDaysLabel", {
+                          n: item.validDays,
+                          defaultValue: `Hạn dùng ${item.validDays} ngày sau khi đổi`,
+                        })}
+                      </span>
                     </div>
                   </div>
 
@@ -206,17 +265,31 @@ export const RewardsSection: React.FC = () => {
                       <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">
                         {t("rewards.requirementLabel", { defaultValue: "Yêu cầu" })}
                       </p>
-                      <p className="text-xl font-black text-slate-800 mt-0.5">
-                        {item.requiredPts}{" "}
-                        <span className="text-sm font-bold text-slate-500">
-                          {t("rewards.pointsUnit", { defaultValue: "điểm" })}
-                        </span>
-                      </p>
+                      {item.isFreeWashReward ? (
+                        <p className="text-xl font-black text-slate-800 mt-0.5">
+                          {currentCycleWashes}/{REQUIRED_WASHES}{" "}
+                          <span className="text-sm font-bold text-slate-500">
+                            {t("rewards.washesUnit", { defaultValue: "lượt" })}
+                          </span>
+                        </p>
+                      ) : (
+                        <p className="text-xl font-black text-slate-800 mt-0.5">
+                          {item.requiredPts}{" "}
+                          <span className="text-sm font-bold text-slate-500">
+                            {t("rewards.pointsUnit", { defaultValue: "điểm" })}
+                          </span>
+                        </p>
+                      )}
                     </div>
 
                     <button
                       onClick={() =>
-                        handleRedeemClick(item.id, item.requiredPts, item.title)
+                        handleRedeemClick(
+                          item.id,
+                          item.requiredPts,
+                          item.title,
+                          item.isFreeWashReward,
+                        )
                       }
                       disabled={
                         item.comingSoon ||
@@ -230,7 +303,9 @@ export const RewardsSection: React.FC = () => {
                           : "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
                       }`}
                     >
-                      {redeemingId === item.id ? t("rewards.processingBtn", { defaultValue: "Đang xử lý..." }) : t("rewards.redeemNowBtn", { defaultValue: "Đổi Ngay" })}
+                      {redeemingId === item.id
+                        ? t("rewards.processingBtn", { defaultValue: "Đang xử lý..." })
+                        : t("rewards.redeemNowBtn", { defaultValue: "Đổi Ngay" })}
                     </button>
                   </div>
                 </div>
@@ -257,6 +332,11 @@ export const RewardsSection: React.FC = () => {
           ) : (
             redemptions.map((v) => {
               if (!v) return null;
+
+              // Kiểm tra xem đây có phải là lịch sử của Rửa Xe Miễn Phí không
+              const isHistoryFreeWash =
+                v.rewardName === "Phần thưởng Rửa Xe Miễn Phí";
+
               return (
                 <div
                   key={v.id}
@@ -295,7 +375,9 @@ export const RewardsSection: React.FC = () => {
                             </span>{" "}
                             {t("rewards.codeLabel", { defaultValue: "· Mã:" })}{" "}
                             <span className="font-mono">
-                              REDEEM-{v.pointsSpent}PTS
+                              {isHistoryFreeWash
+                                ? `REDEEM-7WASHES`
+                                : `REDEEM-${v.pointsSpent}PTS`}
                             </span>
                           </p>
                         );
@@ -304,12 +386,23 @@ export const RewardsSection: React.FC = () => {
                   </div>
 
                   <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                    <p className="text-lg font-black text-slate-800 tracking-tight">
-                      -{v.pointsSpent ?? 0}{" "}
-                      <span className="text-xs font-bold text-slate-500">
-                        {t("rewards.pointsUnit", { defaultValue: "điểm" })}
-                      </span>
-                    </p>
+                    {/* Tinh chỉnh UI lịch sử cho Rửa Xe Miễn Phí để hiển thị "-7 lượt" thay vì "-0 điểm" */}
+                    {isHistoryFreeWash ? (
+                      <p className="text-lg font-black text-slate-800 tracking-tight">
+                        -7{" "}
+                        <span className="text-xs font-bold text-slate-500">
+                          {t("rewards.washesUnit", { defaultValue: "lượt" })}
+                        </span>
+                      </p>
+                    ) : (
+                      <p className="text-lg font-black text-slate-800 tracking-tight">
+                        -{v.pointsSpent ?? 0}{" "}
+                        <span className="text-xs font-bold text-slate-500">
+                          {t("rewards.pointsUnit", { defaultValue: "điểm" })}
+                        </span>
+                      </p>
+                    )}
+
                     {(() => {
                       const statusLower = String(v.status).toLowerCase();
                       const isAvailable =

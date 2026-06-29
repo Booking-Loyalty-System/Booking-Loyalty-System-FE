@@ -18,9 +18,16 @@ export const Promotions: React.FC = () => {
         return <div className="p-10 text-center font-medium text-slate-500">{t('promotions.loadingText')}</div>;
     }
 
-    // Lọc data theo một số điều kiện mẫu (hoặc backend tự trả về isFeatured)
-    const featuredPromos = promotions.filter(p => p.discountValue >= 30 || p.targetTiers.includes('Gold'));
-    const activePromos = promotions.filter(p => !featuredPromos.find(f => f.id === p.id));
+    // Đảm bảo promotions là một mảng để tránh lỗi .filter is not a function nếu api trả về undefined lúc đầu
+    const safePromotions = Array.isArray(promotions) ? promotions : [];
+
+    // Lọc data an toàn với Optional Chaining (?.) cho targetTiers vì API không có trường này
+    const featuredPromos = safePromotions.filter(
+        (p) => p.discountValue >= 30 || p.targetTiers?.includes("Gold")
+    );
+    const activePromos = safePromotions.filter(
+        (p) => !featuredPromos.find((f) => f.id === p.id)
+    );
 
     return (
         <div className="w-full space-y-8 font-sans antialiased text-slate-800">
@@ -42,7 +49,9 @@ export const Promotions: React.FC = () => {
                         </div>
                         <div className="bg-white/15 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10">
                             <p className="text-xs text-orange-100 font-medium">{t('promotions.banner.labelActivePromotions')}</p>
-                            <p className="text-sm font-bold mt-0.5">6 Available</p>
+                            <p className="text-sm font-bold mt-0.5">
+                                {activePromos.length + featuredPromos.length} {t('promotions.banner.labelAvailable', { defaultValue: 'Available' })}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -63,12 +72,17 @@ export const Promotions: React.FC = () => {
                                         <Tag className="w-6 h-6" />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <h3 className="text-lg font-bold text-slate-900 tracking-tight">{promo.title}</h3>
+                                        {/* Fallback sang .title nếu mock data dùng title, còn api thật dùng name */}
+                                        <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                                            {promo.name || promo.title}
+                                        </h3>
                                         <p className="text-sm text-slate-500 font-medium leading-relaxed">{promo.description}</p>
                                         <div className="flex flex-wrap items-center gap-3 pt-1">
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">
-                        {promo.targetTiers.join(', ')}
-                      </span>
+                                            {promo.targetTiers && promo.targetTiers.length > 0 && (
+                                                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">
+                                                    {promo.targetTiers.join(', ')}
+                                                </span>
+                                            )}
                                             <div className="flex items-center gap-1 text-xs text-slate-400 font-semibold">
                                                 <Calendar className="w-3.5 h-3.5" />
                                                 <span>{t('promotions.featured.labelUntil')} {new Date(promo.endDate).toLocaleDateString('vi-VN')}</span>
@@ -106,7 +120,12 @@ export const Promotions: React.FC = () => {
                             <div className="mt-5 pt-4 border-t border-slate-100">
                                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{t('promotions.featured.termsAndConditions')}</h4>
                                 <ul className="text-xs text-slate-500 font-medium space-y-1 list-disc pl-4 leading-relaxed">
-                                    {promo.conditions.map((c, i) => <li key={i}>{c}</li>)}
+                                    {promo.conditions?.map((c, i) => <li key={i}>{c}</li>)}
+                                    {(!promo.conditions || promo.conditions.length === 0) && (
+                                        <li>
+                                            {t('promotions.featured.defaultCondition', { defaultValue: 'Áp dụng cho các hóa đơn thỏa mãn điều kiện tối thiểu.' })}
+                                        </li>
+                                    )}
                                 </ul>
                             </div>
                         </div>
@@ -125,10 +144,14 @@ export const Promotions: React.FC = () => {
                                     <Sparkles className="w-6 h-6" />
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-base font-bold text-slate-900 tracking-tight">{item.title}</h3>
-                                    <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-md mt-1">
-                    {item.targetTiers.join(', ')}
-                  </span>
+                                    <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                                        {item.name || item.title}
+                                    </h3>
+                                    {item.targetTiers && item.targetTiers.length > 0 && (
+                                        <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-md mt-1">
+                                            {item.targetTiers.join(', ')}
+                                        </span>
+                                    )}
                                     <p className="text-sm text-slate-500 font-medium pt-2 leading-relaxed">{item.description}</p>
                                 </div>
                                 <div className="bg-slate-50 rounded-xl p-3">
