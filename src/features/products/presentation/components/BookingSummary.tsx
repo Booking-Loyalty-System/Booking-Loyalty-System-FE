@@ -20,23 +20,30 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   // 1. Tính tiền giảm từ Voucher (nếu có)
   let voucherDiscount = 0;
   if (selectedVoucher) {
-    if (selectedVoucher.isFreeWash) {
+    const vName =
+      (selectedVoucher as any).name || (selectedVoucher as any).title || "";
+    // Nhận diện voucher miễn phí qua cờ isFreeWash hoặc tên cứng
+    const isFreeWash =
+      selectedVoucher.isFreeWash || vName === "Phần thưởng Rửa Xe Miễn Phí";
+
+    if (isFreeWash) {
       voucherDiscount = originalPrice;
     } else {
-      voucherDiscount = Math.min(originalPrice, selectedVoucher.discountValue);
+      voucherDiscount = Math.min(
+        originalPrice,
+        selectedVoucher.discountValue || 0,
+      );
     }
   }
 
   const priceAfterVoucher = Math.max(0, originalPrice - voucherDiscount);
 
-  // 2. Tính tiền giảm từ Promotion (Lấy trực tiếp từ API trả về)
+  // 2. Tính tiền giảm từ Promotion
   let promoDiscount = 0;
   if (appliedPromotion) {
-    // Ưu tiên lấy discountAmount từ payload của API preview
     if (typeof (appliedPromotion as any).discountAmount !== "undefined") {
       promoDiscount = (appliedPromotion as any).discountAmount;
     } else {
-      // Fallback dành cho dữ liệu mock cũ (nếu API chưa hoạt động)
       if (appliedPromotion.discountType === "FixedAmount") {
         promoDiscount = Math.min(
           priceAfterVoucher,
@@ -50,11 +57,9 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
     }
   }
 
-  // 3. Tính tổng tiền cuối cùng (Total Estimated)
-  // Trừ đi cả voucher và promo. Đảm bảo giá trị không bị âm.
+  // 3. Tính tổng tiền cuối cùng
   let totalPrice = Math.max(0, originalPrice - voucherDiscount - promoDiscount);
 
-  // Nếu API trả về finalAmount và không dùng thêm voucher, ta lấy chính xác số của API
   if (
     appliedPromotion &&
     typeof (appliedPromotion as any).finalAmount !== "undefined" &&
@@ -76,7 +81,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
       if (result !== true) {
         setPromoError(result as string);
       } else {
-        setPromoInput(""); // Xóa input khi apply thành công
+        setPromoInput("");
       }
     }
     setIsApplyingPromo(false);
@@ -144,7 +149,9 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                       Applied Voucher
                     </span>
                     <span className="text-xs font-bold truncate max-w-[150px]">
-                      {selectedVoucher.title}
+                      {(selectedVoucher as any).title ||
+                        (selectedVoucher as any).name ||
+                        "Voucher"}
                     </span>
                   </div>
                   <span className="font-bold">
@@ -192,7 +199,6 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                       <p className="text-xs font-bold text-slate-700">
                         {appliedPromotion.code}
                       </p>
-                      {/* Thêm fallback text nếu API không có trường title */}
                       <p className="text-[10px] text-slate-500">
                         {(appliedPromotion as any).title ||
                           "Khuyến mãi đã áp dụng"}

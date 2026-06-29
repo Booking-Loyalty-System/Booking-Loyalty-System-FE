@@ -10,6 +10,7 @@ interface VoucherSelectionProps {
   selectedVoucherId: string;
   onSelectVoucher: (voucher: Voucher | null) => void;
   totalPoints: number;
+  currentCycleWashes: number; // Thêm prop này để kiểm tra lượt rửa
 }
 
 export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
@@ -17,8 +18,9 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
   selectedVoucherId,
   onSelectVoucher,
   totalPoints,
+  currentCycleWashes,
 }) => {
-  const { t } = useTranslation('customer');
+  const { t } = useTranslation("customer");
   const {
     redeemReward: redeemVoucher,
     isRedeeming,
@@ -26,27 +28,51 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
   } = useReward();
   const [showQuickRedeem, setShowQuickRedeem] = useState(false);
 
-  // Danh sách phần thưởng quy đổi nhanh trong màn hình đặt lịch lấy từ API (giới hạn 4 món)
   const quickRedeemList = availableRewards.slice(0, 4);
 
   const handleQuickRedeem = async (
     rewardId: string,
     requiredPts: number,
     title: string,
+    isFreeWash: boolean,
   ) => {
-    if (totalPoints < requiredPts) {
-      toast.error(t("bookWash.voucher.toastNotEnoughPoints", { defaultValue: "You do not have enough points to redeem this voucher!" }));
+    // Kiểm tra điều kiện riêng cho phần thưởng Rửa Xe Miễn Phí
+    if (isFreeWash && currentCycleWashes < 1) {
+      toast.error(
+        t("bookWash.voucher.toastNotEnoughWashes", {
+          defaultValue: "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
+        }),
+      );
+      return;
+    }
+
+    // Kiểm tra điều kiện cho các voucher đổi bằng điểm
+    if (!isFreeWash && totalPoints < requiredPts) {
+      toast.error(
+        t("bookWash.voucher.toastNotEnoughPoints", {
+          defaultValue: "You do not have enough points to redeem this voucher!",
+        }),
+      );
       return;
     }
 
     try {
       const newVoucher = await redeemVoucher(rewardId);
-      toast.success(t("bookWash.voucher.toastRedeemSuccess", { title, defaultValue: `Successfully redeemed: ${title}` }));
+      toast.success(
+        t("bookWash.voucher.toastRedeemSuccess", {
+          title,
+          defaultValue: `Successfully redeemed: ${title}`,
+        }),
+      );
       if (newVoucher) {
         onSelectVoucher(newVoucher);
       }
     } catch (error) {
-      toast.error(t("bookWash.voucher.toastRedeemFailed", { defaultValue: "Failed to redeem voucher. Please try again." }));
+      toast.error(
+        t("bookWash.voucher.toastRedeemFailed", {
+          defaultValue: "Failed to redeem voucher. Please try again.",
+        }),
+      );
     }
   };
 
@@ -61,7 +87,6 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm transition-all hover:shadow-md">
-      {/* COMPONENT HEADER */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
@@ -72,7 +97,9 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
               {t("bookWash.voucher.title", { defaultValue: "Your Rewards" })}
             </h3>
             <p className="text-[11px] font-medium text-slate-400">
-              {t("bookWash.voucher.selectSubtitle", { defaultValue: "Select an available voucher for your booking" })}
+              {t("bookWash.voucher.selectSubtitle", {
+                defaultValue: "Select an available voucher for your booking",
+              })}
             </p>
           </div>
         </div>
@@ -86,24 +113,35 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
           }`}
         >
           <Gift className="w-3.5 h-3.5" />
-          {showQuickRedeem ? t("bookWash.voucher.viewMyVouchers", { defaultValue: "View My Vouchers" }) : t("bookWash.voucher.redeemMore", { defaultValue: "Redeem More" })}
+          {showQuickRedeem
+            ? t("bookWash.voucher.viewMyVouchers", {
+                defaultValue: "View My Vouchers",
+              })
+            : t("bookWash.voucher.redeemMore", { defaultValue: "Redeem More" })}
         </button>
       </div>
 
-      {/* MAIN CONTAINER */}
       <div className="relative">
         {!showQuickRedeem ? (
-          /* LIST OF CURRENT VOUCHERS */
           <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
             {usableVouchers.length === 0 ? (
               <div className="text-center py-6 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                 <p className="text-xs font-semibold text-slate-400">
-                  {t("bookWash.voucher.noVouchers", { defaultValue: "You don't have any usable vouchers." })}
+                  {t("bookWash.voucher.noVouchers", {
+                    defaultValue: "You don't have any usable vouchers.",
+                  })}
                 </p>
               </div>
             ) : (
               usableVouchers.map((voucher) => {
                 const isSelected = selectedVoucherId === voucher.id;
+
+                // Nhận diện voucher Free Wash để hiển thị nhãn FREE thay vì số tiền
+                const vName =
+                  (voucher as any).name || (voucher as any).title || "";
+                const isFreeWash =
+                  voucher.isFreeWash || vName === "Phần thưởng Rửa Xe Miễn Phí";
+
                 return (
                   <div
                     key={voucher.id}
@@ -122,13 +160,16 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                       </div>
                       <div>
                         <h4 className="text-xs font-black text-slate-800">
-                          {(voucher as any).name ||
-                            (voucher as any).title ||
+                          {vName ||
                             (voucher as any).description ||
-                            t("bookWash.voucher.fallbackTitle", { defaultValue: "Reward Voucher" })}
+                            t("bookWash.voucher.fallbackTitle", {
+                              defaultValue: "Reward Voucher",
+                            })}
                         </h4>
                         <p className="text-[10px] font-bold text-slate-400 mt-0.5">
-                          {t("bookWash.voucher.codeLabel", { defaultValue: "Code:" })}{" "}
+                          {t("bookWash.voucher.codeLabel", {
+                            defaultValue: "Code:",
+                          })}{" "}
                           <span className="font-mono text-slate-600">
                             {voucher.code}
                           </span>
@@ -137,7 +178,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                     </div>
 
                     <div className="flex items-center gap-2.5">
-                      {voucher.discountValue && (
+                      {isFreeWash ? (
                         <span
                           className={`text-[11px] font-black px-2 py-0.5 rounded-md ${
                             isSelected
@@ -145,9 +186,22 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                               : "bg-emerald-50 text-emerald-700"
                           }`}
                         >
-                          -{voucher.discountValue.toLocaleString()}₫
+                          MIỄN PHÍ
                         </span>
+                      ) : (
+                        voucher.discountValue && (
+                          <span
+                            className={`text-[11px] font-black px-2 py-0.5 rounded-md ${
+                              isSelected
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-emerald-50 text-emerald-700"
+                            }`}
+                          >
+                            -{voucher.discountValue.toLocaleString()}₫
+                          </span>
+                        )
                       )}
+
                       <div
                         className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                           isSelected
@@ -164,14 +218,15 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
             )}
           </div>
         ) : (
-          /* QUICK REDEEM SHOP */
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-200">
             <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl p-3 text-white mb-3 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <Star className="w-3.5 h-3.5 fill-white text-amber-300 animate-pulse" />
                   <span className="text-[10px] font-black uppercase tracking-wider text-amber-100">
-                    {t("bookWash.voucher.pointsWallet", { defaultValue: "Your points wallet" })}
+                    {t("bookWash.voucher.pointsWallet", {
+                      defaultValue: "Your points wallet",
+                    })}
                   </span>
                 </div>
                 <span className="text-sm font-black tracking-tight bg-white/20 px-2 py-0.5 rounded-lg">
@@ -183,11 +238,20 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
             <div className="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
               {quickRedeemList.length === 0 ? (
                 <div className="col-span-2 text-center py-6 text-xs font-bold text-slate-400">
-                  {t("bookWash.voucher.noAvailableRewards", { defaultValue: "No reward vouchers currently available to redeem." })}
+                  {t("bookWash.voucher.noAvailableRewards", {
+                    defaultValue:
+                      "No reward vouchers currently available to redeem.",
+                  })}
                 </div>
               ) : (
                 quickRedeemList.map((reward) => {
-                  const canRedeem = totalPoints >= reward.pointsCost;
+                  // Phân biệt Free Wash và Quà thường
+                  const isFreeWashReward =
+                    reward.name === "Phần thưởng Rửa Xe Miễn Phí";
+                  const canRedeem = isFreeWashReward
+                    ? currentCycleWashes >= 1
+                    : totalPoints >= reward.pointsCost;
+
                   return (
                     <div
                       key={reward.id}
@@ -203,7 +267,9 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                       </div>
                       <div className="flex items-center justify-between border-t border-slate-50 pt-2">
                         <span className="text-xs font-black text-slate-700">
-                          {reward.pointsCost} pts
+                          {isFreeWashReward
+                            ? "7 lượt"
+                            : `${reward.pointsCost} pts`}
                         </span>
                         <button
                           onClick={() =>
@@ -211,6 +277,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                               reward.id,
                               reward.pointsCost,
                               reward.name,
+                              isFreeWashReward,
                             )
                           }
                           disabled={isRedeeming || !canRedeem}
@@ -220,7 +287,13 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                               : "bg-slate-100 text-slate-400 cursor-not-allowed"
                           }`}
                         >
-                          {isRedeeming ? t("bookWash.voucher.redeeming", { defaultValue: "Redeeming..." }) : t("bookWash.voucher.redeemNow", { defaultValue: "Redeem Now" })}
+                          {isRedeeming
+                            ? t("bookWash.voucher.redeeming", {
+                                defaultValue: "Redeeming...",
+                              })
+                            : t("bookWash.voucher.redeemNow", {
+                                defaultValue: "Redeem Now",
+                              })}
                         </button>
                       </div>
                     </div>

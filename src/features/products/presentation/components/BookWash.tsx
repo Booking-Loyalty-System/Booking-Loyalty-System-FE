@@ -452,12 +452,12 @@ export const BookWash: React.FC = () => {
           onSelectPackage={setSelectedPackageId}
         />
 
-        {/* 🌟 VOUCHER SELECTION ĐÃ ĐƯỢC DỌN DẸP, CHỈ TRUYỀN HÀM ĐỒNG BỘ SET VOUCHER */}
         <VoucherSelection
           activeVouchers={redeemedVouchersOnly as any}
           selectedVoucherId={selectedVoucher?.id || ""}
-          onSelectVoucher={setSelectedVoucher} // Truyền thẳng hàm gốc vào, không dùng async
-          totalPoints={customerMe?.totalPoints || 0}
+          onSelectVoucher={setSelectedVoucher}
+          totalPoints={customerMe?.availablePoint ?? 0}
+          currentCycleWashes={(customerMe as any)?.currentCycleWashes ?? 0}
         />
 
         <DateTimeSelection

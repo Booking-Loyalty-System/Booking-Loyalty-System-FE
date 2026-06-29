@@ -38,9 +38,8 @@ export const RewardsSection: React.FC = () => {
   } = useReward();
 
   const availablePoints = customerMe?.availablePoint ?? 0;
-  // Lấy trực tiếp currentCycleWashes từ API Backend
+  // Số lượng phần thưởng rửa xe miễn phí khả dụng
   const currentCycleWashes = (customerMe as any)?.currentCycleWashes ?? 0;
-  const REQUIRED_WASHES = 7;
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
 
   // Bảng cấu hình icon mẫu
@@ -101,11 +100,11 @@ export const RewardsSection: React.FC = () => {
       .filter((item) => item !== null) as RewardItem[];
   }, [availableRewards]);
 
-  // Tính toán số lượng phần thưởng khả dụng (Áp dụng currentCycleWashes cho quà rửa xe)
+  // Tính toán số lượng phần thưởng khả dụng
   const redeemableCount = useMemo(() => {
     return rewards.filter((r) => {
       if (r.comingSoon) return false;
-      if (r.isFreeWashReward) return currentCycleWashes >= REQUIRED_WASHES;
+      if (r.isFreeWashReward) return currentCycleWashes >= 1;
       return availablePoints >= r.requiredPts;
     }).length;
   }, [rewards, availablePoints, currentCycleWashes]);
@@ -116,11 +115,10 @@ export const RewardsSection: React.FC = () => {
     title: string,
     isFreeWash: boolean = false,
   ) => {
-    if (isFreeWash && currentCycleWashes < REQUIRED_WASHES) {
+    if (isFreeWash && currentCycleWashes < 1) {
       toast.error(
         t("rewards.toastNotEnoughWashes", {
-          n: REQUIRED_WASHES - currentCycleWashes,
-          defaultValue: `Bạn cần tích lũy thêm ${REQUIRED_WASHES - currentCycleWashes} lượt rửa nữa để đổi phần thưởng này!`,
+          defaultValue: "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
         }),
       );
       return;
@@ -210,8 +208,7 @@ export const RewardsSection: React.FC = () => {
             </div>
           ) : (
             rewards.map((item) => {
-              const isEligibleForFreeWash =
-                currentCycleWashes >= REQUIRED_WASHES;
+              const isEligibleForFreeWash = currentCycleWashes >= 1;
               const canAfford = item.isFreeWashReward
                 ? isEligibleForFreeWash
                 : availablePoints >= item.requiredPts;
@@ -264,13 +261,14 @@ export const RewardsSection: React.FC = () => {
                         })}
                       </p>
 
-                      {/* Logic hiển thị Yêu Cầu / Tiến độ (Đã được bọc ngoặc nhọn {}) */}
                       {item.isFreeWashReward ? (
                         <div className="flex flex-col">
                           <p className="text-xl font-black text-slate-800 mt-0.5">
-                            {REQUIRED_WASHES}{" "}
+                            7{" "}
                             <span className="text-sm font-bold text-slate-500">
-                              lượt
+                              {t("rewards.washesUnit", {
+                                defaultValue: "lượt",
+                              })}
                             </span>
                           </p>
                         </div>
@@ -343,7 +341,6 @@ export const RewardsSection: React.FC = () => {
             redemptions.map((v) => {
               if (!v) return null;
 
-              // Kiểm tra xem đây có phải là lịch sử của Rửa Xe Miễn Phí không
               const isHistoryFreeWash =
                 v.rewardName === "Phần thưởng Rửa Xe Miễn Phí";
 
@@ -394,7 +391,7 @@ export const RewardsSection: React.FC = () => {
                             {t("rewards.codeLabel", { defaultValue: "· Mã:" })}{" "}
                             <span className="font-mono">
                               {isHistoryFreeWash
-                                ? `REDEEM-7WASHES`
+                                ? `REDEEM-1WASH`
                                 : `REDEEM-${v.pointsSpent}PTS`}
                             </span>
                           </p>
@@ -404,10 +401,9 @@ export const RewardsSection: React.FC = () => {
                   </div>
 
                   <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                    {/* Tinh chỉnh UI lịch sử cho Rửa Xe Miễn Phí để hiển thị "-7 lượt" thay vì "-0 điểm" */}
                     {isHistoryFreeWash ? (
                       <p className="text-lg font-black text-slate-800 tracking-tight">
-                        -7{" "}
+                        -1{" "}
                         <span className="text-xs font-bold text-slate-500">
                           {t("rewards.washesUnit", { defaultValue: "lượt" })}
                         </span>
