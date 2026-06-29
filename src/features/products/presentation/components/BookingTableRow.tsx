@@ -40,15 +40,15 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({ booking: b, ha
 
             <td className="py-4 px-6">
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ring-1 ring-inset ${
-                    b.status === 'Pending' ? 'bg-orange-50 text-orange-700 ring-orange-600/20' :
+                    b.status === 'Pending' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' :
                         b.status === 'Confirmed' ? 'bg-blue-50 text-blue-700 ring-blue-600/20' :
-                            b.status === 'CheckedIn' ? 'bg-purple-50 text-purple-700 ring-purple-600/20' :
-                                b.status === 'Queued' ? 'bg-indigo-50 text-indigo-700 ring-indigo-600/20' :
-                                    b.status === 'InProgress' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' :
+                            b.status === 'CheckedIn' ? 'bg-indigo-50 text-indigo-700 ring-indigo-600/20' :
+                                b.status === 'Queued' ? 'bg-cyan-50 text-cyan-700 ring-cyan-600/20' :
+                                    b.status === 'InProgress' ? 'bg-purple-50 text-purple-700 ring-purple-600/20' :
                                         b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' :
-                                            b.status === 'CheckedOut' ? 'bg-slate-50 text-slate-600 ring-slate-500/20' :
-                                                b.status === 'Cancelled' ? 'bg-red-50 text-red-700 ring-red-600/20' :
-                                                    b.status === 'NoShow' ? 'bg-stone-50 text-stone-700 ring-stone-600/20' :
+                                            b.status === 'CheckedOut' ? 'bg-teal-50 text-teal-700 ring-teal-600/20' :
+                                                b.status === 'Cancelled' || b.status === 'Rejected' ? 'bg-rose-50 text-rose-700 ring-rose-600/20' :
+                                                    b.status === 'NoShow' ? 'bg-slate-100 text-slate-700 ring-slate-600/20' :
                                                         'bg-slate-50 text-slate-700 ring-slate-500/20'
                 }`}>
                     {b.status}

@@ -61,3 +61,10 @@ Desktop.ini
 # Testing
 coverage/
 .nyc_output/
+
+# Local dev notes & AI agent memory (không liên quan đến vận hành dự án)
+GEMINI.md
+Note.txt
+*.diff
+*.patch
+AGENTS.md

@@ -1,0 +1,498 @@
+{
+  "dashboard": {
+    "welcomeBack": "Welcome back,",
+    "accountToday": "Here's what's happening with your account today.",
+    "stats": {
+      "allTime": "All time",
+      "totalBookings": "Total Bookings",
+      "loyalty": "Loyalty",
+      "totalPoints": "Total Points",
+      "status": "Status",
+      "membershipTier": "Membership Tier",
+      "savings": "Savings",
+      "totalSaved": "Total Saved"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "bookWash": "Book Wash",
+      "bookWashDesc": "Schedule a new wash",
+      "rewards": "Rewards",
+      "rewardsDesc": "Redeem your points",
+      "promotions": "Promotions",
+      "promotionsDesc": "View active deals",
+      "history": "History",
+      "historyDesc": "View past bookings"
+    },
+    "washProgress": {
+      "title": "Wash Progress",
+      "subtitle": "Your Free Wash Journey",
+      "washesCompleted": "washes completed in this cycle",
+      "oneMoreLeft": "Only {{count}} more wash to go for your next free wash!",
+      "moreLeft": "Only {{count}} more washes to go for your next free wash!",
+      "congratulations": "Congratulations! You've earned a free wash!",
+      "claimFreeWash": "Claim Free Wash",
+      "ofSeven": "/ 7 washes"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "viewAll": "View All",
+      "noActivity": "No recent activity",
+      "completed": "Completed",
+      "pending": "Pending",
+      "cancelled": "Cancelled",
+      "inProgress": "In Progress"
+    },
+    "upcomingBooking": {
+      "title": "Upcoming Booking",
+      "noBooking": "No upcoming bookings",
+      "bookNow": "Book Now",
+      "viewDetails": "View Details"
+    },
+    "loyaltySummary": {
+      "title": "Loyalty Summary",
+      "currentTier": "Current Tier",
+      "pointsBalance": "Points Balance",
+      "viewRewards": "View Rewards"
+    }
+  },
+  "bookWash": {
+    "title": "Book a Wash",
+    "priority": {
+      "loading": "Loading membership tier information...",
+      "title": "Tier-Based Priority Booking Window",
+      "descTemplate": "As a {{tier}} member, you can book up to {{days}} days in advance.",
+      "days": "days"
+    },
+    "steps": {
+      "selectBranch": "Select Branch",
+      "selectPackage": "Select Package",
+      "selectVehicle": "Select Vehicle",
+      "selectDateTime": "Select Date & Time",
+      "selectVoucher": "Select Voucher",
+      "summary": "Summary"
+    },
+    "branch": {
+      "title": "Select a Branch",
+      "findNearest": "Find Nearest",
+      "searchPlaceholder": "Search branches...",
+      "viewOnMap": "View on Map",
+      "kmAway": "km away",
+      "open": "Open",
+      "closed": "Closed",
+      "select": "Select"
+    },
+    "package": {
+      "title": "Select a Package",
+      "popular": "Popular",
+      "duration": "Duration",
+      "includes": "Includes",
+      "selectPackage": "Select Package"
+    },
+    "vehicle": {
+      "title": "Select Your Vehicle",
+      "addNew": "Add New Vehicle",
+      "noVehicles": "No vehicles added yet",
+      "selectVehicle": "Select"
+    },
+    "dateTime": {
+      "title": "Select Date & Time",
+      "selectDate": "Select Date",
+      "selectTime": "Select Time",
+      "noSlots": "No available time slots",
+      "available": "Available",
+      "fullyBooked": "Fully Booked"
+    },
+    "voucher": {
+      "title": "Apply Voucher (Optional)",
+      "enterCode": "Enter voucher code",
+      "apply": "Apply",
+      "remove": "Remove",
+      "noVouchers": "No vouchers available",
+      "discount": "Discount"
+    },
+    "summary": {
+      "title": "Booking Summary",
+      "branch": "Branch",
+      "package": "Package",
+      "vehicle": "Vehicle",
+      "dateTime": "Date & Time",
+      "voucher": "Voucher",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "total": "Total",
+      "confirmBooking": "Confirm Booking",
+      "processing": "Processing...",
+      "noVoucher": "None"
+    },
+    "buttons": {
+      "back": "Back",
+      "next": "Next",
+      "confirm": "Confirm Booking"
+    }
+  },
+  "bookingHistory": {
+    "title": "Booking History",
+    "subtitle": "Track all your past and upcoming car wash appointments",
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "searchPlaceholder": "Search bookings..."
+    },
+    "table": {
+      "id": "Booking ID",
+      "branch": "Branch",
+      "package": "Package",
+      "vehicle": "Vehicle",
+      "dateTime": "Date & Time",
+      "price": "Price",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "reschedule": "Reschedule",
+      "cancel": "Cancel",
+      "review": "Review"
+    },
+    "empty": {
+      "title": "No bookings found",
+      "description": "You haven't made any bookings yet.",
+      "bookNow": "Book a Wash"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "rewards": {
+    "title": "Available Rewards",
+    "subtitle": "Redeem your loyalty points for exclusive rewards",
+    "pointsBalance": "Points Balance",
+    "availableRewards": "Available Rewards",
+    "redeem": "Redeem",
+    "points": "pts",
+    "notEnoughPoints": "Not enough points",
+    "redeemSuccess": "Reward redeemed successfully!",
+    "categories": {
+      "all": "All",
+      "discount": "Discounts",
+      "freeWash": "Free Wash",
+      "upgrade": "Upgrades",
+      "merchandise": "Merchandise"
+    },
+    "card": {
+      "pointsRequired": "points required",
+      "expires": "Expires",
+      "redeemNow": "Redeem Now",
+      "outOfStock": "Out of Stock"
+    },
+    "history": {
+      "title": "Redemption History",
+      "empty": "No redemption history yet"
+    }
+  },
+  "loyaltyTier": {
+    "title": "Your Loyalty & Tier",
+    "currentTier": "Current Tier",
+    "pointsToNext": "points to next tier",
+    "tierMember": "Member",
+    "totalPointsSuffix": "Total Points",
+    "progressToLabel": "Progress to {{nextTier}}",
+    "maxTierReached": "Max Tier Reached",
+    "pointsToGoSuffix": "{{n}} points to go",
+    "tiersAutoReviewed": "Tiers are auto-reviewed & upgraded/downgraded monthly based on your past 3 months' data",
+    "totalPointsCard": "Total Points",
+    "discountRateCard": "Discount Rate",
+    "pointsMultiplierCard": "Points Multiplier",
+    "howYouEarnPoints": "How You Earn Points",
+    "pointsFormula": "Points = (Payment Amount / 1000) × Tier Multiplier",
+    "formulaExample": "Example: A 450.000đ wash for Gold members = (450.000 / 1.000) × 2 = 450 × 2 = 900 points",
+    "membershipTiers": "Membership Tiers",
+    "loadingTransactions": "Loading transaction history...",
+    "noTransactions": "No transactions found.",
+    "transactionHistory": "Transaction History",
+    "benefitDiscount": "{{n}} discount",
+    "benefitMultiplier": "Points × {{multiplier}}",
+    "benefitAdvanceBooking": "Book {{n}} days in advance",
+    "benefitBirthdayBonus": "Birthday bonus",
+    "benefitPrioritySupport": "Priority support",
+    "benefitExclusiveOffers": "Exclusive offers",
+    "benefitPriorityBooking": "Priority booking",
+    "benefitFreeWashBirthday": "Free wash on birthday",
+    "benefitVipAccess": "VIP priority access",
+    "benefitDedicatedManager": "Dedicated account manager",
+    "tiers": {
+      "member": "Bronze Member",
+      "bronze": "Bronze Member",
+      "silver": "Silver Member",
+      "gold": "Gold Member",
+      "platinum": "Platinum Member",
+      "diamond": "Diamond Member",
+      "max tier": "Max Tier"
+    },
+    "table": {
+      "date": "Date",
+      "description": "Description",
+      "type": "Type",
+      "points": "Points"
+    },
+    "txTypeEarned": "Earned",
+    "txTypeRedeemed": "Redeemed",
+    "progress": {
+      "title": "Progress to Next Tier",
+      "washes": "Washes",
+      "points": "Points"
+    }
+  },
+  "promotions": {
+    "loadingText": "Loading promotions...",
+    "banner": {
+      "badgeLimitedTime": "Limited Time",
+      "heading": "Special Promotions Just for You!",
+      "description": "Save big with our exclusive member promotions and tier-based rewards. Check back regularly for new offers!",
+      "labelYourTier": "Your Tier",
+      "valueYourTier": "Gold Member",
+      "labelActivePromotions": "Active Promotions",
+      "valueActivePromotions": "6 Available"
+    },
+    "featured": {
+      "sectionTitle": "Featured Promotions",
+      "labelUntil": "Until",
+      "labelPromoCode": "Promo Code",
+      "btnCopyCode": "Copy Code",
+      "btnCopied": "Copied",
+      "termsAndConditions": "Terms & Conditions:"
+    },
+    "allActive": {
+      "sectionTitle": "All Active Promotions",
+      "labelCode": "Code",
+      "labelUntil": "Until",
+      "btnViewDetails": "View Details"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "empty": {
+      "title": "No notifications",
+      "description": "You're all caught up!"
+    },
+    "markAsRead": "Mark as read"
+  },
+  "vehicles": {
+    "title": "My Vehicles",
+    "addVehicle": "Add Vehicle",
+    "editVehicle": "Edit Vehicle",
+    "deleteVehicle": "Delete Vehicle",
+    "noVehicles": "No vehicles added yet",
+    "addFirst": "Add your first vehicle to get started",
+    "form": {
+      "licensePlate": "License Plate",
+      "vehicleType": "Vehicle Type",
+      "brand": "Brand",
+      "model": "Model",
+      "color": "Color",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "types": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "suv": "SUV",
+      "truck": "Truck"
+    }
+  },
+  "settings": {
+    "pageSubtitle": "Manage your account information and preferences",
+    "personalInfo": {
+      "sectionTitle": "Personal Information",
+      "btnEdit": "Edit",
+      "btnCancel": "Cancel",
+      "btnSave": "Save",
+      "labelFullName": "Full Name",
+      "labelPhoneNumber": "Phone Number",
+      "labelEmailAddress": "Email Address",
+      "emailReadOnly": "(Read-only)"
+    },
+    "passwordSecurity": {
+      "sectionTitle": "Password & Security",
+      "labelCurrentPassword": "Current Password",
+      "placeholderCurrentPassword": "Enter current password",
+      "labelNewPassword": "New Password",
+      "placeholderNewPassword": "Enter new password",
+      "labelConfirmNewPassword": "Confirm New Password",
+      "placeholderConfirmNewPassword": "Confirm new password",
+      "btnUpdatePassword": "Update Password",
+      "btnUpdating": "Updating...",
+      "twoFactorTitle": "Two-Factor Authentication",
+      "twoFactorDesc": "Add an extra layer of security to your account"
+    },
+    "memberCard": {
+      "memberSince": "Member Since",
+      "totalBookings": "Total Bookings:",
+      "totalSpent": "Total Spent:",
+      "pointsBalance": "Points Balance:"
+    },
+    "notificationsSection": {
+      "sectionTitle": "Notifications",
+      "emailNotifications": "Email Notifications",
+      "smsNotifications": "SMS Notifications",
+      "marketingEmails": "Marketing Emails"
+    },
+    "appearance": {
+      "sectionTitle": "Appearance",
+      "darkMode": "Dark Mode",
+      "lightMode": "Light Mode",
+      "persistNote": "Preference is saved automatically and persists across sessions."
+    },
+    "language": {
+      "sectionTitle": "Language",
+      "description": "Choose your preferred display language",
+      "persistNote": "Language preference is saved automatically."
+    },
+    "privacy": {
+      "sectionTitle": "Privacy",
+      "downloadMyData": "Download My Data",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "deleteAccount": "Delete Account"
+    },
+    "toast": {
+      "requiredFields": "Please fill in all required fields",
+      "profileUpdated": "Profile updated successfully!",
+      "profileUpdateFailed": "Failed to update profile. Please try again.",
+      "passwordFieldsRequired": "Please fill in all password fields",
+      "passwordsDoNotMatch": "New passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long",
+      "passwordUpdated": "Password updated successfully!",
+      "passwordChangeFailed": "Failed to change password. Please check your current password and try again."
+    }
+  },
+  "auth": {
+    "login": {
+      "appName": "AutoWash Pro",
+      "appTagline": "Smart Car Wash Management",
+      "feature1Title": "Easy Booking",
+      "feature1Desc": "Schedule your car wash in seconds",
+      "feature2Title": "Loyalty Rewards",
+      "feature2Desc": "Earn points and get exclusive benefits",
+      "feature3Title": "Premium Service",
+      "feature3Desc": "Professional car care guaranteed",
+      "formHeading": "Welcome Back",
+      "formSubtitle": "Sign in to your account to continue",
+      "labelEmail": "Email Address",
+      "placeholderEmail": "john@example.com",
+      "labelPassword": "Password",
+      "placeholderPassword": "••••••••",
+      "checkboxRememberMe": "Remember me",
+      "linkForgotPassword": "Forgot password?",
+      "btnSignIn": "Sign In",
+      "btnSignInWithGoogle": "Sign in with Google",
+      "noAccount": "Don't have an account?",
+      "linkCreateAccount": "Create Account",
+      "quickAccessLabel": "Quick Access (Demo)",
+      "quickAccessCustomer": "Customer",
+      "quickAccessStaff": "Staff",
+      "quickAccessAdmin": "Admin"
+    },
+    "register": {
+      "appName": "AutoWash Pro",
+      "appTagline": "Join our community",
+      "membershipBenefitsTitle": "Membership Benefits",
+      "benefit1": "Earn loyalty points on every wash",
+      "benefit2": "Priority booking for VIP members",
+      "benefit3": "Exclusive discounts and promotions",
+      "benefit4": "Track your booking history",
+      "formHeading": "Create Account",
+      "formSubtitle": "Get started with AutoWash Pro",
+      "tabEmail": "By Email",
+      "tabPhone": "By Phone (OTP)",
+      "labelFullName": "Full Name",
+      "placeholderFullName": "John Doe",
+      "labelEmail": "Email",
+      "placeholderEmail": "john@example.com",
+      "labelPhoneNumber": "Phone Number",
+      "placeholderPhoneNumber": "0912345678",
+      "labelDOB": "Date of Birth",
+      "labelVehicleType": "Vehicle Type",
+      "optionSmall": "Small",
+      "optionMedium": "Medium",
+      "optionLarge": "Large",
+      "labelLicensePlate": "License Plate (Optional)",
+      "placeholderLicensePlate": "e.g. 29A-12345",
+      "labelPassword": "Password",
+      "placeholderPassword": "••••••••",
+      "labelConfirmPassword": "Confirm Password",
+      "btnCreateAccount": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "linkSignIn": "Sign In"
+    }
+  },
+  "landing": {
+    "login": "Log in",
+    "register": "Register now",
+    "subtitle": "Smart Car Care",
+    "tagline": "Next Generation Automated Car Wash Technology",
+    "title": "Smart Car Wash \nAccumulate Huge Offers",
+    "description": "Experience the state-of-the-art automated booking system. Fast wash, easy payment, upgrade your membership to get free vouchers daily.",
+    "getStarted": "Get started now",
+    "bookService": "Book a service",
+    "bookingTitle": "AutoWash Booking",
+    "save20": "Save 20%",
+    "membershipBenefits": "Membership Benefits",
+    "earnAndUpgrade": "Earn Points & Upgrade",
+    "recommendedPkg": "Recommended Package",
+    "premiumWash": "Premium Wash",
+    "ourPackages": "Our Service Packages",
+    "ourPackagesDesc": "Choose the best care package that suits your vehicle",
+    "loadingPackages": "Loading service packages...",
+    "membershipTiersTitle": "Membership Tiers & Benefits",
+    "membershipTiersDesc": "Accumulate reward points after every wash to upgrade your tier and enjoy deep automatic discounts",
+    "bookInAdvance": "Book in advance",
+    "upTo": "Up to {{days}} days",
+    "registerToExchange": "Register to Exchange Reward Points Now",
+    "branchSystem": "Branch System",
+    "branchSystemDesc": "Find and select the nearest AutoWash Pro branch in HCMC",
+    "loadingBranches": "Loading branches...",
+    "noBranches": "No branches found.",
+    "open": "Open",
+    "viewOnMap": "View on Digital Map",
+    "mapTitle": "Branch System Map",
+    "detailMapBtn": "Detailed Digital Map",
+    "mapFooter": "Drag and zoom to explore branches, or click \"Detailed Digital Map\" for routing and directions.",
+    "allRightsReserved": "© 2026 AutoWash Pro. All rights reserved.",
+    "tiers": {
+      "member": "Member",
+      "silver": "Silver Tier",
+      "gold": "Gold Tier",
+      "platinum": "Platinum Tier",
+      "benefit_member_1": "5% off invoice",
+      "benefit_member_2": "Points multiplier: 1x",
+      "benefit_member_3": "Book up to 7 days in advance",
+      "benefit_member_4": "Birthday gift",
+      "benefit_silver_1": "10% off invoice",
+      "benefit_silver_2": "Points multiplier: 1.5x",
+      "benefit_silver_3": "Book up to 10 days in advance",
+      "benefit_silver_4": "Priority support",
+      "benefit_gold_1": "15% off invoice",
+      "benefit_gold_2": "Points multiplier: 2x",
+      "benefit_gold_3": "Book up to 12 days in advance",
+      "benefit_gold_4": "Free wash on birthday",
+      "benefit_platinum_1": "20% off invoice",
+      "benefit_platinum_2": "Points multiplier: 3x",
+      "benefit_platinum_3": "Book up to 14 days in advance",
+      "benefit_platinum_4": "VIP lane at store",
+      "bookInAdvance": "Book in advance",
+      "upToDays": "Up to {{days}} days",
+      "pointsMultiplier": "Points multiplier: {{mult}}"
+    }
+  }
+}

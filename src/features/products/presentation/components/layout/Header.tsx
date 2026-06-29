@@ -54,7 +54,7 @@ function LogoutModal({
 
 export function Header({
   title = "Dashboard",
-  userName = "John Doe",
+  userName = "Khách hàng", // ĐÃ SỬA: Xóa bỏ John Doe
   role = "customer",
 }: HeaderProps) {
   const [open, setOpen] = useState(false);
@@ -65,7 +65,8 @@ export function Header({
   const initials = userName
     .split(" ")
     .map((n) => n[0])
-    .join("");
+    .join("")
+    .substring(0, 2); // Cắt lấy 2 chữ cái đầu cho gọn
 
   const settingsPath =
     role === "admin"
@@ -127,7 +128,7 @@ export function Header({
                 onClick={() => setOpen((v) => !v)}
                 className="flex items-center gap-3 focus:outline-none group"
               >
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white select-none">
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white select-none uppercase font-bold">
                   {initials}
                 </div>
                 <div className="hidden md:block text-left">

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 import { useAuth } from '../../../application/useAuth';
+import { usePayment } from '../../../application/usePayment';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 import { toast } from 'sonner';
 import { CheckoutSummaryModal } from '../../components/staff/CheckoutSummaryModal';
@@ -19,6 +20,7 @@ type StaffAction = 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout';
 
 export const StaffQueuePage: React.FC = () => {
     const { user } = useAuth();
+    const { createPayOsUrl } = usePayment();
     // Đảm bảo lấy đúng kiểu dữ liệu từ hook
     const { bookings = [], isLoading, actions } = useStaffDashboard();
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
@@ -219,12 +221,13 @@ export const StaffQueuePage: React.FC = () => {
 
                                                 <button
                                                     onClick={() => handleAction(booking.id, action)}
-                                                    className={`w-full mt-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 ${action === 'checkIn' ? 'bg-slate-800 text-white hover:bg-black shadow-slate-200' :
+                                                    className={`w-full mt-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                                                        action === 'checkIn' ? 'bg-slate-800 text-white hover:bg-black shadow-slate-200' :
                                                             action === 'queue' ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-100' :
                                                                 action === 'start' ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-100' :
                                                                     action === 'finish' ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100' :
                                                                         'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-100'
-                                                        } shadow-lg`}
+                                                    } shadow-lg`}
                                                 >
                                                     {label}
                                                     <ChevronRight className="w-4 h-4" />

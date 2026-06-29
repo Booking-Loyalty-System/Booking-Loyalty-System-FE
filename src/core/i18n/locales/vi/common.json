@@ -1,0 +1,45 @@
+{
+  "sidebar": {
+    "appName": "AutoWash Pro",
+    "tagline": "Rửa Xe Thông Minh",
+    "dashboard": "Tổng Quan",
+    "bookWash": "Đặt Lịch Rửa",
+    "liveTracking": "Theo Dõi Trực Tiếp",
+    "loyaltyTier": "Tích Điểm & Hạng",
+    "rewards": "Phần Thưởng",
+    "promotions": "Khuyến Mãi",
+    "bookingHistory": "Lịch Sử Đặt Lịch",
+    "myVehicles": "Xe Của Tôi",
+    "notifications": "Thông Báo",
+    "settings": "Cài Đặt",
+    "logout": "Đăng Xuất",
+    "copyright": "© 2026 AutoWash Pro"
+  },
+  "header": {
+    "searchPlaceholder": "Tìm kiếm...",
+    "dashboard": "Tổng Quan",
+    "bookAWash": "Đặt Lịch Rửa Xe",
+    "liveTracking": "Theo Dõi Trực Tiếp",
+    "loyaltyTier": "Tích Điểm & Hạng Thành Viên",
+    "rewards": "Phần Thưởng Khả Dụng",
+    "promotions": "Khuyến Mãi Đặc Biệt",
+    "bookingHistory": "Lịch Sử Đặt Lịch",
+    "myVehicles": "Gara / Xe Của Tôi",
+    "notificationCenter": "Trung Tâm Thông Báo",
+    "profileSettings": "Cài Đặt Tài Khoản",
+    "profile": {
+      "defaultGuest": "Khách hàng",
+      "roleCustomer": "Khách hàng",
+      "signedInAs": "Đã đăng nhập với",
+      "myProfile": "Hồ sơ của tôi",
+      "accountSettings": "Thiết lập tài khoản",
+      "loggingOut": "Đang đăng xuất...",
+      "logOut": "Đăng Xuất"
+    }
+  },
+  "language": {
+    "en": "English",
+    "vi": "Tiếng Việt",
+    "switchTo": "Chuyển sang"
+  }
+}

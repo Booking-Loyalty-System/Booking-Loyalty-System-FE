@@ -44,4 +44,11 @@ export class AdminRewardRepositoryImplement implements IAdminRewardRepository {
             ENDPOINTS.ADMIN.REWARD_DETAIL(id)
         );
     }
+
+    async fulfillRedemption(redemptionId: string): Promise<void> {
+        await httpClient.post<ApiResponse<unknown>>(
+            ENDPOINTS.ADMIN.REWARD_FULFILL(redemptionId),
+            {}
+        );
+    }
 }

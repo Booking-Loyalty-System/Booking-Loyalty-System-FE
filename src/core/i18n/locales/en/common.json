@@ -1,0 +1,45 @@
+{
+  "sidebar": {
+    "appName": "AutoWash Pro",
+    "tagline": "Smart Car Wash",
+    "dashboard": "Dashboard",
+    "bookWash": "Book Wash",
+    "liveTracking": "Live Tracking",
+    "loyaltyTier": "Loyalty & Tier",
+    "rewards": "Rewards",
+    "promotions": "Promotions",
+    "bookingHistory": "Booking History",
+    "myVehicles": "My Vehicles",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "logout": "Logout",
+    "copyright": "© 2026 AutoWash Pro"
+  },
+  "header": {
+    "searchPlaceholder": "Search...",
+    "dashboard": "Dashboard",
+    "bookAWash": "Book a Wash",
+    "liveTracking": "Live Tracking Status",
+    "loyaltyTier": "Your Loyalty & Tier",
+    "rewards": "Available Rewards",
+    "promotions": "Special Promotions",
+    "bookingHistory": "Booking History",
+    "myVehicles": "My Garage / Vehicles",
+    "notificationCenter": "Notification Center",
+    "profileSettings": "Profile Settings",
+    "profile": {
+      "defaultGuest": "Customer",
+      "roleCustomer": "Customer",
+      "signedInAs": "Signed in as",
+      "myProfile": "My Profile",
+      "accountSettings": "Account Settings",
+      "loggingOut": "Logging out...",
+      "logOut": "Log Out"
+    }
+  },
+  "language": {
+    "en": "English",
+    "vi": "Tiếng Việt",
+    "switchTo": "Switch to"
+  }
+}

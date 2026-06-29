@@ -10,4 +10,5 @@ export interface IAdminRewardRepository {
     create(data: CreateAdminRewardInput): Promise<AdminRewardResponseData>;
     update(id: string, data: UpdateAdminRewardInput): Promise<AdminRewardResponseData>;
     delete(id: string): Promise<void>;
+    fulfillRedemption(redemptionId: string): Promise<void>;
 }
