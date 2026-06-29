@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "../../components/layout/Layout";
 import {
   Package,
   Plus,
@@ -121,7 +120,7 @@ export function AdminPackages() {
   };
 
   return (
-    <Layout title="Wash Package Management" userName="Admin" role="admin">
+      <div className="p-6 space-y-6 animate-fade-in">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -410,6 +409,6 @@ export function AdminPackages() {
           </div>
         </div>
       )}
-    </Layout>
+      </div>
   );
 }

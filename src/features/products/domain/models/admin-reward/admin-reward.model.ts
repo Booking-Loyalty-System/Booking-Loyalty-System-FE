@@ -1,4 +1,4 @@
-export interface RewardResponseData {
+export interface AdminRewardResponseData {
     id: string;
     name: string;
     description: string;
@@ -8,12 +8,13 @@ export interface RewardResponseData {
     createdAt: string;
 }
 
-export interface CreateRewardInput {
+export interface CreateAdminRewardInput {
     name: string;
     description: string;
     pointsCost: number;
     discountAmount: number;
-    isActive?: boolean;
 }
 
-export type UpdateRewardInput = Partial<CreateRewardInput>;
+export interface UpdateAdminRewardInput extends CreateAdminRewardInput {
+    isActive: boolean;
+}

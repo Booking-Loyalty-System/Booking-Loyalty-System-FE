@@ -1,38 +1,38 @@
 import { httpClient } from '@/core/http/httpClient';
-import { ENDPOINTS } from "@/core/api/endpoints.ts";
+import { ENDPOINTS } from '@/core/api/endpoints';
 import type { ApiResponse } from '../../../domain/apiResponse';
-import type { IAdminRewardRepository } from './admin-reward.repository.interface';
-import type { 
-    RewardResponseData, 
-    CreateRewardInput, 
-    UpdateRewardInput 
+import type {
+    AdminRewardResponseData,
+    CreateAdminRewardInput,
+    UpdateAdminRewardInput,
 } from '../../../domain/models/admin-reward/admin-reward.model';
+import type { IAdminRewardRepository } from './admin-reward.repository.interface';
 
 export class AdminRewardRepositoryImplement implements IAdminRewardRepository {
-    async getAll(): Promise<RewardResponseData[]> {
-        const response = await httpClient.get<ApiResponse<RewardResponseData[]>>(
+    async getAll(): Promise<AdminRewardResponseData[]> {
+        const response = await httpClient.get<ApiResponse<AdminRewardResponseData[]>>(
             ENDPOINTS.ADMIN.REWARDS
         );
         return response.data;
     }
 
-    async getById(id: string): Promise<RewardResponseData> {
-        const response = await httpClient.get<ApiResponse<RewardResponseData>>(
+    async getById(id: string): Promise<AdminRewardResponseData> {
+        const response = await httpClient.get<ApiResponse<AdminRewardResponseData>>(
             ENDPOINTS.ADMIN.REWARD_DETAIL(id)
         );
         return response.data;
     }
 
-    async create(data: CreateRewardInput): Promise<RewardResponseData> {
-        const response = await httpClient.post<ApiResponse<RewardResponseData>>(
+    async create(data: CreateAdminRewardInput): Promise<AdminRewardResponseData> {
+        const response = await httpClient.post<ApiResponse<AdminRewardResponseData>>(
             ENDPOINTS.ADMIN.REWARDS,
             data
         );
         return response.data;
     }
 
-    async update(id: string, data: UpdateRewardInput): Promise<RewardResponseData> {
-        const response = await httpClient.put<ApiResponse<RewardResponseData>>(
+    async update(id: string, data: UpdateAdminRewardInput): Promise<AdminRewardResponseData> {
+        const response = await httpClient.put<ApiResponse<AdminRewardResponseData>>(
             ENDPOINTS.ADMIN.REWARD_DETAIL(id),
             data
         );

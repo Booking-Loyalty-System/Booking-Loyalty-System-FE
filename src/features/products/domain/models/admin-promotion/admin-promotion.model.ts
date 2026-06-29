@@ -1,8 +1,10 @@
-export interface PromotionResponseData {
+export type DiscountType = 'Percentage' | 'FixedAmount';
+
+export interface AdminPromotionResponseData {
     id: string;
     code: string;
     description: string;
-    discountType: 'Percentage' | 'FixedAmount';
+    discountType: DiscountType;
     discountValue: number;
     startDate: string;
     endDate: string;
@@ -13,16 +15,24 @@ export interface PromotionResponseData {
     createdAt: string;
 }
 
-export interface CreatePromotionInput {
+export interface CreateAdminPromotionInput {
     code: string;
     description: string;
-    discountType: 'Percentage' | 'FixedAmount';
+    discountType: DiscountType;
     discountValue: number;
     startDate: string;
     endDate: string;
-    maxUses: number | null;
-    minSpend: number | null;
-    isActive?: boolean;
+    maxUses?: number | null;
+    minSpend?: number | null;
 }
 
-export type UpdatePromotionInput = Partial<CreatePromotionInput>;
+export interface UpdateAdminPromotionInput {
+    description: string;
+    discountType: DiscountType;
+    discountValue: number;
+    startDate: string;
+    endDate: string;
+    maxUses?: number | null;
+    minSpend?: number | null;
+    isActive: boolean;
+}

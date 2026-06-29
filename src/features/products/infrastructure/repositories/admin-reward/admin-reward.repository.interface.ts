@@ -1,14 +1,14 @@
 import type {
-    RewardResponseData,
-    CreateRewardInput,
-    UpdateRewardInput
-} from "../../../domain/models/admin-reward/admin-reward.model";
+    AdminRewardResponseData,
+    CreateAdminRewardInput,
+    UpdateAdminRewardInput,
+} from "@/features/products/domain/models/admin-reward/admin-reward.model.ts";
 
 export interface IAdminRewardRepository {
-    getAll(): Promise<RewardResponseData[]>;
-    getById(id: string): Promise<RewardResponseData>;
-    create(data: CreateRewardInput): Promise<RewardResponseData>;
-    update(id: string, data: UpdateRewardInput): Promise<RewardResponseData>;
+    getAll(): Promise<AdminRewardResponseData[]>;
+    getById(id: string): Promise<AdminRewardResponseData>;
+    create(data: CreateAdminRewardInput): Promise<AdminRewardResponseData>;
+    update(id: string, data: UpdateAdminRewardInput): Promise<AdminRewardResponseData>;
     delete(id: string): Promise<void>;
     fulfillRedemption(redemptionId: string): Promise<void>;
 }
