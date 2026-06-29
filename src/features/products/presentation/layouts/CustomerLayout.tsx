@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { toast } from "sonner"; // Hoặc bất kỳ thư viện toast nào bạn dùng
+import { toast } from "sonner";
 import {
   LayoutDashboard,
   Car,
@@ -15,10 +15,15 @@ import {
   Search,
   Settings,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SidebarItem } from "../components/SidebarItem";
 import { ProfileDropdown } from "../components/ProfileDropdown";
 import { TierUpgradeModal } from "../components/TierUpgradeModal";
+import { useLanguage } from "@/core/context/LanguageContext.tsx";
+import { useTheme } from "@/core/context/ThemeContext.tsx";
 
 // Đưa các Hook chuẩn kiến trúc của bạn vào đây
 import { useAuth } from "../../application/useAuth.ts";
@@ -35,11 +40,15 @@ export const CustomerLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation("common");
+  const { language, toggleLanguage } = useLanguage();
+  const { toggleTheme, isDark } = useTheme();
 
   // 🌟 Lấy dữ liệu từ các Application Hook chuẩn của hệ thống
   const { logout, userId } = useAuth();
   const { myBookings, isLoading } = useBooking();
   const { unreadCount } = useNotification();
+  
   // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
   const hasInProgressBooking =
     !isLoading && myBookings.some((booking) => booking.status === "InProgress");
@@ -114,16 +123,18 @@ export const CustomerLayout: React.FC = () => {
         connection.stop().catch(() => {});
       }
     };
-  }, [userId, queryClient]);
+  }, [userId, queryClient, baseUrl]);
 
   // Mảng Menu gốc của bạn
   const rawMenuItems: MenuItem[] = [
     {
       path: "/dashboard",
-      label: "Dashboard",
+      label: t("sidebar.dashboard", { defaultValue: "Dashboard" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${isActive ? "bg-[#1e6ffd] text-white shadow-sm" : "bg-blue-50 text-[#1e6ffd]"}`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${
+            isActive ? "bg-[#1e6ffd] text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-[#1e6ffd]"
+          }`}
         >
           <LayoutDashboard className="w-4 h-4" />
         </div>
@@ -131,10 +142,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/book-wash",
-      label: "Book Wash",
+      label: t("sidebar.bookWash", { defaultValue: "Book Wash" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-1 ${isActive ? "bg-[#10b981] text-white shadow-sm" : "bg-emerald-50 text-[#10b981]"}`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-1 ${
+            isActive ? "bg-[#10b981] text-white shadow-sm" : "bg-emerald-50 dark:bg-emerald-950/30 text-[#10b981]"
+          }`}
         >
           <Car className="w-4 h-4" />
         </div>
@@ -142,10 +155,10 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/live-tracking",
-      label: "Live Tracking",
+      label: t("sidebar.liveTracking", { defaultValue: "Live Tracking" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg ${isActive ? "bg-red-500 text-white shadow-sm" : "bg-red-50 text-red-500"}`}
+          className={`p-2 rounded-lg ${isActive ? "bg-red-500 text-white shadow-sm" : "bg-red-50 dark:bg-red-950/30 text-red-500"}`}
         >
           <Radio className="w-4 h-4 animate-pulse" />
         </div>
@@ -153,10 +166,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/loyalty-tier",
-      label: "Loyalty & Tier",
+      label: t("sidebar.loyaltyTier", { defaultValue: "Loyalty & Tier" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${isActive ? "bg-[#f59e0b] text-white shadow-sm" : "bg-amber-50 text-[#f59e0b]"}`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${
+            isActive ? "bg-[#f59e0b] text-white shadow-sm" : "bg-amber-50 dark:bg-amber-950/30 text-[#f59e0b]"
+          }`}
         >
           <Award className="w-4 h-4" />
         </div>
@@ -164,10 +179,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/rewards",
-      label: "Rewards",
+      label: t("sidebar.rewards", { defaultValue: "Rewards" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-pink-500 text-white shadow-sm" : "bg-pink-50 text-pink-500 group-hover:animate-bounce"}`}
+          className={`p-2 rounded-lg transition-all duration-300 ${
+            isActive ? "bg-pink-500 text-white shadow-sm" : "bg-pink-50 dark:bg-pink-950/30 text-pink-500 group-hover:animate-bounce"
+          }`}
         >
           <Gift className="w-4 h-4" />
         </div>
@@ -175,10 +192,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/promotions",
-      label: "Promotions",
+      label: t("sidebar.promotions", { defaultValue: "Promotions" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:-rotate-12 ${isActive ? "bg-[#a855f7] text-white shadow-sm" : "bg-purple-50 text-[#a855f7]"}`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:-rotate-12 ${
+            isActive ? "bg-[#a855f7] text-white shadow-sm" : "bg-purple-50 dark:bg-purple-950/30 text-[#a855f7]"
+          }`}
         >
           <Megaphone className="w-4 h-4" />
         </div>
@@ -186,10 +205,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/booking-history",
-      label: "Booking History",
+      label: t("sidebar.bookingHistory", { defaultValue: "Booking History" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-[#06b6d4] text-white shadow-sm" : "bg-cyan-50 text-[#06b6d4]"}`}
+          className={`p-2 rounded-lg transition-all duration-300 ${
+            isActive ? "bg-[#06b6d4] text-white shadow-sm" : "bg-cyan-50 dark:bg-cyan-950/30 text-[#06b6d4]"
+          }`}
         >
           <History className="w-4 h-4" />
         </div>
@@ -197,10 +218,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/my-vehicles",
-      label: "My Vehicles",
+      label: t("sidebar.myVehicles", { defaultValue: "My Vehicles" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-0.5 ${isActive ? "bg-[#14b8a6] text-white shadow-sm" : "bg-teal-50 text-[#14b8a6]"}`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-0.5 ${
+            isActive ? "bg-[#14b8a6] text-white shadow-sm" : "bg-teal-50 dark:bg-teal-950/30 text-[#14b8a6]"
+          }`}
         >
           <Car className="w-4 h-4" />
         </div>
@@ -208,10 +231,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/notifications",
-      label: "Notifications",
+      label: t("sidebar.notifications", { defaultValue: "Notifications" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-slate-700 text-white shadow-sm" : "bg-slate-100 text-slate-600"}`}
+          className={`p-2 rounded-lg transition-all duration-300 ${
+            isActive ? "bg-slate-700 text-white shadow-sm" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+          }`}
         >
           <Bell className="w-4 h-4" />
         </div>
@@ -219,10 +244,12 @@ export const CustomerLayout: React.FC = () => {
     },
     {
       path: "/settings",
-      label: "Settings",
+      label: t("sidebar.settings", { defaultValue: "Settings" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:rotate-45 ${isActive ? "bg-blue-600 text-white shadow-sm" : "bg-blue-50 text-blue-600"}`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:rotate-45 ${
+            isActive ? "bg-blue-600 text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-blue-600"
+          }`}
         >
           <Settings className="w-4 h-4" />
         </div>
@@ -236,16 +263,16 @@ export const CustomerLayout: React.FC = () => {
   );
 
   const titleMap: Record<string, string> = {
-    "/dashboard": "Dashboard",
-    "/book-wash": "Book a Wash",
-    "/live-tracking": "Live Tracking Status",
-    "/loyalty-tier": "Your Loyalty & Tier",
-    "/rewards": "Available Rewards",
-    "/promotions": "Special Promotions",
-    "/booking-history": "Booking History",
-    "/my-vehicles": "My Garage / Vehicles",
-    "/notifications": "Notification Center",
-    "/settings": "Profile Settings",
+    "/dashboard": t("header.dashboard", { defaultValue: "Dashboard" }),
+    "/book-wash": t("header.bookAWash", { defaultValue: "Book a Wash" }),
+    "/live-tracking": t("header.liveTracking", { defaultValue: "Live Tracking" }),
+    "/loyalty-tier": t("header.loyaltyTier", { defaultValue: "Loyalty & Tier" }),
+    "/rewards": t("header.rewards", { defaultValue: "Rewards" }),
+    "/promotions": t("header.promotions", { defaultValue: "Promotions" }),
+    "/booking-history": t("header.bookingHistory", { defaultValue: "Booking History" }),
+    "/my-vehicles": t("header.myVehicles", { defaultValue: "My Vehicles" }),
+    "/notifications": t("header.notificationCenter", { defaultValue: "Notification Center" }),
+    "/settings": t("header.profileSettings", { defaultValue: "Profile Settings" }),
   };
 
   const currentTitle = titleMap[location.pathname] || "AutoWash Pro";
@@ -256,20 +283,20 @@ export const CustomerLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-[#f8fafc] overflow-hidden antialiased">
+    <div className="flex h-screen w-screen bg-[#f8fafc] dark:bg-slate-950 overflow-hidden antialiased">
       {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r border-[#e2e8f0] flex flex-col justify-between p-4 shrink-0 h-full">
+      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-[#e2e8f0] dark:border-slate-800 flex flex-col justify-between p-4 shrink-0 h-full">
         <div className="flex flex-col h-[calc(100vh-80px)]">
           <div className="flex items-center gap-3 px-2 py-4 mb-4">
             <div className="w-10 h-10 bg-[#1e6ffd] rounded-xl flex items-center justify-center text-white shadow-md">
               <Radio className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#0f172a] leading-tight">
-                AutoWash Pro
+              <h2 className="text-xl font-bold text-[#0f172a] dark:text-white leading-tight">
+                {t("sidebar.appName", { defaultValue: "AutoWash Pro" })}
               </h2>
               <p className="text-xs text-[#94a3b8] font-medium">
-                Smart Car Wash
+                {t("sidebar.tagline", { defaultValue: "Smart Car Wash" })}
               </p>
             </div>
           </div>
@@ -287,27 +314,27 @@ export const CustomerLayout: React.FC = () => {
           </nav>
         </div>
 
-        <div className="pt-2 border-t border-[#f1f5f9] space-y-2">
+        <div className="pt-2 border-t border-[#f1f5f9] dark:border-slate-800 space-y-2">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition-all duration-200 group"
+            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all duration-200 group"
           >
-            <div className="p-2 rounded-lg bg-rose-50 text-rose-600 group-hover:scale-110 transition-transform">
+            <div className="p-2 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-600 group-hover:scale-110 transition-transform">
               <LogOut className="w-4 h-4" />
             </div>
-            <span>Logout</span>
+            <span>{t("sidebar.logout", { defaultValue: "Logout" })}</span>
           </button>
           <div className="text-center text-[11px] text-[#94a3b8] font-medium">
-            © 2026 AutoWash Pro
+            {t("sidebar.copyright", { defaultValue: "© 2026 AutoWash Pro" })}
           </div>
         </div>
       </aside>
 
       {/* CONTENT */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <header className="h-16 bg-white border-b border-[#e2e8f0] flex items-center justify-between px-8 shrink-0">
+        <header className="h-16 bg-white dark:bg-slate-900 border-b border-[#e2e8f0] dark:border-slate-800 flex items-center justify-between px-8 shrink-0">
           <div className="animate-fade-in">
-            <h1 className="text-2xl font-bold text-[#0f172a]">
+            <h1 className="text-2xl font-bold text-[#0f172a] dark:text-white">
               {currentTitle}
             </h1>
           </div>
@@ -316,15 +343,48 @@ export const CustomerLayout: React.FC = () => {
             <div className="w-72 relative">
               <input
                 type="text"
-                placeholder="Search..."
-                className="w-full bg-[#f1f5f9] border border-transparent rounded-xl py-2 pl-4 pr-10 text-sm focus:outline-none focus:bg-white focus:border-[#1e6ffd] transition-all"
+                placeholder={t("header.searchPlaceholder", { defaultValue: "Search..." })}
+                className="w-full bg-[#f1f5f9] dark:bg-slate-850 dark:text-slate-200 dark:placeholder-slate-500 border border-transparent dark:border-slate-700 rounded-xl py-2 pl-4 pr-10 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-[#1e6ffd] transition-all"
               />
               <Search className="w-4 h-4 text-[#94a3b8] absolute right-3 top-1/2 -translate-y-1/2" />
             </div>
 
+            {/* Theme Toggle Button */}
+            <button
+              id="theme-toggle-header"
+              onClick={toggleTheme}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              className="flex items-center justify-center p-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200 cursor-pointer"
+            >
+              {isDark ? (
+                <Sun className="w-4 h-4 text-amber-500" />
+              ) : (
+                <Moon className="w-4 h-4 text-blue-600" />
+              )}
+            </button>
+
+            {/* Language Toggle Button */}
+            <button
+              id="language-toggle-header"
+              onClick={toggleLanguage}
+              title={`${t("language.switchTo", { defaultValue: "Switch to" })} ${
+                language === "en"
+                  ? t("language.vi", { defaultValue: "Vietnamese" })
+                  : t("language.en", { defaultValue: "English" })
+              }`}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200"
+            >
+              <span className="text-base leading-none">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
+              <span className="uppercase tracking-wide">{language === "en" ? "EN" : "VI"}</span>
+            </button>
+
             <button
               onClick={() => navigate("/notifications")}
-              className={`relative p-2 rounded-xl transition-all duration-200 focus:outline-none ${location.pathname === "/notifications" ? "bg-[#f1f5f9] text-[#0f172a]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#f1f5f9]"}`}
+              className={`relative p-2 rounded-xl transition-all duration-200 focus:outline-none ${
+                location.pathname === "/notifications"
+                  ? "bg-[#f1f5f9] dark:bg-slate-800 text-[#0f172a] dark:text-white"
+                  : "text-[#64748b] hover:text-[#0f172a] dark:hover:text-white hover:bg-[#f1f5f9] dark:hover:bg-slate-800"
+              }`}
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
@@ -338,7 +398,7 @@ export const CustomerLayout: React.FC = () => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-8 bg-[#f8fafc]">
+        <main className="flex-1 overflow-y-auto p-8 bg-[#f8fafc] dark:bg-slate-950">
           <Outlet />
         </main>
       </div>

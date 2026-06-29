@@ -1,10 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Info } from 'lucide-react';
 // Lưu ý: Cập nhật lại đường dẫn import cho đúng với cấu trúc dự án của bạn
 import { useTier } from '@/features/products/application/useTier';
 import { useCustomerMe } from '@/features/products/application/useCustomer';
 
 export const TierPriorityWindow: React.FC = () => {
+    const { t } = useTranslation('customer');
     // 1. Lấy dữ liệu từ cả 2 hooks
     const { tiers, isLoading: isLoadingTiers } = useTier();
     const { customerMe, isLoading: isLoadingCustomer } = useCustomerMe();
@@ -13,7 +15,7 @@ export const TierPriorityWindow: React.FC = () => {
     if (isLoadingTiers || isLoadingCustomer) {
         return (
             <div className="bg-[#eff6ff] border border-[#bfdbfe] rounded-2xl p-6 h-40 animate-pulse flex items-center justify-center">
-                <span className="text-[#1e6ffd] font-medium">Đang tải thông tin hạng thành viên...</span>
+                <span className="text-[#1e6ffd] font-medium">{t('bookWash.priority.loading', { defaultValue: "Đang tải thông tin hạng thành viên..." })}</span>
             </div>
         );
     }
@@ -25,7 +27,7 @@ export const TierPriorityWindow: React.FC = () => {
     // 4. Lấy thông tin hạng của user hiện tại
     const currentTierName = customerMe?.tier || 'Unknown';
     // Tìm object tier chi tiết tương ứng với hạng của user để lấy số ngày (bookingWindow)
-    const currentTierInfo = tiers.find(t => t.tierName === currentTierName);
+    const currentTierInfo = tiers.find(tInfo => tInfo.tierName === currentTierName);
 
     return (
         <div className="bg-[#eff6ff] border border-[#bfdbfe] rounded-2xl p-6 space-y-4">
@@ -33,12 +35,13 @@ export const TierPriorityWindow: React.FC = () => {
             <div className="flex items-start gap-3">
                 <Info className="w-5 h-5 text-[#1e6ffd] mt-0.5 shrink-0" />
                 <div>
-                    <h4 className="text-base font-bold text-[#1e3a8a]">Tier-Based Priority Booking Window</h4>
+                    <h4 className="text-base font-bold text-[#1e3a8a]">{t('bookWash.priority.title', { defaultValue: "Tier-Based Priority Booking Window" })}</h4>
                     <p className="text-sm text-[#1e40af] mt-0.5">
-                        As a <span className="font-bold text-[#1e6ffd]">{currentTierName}</span> member,
-                        you can book up to <span className="font-bold text-[#1e40af]">
-                            {currentTierInfo?.bookingWindow || 0} days
-                        </span> in advance.
+                        {t('bookWash.priority.descTemplate', {
+                            tier: t(`loyaltyTier.tiers.${currentTierName.toLowerCase()}`, { defaultValue: currentTierName }),
+                            days: currentTierInfo?.bookingWindow || 0,
+                            defaultValue: `As a ${currentTierName} member, you can book up to ${currentTierInfo?.bookingWindow || 0} days in advance.`
+                        })}
                     </p>
                 </div>
             </div>
@@ -62,12 +65,12 @@ export const TierPriorityWindow: React.FC = () => {
                             <span
                                 className={`block text-xs font-semibold ${isCurrentTier ? 'text-[#b45309]' : 'text-[#94a3b8]'}`}
                             >
-                                {tier.tierName}
+                                {t(`loyaltyTier.tiers.${tier.tierName.toLowerCase()}`, { defaultValue: tier.tierName })}
                             </span>
                             <span
                                 className={`text-sm font-bold ${isCurrentTier ? 'text-[#b45309]' : 'text-[#0f172a]'}`}
                             >
-                                {tier.bookingWindow} days
+                                {tier.bookingWindow} {t('bookWash.priority.days', { defaultValue: 'days' })}
                             </span>
                         </div>
                     );

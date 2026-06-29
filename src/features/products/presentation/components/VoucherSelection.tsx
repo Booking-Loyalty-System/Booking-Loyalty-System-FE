@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Ticket, Gift, Star, Check } from "lucide-react";
 import type { Voucher } from "../../domain/models/voucher/voucher.model.ts";
 import { useReward } from "../../application/useReward.ts";
@@ -17,6 +18,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
   onSelectVoucher,
   totalPoints,
 }) => {
+  const { t } = useTranslation('customer');
   const {
     redeemReward: redeemVoucher,
     isRedeeming,
@@ -33,18 +35,18 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     title: string,
   ) => {
     if (totalPoints < requiredPts) {
-      toast.error("You do not have enough points to redeem this voucher!");
+      toast.error(t("bookWash.voucher.toastNotEnoughPoints", { defaultValue: "You do not have enough points to redeem this voucher!" }));
       return;
     }
 
     try {
       const newVoucher = await redeemVoucher(rewardId);
-      toast.success(`Successfully redeemed: ${title}`);
+      toast.success(t("bookWash.voucher.toastRedeemSuccess", { title, defaultValue: `Successfully redeemed: ${title}` }));
       if (newVoucher) {
         onSelectVoucher(newVoucher);
       }
     } catch (error) {
-      toast.error("Failed to redeem voucher. Please try again.");
+      toast.error(t("bookWash.voucher.toastRedeemFailed", { defaultValue: "Failed to redeem voucher. Please try again." }));
     }
   };
 
@@ -67,10 +69,10 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
           </div>
           <div>
             <h3 className="font-extrabold text-slate-800 text-sm tracking-tight">
-              Your Rewards
+              {t("bookWash.voucher.title", { defaultValue: "Your Rewards" })}
             </h3>
             <p className="text-[11px] font-medium text-slate-400">
-              Select an available voucher for your booking
+              {t("bookWash.voucher.selectSubtitle", { defaultValue: "Select an available voucher for your booking" })}
             </p>
           </div>
         </div>
@@ -84,7 +86,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
           }`}
         >
           <Gift className="w-3.5 h-3.5" />
-          {showQuickRedeem ? "View My Vouchers" : "Redeem More"}
+          {showQuickRedeem ? t("bookWash.voucher.viewMyVouchers", { defaultValue: "View My Vouchers" }) : t("bookWash.voucher.redeemMore", { defaultValue: "Redeem More" })}
         </button>
       </div>
 
@@ -96,7 +98,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
             {usableVouchers.length === 0 ? (
               <div className="text-center py-6 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                 <p className="text-xs font-semibold text-slate-400">
-                  You don't have any usable vouchers.
+                  {t("bookWash.voucher.noVouchers", { defaultValue: "You don't have any usable vouchers." })}
                 </p>
               </div>
             ) : (
@@ -123,10 +125,10 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                           {(voucher as any).name ||
                             (voucher as any).title ||
                             (voucher as any).description ||
-                            "Reward Voucher"}
+                            t("bookWash.voucher.fallbackTitle", { defaultValue: "Reward Voucher" })}
                         </h4>
                         <p className="text-[10px] font-bold text-slate-400 mt-0.5">
-                          Code:{" "}
+                          {t("bookWash.voucher.codeLabel", { defaultValue: "Code:" })}{" "}
                           <span className="font-mono text-slate-600">
                             {voucher.code}
                           </span>
@@ -169,7 +171,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                 <div className="flex items-center gap-1.5">
                   <Star className="w-3.5 h-3.5 fill-white text-amber-300 animate-pulse" />
                   <span className="text-[10px] font-black uppercase tracking-wider text-amber-100">
-                    Your points wallet
+                    {t("bookWash.voucher.pointsWallet", { defaultValue: "Your points wallet" })}
                   </span>
                 </div>
                 <span className="text-sm font-black tracking-tight bg-white/20 px-2 py-0.5 rounded-lg">
@@ -181,7 +183,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
             <div className="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1 custom-scrollbar">
               {quickRedeemList.length === 0 ? (
                 <div className="col-span-2 text-center py-6 text-xs font-bold text-slate-400">
-                  No reward vouchers currently available to redeem.
+                  {t("bookWash.voucher.noAvailableRewards", { defaultValue: "No reward vouchers currently available to redeem." })}
                 </div>
               ) : (
                 quickRedeemList.map((reward) => {
@@ -218,7 +220,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                               : "bg-slate-100 text-slate-400 cursor-not-allowed"
                           }`}
                         >
-                          {isRedeeming ? "Redeeming..." : "Redeem Now"}
+                          {isRedeeming ? t("bookWash.voucher.redeeming", { defaultValue: "Redeeming..." }) : t("bookWash.voucher.redeemNow", { defaultValue: "Redeem Now" })}
                         </button>
                       </div>
                     </div>
