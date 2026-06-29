@@ -397,7 +397,10 @@ export const BookWash: React.FC = () => {
 
         <NearestBranches
           selectedBranchId={selectedBranchId}
-          onSelectBranch={setSelectedBranchId}
+          onSelectBranch={(branchId) => {
+            setSelectedBranchId(branchId);
+            setAppliedPromotion(null);
+          }}
         />
 
         <WashPackageSelection
@@ -437,15 +440,56 @@ export const BookWash: React.FC = () => {
         selectedVoucher={selectedVoucher}
         appliedPromotion={appliedPromotion}
         onApplyPromotion={async (code) => {
-          const res = await validatePromotion({
-            code,
-            serviceId: selectedPackageId,
-          });
-          if (res.isValid && res.promotion) {
-            setAppliedPromotion(res.promotion);
-            return true;
+          const subtotal = currentPackage?.price || 0;
+
+          if (!selectedBranchId) {
+            return "Vui lòng chọn chi nhánh trước khi áp dụng mã giảm giá.";
           }
-          return res.errorMessage || "Mã giảm giá không hợp lệ";
+
+          try {
+            const res = await validatePromotion({
+              code,
+              subtotal,
+              branchId: selectedBranchId,
+              serviceId: selectedPackageId,
+            });
+
+            // In ra console để xem chính xác dữ liệu có hình thù như thế nào
+            console.log("🔥 Kết quả nhận được từ API Promotion:", res);
+
+            const payload = res as any;
+
+            // Kịch bản 1: API trả về đúng form { success: true, data: {...} }
+            if (
+              payload.success === true &&
+              payload.data &&
+              typeof payload.data.discountAmount !== "undefined"
+            ) {
+              setAppliedPromotion(payload.data);
+              return true;
+            }
+
+            // Kịch bản 2: httpClient đã tự bóc tách vỏ, payload chính là data chứa discountAmount luôn
+            if (typeof payload.discountAmount !== "undefined") {
+              setAppliedPromotion(payload);
+              return true;
+            }
+
+            // Kịch bản 3: Rớt vào catch của block try/catch (isValid = false)
+            if (payload.isValid === false) {
+              return payload.errorMessage || "Mã giảm giá không hợp lệ.";
+            }
+
+            // Fallback cuối cùng
+            return (
+              payload.message ||
+              payload.errorMessage ||
+              "Mã giảm giá không hợp lệ."
+            );
+          } catch (error) {
+            console.error("Lỗi Exception khi apply mã:", error);
+            return "Đã xảy ra lỗi hệ thống, vui lòng thử lại sau.";
+          }
         }}
         onRemovePromotion={() => setAppliedPromotion(null)}
       />

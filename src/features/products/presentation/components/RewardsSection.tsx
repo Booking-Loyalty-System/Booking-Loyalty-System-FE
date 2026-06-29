@@ -36,23 +36,10 @@ export const RewardsSection: React.FC = () => {
   } = useReward();
 
   const availablePoints = customerMe?.availablePoint ?? 0;
-  const totalBookings = customerMe?.totalWashes ?? 0; // Lấy tổng số lượt rửa
+  // Lấy trực tiếp currentCycleWashes từ API Backend
+  const currentCycleWashes = (customerMe as any)?.currentCycleWashes ?? 0;
   const REQUIRED_WASHES = 7;
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
-
-  // 1. Đếm tổng số lần đã từng đổi "Phần thưởng Rửa Xe Miễn Phí" trong lịch sử
-  const totalRedemedFreeWash = useMemo(() => {
-    if (!Array.isArray(redemptions)) return 0;
-    return redemptions.filter(
-      (v) => v && v.rewardName === "Phần thưởng Rửa Xe Miễn Phí",
-    ).length;
-  }, [redemptions]);
-
-  // 2. Tính số lượt rửa khả dụng trong chu kỳ 7 lượt hiện tại
-  const currentCycleWashes = useMemo(() => {
-    const remaining = totalBookings - totalRedemedFreeWash * REQUIRED_WASHES;
-    return remaining < 0 ? 0 : remaining;
-  }, [totalBookings, totalRedemedFreeWash]);
 
   // Bảng cấu hình icon mẫu
   const iconMap = {
@@ -85,7 +72,7 @@ export const RewardsSection: React.FC = () => {
       .map((reward) => {
         if (!reward) return null;
 
-        // Nhận diện voucher Rửa Xe
+        // Nhận diện voucher Rửa Xe Miễn Phí
         const isFreeWashReward = reward.name === "Phần thưởng Rửa Xe Miễn Phí";
 
         let iconConfig = iconMap.GIFT;
@@ -112,7 +99,7 @@ export const RewardsSection: React.FC = () => {
       .filter((item) => item !== null) as RewardItem[];
   }, [availableRewards]);
 
-  // 3. Tính toán số lượng phần thưởng khả dụng (Áp dụng currentCycleWashes)
+  // Tính toán số lượng phần thưởng khả dụng (Áp dụng currentCycleWashes cho quà rửa xe)
   const redeemableCount = useMemo(() => {
     return rewards.filter((r) => {
       if (r.comingSoon) return false;
@@ -241,13 +228,17 @@ export const RewardsSection: React.FC = () => {
                       <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">
                         Yêu cầu
                       </p>
+
+                      {/* Logic hiển thị Yêu Cầu / Tiến độ (Đã được bọc ngoặc nhọn {}) */}
                       {item.isFreeWashReward ? (
-                        <p className="text-xl font-black text-slate-800 mt-0.5">
-                          {currentCycleWashes}/{REQUIRED_WASHES}{" "}
-                          <span className="text-sm font-bold text-slate-500">
-                            lượt
-                          </span>
-                        </p>
+                        <div className="flex flex-col">
+                          <p className="text-xl font-black text-slate-800 mt-0.5">
+                            {REQUIRED_WASHES}{" "}
+                            <span className="text-sm font-bold text-slate-500">
+                              lượt
+                            </span>
+                          </p>
+                        </div>
                       ) : (
                         <p className="text-xl font-black text-slate-800 mt-0.5">
                           {item.requiredPts}{" "}
