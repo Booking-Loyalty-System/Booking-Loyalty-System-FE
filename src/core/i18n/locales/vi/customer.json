@@ -1,0 +1,528 @@
+{
+  "dashboard": {
+    "welcomeBack": "Chào mừng trở lại,",
+    "accountToday": "Đây là những gì đang diễn ra với tài khoản của bạn hôm nay.",
+    "stats": {
+      "allTime": "Tổng cộng",
+      "totalBookings": "Lượt Đặt Lịch",
+      "loyalty": "Tích Điểm",
+      "totalPoints": "Tổng Điểm",
+      "status": "Trạng Thái",
+      "membershipTier": "Hạng Thành Viên",
+      "savings": "Tiết Kiệm",
+      "totalSaved": "Đã Tiết Kiệm"
+    },
+    "quickActions": {
+      "title": "Thao Tác Nhanh",
+      "bookWash": "Đặt Lịch",
+      "bookWashDesc": "Đặt lịch rửa xe mới",
+      "rewards": "Phần Thưởng",
+      "rewardsDesc": "Đổi điểm của bạn",
+      "promotions": "Khuyến Mãi",
+      "promotionsDesc": "Xem ưu đãi hiện có",
+      "history": "Lịch Sử",
+      "historyDesc": "Xem lịch sử đặt lịch"
+    },
+    "washProgress": {
+      "title": "Tiến Trình Rửa Xe",
+      "subtitle": "Hành Trình Nhận Rửa Xe Miễn Phí",
+      "washesCompleted": "lượt rửa đã hoàn thành trong chu kỳ này",
+      "oneMoreLeft": "Chỉ còn {{count}} lượt rửa nữa để nhận rửa xe miễn phí!",
+      "moreLeft": "Chỉ còn {{count}} lượt rửa nữa để nhận rửa xe miễn phí!",
+      "congratulations": "Chúc mừng! Bạn đã nhận được một lần rửa xe miễn phí!",
+      "claimFreeWash": "Nhận Rửa Xe Miễn Phí",
+      "ofSeven": "/ 7 lượt"
+    },
+    "recentActivity": {
+      "title": "Hoạt Động Gần Đây",
+      "viewAll": "Xem Tất Cả",
+      "noActivity": "Chưa có hoạt động nào",
+      "completed": "Hoàn Thành",
+      "pending": "Chờ Xác Nhận",
+      "cancelled": "Đã Hủy",
+      "inProgress": "Đang Xử Lý"
+    },
+    "upcomingBooking": {
+      "title": "Lịch Đặt Sắp Tới",
+      "noBooking": "Không có lịch đặt sắp tới",
+      "bookNow": "Đặt Ngay",
+      "viewDetails": "Xem Chi Tiết"
+    },
+    "loyaltySummary": {
+      "title": "Tóm Tắt Tích Điểm",
+      "currentTier": "Hạng Hiện Tại",
+      "pointsBalance": "Số Điểm Hiện Có",
+      "viewRewards": "Xem Phần Thưởng"
+    },
+    "cancelConfirm": "Bạn có chắc chắn muốn hủy lịch hẹn này?",
+    "cancelSuccess": "Đã hủy lịch hẹn thành công",
+    "cancelError": "Không thể hủy lịch hẹn",
+    "freeWashRewardProgress": "Tiến Trình Nhận Lượt Rửa Miễn Phí",
+    "completeWashesToEarn": "Hoàn thành 7 lượt rửa để nhận 1 lượt rửa MIỄN PHÍ!",
+    "washesDone": "Lượt Rửa Đã Hoàn Thành",
+    "moreWashes": "lượt rửa nữa",
+    "unlockReward": "để nhận lượt rửa MIỄN PHÍ của bạn!",
+    "unlockedReward": "Bạn đã nhận được 1 lượt rửa MIỄN PHÍ! 🎉",
+    "currentTier": "Hạng Hiện Tại",
+    "loading": "Đang tải...",
+    "member": "Thành viên",
+    "progressToNextTier": "Tiến Trình Lên Hạng Tiếp Theo",
+    "pointsToNextTier": "điểm để lên hạng tiếp theo",
+    "tiersAutoReviewed": "Hạng thành viên được tự động đánh giá hàng tháng dựa trên dữ liệu 3 tháng gần nhất",
+    "totalPoints": "Tổng Điểm Tích Lũy",
+    "multiplier": "Hệ Số Nhân Điểm",
+    "bookingDays": "Số Ngày Đặt Trước",
+    "bookingTime": "Thời gian",
+    "bookingVehicle": "Phương tiện",
+    "bookingStatus": "Trạng thái",
+    "cancel": "Hủy lịch",
+    "viewAll": "Xem tất cả",
+    "quickActionsTitle": "Thao Tác Nhanh"
+  },
+  "bookWash": {
+    "title": "Đặt Lịch Rửa Xe",
+    "priority": {
+      "loading": "Đang tải thông tin hạng thành viên...",
+      "title": "Đặc Quyền Thời Gian Đặt Lịch Theo Hạng",
+      "descTemplate": "Là thành viên {{tier}}, bạn có thể đặt lịch trước tối đa {{days}} ngày.",
+      "days": "ngày"
+    },
+    "steps": {
+      "selectBranch": "Chọn Chi Nhánh",
+      "selectPackage": "Chọn Gói Dịch Vụ",
+      "selectVehicle": "Chọn Xe",
+      "selectDateTime": "Chọn Ngày & Giờ",
+      "selectVoucher": "Chọn Voucher",
+      "summary": "Tóm Tắt"
+    },
+    "branch": {
+      "title": "Chọn Chi Nhánh",
+      "findNearest": "Tìm Gần Nhất",
+      "searchPlaceholder": "Tìm kiếm chi nhánh...",
+      "viewOnMap": "Xem Trên Bản Đồ",
+      "kmAway": "km",
+      "open": "Đang Mở",
+      "closed": "Đã Đóng",
+      "select": "Chọn"
+    },
+    "package": {
+      "title": "Chọn Gói Dịch Vụ",
+      "popular": "Phổ Biến",
+      "duration": "Thời Gian",
+      "includes": "Bao Gồm",
+      "selectPackage": "Chọn Gói"
+    },
+    "vehicle": {
+      "title": "Chọn Xe Của Bạn",
+      "addNew": "Thêm Xe Mới",
+      "noVehicles": "Chưa có xe nào được thêm",
+      "selectVehicle": "Chọn"
+    },
+    "dateTime": {
+      "title": "Chọn Ngày & Giờ",
+      "selectDate": "Chọn Ngày",
+      "selectTime": "Chọn Giờ",
+      "noSlots": "Không có khung giờ trống",
+      "available": "Còn Trống",
+      "fullyBooked": "Hết Chỗ"
+    },
+    "voucher": {
+      "title": "Áp Dụng Voucher (Tùy Chọn)",
+      "enterCode": "Nhập mã voucher",
+      "apply": "Áp Dụng",
+      "remove": "Xóa",
+      "noVouchers": "Không có voucher",
+      "discount": "Giảm Giá"
+    },
+    "summary": {
+      "title": "Tóm Tắt Đặt Lịch",
+      "branch": "Chi Nhánh",
+      "package": "Gói Dịch Vụ",
+      "vehicle": "Xe",
+      "dateTime": "Ngày & Giờ",
+      "voucher": "Voucher",
+      "subtotal": "Tạm Tính",
+      "discount": "Giảm Giá",
+      "total": "Tổng Cộng",
+      "confirmBooking": "Xác Nhận Đặt Lịch",
+      "processing": "Đang Xử Lý...",
+      "noVoucher": "Không có"
+    },
+    "buttons": {
+      "back": "Quay Lại",
+      "next": "Tiếp Theo",
+      "confirm": "Xác Nhận Đặt Lịch"
+    }
+  },
+  "bookingHistory": {
+    "title": "Lịch Sử Đặt Lịch",
+    "subtitle": "Theo dõi tất cả lịch đặt xe trong quá khứ và sắp tới",
+    "filter": {
+      "all": "Tất Cả",
+      "pending": "Chờ Xác Nhận",
+      "confirmed": "Đã Xác Nhận",
+      "inProgress": "Đang Xử Lý",
+      "completed": "Hoàn Thành",
+      "cancelled": "Đã Hủy",
+      "searchPlaceholder": "Tìm kiếm lịch đặt..."
+    },
+    "table": {
+      "id": "Mã Đặt Lịch",
+      "branch": "Chi Nhánh",
+      "package": "Gói Dịch Vụ",
+      "vehicle": "Xe",
+      "dateTime": "Ngày & Giờ",
+      "price": "Giá Tiền",
+      "status": "Trạng Thái",
+      "actions": "Thao Tác"
+    },
+    "actions": {
+      "viewDetails": "Xem Chi Tiết",
+      "reschedule": "Dời Lịch",
+      "cancel": "Hủy",
+      "review": "Đánh Giá"
+    },
+    "empty": {
+      "title": "Chưa có lịch đặt nào",
+      "description": "Bạn chưa đặt lịch rửa xe nào.",
+      "bookNow": "Đặt Lịch Ngay"
+    },
+    "status": {
+      "pending": "Chờ Xác Nhận",
+      "confirmed": "Đã Xác Nhận",
+      "inProgress": "Đang Xử Lý",
+      "completed": "Hoàn Thành",
+      "cancelled": "Đã Hủy"
+    }
+  },
+  "rewards": {
+    "title": "Phần Thưởng Khả Dụng",
+    "subtitle": "Đổi điểm tích lũy của bạn lấy phần thưởng độc quyền",
+    "pointsBalance": "Số Điểm Hiện Có",
+    "availableRewards": "Phần Thưởng Khả Dụng",
+    "redeem": "Đổi",
+    "points": "điểm",
+    "notEnoughPoints": "Không đủ điểm",
+    "redeemSuccess": "Đổi phần thưởng thành công!",
+    "categories": {
+      "all": "Tất Cả",
+      "discount": "Giảm Giá",
+      "freeWash": "Rửa Xe Miễn Phí",
+      "upgrade": "Nâng Cấp",
+      "merchandise": "Quà Tặng"
+    },
+    "card": {
+      "pointsRequired": "điểm cần",
+      "expires": "Hết hạn",
+      "redeemNow": "Đổi Ngay",
+      "outOfStock": "Hết Hàng"
+    },
+    "history": {
+      "title": "Lịch Sử Đổi Thưởng",
+      "empty": "Chưa có lịch sử đổi thưởng"
+    }
+  },
+  "loyaltyTier": {
+    "title": "Tích Điểm & Hạng Thành Viên",
+    "stats": {
+      "pointsEarned": "Tổng Điểm Tích Lũy",
+      "pointsRedeemed": "Điểm Đã Đổi",
+      "totalBookings": "Tổng Lượt Rửa",
+      "allTime": "Tích lũy trọn đời"
+    },
+    "currentTier": "Hạng Hiện Tại",
+    "pointsToNext": "điểm để lên hạng tiếp theo",
+    "tierMember": "Thành Viên",
+    "totalPointsSuffix": "Tổng Điểm Tích Lũy",
+    "progressToLabel": "Tiến trình lên {{nextTier}}",
+    "maxTierReached": "Đã đạt hạng cao nhất",
+    "pointsToGoSuffix": "Còn {{n}} điểm để lên hạng",
+    "tiersAutoReviewed": "Hạng thành viên được xét duyệt & nâng/hạ tự động hàng tháng dựa trên dữ liệu 3 tháng gần nhất",
+    "totalPointsCard": "Tổng Điểm",
+    "discountRateCard": "Tỷ Lệ Giảm Giá",
+    "pointsMultiplierCard": "Hệ Số Nhân Điểm",
+    "howYouEarnPoints": "Cách Tích Lũy Điểm Thưởng",
+    "pointsFormula": "Điểm tích lũy = (Số tiền thanh toán / 1000) × Hệ số hạng",
+    "formulaExample": "Ví dụ: Lượt rửa 450.000đ của thành viên Vàng = (450.000 / 1.000) × 2 = 450 × 2 = 900 điểm",
+    "membershipTiers": "Các Hạng Thành Viên",
+    "loadingTransactions": "Đang tải lịch sử giao dịch...",
+    "noTransactions": "Không tìm thấy giao dịch nào.",
+    "transactionHistory": "Lịch Sử Giao Dịch",
+    "benefitDiscount": "Giảm giá {{n}}",
+    "benefitMultiplier": "Điểm tích lũy × {{multiplier}}",
+    "benefitAdvanceBooking": "Đặt lịch trước {{n}} ngày",
+    "benefitBirthdayBonus": "Quà tặng sinh nhật",
+    "benefitPrioritySupport": "Hỗ trợ ưu tiên",
+    "benefitExclusiveOffers": "Ưu đãi độc quyền",
+    "benefitPriorityBooking": "Đặt lịch ưu tiên",
+    "benefitFreeWashBirthday": "Rửa xe miễn phí ngày sinh nhật",
+    "benefitVipAccess": "Lối vào ưu tiên VIP",
+    "benefitDedicatedManager": "Quản lý tài khoản riêng",
+    "tiers": {
+      "member": "Thành Viên Đồng",
+      "bronze": "Thành Viên Đồng",
+      "silver": "Thành Viên Bạc",
+      "gold": "Thành Viên Vàng",
+      "platinum": "Thành Viên Bạch Kim",
+      "diamond": "Thành Viên Kim Cương",
+      "max tier": "Hạng Cao Nhất"
+    },
+    "table": {
+      "date": "Ngày",
+      "description": "Mô Tả",
+      "type": "Loại Giao Dịch",
+      "points": "Điểm Số"
+    },
+    "txTypeEarned": "Tích Lũy",
+    "txTypeRedeemed": "Đã Đổi",
+    "progress": {
+      "title": "Tiến Trình Lên Hạng",
+      "washes": "Lượt Rửa",
+      "points": "Điểm"
+    }
+  },
+  "promotions": {
+    "loadingText": "Đang tải khuyến mãi...",
+    "banner": {
+      "badgeLimitedTime": "Có Hạn",
+      "heading": "Khuyến Mãi Đặc Biệt Dành Cho Bạn!",
+      "description": "Tiết kiệm lớn với các khuyến mãi độc quyền và phần thưởng theo hạng thành viên. Kiểm tra thường xuyên để nhận ưu đãi mới!",
+      "labelYourTier": "Hạng Của Bạn",
+      "valueYourTier": "Thành Viên Vàng",
+      "labelActivePromotions": "Khuyến Mãi Đang Áp Dụng",
+      "valueActivePromotions": "6 Ưu Đãi"
+    },
+    "featured": {
+      "sectionTitle": "Khuyến Mãi Nổi Bật",
+      "labelUntil": "Đến hết",
+      "labelPromoCode": "Mã Khuyến Mãi",
+      "btnCopyCode": "Sao Chép Mã",
+      "btnCopied": "Đã Sao Chép",
+      "termsAndConditions": "Điều Khoản & Điều Kiện:"
+    },
+    "allActive": {
+      "sectionTitle": "Tất Cả Khuyến Mãi Đang Áp Dụng",
+      "labelCode": "Mã",
+      "labelUntil": "Đến hết",
+      "btnViewDetails": "Xem Chi Tiết"
+    }
+  },
+  "notifications": {
+    "title": "Thông Báo",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "empty": {
+      "title": "Không có thông báo",
+      "description": "Bạn đã xem hết tất cả các thông báo."
+    },
+    "markAsRead": "Đánh dấu đã đọc"
+  },
+  "vehicles": {
+    "title": "Xe Của Tôi",
+    "addVehicle": "Thêm Xe",
+    "editVehicle": "Chỉnh Sửa Xe",
+    "deleteVehicle": "Xóa Xe",
+    "noVehicles": "Chưa có xe nào được thêm",
+    "addFirst": "Thêm xe đầu tiên của bạn để bắt đầu",
+    "form": {
+      "licensePlate": "Biển Số Xe",
+      "vehicleType": "Loại Xe",
+      "brand": "Hãng Xe",
+      "model": "Mẫu Xe",
+      "color": "Màu Sắc",
+      "save": "Lưu",
+      "cancel": "Hủy"
+    },
+    "types": {
+      "small": "Xe Nhỏ",
+      "medium": "Xe Vừa",
+      "large": "Xe Lớn",
+      "suv": "SUV",
+      "truck": "Xe Tải"
+    }
+  },
+  "settings": {
+    "pageSubtitle": "Quản lý thông tin tài khoản và tùy chọn của bạn",
+    "personalInfo": {
+      "sectionTitle": "Thông Tin Cá Nhân",
+      "btnEdit": "Chỉnh Sửa",
+      "btnCancel": "Hủy",
+      "btnSave": "Lưu",
+      "labelFullName": "Họ và Tên",
+      "labelPhoneNumber": "Số Điện Thoại",
+      "labelEmailAddress": "Địa Chỉ Email",
+      "emailReadOnly": "(Chỉ đọc)"
+    },
+    "passwordSecurity": {
+      "sectionTitle": "Mật Khẩu & Bảo Mật",
+      "labelCurrentPassword": "Mật Khẩu Hiện Tại",
+      "placeholderCurrentPassword": "Nhập mật khẩu hiện tại",
+      "labelNewPassword": "Mật Khẩu Mới",
+      "placeholderNewPassword": "Nhập mật khẩu mới",
+      "labelConfirmNewPassword": "Xác Nhận Mật Khẩu Mới",
+      "placeholderConfirmNewPassword": "Xác nhận mật khẩu mới",
+      "btnUpdatePassword": "Cập Nhật Mật Khẩu",
+      "btnUpdating": "Đang Cập Nhật...",
+      "twoFactorTitle": "Xác Thực Hai Lớp",
+      "twoFactorDesc": "Thêm lớp bảo mật cho tài khoản của bạn"
+    },
+    "memberCard": {
+      "memberSince": "Thành Viên Từ",
+      "totalBookings": "Tổng Lượt Đặt:",
+      "totalSpent": "Tổng Chi Tiêu:",
+      "pointsBalance": "Số Điểm Hiện Có:"
+    },
+    "notificationsSection": {
+      "sectionTitle": "Thông Báo",
+      "emailNotifications": "Thông Báo Qua Email",
+      "smsNotifications": "Thông Báo Qua SMS",
+      "marketingEmails": "Email Marketing"
+    },
+    "appearance": {
+      "sectionTitle": "Giao Diện",
+      "darkMode": "Chế Độ Tối",
+      "lightMode": "Chế Độ Sáng",
+      "persistNote": "Tùy chọn được lưu tự động và duy trì qua các phiên."
+    },
+    "language": {
+      "sectionTitle": "Ngôn Ngữ",
+      "description": "Chọn ngôn ngữ hiển thị bạn muốn",
+      "persistNote": "Tùy chọn ngôn ngữ được lưu tự động."
+    },
+    "privacy": {
+      "sectionTitle": "Quyền Riêng Tư",
+      "downloadMyData": "Tải Xuống Dữ Liệu Của Tôi",
+      "privacyPolicy": "Chính Sách Bảo Mật",
+      "termsOfService": "Điều Khoản Dịch Vụ",
+      "deleteAccount": "Xóa Tài Khoản"
+    },
+    "toast": {
+      "requiredFields": "Vui lòng điền đầy đủ các trường bắt buộc",
+      "profileUpdated": "Cập nhật hồ sơ thành công!",
+      "profileUpdateFailed": "Cập nhật hồ sơ thất bại. Vui lòng thử lại.",
+      "passwordFieldsRequired": "Vui lòng điền đầy đủ các trường mật khẩu",
+      "passwordsDoNotMatch": "Mật khẩu mới không khớp",
+      "passwordTooShort": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordUpdated": "Cập nhật mật khẩu thành công!",
+      "passwordChangeFailed": "Không thể thay đổi mật khẩu. Vui lòng kiểm tra lại mật khẩu hiện tại và thử lại."
+    }
+  },
+  "auth": {
+    "login": {
+      "appName": "AutoWash Pro",
+      "appTagline": "Hệ Thống Quản Lý Rửa Xe Thông Minh",
+      "feature1Title": "Đặt Lịch Dễ Dàng",
+      "feature1Desc": "Đặt lịch rửa xe chỉ trong vài giây",
+      "feature2Title": "Tích Điểm Thưởng",
+      "feature2Desc": "Kiếm điểm và nhận quyền lợi độc quyền",
+      "feature3Title": "Dịch Vụ Cao Cấp",
+      "feature3Desc": "Chăm sóc xe chuyên nghiệp được đảm bảo",
+      "formHeading": "Chào Mừng Trở Lại",
+      "formSubtitle": "Đăng nhập vào tài khoản của bạn để tiếp tục",
+      "labelEmail": "Địa Chỉ Email",
+      "placeholderEmail": "john@example.com",
+      "labelPassword": "Mật Khẩu",
+      "placeholderPassword": "••••••••",
+      "checkboxRememberMe": "Ghi nhớ tôi",
+      "linkForgotPassword": "Quên mật khẩu?",
+      "btnSignIn": "Đăng Nhập",
+      "btnSignInWithGoogle": "Đăng nhập với Google",
+      "noAccount": "Chưa có tài khoản?",
+      "linkCreateAccount": "Tạo Tài Khoản",
+      "quickAccessLabel": "Truy Cập Nhanh (Demo)",
+      "quickAccessCustomer": "Khách Hàng",
+      "quickAccessStaff": "Nhân Viên",
+      "quickAccessAdmin": "Quản Trị"
+    },
+    "register": {
+      "appName": "AutoWash Pro",
+      "appTagline": "Tham gia cộng đồng của chúng tôi",
+      "membershipBenefitsTitle": "Quyền Lợi Thành Viên",
+      "benefit1": "Tích điểm với mỗi lần rửa xe",
+      "benefit2": "Đặt lịch ưu tiên cho thành viên VIP",
+      "benefit3": "Giảm giá và khuyến mãi độc quyền",
+      "benefit4": "Theo dõi lịch sử đặt lịch",
+      "formHeading": "Tạo Tài Khoản",
+      "formSubtitle": "Bắt đầu với AutoWash Pro",
+      "tabEmail": "Bằng Email",
+      "tabPhone": "Bằng SĐT (OTP)",
+      "labelFullName": "Họ và Tên",
+      "placeholderFullName": "Nguyễn Văn A",
+      "labelEmail": "Email",
+      "placeholderEmail": "john@example.com",
+      "labelPhoneNumber": "Số Điện Thoại",
+      "placeholderPhoneNumber": "0912345678",
+      "labelDOB": "Ngày Sinh",
+      "labelVehicleType": "Loại Xe",
+      "optionSmall": "Xe Nhỏ",
+      "optionMedium": "Xe Vừa",
+      "optionLarge": "Xe Lớn",
+      "labelLicensePlate": "Biển Số Xe (Tùy Chọn)",
+      "placeholderLicensePlate": "VD: 29A-12345",
+      "labelPassword": "Mật Khẩu",
+      "placeholderPassword": "••••••••",
+      "labelConfirmPassword": "Xác Nhận Mật Khẩu",
+      "btnCreateAccount": "Tạo Tài Khoản",
+      "alreadyHaveAccount": "Đã có tài khoản?",
+      "linkSignIn": "Đăng Nhập"
+    }
+  },
+  "landing": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký ngay",
+    "subtitle": "Chăm Sóc Xe Thông Minh",
+    "tagline": "Công Nghệ Rửa Xe Tự Động Thế Hệ Mới",
+    "title": "Rửa Xe Thông Minh \nTích Điểm Nhận Ưu Đãi Khủng",
+    "description": "Trải nghiệm hệ thống đặt lịch tự động hiện đại. Rửa xe nhanh chóng, thanh toán dễ dàng, nâng hạng thành viên để nhận voucher miễn phí mỗi ngày.",
+    "getStarted": "Bắt đầu ngay",
+    "bookService": "Đặt dịch vụ",
+    "bookingTitle": "Đặt Lịch AutoWash",
+    "save20": "Tiết kiệm 20%",
+    "membershipBenefits": "Đặc Quyền Thành Viên",
+    "earnAndUpgrade": "Tích Điểm & Nâng Hạng",
+    "recommendedPkg": "Gói Rửa Khuyên Dùng",
+    "premiumWash": "Rửa Cao Cấp",
+    "ourPackages": "Các Gói Dịch Vụ Của Chúng Tôi",
+    "ourPackagesDesc": "Lựa chọn gói chăm sóc phù hợp nhất với xế yêu của bạn",
+    "loadingPackages": "Đang tải danh sách gói rửa...",
+    "membershipTiersTitle": "Hạng Thành Viên & Ưu Đãi",
+    "membershipTiersDesc": "Tích lũy điểm thưởng sau mỗi lần rửa xe để nâng hạng thành viên và hưởng chiết khấu tự động cực sâu",
+    "bookInAdvance": "Đặt lịch trước",
+    "upTo": "Tối đa {{days}} ngày",
+    "registerToExchange": "Đăng ký tích điểm đổi quà ngay",
+    "branchSystem": "Hệ Thống Chi Nhánh",
+    "branchSystemDesc": "Tìm kiếm và lựa chọn chi nhánh AutoWash Pro gần nhất tại TP.HCM",
+    "loadingBranches": "Đang tải danh sách chi nhánh...",
+    "noBranches": "Không tìm thấy chi nhánh nào.",
+    "open": "Đang hoạt động",
+    "viewOnMap": "Xem trên bản đồ số",
+    "mapTitle": "Bản Đồ Hệ Thống Chi Nhánh",
+    "detailMapBtn": "Bản Đồ Số Chi Tiết",
+    "mapFooter": "Kéo và thu phóng để khám phá các chi nhánh, hoặc click \"Bản Đồ Số Chi Tiết\" để xem chỉ đường.",
+    "allRightsReserved": "© 2026 AutoWash Pro. Bảo lưu mọi quyền.",
+    "tiers": {
+      "member": "Thành Viên",
+      "silver": "Hạng Bạc",
+      "gold": "Hạng Vàng",
+      "platinum": "Hạng Bạch Kim",
+      "benefit_member_1": "Giảm 5% hóa đơn",
+      "benefit_member_2": "Hệ số tích điểm: 1x",
+      "benefit_member_3": "Đặt trước tối đa 7 ngày",
+      "benefit_member_4": "Quà tặng sinh nhật",
+      "benefit_silver_1": "Giảm 10% hóa đơn",
+      "benefit_silver_2": "Hệ số tích điểm: 1.5x",
+      "benefit_silver_3": "Đặt trước tối đa 10 ngày",
+      "benefit_silver_4": "Hỗ trợ ưu tiên",
+      "benefit_gold_1": "Giảm 15% hóa đơn",
+      "benefit_gold_2": "Hệ số tích điểm: 2x",
+      "benefit_gold_3": "Đặt trước tối đa 12 ngày",
+      "benefit_gold_4": "Rửa xe miễn phí dịp sinh nhật",
+      "benefit_platinum_1": "Giảm 20% hóa đơn",
+      "benefit_platinum_2": "Hệ số tích điểm: 3x",
+      "benefit_platinum_3": "Đặt trước tối đa 14 ngày",
+      "benefit_platinum_4": "Lối đi VIP tại cửa hàng",
+      "bookInAdvance": "Đặt lịch trước",
+      "upToDays": "Tối đa {{days}} ngày",
+      "pointsMultiplier": "Hệ số tích điểm: {{mult}}"
+    }
+  }
+}

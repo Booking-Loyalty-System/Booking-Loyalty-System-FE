@@ -25,4 +25,9 @@ export class VehicleRepositoryImplement implements IVehicleRepository {
 
         return response.data;
     }
+    async deleteVehicle(id: string): Promise<void> {
+        await httpClient.delete<ApiResponse<void>>(
+            `${ENDPOINTS.VEHICLES.VEHICLE}/${id}`
+        );
+    }
 }

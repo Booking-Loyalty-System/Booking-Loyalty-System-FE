@@ -1,271 +1,460 @@
-import React from 'react';
-import { Gift, Ticket, Star, Sparkles, CheckCircle, Info, History } from 'lucide-react';
-
-// --- Khai báo Interface cho Props của Component ---
-interface RewardsSectionProps {
-    availablePoints?: number;
-    onRedeemSuccess?: (pointsLeft: number, rewardTitle: string) => void;
-}
+import React, { useState, useMemo } from "react";
+import {
+  Gift,
+  Ticket,
+  Star,
+  Sparkles,
+  CheckCircle,
+  Info,
+  History,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useReward } from "@/features/products/application/useReward.ts";
+import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
+import { toast } from "sonner";
 
 interface RewardItem {
-    id: string;
-    title: string;
-    description: string;
-    validDays: number;
-    requiredPts: number;
-    icon: React.ReactNode;
-    iconBg: string;
-    iconColor: string;
-    comingSoon?: boolean;
+  id: string;
+  title: string;
+  description: string;
+  validDays: number;
+  requiredPts: number;
+  icon: React.ReactNode;
+  iconBg: string;
+  iconColor: string;
+  comingSoon?: boolean;
+  isFreeWashReward?: boolean; // Cờ nhận diện quà rửa xe
 }
 
-interface RedeemedHistory {
-    id: string;
-    title: string;
-    redeemedDate: string;
-    points: number;
-    status: 'Active' | 'Used' | 'Expired';
-    icon: React.ReactNode;
-    iconBg: string;
-    iconColor: string;
-}
+export const RewardsSection: React.FC = () => {
+  const { t } = useTranslation("customer");
+  const { customerMe } = useCustomerMe();
+  const {
+    redemptions,
+    redeemReward,
+    isRedeeming,
+    availableRewards,
+    isLoadingRewards,
+  } = useReward();
 
-export const RewardsSection: React.FC<RewardsSectionProps> = ({
-                                                                  availablePoints = 0,
-                                                                  onRedeemSuccess
-                                                              }) => {
+  const availablePoints = customerMe?.availablePoint ?? 0;
+  // Số lượng phần thưởng rửa xe miễn phí khả dụng
+  const currentCycleWashes = (customerMe as any)?.currentCycleWashes ?? 0;
+  const [redeemingId, setRedeemingId] = useState<string | null>(null);
 
-    // --- Cấu hình danh sách phần thưởng dựa theo ảnh UI ---
-    const rewards: RewardItem[] = [
-        {
-            id: 'rw_1',
-            title: 'Free Basic Wash',
-            description: 'Redeem for one complimentary basic car wash service',
-            validDays: 30,
-            requiredPts: 200,
-            icon: <Gift className="w-6 h-6" />,
-            iconBg: 'bg-blue-50',
-            iconColor: 'text-blue-600',
-        },
-        {
-            id: 'rw_2',
-            title: '$10 Discount Voucher',
-            description: 'Get $10 off on any service package',
-            validDays: 60,
-            requiredPts: 150,
-            icon: <Ticket className="w-6 h-6" />,
-            iconBg: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-        },
-        {
-            id: 'rw_3',
-            title: 'VIP Booking Slot',
-            description: 'Priority booking access for premium time slots',
-            validDays: 90,
-            requiredPts: 300,
-            icon: <Star className="w-6 h-6" />,
-            iconBg: 'bg-purple-50',
-            iconColor: 'text-purple-600',
-        },
-        {
-            id: 'rw_4',
-            title: 'Free Premium Wash',
-            description: 'Redeem for one complimentary premium car wash service',
-            validDays: 30,
-            requiredPts: 400,
-            icon: <Sparkles className="w-6 h-6" />,
-            iconBg: 'bg-amber-50',
-            iconColor: 'text-amber-500',
-        },
-        {
-            id: 'rw_5',
-            title: '$25 Discount Voucher',
-            description: 'Get $25 off on any service package',
-            validDays: 60,
-            requiredPts: 350,
-            icon: <Ticket className="w-6 h-6" />,
-            iconBg: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-        },
-        {
-            id: 'rw_6',
-            title: 'Free Ceramic Coating',
-            description: 'Redeem for complimentary ceramic coating service',
-            validDays: 30,
-            requiredPts: 800,
-            icon: <Sparkles className="w-6 h-6" />,
-            iconBg: 'bg-amber-50',
-            iconColor: 'text-amber-500',
-            comingSoon: true,
-        },
-    ];
+  // Bảng cấu hình icon mẫu
+  const iconMap = {
+    GIFT: {
+      icon: <Gift className="w-6 h-6" />,
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-600",
+    },
+    TICKET: {
+      icon: <Ticket className="w-6 h-6" />,
+      iconBg: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+    },
+    STAR: {
+      icon: <Star className="w-6 h-6" />,
+      iconBg: "bg-purple-50",
+      iconColor: "text-purple-600",
+    },
+    SPARKLES: {
+      icon: <Sparkles className="w-6 h-6" />,
+      iconBg: "bg-amber-50",
+      iconColor: "text-amber-500",
+    },
+  };
 
-    // --- Dữ liệu lịch sử đổi thưởng gần đây ---
-    const redeemedHistory: RedeemedHistory[] = [
-        {
-            id: 'hist_1',
-            title: 'Free Basic Wash',
-            redeemedDate: 'May 10, 2026',
-            points: -200,
-            status: 'Active',
-            icon: <Gift className="w-6 h-6" />,
-            iconBg: 'bg-blue-50',
-            iconColor: 'text-blue-600',
-        },
-        {
-            id: 'hist_2',
-            title: '$10 Discount Voucher',
-            redeemedDate: 'April 25, 2026',
-            points: -150,
-            status: 'Used',
-            icon: <Ticket className="w-6 h-6" />,
-            iconBg: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-        },
-        {
-            id: 'hist_3',
-            title: 'VIP Booking Slot',
-            redeemedDate: 'April 15, 2026',
-            points: -300,
-            status: 'Expired',
-            icon: <Star className="w-6 h-6" />,
-            iconBg: 'bg-purple-50',
-            iconColor: 'text-purple-600',
-        },
-    ];
+  const rewards: RewardItem[] = useMemo(() => {
+    if (!Array.isArray(availableRewards)) return [];
 
-    const handleRedeemClick = (title: string, cost: number) => {
-        if (availablePoints >= cost) {
-            if (onRedeemSuccess) {
-                onRedeemSuccess(availablePoints - cost, title);
-            }
+    return availableRewards
+      .map((reward) => {
+        if (!reward) return null;
+
+        // Nhận diện voucher Rửa Xe Miễn Phí
+        const isFreeWashReward = reward.name === "Phần thưởng Rửa Xe Miễn Phí";
+
+        let iconConfig = iconMap.GIFT;
+        if (reward.discountAmount >= 200) {
+          iconConfig = iconMap.SPARKLES;
+        } else if (reward.discountAmount >= 100) {
+          iconConfig = iconMap.STAR;
+        } else if (reward.discountAmount >= 20) {
+          iconConfig = iconMap.TICKET;
         }
-    };
 
-    return (
-        <div className="w-full space-y-8 text-slate-800">
+        return {
+          id: reward.id,
+          title: reward.name ?? "Voucher đặc biệt",
+          description:
+            reward.description ?? "Đổi điểm để nhận ưu đãi giảm giá.",
+          validDays: reward.validDays ?? 30,
+          requiredPts: reward.pointsCost ?? 0,
+          comingSoon: !reward.isActive,
+          isFreeWashReward,
+          ...iconConfig,
+        };
+      })
+      .filter((item) => item !== null) as RewardItem[];
+  }, [availableRewards]);
 
-            {/* 1. Thanh thông báo tự động áp dụng khi checkout */}
-            <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 flex items-start gap-4">
-                <div className="p-2 bg-white rounded-full text-emerald-600 shadow-sm shrink-0">
-                    <Info className="w-5 h-5" />
-                </div>
-                <div className="space-y-1">
-                    <h4 className="font-bold text-emerald-900 text-base">Auto-Applied at Checkout</h4>
-                    <p className="text-sm text-emerald-800 leading-relaxed">
-                        All redeemed vouchers, free washes, and tier perks are <strong className="text-emerald-900 font-extrabold">automatically applied at checkout</strong>. No need to enter codes manually - just redeem and book!
-                    </p>
-                </div>
+  // Tính toán số lượng phần thưởng khả dụng
+  const redeemableCount = useMemo(() => {
+    return rewards.filter((r) => {
+      if (r.comingSoon) return false;
+      if (r.isFreeWashReward) return currentCycleWashes >= 1;
+      return availablePoints >= r.requiredPts;
+    }).length;
+  }, [rewards, availablePoints, currentCycleWashes]);
+
+  const handleRedeemClick = async (
+    rewardId: string,
+    cost: number,
+    title: string,
+    isFreeWash: boolean = false,
+  ) => {
+    if (isFreeWash && currentCycleWashes < 1) {
+      toast.error(
+        t("rewards.toastNotEnoughWashes", {
+          defaultValue: "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
+        }),
+      );
+      return;
+    }
+
+    if (!isFreeWash && availablePoints < cost) {
+      toast.error(
+        t("rewards.toastNotEnoughPoints", {
+          defaultValue: "Bạn không đủ điểm tích lũy để đổi phần thưởng này!",
+        }),
+      );
+      return;
+    }
+
+    setRedeemingId(rewardId);
+    try {
+      await redeemReward(rewardId);
+      toast.success(
+        t("rewards.redeemSuccess", {
+          title,
+          defaultValue: `Đổi thành công: ${title}! Voucher đã được thêm vào tài khoản của bạn.`,
+        }),
+      );
+    } catch (err) {
+      console.error("Lỗi đổi thưởng:", err);
+      toast.error(
+        t("rewards.toastRedeemFailed", {
+          defaultValue: "Đổi quà thất bại, vui lòng thử lại sau.",
+        }),
+      );
+    } finally {
+      setRedeemingId(null);
+    }
+  };
+
+  return (
+    <div className="w-full space-y-8 text-slate-800">
+      {/* 1. Thanh thông báo tự động áp dụng */}
+      <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 flex items-start gap-4">
+        <div className="p-2 bg-white rounded-full text-emerald-600 shadow-sm shrink-0">
+          <Info className="w-5 h-5" />
+        </div>
+        <div className="space-y-1">
+          <h4 className="font-bold text-emerald-900 text-base">
+            {t("rewards.infoTitle", {
+              defaultValue: "Tự động áp dụng khi đặt lịch",
+            })}
+          </h4>
+          <p className="text-sm text-emerald-800 leading-relaxed">
+            {t("rewards.infoDesc", {
+              defaultValue:
+                "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!",
+            })}
+          </p>
+        </div>
+      </div>
+
+      {/* 2. Danh sách phần thưởng */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            {t("rewards.availableRewardsTitle", {
+              defaultValue: "Phần thưởng khả dụng",
+            })}
+          </h2>
+          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
+            <CheckCircle className="w-4 h-4 text-slate-400" />
+            <span>
+              {t("rewards.redeemableCountMsg", {
+                n: redeemableCount,
+                defaultValue: `Bạn có thể đổi được ${redeemableCount} phần thưởng`,
+              })}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {isLoadingRewards ? (
+            <div className="col-span-full py-12 flex justify-center items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
             </div>
+          ) : rewards.length === 0 ? (
+            <div className="col-span-full py-12 text-center text-slate-400 font-medium">
+              {t("rewards.noRewardsAvailable", {
+                defaultValue: "Hiện tại không có phần thưởng nào khả dụng.",
+              })}
+            </div>
+          ) : (
+            rewards.map((item) => {
+              const isEligibleForFreeWash = currentCycleWashes >= 1;
+              const canAfford = item.isFreeWashReward
+                ? isEligibleForFreeWash
+                : availablePoints >= item.requiredPts;
 
-            {/* 2. Danh sách phần thưởng */}
-            <div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-                    <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Available Rewards</h2>
-                    <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
-                        <CheckCircle className="w-4 h-4 text-slate-400" />
-                        <span>You can redeem {rewards.filter(r => !r.comingSoon && availablePoints >= r.requiredPts).length} rewards</span>
+              return (
+                <div
+                  key={item.id}
+                  className={`bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative ${
+                    item.comingSoon ? "opacity-75" : ""
+                  }`}
+                >
+                  {item.comingSoon && (
+                    <span className="absolute top-4 right-4 bg-slate-100 text-slate-500 text-xs font-bold px-2.5 py-1 rounded-full">
+                      {t("rewards.comingSoonBadge", {
+                        defaultValue: "Sắp ra mắt",
+                      })}
+                    </span>
+                  )}
+
+                  <div>
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${item.iconBg} ${item.iconColor}`}
+                    >
+                      {item.icon}
                     </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {rewards.map((item) => {
-                        const canAfford = availablePoints >= item.requiredPts;
+                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-slate-500 mt-2 leading-relaxed font-medium">
+                      {item.description}
+                    </p>
+
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mt-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                      <span>
+                        {t("rewards.validDaysLabel", {
+                          n: item.validDays,
+                          defaultValue: `Hạn dùng ${item.validDays} ngày sau khi đổi`,
+                        })}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                        {t("rewards.requirementLabel", {
+                          defaultValue: "Yêu cầu",
+                        })}
+                      </p>
+
+                      {item.isFreeWashReward ? (
+                        <div className="flex flex-col">
+                          <p className="text-xl font-black text-slate-800 mt-0.5">
+                            7{" "}
+                            <span className="text-sm font-bold text-slate-500">
+                              {t("rewards.washesUnit", {
+                                defaultValue: "lượt",
+                              })}
+                            </span>
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-xl font-black text-slate-800 mt-0.5">
+                          {item.requiredPts}{" "}
+                          <span className="text-sm font-bold text-slate-500">
+                            {t("rewards.pointsUnit", { defaultValue: "điểm" })}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        handleRedeemClick(
+                          item.id,
+                          item.requiredPts,
+                          item.title,
+                          item.isFreeWashReward,
+                        )
+                      }
+                      disabled={
+                        item.comingSoon ||
+                        !canAfford ||
+                        isRedeeming ||
+                        redeemingId === item.id
+                      }
+                      className={`font-bold text-sm px-6 py-2.5 rounded-xl shadow-sm transition-all ${
+                        !item.comingSoon && canAfford
+                          ? "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
+                          : "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
+                      }`}
+                    >
+                      {redeemingId === item.id
+                        ? t("rewards.processingBtn", {
+                            defaultValue: "Đang xử lý...",
+                          })
+                        : t("rewards.redeemNowBtn", {
+                            defaultValue: "Đổi Ngay",
+                          })}
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* 3. Phần lịch sử đổi thưởng gần đây */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex items-center gap-2.5">
+          <History className="w-5 h-5 text-slate-400" />
+          <h3 className="text-lg font-bold text-slate-800 tracking-tight">
+            {t("rewards.redemptionHistoryTitle", {
+              defaultValue: "Lịch sử đổi thưởng",
+            })}
+          </h3>
+        </div>
+
+        <div className="divide-y divide-slate-100">
+          {!Array.isArray(redemptions) || redemptions.length === 0 ? (
+            <p className="text-sm text-slate-400 font-medium text-center py-8">
+              {t("rewards.noRedemptionHistory", {
+                defaultValue: "Bạn chưa đổi phần thưởng nào.",
+              })}
+            </p>
+          ) : (
+            redemptions.map((v) => {
+              if (!v) return null;
+
+              const isHistoryFreeWash =
+                v.rewardName === "Phần thưởng Rửa Xe Miễn Phí";
+
+              return (
+                <div
+                  key={v.id}
+                  className="p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-emerald-50 text-emerald-600">
+                      <Ticket className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 text-base tracking-tight">
+                        {v.rewardName ?? "Voucher giảm giá"}
+                      </h4>
+                      {(() => {
+                        const statusLower = String(v.status).toLowerCase();
+                        const isAvailable =
+                          statusLower === "active" || statusLower === "pending";
+                        const isUsed =
+                          statusLower === "used" || statusLower === "fulfilled";
 
                         return (
-                            <div
-                                key={item.id}
-                                className={`bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative ${
-                                    item.comingSoon ? 'opacity-75' : ''
-                                }`}
+                          <p className="text-[11px] font-bold text-slate-400 mt-1">
+                            {t("rewards.statusLabel", {
+                              defaultValue: "Trạng thái: ",
+                            })}{" "}
+                            <span
+                              className={
+                                isAvailable
+                                  ? "text-emerald-600"
+                                  : "text-slate-500"
+                              }
                             >
-                                {item.comingSoon && (
-                                    <span className="absolute top-4 right-4 bg-slate-100 text-slate-500 text-xs font-bold px-2.5 py-1 rounded-full">
-                    Coming Soon
-                  </span>
-                                )}
-
-                                <div>
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${item.iconBg} ${item.iconColor}`}>
-                                        {item.icon}
-                                    </div>
-
-                                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">{item.title}</h3>
-                                    <p className="text-sm text-slate-500 mt-2 leading-relaxed font-medium">{item.description}</p>
-
-                                    <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mt-4">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                                        <span>Valid for {item.validDays} days</span>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between gap-4">
-                                    <div>
-                                        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Required</p>
-                                        <p className="text-xl font-black text-slate-800 mt-0.5">{item.requiredPts} <span className="text-sm font-bold text-slate-500">pts</span></p>
-                                    </div>
-
-                                    <button
-                                        onClick={() => handleRedeemClick(item.title, item.requiredPts)}
-                                        disabled={item.comingSoon || !canAfford}
-                                        className={`font-bold text-sm px-6 py-2.5 rounded-xl shadow-sm transition-all ${
-                                            !item.comingSoon && canAfford
-                                                ? 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
-                                                : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
-                                        }`}
-                                    >
-                                        Redeem
-                                    </button>
-                                </div>
-                            </div>
+                              {isAvailable
+                                ? t("rewards.statusAvailable", {
+                                    defaultValue: "Khả dụng",
+                                  })
+                                : isUsed
+                                  ? t("rewards.statusUsed", {
+                                      defaultValue: "Đã dùng",
+                                    })
+                                  : t("rewards.statusExpired", {
+                                      defaultValue: "Hết hạn",
+                                    })}
+                            </span>{" "}
+                            {t("rewards.codeLabel", { defaultValue: "· Mã:" })}{" "}
+                            <span className="font-mono">
+                              {isHistoryFreeWash
+                                ? `REDEEM-1WASH`
+                                : `REDEEM-${v.pointsSpent}PTS`}
+                            </span>
+                          </p>
                         );
-                    })}
-                </div>
-            </div>
+                      })()}
+                    </div>
+                  </div>
 
-            {/* 3. Phần lịch sử đổi thưởng gần đây */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="p-6 border-b border-slate-100 flex items-center gap-2.5">
-                    <History className="w-5 h-5 text-slate-400" />
-                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">Recently Redeemed</h3>
-                </div>
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+                    {isHistoryFreeWash ? (
+                      <p className="text-lg font-black text-slate-800 tracking-tight">
+                        -1{" "}
+                        <span className="text-xs font-bold text-slate-500">
+                          {t("rewards.washesUnit", { defaultValue: "lượt" })}
+                        </span>
+                      </p>
+                    ) : (
+                      <p className="text-lg font-black text-slate-800 tracking-tight">
+                        -{v.pointsSpent ?? 0}{" "}
+                        <span className="text-xs font-bold text-slate-500">
+                          {t("rewards.pointsUnit", { defaultValue: "điểm" })}
+                        </span>
+                      </p>
+                    )}
 
-                <div className="divide-y divide-slate-100">
-                    {redeemedHistory.map((historyItem) => (
-                        <div
-                            key={historyItem.id}
-                            className="p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                    {(() => {
+                      const statusLower = String(v.status).toLowerCase();
+                      const isAvailable =
+                        statusLower === "active" || statusLower === "pending";
+                      const isUsed =
+                        statusLower === "used" || statusLower === "fulfilled";
+
+                      return (
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                            isAvailable
+                              ? "bg-emerald-50 text-emerald-700"
+                              : isUsed
+                                ? "bg-slate-100 text-slate-600"
+                                : "bg-rose-50 text-rose-600"
+                          }`}
                         >
-                            <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${historyItem.iconBg} ${historyItem.iconColor}`}>
-                                    {historyItem.icon}
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-800 text-base tracking-tight">{historyItem.title}</h4>
-                                    <p className="text-sm text-slate-400 font-medium mt-1">Redeemed on {historyItem.redeemedDate}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                                <p className="text-lg font-black text-slate-800 tracking-tight">
-                                    {historyItem.points} <span className="text-xs font-bold text-slate-500">pts</span>
-                                </p>
-
-                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
-                                    historyItem.status === 'Active'
-                                        ? 'bg-emerald-50 text-emerald-700'
-                                        : historyItem.status === 'Used'
-                                            ? 'bg-slate-100 text-slate-600'
-                                            : 'bg-rose-50 text-rose-600'
-                                }`}>
-                  {historyItem.status}
-                </span>
-                            </div>
-                        </div>
-                    ))}
+                          {isAvailable
+                            ? t("rewards.statusAvailable", {
+                                defaultValue: "Khả dụng",
+                              })
+                            : isUsed
+                              ? t("rewards.statusUsed", {
+                                  defaultValue: "Đã dùng",
+                                })
+                              : t("rewards.statusExpired", {
+                                  defaultValue: "Hết hạn",
+                                })}
+                        </span>
+                      );
+                    })()}
+                  </div>
                 </div>
-            </div>
-
+              );
+            })
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 };

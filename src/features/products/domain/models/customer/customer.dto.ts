@@ -8,5 +8,15 @@ export interface Customer {
     totalPoints: number;
     totalWashes: number;
     totalSpent: number;
-    createdAt: string;     
+    totalSaved: number;
+    createdAt: string;   
+    availablePoint: number;  
+    totalPoint: number;
+    totalBookings?: number;
+}
+
+export interface UpdateCustomerInput {
+    fullName?: string;
+    phoneNumber?: string;
+    dateOfBirth?: string | null;
 }

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Giữ lại hệ thống font chữ và khử răng cưa chuẩn của hệ thống */
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;

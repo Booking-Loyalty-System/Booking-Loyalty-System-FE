@@ -1,6 +1,8 @@
-import type {DateSlot} from "../time-slot/time-slot.dto.ts";
-import type {Vehicle} from "@/features/products/domain/models/vehicle/vehicle.model.ts";
-import type {WashPackage} from "@/features/products/domain/models/wash-package/wash-package.model.ts";
+import type { DateSlot } from "../time-slot/time-slot.dto.ts";
+import type { Vehicle } from "@/features/products/domain/models/vehicle/vehicle.model.ts";
+import type { WashPackage } from "@/features/products/domain/models/wash-package/wash-package.model.ts";
+
+import type { Voucher } from "../voucher/voucher.model.ts";
 
 export interface CreateBookingInput {
     vehicleId: string;
@@ -8,6 +10,8 @@ export interface CreateBookingInput {
     branchId: string;
     bookingDate: string;
     startTime: string;
+    rewardRedemptionId?: string;
+    promotionCode?: string;
 }
 
 export interface BookingResponseData {
@@ -16,8 +20,16 @@ export interface BookingResponseData {
     washPackageId: string;
     bookingDate: string;
     startTime: string;
+    vehicleName: string
+    licensePlate: string;
+    serviceName: string;
+    totalAmount: number;
     status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
     createdAt: string;
+    voucherId?: string;
+    discountAmount?: number;
+    totalPrice?: number;
+    bookingCode: string
 }
 
 export interface BookingSummaryProps {
@@ -28,6 +40,10 @@ export interface BookingSummaryProps {
     selectedDateSlot?: DateSlot;
     isBooking: boolean;
     onConfirmBooking: () => void;
+    selectedVoucher?: Voucher | null;
+    appliedPromotion?: any | null; // using any temporarily to avoid import loops if needed, or import Promotion
+    onApplyPromotion?: (code: string) => Promise<boolean | string>;
+    onRemovePromotion?: () => void;
 }
 
 export interface MyBookingRecord {
@@ -46,4 +62,5 @@ export interface MyBookingRecord {
     status: string;
     qrData: string | null;
     createdAt: string;
+    features: string | string[];
 }

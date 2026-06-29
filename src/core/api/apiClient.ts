@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { AuthRepositoryImplement } from '@/features/products/infrastructure/repositories/auth/auth.repository.implement.ts';
-import type {AuthResponseData} from "@/features/products/domain/models/auth/auth.model.ts";
+import type { AuthResponseData } from "@/features/products/domain/models/auth/auth.model.ts";
 
 // Khởi tạo instance
 export const apiClient = axios.create({
@@ -71,7 +71,7 @@ const handleForceLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
-    if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+    if (window.location.pathname !== '/') {
+        window.location.href = '/';
     }
 };

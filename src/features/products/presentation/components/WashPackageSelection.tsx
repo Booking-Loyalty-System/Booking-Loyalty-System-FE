@@ -1,3 +1,5 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
 import {Droplet, ShieldAlert, Sparkles} from "lucide-react";
 import type {WashPackageSelectionProps} from "@/features/products/domain/models/wash-package/wash-package.model.ts";
 
@@ -15,9 +17,10 @@ const getPackageUIVisual = (packageName: string | null) => {
 export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                                                                               washPackages, selectedPackageId, onSelectPackage
                                                                           }) => {
+    const { t } = useTranslation('customer');
     return (
         <div className="space-y-4">
-            <h3 className="text-xl font-bold text-[#0f172a]">Select Wash Package</h3>
+            <h3 className="text-xl font-bold text-[#0f172a]">{t('bookWash.package.selectTitle', { defaultValue: "Select Wash Package" })}</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {washPackages.map((pkg) => {
                     const isSelected = selectedPackageId === pkg.id;
@@ -40,8 +43,8 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                                     <p className="text-xs text-[#64748b] mt-1 font-medium line-clamp-2">{pkg.description}</p>
                                 </div>
                                 <div className="flex items-baseline gap-3 pt-2">
-                                    <span className="text-3xl font-extrabold text-[#0f172a]">${pkg.price}</span>
-                                    <span className="text-xs text-[#64748b] font-semibold">⏱ {pkg.durationMinutes} min</span>
+                                    <span className="text-3xl font-extrabold text-[#0f172a]">{pkg.price.toLocaleString('vi-VN')}đ</span>
+                                    <span className="text-xs text-[#64748b] font-semibold">⏱ {pkg.durationMinutes} {t('bookWash.package.minutes', { defaultValue: "min" })}</span>
                                 </div>
                                 {pkg.features && pkg.features.length > 0 && (
                                     <ul className="space-y-2 pt-2 border-t border-[#f1f5f9]">
@@ -54,7 +57,7 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                                 )}
                                 {pkg.vehicleType && (
                                     <div className="text-[11px] font-semibold text-blue-600 bg-blue-50/60 inline-block px-2 py-0.5 rounded">
-                                        🚗 For: {pkg.vehicleType}
+                                        🚗 {t('bookWash.package.forVehicle', { defaultValue: "For:" })} {pkg.vehicleType}
                                     </div>
                                 )}
                             </div>

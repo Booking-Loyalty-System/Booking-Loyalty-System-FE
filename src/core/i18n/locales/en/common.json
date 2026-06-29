@@ -1,0 +1,140 @@
+{
+  "sidebar": {
+    "appName": "AutoWash Pro",
+    "tagline": "Smart Car Wash",
+    "dashboard": "Dashboard",
+    "bookWash": "Book Wash",
+    "liveTracking": "Live Tracking",
+    "loyaltyTier": "Loyalty & Tier",
+    "rewards": "Rewards",
+    "promotions": "Promotions",
+    "bookingHistory": "Booking History",
+    "myVehicles": "My Vehicles",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "logout": "Logout",
+    "copyright": "© 2026 AutoWash Pro"
+  },
+  "header": {
+    "searchPlaceholder": "Search...",
+    "dashboard": "Dashboard",
+    "bookAWash": "Book a Wash",
+    "liveTracking": "Live Tracking Status",
+    "loyaltyTier": "Your Loyalty & Tier",
+    "rewards": "Available Rewards",
+    "promotions": "Special Promotions",
+    "bookingHistory": "Booking History",
+    "myVehicles": "My Garage / Vehicles",
+    "notificationCenter": "Notification Center",
+    "profileSettings": "Profile Settings",
+    "profile": {
+      "defaultGuest": "Customer",
+      "roleCustomer": "Customer",
+      "signedInAs": "Signed in as",
+      "myProfile": "My Profile",
+      "accountSettings": "Account Settings",
+      "loggingOut": "Logging out...",
+      "logOut": "Log Out"
+    }
+  },
+  "language": {
+    "en": "English",
+    "vi": "Tiếng Việt",
+    "switchTo": "Switch to"
+  },
+  "liveTracking": {
+    "noActiveWash": "You currently have no active vehicle being serviced at the station.",
+    "washingCount": "Washing Vehicles ({{count}})",
+    "licensePlate": "LICENSE PLATE",
+    "overallProgress": "Overall Progress",
+    "washProcess": "Wash Process",
+    "washStep": "STEP {{step}}",
+    "customPackage": "Custom",
+    "packageLabel": "Package: {{name}}",
+    "btnNext": "Next Step →",
+    "btnComplete": "Complete This Car ✔",
+    "btnSaving": "Saving results...",
+    "btnConfirmAndUpdate": "Confirm & Update",
+    "modalTitle": "Wash Completed!",
+    "modalDesc": "The washing process for vehicle {{plate}} has completed.",
+    "toastErrorNoBooking": "No valid booking ID found!",
+    "toastSuccessComplete": "Vehicle {{plate}} successfully completed!",
+    "toastErrorServer": "Failed to update status on the server!",
+    "hud": {
+      "nozzleSystem": "Nozzle System",
+      "pressure": "Pressure",
+      "flow": "Flow rate",
+      "brushSystem": "Smart Roller Brush",
+      "mechanism": "Mechanism",
+      "reverseRotation": "Continuous reverse rotation",
+      "foamSol": "Foam solution",
+      "interiorSim": "Simulating car doors opening and interior work...",
+      "windowCleaning": "🧽 Cleaning car windows...",
+      "vacuum": "Vacuum Cleaning",
+      "vacuumDesc": "Vacuuming dirt from floors, floor mats, and crevices.",
+      "polish": "Dashboard Polish",
+      "polishDesc": "Cleaning and applying polish to the dashboard surface.",
+      "leather": "Leather Conditioning",
+      "leatherDesc": "Applying specialized conditioner to prevent leather seats from cracking.",
+      "freshener": "Interior Deodorization",
+      "freshenerDesc": "Deodorizing and spraying natural essential oil fragrance.",
+      "wax": "✨ Activating robot arm to apply Wax coating...",
+      "ceramic": "🛡️ Spraying Ceramic protective coating...",
+      "engine": "⚙️ Cleaning engine bay using hot steam..."
+    },
+    "steps": {
+      "exteriorWash": {
+        "name": "Exterior Wash",
+        "desc": "High-pressure water spray to clean surface dirt."
+      },
+      "interiorVacuum": {
+        "name": "Interior Vacuum",
+        "desc": "Vacuuming dirt from floors, floor mats, and crevices."
+      },
+      "dashboardPolish": {
+        "name": "Dashboard Polish",
+        "desc": "Cleaning and applying polish to the dashboard surface."
+      },
+      "airFreshener": {
+        "name": "Air Freshener",
+        "desc": "Deodorizing and spraying natural essential oil fragrance."
+      },
+      "tireCleaning": {
+        "name": "Tire Cleaning",
+        "desc": "Scrubbing wheels, tires, and cleaning brake system."
+      },
+      "windowCleaning": {
+        "name": "Window Cleaning",
+        "desc": "Cleaning windshield, side windows, and mirrors."
+      },
+      "fullExteriorWash": {
+        "name": "Full Exterior Wash",
+        "desc": "Deep cleaning of car body, undercarriage, and wheel arches."
+      },
+      "interiorDeepClean": {
+        "name": "Interior Deep Clean",
+        "desc": "Washing carpets, cleaning roof, floor, and air conditioner vents."
+      },
+      "waxCoating": {
+        "name": "Wax Coating",
+        "desc": "Applying wax protective layer to enhance paint depth and gloss."
+      },
+      "leatherConditioning": {
+        "name": "Leather Conditioning",
+        "desc": "Applying specialized conditioner to prevent leather seats from cracking."
+      },
+      "engineBayCleaning": {
+        "name": "Engine Bay Cleaning",
+        "desc": "Cleaning dirt, leaves and conditioning rubber hoses in the engine bay."
+      },
+      "ceramicSpray": {
+        "name": "Ceramic Spray",
+        "desc": "Applying ceramic spray to create an outstanding hydrophobic effect."
+      },
+      "tireShine": {
+        "name": "Tire Shine",
+        "desc": "Applying tire polish for a brand new shiny look."
+      }
+    }
+  }
+}

@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { AuthRepositoryImplement } from '../infrastructure/repositories/auth/auth.repository.implement.ts';
+
 import type {
     User,
     RefreshTokenRequest,
     RegisterRequest,
-    PhoneRegisterRequest, AuthResponseData
+    PhoneRegisterRequest, AuthResponseData,
+    ChangePasswordRequest
 } from '../domain/models/auth/auth.model.ts';
 import {toast} from "sonner";
 
@@ -166,40 +168,64 @@ export const useAuth = () => {
     // Mutation: Register
     const registerMutation = useMutation({
         mutationFn: (userData: RegisterRequest) => authRepository.register(userData),
-        onSuccess: (data) => {
+        onSuccess: (data, variables) => {
             // 1. Lưu token vào localStorage
             localStorage.setItem('access_token', data.accessToken);
-            localStorage.setItem('refresh_token', data.refreshToken);
+            if (data.refreshToken) {
+                localStorage.setItem('refresh_token', data.refreshToken);
+            }
 
-            saveTokenData(data.accessToken);
+            const cleanedToken = saveTokenData(data.accessToken);
+            if (cleanedToken) {
+                const synthesizedUser: User = {
+                    id: cleanedToken.userId || "",
+                    email: variables.email || cleanedToken.email || "",
+                    role: cleanedToken.role || "Customer",
+                    fullName: variables.fullName || "",
+                } as unknown as User;
+
+                localStorage.setItem('user_info', JSON.stringify(synthesizedUser));
+                queryClient.setQueryData(['current_user'], synthesizedUser);
+            }
             console.log("Đăng ký thành công, Token đã lưu:", data);
-
-            // 2. Chuyển hướng người dùng về trang chủ hoặc dashboard
-            window.location.href = '/dashboard';
         },
         onError: (error) => {
-            alert("Đăng ký thất bại: " + error.message);
+            console.error("Lỗi đăng ký:", error);
         }
     });
 
     const registerWithPhoneMutation = useMutation({
         mutationFn: (userData: PhoneRegisterRequest) => authRepository.registerWithPhone(userData),
-        onSuccess: (data) => {
+        onSuccess: (data, variables) => {
             localStorage.setItem('access_token', data.accessToken);
             if (data.refreshToken) {
                 localStorage.setItem('refresh_token', data.refreshToken);
             }
-            localStorage.setItem('user_info', JSON.stringify(data.user));
-            saveTokenData(data.accessToken);
-            queryClient.setQueryData(['current_user'], data.user);
+            const cleanedToken = saveTokenData(data.accessToken);
+            if (cleanedToken) {
+                const synthesizedUser: User = {
+                    id: cleanedToken.userId || "",
+                    email: cleanedToken.email || "",
+                    role: cleanedToken.role || "Customer",
+                    fullName: data.user?.fullName || variables.phoneNumber || "",
+                } as unknown as User;
+
+                localStorage.setItem('user_info', JSON.stringify(synthesizedUser));
+                queryClient.setQueryData(['current_user'], synthesizedUser);
+            }
 
             console.log("Đăng ký bằng SĐT thành công!");
-            window.location.href = '/dashboard';
+            
         },
         onError: (error) => {
-            alert("Đăng ký bằng SĐT thất bại: " + error.message);
+            console.error("Lỗi đăng ký SĐT:", error);
         }
     });
+
+    const changePasswordMutation = useMutation({
+        mutationFn: (data: ChangePasswordRequest) => authRepository.changePassword(data),
+    });
+
 
     return {
         user,
@@ -213,13 +239,15 @@ export const useAuth = () => {
         isRefreshing: refreshTokenMutation.isPending,
         isPending: registerMutation.isPending,
         isPendingPhone: registerWithPhoneMutation.isPending,
+        isChangingPassword: changePasswordMutation.isPending,
 
-        error: loginMutation.error || logoutMutation.error || refreshTokenMutation.error,
+        error: loginMutation.error || logoutMutation.error || refreshTokenMutation.error || changePasswordMutation.error,
 
         login: loginMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
         register: registerMutation.mutateAsync,
         refreshToken: refreshTokenMutation.mutateAsync,
         registerWithPhone: registerWithPhoneMutation.mutateAsync,
+        changePassword: changePasswordMutation.mutateAsync,
     };
 };

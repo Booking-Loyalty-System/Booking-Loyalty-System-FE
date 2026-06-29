@@ -14,10 +14,10 @@ export class BranchRepositoryImplement implements IBranchRepository{
         return response.data;
     }
 
-    // 2. Lấy chi tiết một gói dịch vụ cụ thể theo ID
+    // 2. Lấy chi tiết một chi nhánh cụ thể theo ID
     async getBranchById(id: string): Promise<Branch> {
         const response = await httpClient.get<ApiResponse<Branch>>(
-            ENDPOINTS.WASH_PACKAGES.WASH_PACKAGE_DETAIL(id)
+            ENDPOINTS.ADMIN.BRANCH_DETAIL(id)
         );
         return response.data;
     }

@@ -1,27 +1,31 @@
-import React, { useState } from 'react';
-import { CheckCircle, Calendar, Droplets } from 'lucide-react';
-import { useStaffDashboard } from '../../../application/useStaffDashboard';
-import { toast } from 'sonner';
-import { CheckoutSummaryModal } from '../../components/staff/CheckoutSummaryModal';
-import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
+import React, { useEffect, useState } from 'react';
+import { useStaffDashboard } from "@/features/products/application/useStaffDashboard.ts";
+import { useStaff } from "@/features/products/application/useStaff.ts";
+import { useBooking } from "@/features/products/application/useBooking.ts";
+import { usePayment } from "@/features/products/application/usePayment.ts";
+import { toast } from "sonner";
+import { Car, MapPin, User, X } from "lucide-react";
+import { type DashboardBooking, DashboardStats } from "@/features/products/presentation/components/DashboardStats.tsx";
+import { BookingTableFilters } from "@/features/products/presentation/components/BookingTableFilters.tsx";
+import { BookingTableRow } from "@/features/products/presentation/components/BookingTableRow.tsx";
+import { CheckoutSummaryModal } from "@/features/products/presentation/components/staff/CheckoutSummaryModal.tsx";
+import type { BookingResponseData } from "@/features/products/domain/models/booking/booking.model.ts";
+import { QrScannerModal } from "@/features/products/presentation/components/QrScannerModal.tsx";
+import { useQueryClient } from '@tanstack/react-query';
 
-// 1. Định nghĩa kiểu dữ liệu cục bộ để mở rộng các Status chạy thực tế ở UI
-interface DashboardBooking extends Omit<BookingResponseData, 'status'> {
-    status: 'Pending' | 'Confirmed' | 'CheckedIn' | 'Queued' | 'InProgress' | 'Completed' | 'CheckedOut' | 'Cancelled' | string;
-}
-
-// 2. Định nghĩa chi tiết các hàm Action để thay thế cho kiểu 'any' bị ESLint bắt lỗi
 interface DashboardActions {
-    checkIn: (id: string) => Promise<void>;
-    queue: (id: string) => Promise<void>;
-    start: (params: { id: string; staffId: string }) => Promise<void>;
-    finish: (id: string) => Promise<void>;
-    checkout: (id: string) => Promise<void>;
+    confirm: (id: string) => Promise<unknown>;
+    checkIn: (params: { id: string; staffId: string }) => Promise<unknown>;
+    checkout: (id: string) => Promise<unknown>;
+    staffCancel: (params: { id: string; cancel: string }) => Promise<unknown>;
+    noShow: (id: string) => Promise<unknown>;
 }
 
 export const StaffDashboard: React.FC = () => {
-    // Ép kiểu hook chặt chẽ, loại bỏ hoàn toàn 'any'
-    const { bookings = [], isLoading, actions, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
+    // 🌟 2. Khởi tạo queryClient để điều khiển việc Refetch dữ liệu
+    const queryClient = useQueryClient();
+
+    const { bookings = [], isLoading: isBookingsLoading, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
         bookings: DashboardBooking[];
         isLoading: boolean;
         selectedDate: string;
@@ -29,212 +33,336 @@ export const StaffDashboard: React.FC = () => {
         actions: DashboardActions;
     };
 
-    // Đồng bộ State quản lý modal theo kiểu dữ liệu DashboardBooking mới
+    const { staffProfile, isLoading: isStaffLoading } = useStaff();
+    const [selectedBookingDetail, setSelectedBookingDetail] = useState<DashboardBooking | null>(null);
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<DashboardBooking | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('All');
+    const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
-    // Lọc danh sách hiển thị dựa trên id và vehicleId
+    const {
+        confirmBooking,
+        checkInBooking,
+        checkoutBooking,
+        staffCancelBooking,
+        scanQr,
+        noShowBooking
+    } = useBooking({ loadMyBookings: false });
+
+    const { createPayOsUrl } = usePayment();
+
+    const actions: DashboardActions = {
+        confirm: confirmBooking,
+        checkIn: checkInBooking,
+        checkout: checkoutBooking,
+        staffCancel: staffCancelBooking,
+        noShow: noShowBooking,
+    };
+
     const filteredBookings = bookings.filter(b => {
-        const bookingId = b.id?.toLowerCase() || '';
-        const vehicle = b.vehicleId?.toLowerCase() || '';
+        const bookingCode = b.bookingCode?.toLowerCase() || '';
+        const vehicleName = b.vehicleName?.toLowerCase() || '';
+        const licensePlate = b.licensePlate?.toLowerCase() || '';
         const search = searchTerm.toLowerCase();
 
-        const matchesSearch = bookingId.includes(search) || vehicle.includes(search);
+        const matchesSearch =
+            bookingCode.includes(search) ||
+            vehicleName.includes(search) ||
+            licensePlate.includes(search);
+
         const matchesStatus = statusFilter === 'All' || b.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
 
-    // Hàm xử lý các thao tác vận hành (Check-in, Queue, Start, Finish, Checkout)
-    const handleAction = async (id: string, action: 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout') => {
+    const handleQrScanSuccess = async (decodedText: string) => {
+        setIsQrModalOpen(false);
+
+        const loadToastId = toast.loading('Đang xác thực mã QR...');
+
         try {
-            switch(action) {
-                case 'checkIn': await actions.checkIn(id); break;
-                case 'queue': await actions.queue(id); break;
-                case 'start': await actions.start({ id, staffId: 'current-staff-id' }); break;
-                case 'finish': await actions.finish(id); break;
+            const bookingData = await scanQr(decodedText);
+
+            if (bookingData && bookingData.bookingCode) {
+                setSearchTerm(bookingData.bookingCode);
+                setStatusFilter('All');
+                toast.success(`Đã tìm thấy lịch đặt: ${bookingData.bookingCode}`, { id: loadToastId, icon: '✨' });
+            } else {
+                toast.error('Không thể trích xuất mã lịch đặt từ mã QR.', { id: loadToastId });
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Mã QR không hợp lệ hoặc không có trong hệ thống!', { id: loadToastId });
+        }
+    };
+
+    const handleAction = async (id: string, action: 'confirm' | 'checkIn' | 'checkout' | 'staffCancel' | 'noShow') => {
+        try {
+            switch (action) {
+                case 'confirm':
+                    await actions.confirm(id);
+                    break;
+                case 'checkIn':
+                    if (!staffProfile?.id) {
+                        toast.error("Không tìm thấy thông tin nhân viên, vui lòng tải lại trang!");
+                        return;
+                    }
+                    await actions.checkIn({ id, staffId: staffProfile.id });
+                    break;
                 case 'checkout': {
                     const booking = bookings.find(b => b.id === id);
                     if (booking) setSelectedBookingForCheckout(booking);
                     return;
                 }
+                case 'staffCancel': {
+                    const reason = window.prompt("Vui lòng nhập lý do hủy lịch:");
+                    if (!reason) return;
+                    await actions.staffCancel({ id, cancel: reason });
+                    break;
+                }
+                case 'noShow':
+                    if (window.confirm("Bạn có chắc chắn muốn đánh dấu khách này là Không Đến (No-Show)?")) {
+                        await actions.noShow(id);
+                    } else {
+                        return;
+                    }
+                    break;
             }
-            toast.success(`${action.charAt(0).toUpperCase() + action.slice(1)} successful!`);
+
+            // 🌟 3. THẦN CHÚ TỰ ĐỘNG CẬP NHẬT: Ép React Query gọi lại API lấy danh sách mới ngay lập tức
+            toast.success(`Thao tác thành công!`);
+            queryClient.invalidateQueries();
+
         } catch (error) {
             console.error(error);
-            toast.error(`Operation ${action} failed`);
+            toast.error(`Thao tác thất bại`);
         }
     };
 
-    // Hàm xác nhận hoàn tất thanh toán (Checkout)
-    const confirmCheckout = async () => {
+    const handleConfirmCash = async () => {
         if (!selectedBookingForCheckout) return;
         try {
             await actions.checkout(selectedBookingForCheckout.id);
-            toast.success('Checkout completed and points awarded!');
+            toast.success('Thanh toán tiền mặt thành công!');
             setSelectedBookingForCheckout(null);
+            queryClient.invalidateQueries(); // Làm mới danh sách
         } catch (error) {
             console.error(error);
-            toast.error('Checkout failed');
+            toast.error('Xử lý thu tiền mặt thất bại');
         }
     };
 
-    if (isLoading) return (
-        <div className="p-8 space-y-6">
-            <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
+    const handleConfirmPayOS = async (): Promise<string> => {
+        if (!selectedBookingForCheckout) return '';
+        const toastId = toast.loading('Đang khởi tạo cổng thanh toán PayOS...');
+        try {
+            const response = await createPayOsUrl(selectedBookingForCheckout.id);
+            toast.dismiss(toastId); // Tắt hiệu ứng loading
+
+            if (!response) {
+                throw new Error("Không nhận được phản hồi từ máy chủ");
+            }
+            // 🛠️ FIX TẠI ĐÂY: Kiểm tra nếu phản hồi là Object thì bóc lấy thuộc tính checkoutUrl
+            if (typeof response === 'object' && 'checkoutUrl' in response) {
+                return (response as any).checkoutUrl;
+            }
+
+            // Trường hợp tầng Repository của bạn đã bóc sẵn ra chuỗi string trước đó rồi
+            return response as unknown as string;
+        } catch (error) {
+            console.error(error);
+            toast.error('Không thể kết nối đến cổng thanh toán PayOS', { id: toastId });
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('paymentStatus');
+
+        if (paymentStatus === 'cancel') {
+            queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
+
+            toast.error(`Hủy thanh toán!`, {
+                description: `Giao dịch link thanh toán đã bị hủy bỏ hoặc hết hạn.`,
+                duration: 10000,
+            });
+
+            // 🎯 THỦ THUẬT: Đợi 500ms để trang ổn định, rồi mới phát âm thanh
+            setTimeout(() => {
+                const audioCancel = new Audio('/sound/payment.mp3');
+
+                // Dùng hàm promise để kiểm tra nếu bị chặn
+                audioCancel.play().catch(() => {
+                    console.log("Bị trình duyệt chặn, đang chờ thao tác click...");
+
+                    // Gài "bẫy" click: Chỉ cần nhân viên click vào bất cứ đâu (để tắt toast, để chọn bảng, để làm việc...)
+                    // Âm thanh sẽ nổ lên ngay lập tức mà không cần click vào nút "Nghe lại"
+                    const playOnFirstClick = () => {
+                        audioCancel.play().catch(e => console.error(e));
+                        window.removeEventListener('click', playOnFirstClick);
+                    };
+                    window.addEventListener('click', playOnFirstClick);
+                });
+            }, 500);
+
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, [queryClient]);
+
+    if (isStaffLoading) return (
+        <div className="p-8 space-y-8 max-w-7xl mx-auto">
+            <div className="h-10 w-64 bg-slate-200 rounded-lg animate-pulse"></div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[...Array(4)].map((_, i) => (
-                    <div key={i} className="h-32 bg-gray-100 rounded-xl animate-pulse"></div>
+                    <div key={i} className="h-36 bg-slate-100 rounded-2xl animate-pulse"></div>
                 ))}
             </div>
-            <div className="h-64 bg-gray-100 rounded-xl animate-pulse"></div>
+            <div className="h-96 bg-slate-100 rounded-2xl animate-pulse"></div>
         </div>
     );
 
     return (
-        <div className="space-y-8 font-sans antialiased">
-            <h1 className="text-2xl font-bold text-gray-900">Staff Dashboard</h1>
-
-            {/* Hàng thẻ thống kê (Stats) */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {/* Tổng số lịch trong ngày */}
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <Calendar className="w-8 h-8 text-blue-600" />
-                        <span className="px-2 py-1 bg-blue-100 text-blue-600 text-[10px] font-black uppercase rounded-full tracking-wider">Date</span>
-                    </div>
-                    <p className="text-3xl font-black text-gray-900 mb-1">{bookings.length}</p>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-tight mb-4">Total Bookings</p>
-                    <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="w-full py-2 bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest rounded-lg hover:bg-blue-100 transition-colors cursor-pointer text-center focus:outline-none"
-                    />
-                </div>
-
-                {/* Các ca đã xong */}
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <CheckCircle className="w-8 h-8 text-green-600" />
-                    </div>
-                    <p className="text-3xl font-black text-gray-900 mb-1">
-                        {bookings.filter(b => b.status === 'Completed' || b.status === 'CheckedOut').length}
-                    </p>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-tight">Completed</p>
-                </div>
-
-                {/* Các ca đang thực hiện */}
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <Droplets className="w-8 h-8 text-amber-500" />
-                    </div>
-                    <p className="text-3xl font-black text-gray-900 mb-1">
-                        {bookings.filter(b => b.status === 'InProgress').length}
-                    </p>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-tight">In Progress</p>
-                </div>
-
-                {/* Hàng đợi chờ */}
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <Calendar className="w-8 h-8 text-purple-500" />
-                    </div>
-                    <p className="text-3xl font-black text-gray-900 mb-1">
-                        {bookings.filter(b => b.status === 'Confirmed' || b.status === 'Queued').length}
-                    </p>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-tight">Waiting Queue</p>
+        <div className="space-y-8 font-sans antialiased text-slate-800 pb-12">
+            {/* --- HEADER --- */}
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                <div>
+                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Staff Dashboard</h1>
+                    {staffProfile && (
+                        <div className="mt-4 inline-flex items-center gap-4 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+                            <div className="flex items-center gap-2">
+                                <div className="bg-blue-100 p-1.5 rounded-full text-blue-600">
+                                    <User className="w-4 h-4" />
+                                </div>
+                                <span className="text-sm text-slate-600">Xin chào, <span className="font-bold text-slate-900">{staffProfile.fullName}</span></span>
+                            </div>
+                            <div className="w-px h-4 bg-slate-300"></div>
+                            <div className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
+                                <MapPin className="w-4 h-4 text-rose-500" />
+                                {staffProfile.branch?.branchName || "Chi nhánh"}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Danh sách Booking hôm nay */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <h2 className="text-lg font-bold text-gray-900">Today's Bookings</h2>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Search ID/vehicle..."
-                            className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <select
-                            className="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                        >
-                            <option value="All">All Statuses</option>
-                            <option value="Confirmed">Confirmed</option>
-                            <option value="CheckedIn">Checked In</option>
-                            <option value="Queued">Queued</option>
-                            <option value="InProgress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                        </select>
+            {/* --- THỐNG KÊ (DASHBOARD STATS) --- */}
+            <DashboardStats bookings={bookings} localDate={selectedDate} setLocalDate={setSelectedDate} />
+
+            {/* --- DANH SÁCH LỊCH ĐẶT --- */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                <BookingTableFilters
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    statusFilter={statusFilter}
+                    setStatusFilter={setStatusFilter}
+                    onOpenQr={() => setIsQrModalOpen(true)}
+                />
+
+                {isBookingsLoading ? (
+                    <div className="p-20 flex flex-col items-center justify-center bg-white">
+                        <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                        <p className="text-sm font-semibold text-slate-500 animate-pulse">Đang đồng bộ dữ liệu lịch đặt...</p>
                     </div>
-                </div>
-                {filteredBookings.length === 0 ? (
-                    <div className="p-12 text-center text-gray-500">
-                        <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                            <Calendar className="w-8 h-8 text-gray-400" />
-                        </div>
-                        <p className="font-semibold">No bookings found</p>
+                ) : filteredBookings.length === 0 ? (
+                    <div className="p-16 flex flex-col items-center justify-center text-slate-500 bg-white">
+                        <p className="text-lg font-semibold text-slate-700">Không có lịch đặt nào</p>
+                        <p className="text-sm mt-1">Thử thay đổi bộ lọc hoặc ngày xem sao nhé.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-gray-50 border-b border-gray-200">
-                            <tr className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <th className="py-4 px-6">Booking ID</th>
-                                <th className="py-4 px-6">Vehicle ID</th>
-                                <th className="py-4 px-6">Status</th>
-                                <th className="py-4 px-6 text-right">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                            {filteredBookings.map(b => (
-                                <tr key={b.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-6 font-mono font-bold text-blue-600 text-sm">
-                                        #{b.id?.substring(0, 8)}...
-                                    </td>
-                                    <td className="py-4 px-6 font-medium text-gray-900">
-                                        {b.vehicleId || 'N/A'}
-                                    </td>
-                                    <td className="py-4 px-6">
-                                            <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                                b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' :
-                                                    b.status === 'CheckedIn' ? 'bg-purple-100 text-purple-700' :
-                                                        b.status === 'InProgress' ? 'bg-amber-100 text-amber-700' :
-                                                            b.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
-                                                                'bg-gray-100 text-gray-700'
-                                            }`}>
-                                                {b.status}
-                                            </span>
-                                    </td>
-                                    <td className="py-4 px-6 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            {b.status === 'Confirmed' && <button onClick={() => handleAction(b.id, 'checkIn')} className="text-xs font-black uppercase tracking-widest text-blue-600 hover:text-blue-800">Check-in</button>}
-                                            {b.status === 'CheckedIn' && <button onClick={() => handleAction(b.id, 'queue')} className="text-xs font-black uppercase tracking-widest text-purple-600 hover:text-purple-800">Queue</button>}
-                                            {b.status === 'Queued' && <button onClick={() => handleAction(b.id, 'start')} className="text-xs font-black uppercase tracking-widest text-amber-600 hover:text-amber-800">Start</button>}
-                                            {b.status === 'InProgress' && <button onClick={() => handleAction(b.id, 'finish')} className="text-xs font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-800">Finish</button>}
-                                            {b.status === 'Completed' && <button onClick={() => handleAction(b.id, 'checkout')} className="text-xs font-black uppercase tracking-widest text-gray-900 hover:text-gray-700">Checkout</button>}
-                                        </div>
-                                    </td>
+                        <table className="w-full text-left border-collapse">
+                            <thead className="bg-white border-b border-slate-200">
+                                <tr>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mã Code</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Khách & Xe</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Dịch vụ</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Trạng thái</th>
+                                    <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Thao tác</th>
                                 </tr>
-                            ))}
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 bg-white">
+                                {filteredBookings.map(b => (
+                                    <BookingTableRow key={b.id} booking={b} handleAction={handleAction} onViewDetail={() => setSelectedBookingDetail(b)} />
+                                ))}
                             </tbody>
                         </table>
                     </div>
                 )}
             </div>
 
-            {/* Modal hiển thị khi chọn Thanh toán (Checkout) */}
+            {/* Các Modal chức năng liên quan */}
             {selectedBookingForCheckout && (
                 <CheckoutSummaryModal
                     booking={selectedBookingForCheckout as BookingResponseData}
                     onClose={() => setSelectedBookingForCheckout(null)}
-                    onConfirm={confirmCheckout}
+                    onConfirmCash={handleConfirmCash}
+                    onConfirmPayOS={handleConfirmPayOS}
                 />
+            )}
+
+            {isQrModalOpen && (
+                <QrScannerModal
+                    onClose={() => setIsQrModalOpen(false)}
+                    onScanSuccess={handleQrScanSuccess}
+                />
+            )}
+
+            {/* Modal chi tiết lịch đặt */}
+            {selectedBookingDetail && (
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in">
+                    <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden flex flex-col">
+                        <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold">
+                                    <Car className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h2 className="font-extrabold text-lg text-slate-900">Chi Tiết Lịch Đặt</h2>
+                                    <p className="text-xs text-slate-500 font-medium">
+                                        Mã: <span className="font-bold text-blue-600">{selectedBookingDetail.bookingCode}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <button onClick={() => setSelectedBookingDetail(null)} className="p-2 hover:bg-slate-200/70 text-slate-400 hover:text-slate-700 rounded-xl transition-all">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-5">
+                            <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                                <div>
+                                    <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Biển số xe</p>
+                                    <p className="text-2xl font-black text-slate-900">{selectedBookingDetail.licensePlate}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Dòng xe</p>
+                                    <p className="text-lg font-bold text-slate-700">{selectedBookingDetail.vehicleName}</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
+                                    <span className="text-sm font-medium text-slate-500">Dịch vụ:</span>
+                                    <span className="text-sm font-bold text-slate-900 text-right max-w-[60%]">{selectedBookingDetail.serviceName}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
+                                    <span className="text-sm font-medium text-slate-500">Khung giờ:</span>
+                                    <span className="text-sm font-bold text-slate-900">{selectedBookingDetail.startTime} - {selectedBookingDetail.bookingDate}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
+                                    <span className="text-sm font-medium text-slate-500">Trạng thái:</span>
+                                    <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded uppercase tracking-wider">{selectedBookingDetail.status}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
+                            <button onClick={() => setSelectedBookingDetail(null)} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-colors">
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

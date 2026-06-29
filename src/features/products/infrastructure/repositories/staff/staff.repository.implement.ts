@@ -3,6 +3,7 @@ import { ENDPOINTS } from '@/core/api/endpoints';
 import type { IStaffBookingRepository } from './staff.repository.interface';
 import type { BookingResponseData } from '../../../domain/models/booking/booking.model';
 import type { ApiResponse } from '../../../domain/apiResponse';
+import type {StaffProfile} from "@/features/products/domain/models/staff/staff.dto.ts";
 
 export interface UpdateBookingStatusPayload {
     targetStatus: number;
@@ -30,6 +31,13 @@ export class StaffBookingRepositoryImplement implements IStaffBookingRepository 
             `${ENDPOINTS.STAFF.BOOKINGS}/${bookingId}/status`,
             payload
         );
+        return response.data;
+    }
+
+    async getProfile(): Promise<StaffProfile> {
+        // Thay url này bằng cấu hình ENDPOINTS của ông nếu có. VD: ENDPOINTS.STAFF.PROFILE
+        const response = await httpClient.get<ApiResponse<StaffProfile>>(
+            `${ENDPOINTS.STAFF.PROFILE}`);
         return response.data;
     }
 }

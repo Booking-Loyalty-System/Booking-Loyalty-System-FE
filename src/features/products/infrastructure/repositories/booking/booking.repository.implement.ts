@@ -31,4 +31,82 @@ export class BookingRepositoryImplement implements IBookingRepository {
             { reason }
         );
     }
+
+    // --- CÁC HÀM CỦA STAFF (Dùng PATCH và params) ---
+
+    async confirmBooking(id: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.CONFIRM(id)
+        );
+        return response.data;
+    }
+
+    async checkInBooking(id: string, staffId: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.CHECK_IN(id),
+            undefined, // Không có body
+            { params: { staffId } } // Truyền qua Query Params theo chuẩn ASP.NET Core
+        );
+        return response.data;
+    }
+
+    async queueBooking(id: string, bayId: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.QUEUE(id),
+            undefined,
+            { params: { bayId } }
+        );
+        return response.data;
+    }
+
+    async startBooking(id: string, bayId: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.START(id),
+            undefined,
+            { params: { bayId } }
+        );
+        return response.data;
+    }
+
+    async checkOutBooking(id: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.CHECKOUT(id)
+        );
+        return response ? response.data : {} as BookingResponseData;
+    }
+
+    async staffCancelBooking(id: string, cancel: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.STAFF_CANCEL(id),
+            undefined,
+            { params: { cancel } }
+        );
+        return response.data;
+    }
+
+    async noShowBooking(id: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.NO_SHOW(id)
+        );
+        return response.data;
+    }
+
+    async completed(id: string): Promise<BookingResponseData> {
+        const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.COMPLETED(id)
+        );
+        return response.data;
+    }
+
+    async scan_qr(qr: string): Promise<BookingResponseData> {
+        const response = await httpClient.get<ApiResponse<BookingResponseData>>(
+            ENDPOINTS.BOOKING.QR,
+            {
+                params: {
+                    payload: qr
+                }
+            }
+        );
+        return response.data;
+    }
 }

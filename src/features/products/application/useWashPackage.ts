@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { WashPackageRepositoryImplement } from '../infrastructure/repositories/wash-package/wash-package.repository.implement.ts';
+
 import type { WashPackage } from '../domain/models/wash-package/wash-package.model.ts';
 
 const washPackageRepository = new WashPackageRepositoryImplement();

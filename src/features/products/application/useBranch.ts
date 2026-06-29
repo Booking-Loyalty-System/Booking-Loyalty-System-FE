@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { BranchRepositoryImplement } from '../infrastructure/repositories/branch/branch.repository.implement.ts';
+
 import type { Branch } from '../domain/models/branch/branch.model.ts';
 
 const branchRepository = new BranchRepositoryImplement();
