@@ -11,11 +11,11 @@ import {
 } from "lucide-react";
 import { useAdminReward } from "../../../application/useAdminReward";
 import type {
-  RewardResponseData,
-  CreateRewardInput,
+  AdminRewardResponseData,
+  UpdateAdminRewardInput,
 } from "../../../application/useAdminReward";
 
-const defaultFormState: CreateRewardInput = {
+const defaultFormState: UpdateAdminRewardInput = {
   name: "",
   description: "",
   pointsCost: 0,
@@ -35,7 +35,7 @@ export function AdminReward() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<CreateRewardInput>(defaultFormState);
+  const [editForm, setEditForm] = useState<UpdateAdminRewardInput>(defaultFormState);
 
   // --- Thống kê ---
   const activeRewardsCount = rewards.filter((r) => r.isActive).length;
@@ -46,7 +46,7 @@ export function AdminReward() {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = (reward: RewardResponseData) => {
+  const handleOpenEdit = (reward: AdminRewardResponseData) => {
     setIsEditing(reward.id);
     setEditForm({
       name: reward.name,
@@ -64,7 +64,8 @@ export function AdminReward() {
       if (isEditing) {
         await updateReward({ id: isEditing, data: editForm });
       } else {
-        await createReward(editForm);
+        const { isActive, ...createData } = editForm;
+        await createReward(createData);
       }
       setIsModalOpen(false);
     } catch (error) {

@@ -31,7 +31,6 @@ const FEATURE_MAP: Record<string, { type: StepType; name: string; desc: string; 
     "Exterior wash": { type: 'exterior_wash', name: 'Rửa ngoại thất', desc: 'Xịt nước áp lực cao sạch bụi bẩn bề mặt sơn.', camPos: [15, 6, 15] },
     "Interior vacuum": { type: 'interior_vacuum', name: 'Hút bụi nội thất', desc: 'Hút sạch bụi bẩn sàn xe, thảm để chân và các khe hở.', camPos: [0, 4, 8] },
     "Dashboard polish": { type: 'dashboard_polish', name: 'Đánh bóng taplo', desc: 'Lau dọn và phủ lớp dưỡng bóng bề mặt bảng điều khiển.', camPos: [0, 3, 5] },
-    "Tire shine": { type: 'tire_cleaning', name: 'Làm bóng lốp', desc: 'Quét dung dịch bảo dưỡng giúp lốp đen bóng như mới.', camPos: [-10, 1.5, 10] },
     "Air freshener": { type: 'air_freshener', name: 'Xịt thơm khử mùi', desc: 'Khử khuẩn và phun tinh dầu hương thơm tự nhiên.', camPos: [0, 5, 10] },
     "Tire cleaning": { type: 'tire_cleaning', name: 'Vệ sinh lốp xe', desc: 'Chà rửa mâm lốp và làm sạch hệ thống phanh.', camPos: [10, 1.5, 10] },
     "Window cleaning": { type: 'window_cleaning', name: 'Vệ sinh kính xe', desc: 'Lau sạch các bề mặt kính lái, kính hông và gương.', camPos: [0, 5, 12] },

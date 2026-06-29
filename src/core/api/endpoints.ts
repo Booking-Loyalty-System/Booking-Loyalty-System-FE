@@ -109,12 +109,6 @@ export const ENDPOINTS = {
         WASH_BAYS: '/admin/wash-bays',
         WASH_BAY_DETAIL: (id: string) => `/admin/wash-bays/${id}`,
         WASH_BAY_BY_BRANCH: (id: string) => `/admin/wash-bays/by-branch/${id}`,
-        TIERS: '/admin/tiers',
-        TIER_DETAIL: (id: string) => `/admin/tiers/${id}`,
-        REWARDS: '/admin/rewards',
-        REWARD_DETAIL: (id: string) => `/admin/rewards/${id}`,
-        PROMOTIONS: '/admin/promotions',
-        PROMOTION_DETAIL: (id: string) => `/admin/promotions/${id}`,
     },
 
     ADMIN_DASHBOARD: {
