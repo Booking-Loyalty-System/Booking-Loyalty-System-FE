@@ -313,13 +313,14 @@ export const LoyaltyTier: React.FC = () => {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-slate-500">
-                  {t("loyaltyTier.stats.availablePoints", { defaultValue: "Available Points" })}
+                  {/* Sử dụng hook useTranslation và hàm t() để lấy nội dung dịch thuật đa ngôn ngữ từ locale files */}
+                  {t("loyaltyTier.stats.pointsEarned", { defaultValue: "Total Points Earned" })}
                 </p>
-                {/* Sử dụng Total Earned dựa trên Total Points */}
+                {/* Sử dụng Total Earned dựa trên Total Points trọn đời để thể hiện tổng điểm tích lũy */}
                 <p className="text-3xl font-bold text-slate-800 mt-1">
                   {totalEarned}
                 </p>
-                <p className="text-xs text-slate-400 mt-1">{t("loyaltyTier.stats.allTime")}</p>
+                <p className="text-xs text-slate-400 mt-1">{t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}</p>
               </div>
               <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
                 <TrendingUp className="w-6 h-6" />
@@ -329,12 +330,13 @@ export const LoyaltyTier: React.FC = () => {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-slate-500">
-                  {t("loyaltyTier.stats.pointsRedeemed")}
+                  {/* Sử dụng t() từ react-i18next hiển thị thống kê điểm thưởng đã đổi */}
+                  {t("loyaltyTier.stats.pointsRedeemed", { defaultValue: "Points Redeemed" })}
                 </p>
                 <p className="text-3xl font-bold text-slate-800 mt-1">
                   {totalRedeemed}
                 </p>
-                <p className="text-xs text-slate-400 mt-1">{t("loyaltyTier.stats.allTime")}</p>
+                <p className="text-xs text-slate-400 mt-1">{t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}</p>
               </div>
               <div className="p-3 bg-purple-50 rounded-xl text-purple-600">
                 <Gift className="w-6 h-6" />
@@ -344,12 +346,13 @@ export const LoyaltyTier: React.FC = () => {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-slate-500">
-                  {t("loyaltyTier.stats.totalBookings")}
+                  {/* Sử dụng t() từ react-i18next hiển thị thống kê tổng số lượt đặt lịch của thành viên */}
+                  {t("loyaltyTier.stats.totalBookings", { defaultValue: "Total Bookings" })}
                 </p>
                 <p className="text-3xl font-bold text-slate-800 mt-1">
                   {totalBookings}
                 </p>
-                <p className="text-xs text-slate-400 mt-1">{t("loyaltyTier.stats.allTime")}</p>
+                <p className="text-xs text-slate-400 mt-1">{t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}</p>
               </div>
               <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
                 <Calendar className="w-6 h-6" />

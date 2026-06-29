@@ -224,6 +224,12 @@
   },
   "loyaltyTier": {
     "title": "Tích Điểm & Hạng Thành Viên",
+    "stats": {
+      "pointsEarned": "Tổng Điểm Tích Lũy",
+      "pointsRedeemed": "Điểm Đã Đổi",
+      "totalBookings": "Tổng Lượt Rửa",
+      "allTime": "Tích lũy trọn đời"
+    },
     "currentTier": "Hạng Hiện Tại",
     "pointsToNext": "điểm để lên hạng tiếp theo",
     "tierMember": "Thành Viên",
