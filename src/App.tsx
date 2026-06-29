@@ -28,6 +28,8 @@ import { AdminPromotions } from "@/features/products/presentation/pages/admin/Ad
 import { AdminReports } from "@/features/products/presentation/pages/admin/AdminReports";
 import { AdminStaff } from "@/features/products/presentation/pages/admin/AdminStaff";
 import { AdminBranches } from "@/features/products/presentation/pages/admin/AdminBranches";
+import { AutoWashSimulationTest } from "@/shared/auto-wash-simulation-test.tsx";
+import { AdminLayout } from "@/features/products/presentation/layouts/AdminLayout.tsx";
 
 function App() {
   return (
@@ -39,11 +41,12 @@ function App() {
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/live-tracking-test"
+            element={<AutoWashSimulationTest />}
+          />
           <Route element={<CustomerLayout />}>
-            <Route
-              path="/live-tracking-test"
-              element={<AutoWashSimulation />}
-            />
+
             <Route path="/book-wash" element={<BookWash />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/loyalty-tier" element={<Membership />} />
@@ -65,26 +68,28 @@ function App() {
             </Route>
           </Route>
 
-                    <Route element={<ProtectedRoute allowedRoles={["Staff", "Admin"]} />}>
-                        <Route element={<StaffLayout />}>
-                            <Route path="/staff/dashboard" element={<StaffDashboard />} />
-                            <Route path="/staff/queue" element={<StaffQueuePage />} />
-                            <Route path="/staff/monitor" element={<QueueMonitor />} />
-                            <Route path="/staff/bookings" element={<TotalBookings />} />
-                            <Route path="/staff/notifications" element={< NotificationCenter/>} />
-                        </Route>
-                    </Route>
-
-            <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/packages" element={<AdminPackages />} />
-                <Route path="/admin/branches" element={<AdminBranches />} />
-                <Route path="/admin/loyalty" element={<AdminLoyalty />} />
-                <Route path="/admin/reports" element={<AdminReports />} />
-                <Route path="/admin/analytics" element={<AdminAnalytics />} />
-                <Route path="/admin/promotions" element={<AdminPromotions />} />
-                <Route path="/admin/staff" element={<AdminStaff />} />
+          <Route element={<ProtectedRoute allowedRoles={["Staff", "Admin"]} />}>
+            <Route element={<StaffLayout />}>
+              <Route path="/staff/dashboard" element={<StaffDashboard />} />
+              <Route path="/staff/queue" element={<StaffQueuePage />} />
+              <Route path="/staff/monitor" element={<QueueMonitor />} />
+              <Route path="/staff/bookings" element={<TotalBookings />} />
+              <Route path="/staff/notifications" element={< NotificationCenter />} />
             </Route>
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/packages" element={<AdminPackages />} />
+              <Route path="/admin/branches" element={<AdminBranches />} />
+              <Route path="/admin/loyalty" element={<AdminLoyalty />} />
+              <Route path="/admin/reports" element={<AdminReports />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/admin/promotions" element={<AdminPromotions />} />
+              <Route path="/admin/staff" element={<AdminStaff />} />
+            </Route>
+          </Route>
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

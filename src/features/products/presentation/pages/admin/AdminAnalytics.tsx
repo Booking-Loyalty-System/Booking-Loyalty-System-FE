@@ -1,4 +1,3 @@
-import { Layout } from "../../components/layout/Layout";
 import {
   Users,
   TrendingUp,
@@ -37,8 +36,7 @@ const customerSegmentData = [
 
 export function AdminAnalytics() {
   return (
-    <Layout title="Customer Analytics" userName="Admin" role="admin">
-      <div className="space-y-8">
+      <div className="p-6 space-y-8 animate-fade-in">
         {/* Analytics Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -55,9 +53,9 @@ export function AdminAnalytics() {
               <option>Last Quarter</option>
               <option>Year to Date</option>
             </select>
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
               <Download className="w-4 h-4" />
-              Export Report
+              Export PDF
             </button>
           </div>
         </div>
@@ -298,6 +296,5 @@ export function AdminAnalytics() {
           </div>
         </div>
       </div>
-    </Layout>
   );
 }

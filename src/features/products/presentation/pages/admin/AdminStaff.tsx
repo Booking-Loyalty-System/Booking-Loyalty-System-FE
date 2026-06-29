@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "../../components/layout/Layout";
 import {
   Users,
   Plus,
@@ -227,7 +226,7 @@ export function AdminStaff() {
   };
 
   return (
-    <Layout title="Staff Management" userName="Admin" role="admin">
+      <div className="p-6 space-y-8 animate-fade-in">
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -529,6 +528,6 @@ export function AdminStaff() {
           </div>
         </div>
       )}
-    </Layout>
+      </div>
   );
 }

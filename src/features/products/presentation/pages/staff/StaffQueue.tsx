@@ -54,18 +54,34 @@ export const StaffQueuePage: React.FC = () => {
         }
     };
 
-    const confirmCheckout = async () => {
+    const handleCashCheckout = async () => {
         if (!selectedBookingForCheckout) return;
         try {
             await actions.updateStatus({
                 id: selectedBookingForCheckout.id,
-                payload: { targetStatus: 5 } // Tương ứng với Checkout
+                payload: { targetStatus: 5 } // 5 tương ứng với trạng thái CheckedOut trực tiếp
             });
-            toast.success('Checkout completed and points awarded!');
+            toast.success('Thanh toán tiền mặt thành công! Điểm thưởng đã được cộng.');
             setSelectedBookingForCheckout(null);
         } catch (error) {
             console.error(error);
-            toast.error('Checkout failed');
+            toast.error('Thanh toán tiền mặt thất bại');
+        }
+    };
+
+    const handlePayOSCheckout = async (): Promise<string> => {
+        if (!selectedBookingForCheckout) return '';
+        try {
+            // Gọi API của bạn để tạo Link thanh toán PayOS từ Backend
+            // Ví dụ: const response = await actions.createPayOsLink({ bookingId: selectedBookingForCheckout.id });
+            // return response.checkoutUrl;
+
+            toast.loading('Đang khởi tạo link thanh toán QR...');
+            return 'https://example.com/checkout-link-tu-backend'; // 👈 Thay thế bằng hàm gọi API thực tế của bạn
+        } catch (error) {
+            console.error(error);
+            toast.error('Không thể khởi tạo cổng thanh toán PayOS');
+            return '';
         }
     };
 
@@ -203,13 +219,12 @@ export const StaffQueuePage: React.FC = () => {
 
                                                 <button
                                                     onClick={() => handleAction(booking.id, action)}
-                                                    className={`w-full mt-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                                                        action === 'checkIn' ? 'bg-slate-800 text-white hover:bg-black shadow-slate-200' :
+                                                    className={`w-full mt-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 ${action === 'checkIn' ? 'bg-slate-800 text-white hover:bg-black shadow-slate-200' :
                                                             action === 'queue' ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-100' :
                                                                 action === 'start' ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-100' :
                                                                     action === 'finish' ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100' :
                                                                         'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-100'
-                                                    } shadow-lg`}
+                                                        } shadow-lg`}
                                                 >
                                                     {label}
                                                     <ChevronRight className="w-4 h-4" />
@@ -228,7 +243,8 @@ export const StaffQueuePage: React.FC = () => {
                 <CheckoutSummaryModal
                     booking={selectedBookingForCheckout}
                     onClose={() => setSelectedBookingForCheckout(null)}
-                    onConfirm={confirmCheckout}
+                    onConfirmCash={handleCashCheckout}
+                    onConfirmPayOS={handlePayOSCheckout}
                 />
             )}
         </div>

@@ -70,6 +70,19 @@ export const ENDPOINTS = {
         WASH_PACKAGE_DETAIL: (id: string) => `/admin/wash-packages/${id}`,
         BRANCHES: '/admin/branches',
         BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
+        TIERS: '/admin/tiers',
+        TIER_DETAIL: (id: string) => `/admin/tiers/${id}`,
+        REWARDS: '/admin/rewards',
+        REWARD_DETAIL: (id: string) => `/admin/rewards/${id}`,
+        PROMOTIONS: '/admin/promotions',
+        PROMOTION_DETAIL: (id: string) => `/admin/promotions/${id}`,
+    },
+
+    ADMIN_DASHBOARD: {
+        SUMMARY: '/AdminDashboard/summary',
+        RECENT_BOOKINGS: '/AdminDashboard/recent-bookings',
+        TIER_CONFIG: '/AdminDashboard/tier-config',
+        EXPORT_RBL: '/AdminDashboard/export-rbl'
     },
 
     PROMOTION: {

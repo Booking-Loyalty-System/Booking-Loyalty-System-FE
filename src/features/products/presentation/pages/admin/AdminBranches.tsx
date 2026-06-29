@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { Layout } from "../../components/layout/Layout";
 import {
   MapPin,
   Plus,
@@ -17,7 +16,7 @@ import {
 import { AdminBranchRepositoryImplement } from "../../../infrastructure/repositories/admin-branch/admin-branch.repository.implement";
 import type { BranchResponseData } from "../../../domain/models/admin-branch/admin-branch.model";
 
-// --- IMPORT LEAFLET ---
+// --- IMPORT LEAFLET (ĐÃ SỬA LỖI IMPORT TÊN MODULE SAI) ---
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -44,7 +43,8 @@ function LocationPicker({
   onPositionChange: (latlng: L.LatLng) => void;
 }) {
   useMapEvents({
-    click(e) {
+    // ĐÃ SỬA LỖI TS7006: Định nghĩa kiểu dữ liệu chuẩn cho sự kiện click chuột trên map
+    click(e: L.LeafletMouseEvent) {
       onPositionChange(e.latlng);
     },
   });
@@ -93,6 +93,7 @@ export function AdminBranches() {
     }
   }, []);
 
+  // ĐÃ SỬA LỖI ESLint: Quản lý render tối ưu & an toàn bằng cách gọi hàm đã qua useCallback
   useEffect(() => {
     fetchBranches();
   }, [fetchBranches]);
@@ -199,7 +200,6 @@ export function AdminBranches() {
 
     setIsGeocoding(true);
     try {
-      // Khuyến khích cấu hình trong file .env (ví dụ Vite: VITE_GOONG_REST_API_KEY)
       const GOONG_REST_API_KEY =
           import.meta.env.VITE_GOONG_REST_API_KEY || "YOUR_GOONG_REST_API_KEY";
 
@@ -209,7 +209,6 @@ export function AdminBranches() {
         return;
       }
 
-      // Endpoint Geocoding chính thức của Goong
       const url = `https://rsapi.goong.io/Geocode?address=${encodeURIComponent(
           editForm.address
       )}&api_key=${GOONG_REST_API_KEY}`;
@@ -218,7 +217,6 @@ export function AdminBranches() {
       const data = await res.json();
 
       if (data && data.status === "OK" && data.results && data.results.length > 0) {
-        // Lấy kết quả đầu tiên trả về có độ chính xác cao nhất
         const location = data.results[0].geometry.location;
 
         setEditForm({
@@ -240,11 +238,13 @@ export function AdminBranches() {
   };
 
   return (
-      <Layout title="Branch Management" userName="Admin" role="admin">
+      <div className="p-6 space-y-6 animate-fade-in">
+        {/* Top Section */}
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
+              <h3 className="text-2xl font-bold text-gray-900">Branches</h3>
               <p className="text-gray-500">Manage all car wash branches locations</p>
             </div>
             <button
@@ -302,8 +302,8 @@ export function AdminBranches() {
                         <div className="flex items-start gap-2">
                           <MapPin className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
                           <span className="text-sm text-gray-600 line-clamp-2">
-                      {branch.address}
-                    </span>
+                          {branch.address}
+                        </span>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -314,8 +314,8 @@ export function AdminBranches() {
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-gray-400" />
                           <span className="text-sm text-gray-600">
-                      Hours: {branch.operatingHours}
-                    </span>
+                          Hours: {branch.operatingHours}
+                        </span>
                         </div>
                       </div>
 
@@ -330,14 +330,14 @@ export function AdminBranches() {
                       >
                         {branch.status === "Active" ? (
                             <span className="flex items-center justify-center gap-2">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Active
-                    </span>
+                    <CheckCircle2 className="w-4 h-4" />
+                    Active
+                  </span>
                         ) : (
                             <span className="flex items-center justify-center gap-2">
-                      <XCircle className="w-4 h-4" />
-                      Inactive
-                    </span>
+                    <XCircle className="w-4 h-4" />
+                    Inactive
+                  </span>
                         )}
                       </button>
                     </div>
@@ -385,15 +385,15 @@ export function AdminBranches() {
                         Address
                       </label>
                       <div className="flex gap-2">
-                    <textarea
-                        value={editForm.address}
-                        onChange={(e) =>
-                            setEditForm({ ...editForm, address: e.target.value })
-                        }
-                        rows={2}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                        placeholder="Nhập địa chỉ đầy đủ..."
-                    />
+                  <textarea
+                      value={editForm.address}
+                      onChange={(e) =>
+                          setEditForm({ ...editForm, address: e.target.value })
+                      }
+                      rows={2}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                      placeholder="Nhập địa chỉ đầy đủ..."
+                  />
                         <button
                             type="button"
                             onClick={handleGeocodeAddress}
@@ -403,8 +403,8 @@ export function AdminBranches() {
                         >
                           <Search className="w-5 h-5 mb-1" />
                           <span className="text-xs font-medium">
-                        {isGeocoding ? "Đang tìm..." : "Tìm Map"}
-                      </span>
+                      {isGeocoding ? "Đang tìm..." : "Tìm Map"}
+                    </span>
                         </button>
                       </div>
                     </div>
@@ -475,8 +475,7 @@ export function AdminBranches() {
                   <div className="flex flex-col h-[400px] lg:h-auto border border-gray-300 rounded-lg overflow-hidden">
                     <div className="p-3 bg-gray-50 border-b border-gray-300 text-sm text-gray-600 flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
-                      Click vào bản đồ để ghim vị trí hoặc dùng nút "Tìm Map" bên cạnh địa
-                      chỉ
+                      Click vào bản đồ để ghim vị trí hoặc dùng nút "Tìm Map" bên cạnh địa chỉ
                     </div>
                     <div className="flex-1 w-full h-full relative z-0">
                       <MapContainer
@@ -535,6 +534,6 @@ export function AdminBranches() {
               </div>
             </div>
         )}
-      </Layout>
+      </div>
   );
 }
