@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "../../components/layout/Layout";
 import {
   Gift,
   Plus,
@@ -80,7 +79,7 @@ export function AdminReward() {
   };
 
   return (
-    <Layout title="Rewards Management" userName="Admin" role="admin">
+  <div>
       <div className="space-y-8">
         {/* Header Actions */}
         <div className="flex items-center justify-between">
@@ -351,6 +350,6 @@ export function AdminReward() {
           </div>
         </div>
       )}
-    </Layout>
+  </div>
   );
 }
