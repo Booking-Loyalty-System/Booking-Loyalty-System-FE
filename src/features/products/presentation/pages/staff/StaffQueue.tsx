@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
 import { useAuth } from '../../../application/useAuth';
-import { usePayment } from '../../../application/usePayment';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 import { toast } from 'sonner';
 import { CheckoutSummaryModal } from '../../components/staff/CheckoutSummaryModal';
@@ -20,7 +19,6 @@ type StaffAction = 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout';
 
 export const StaffQueuePage: React.FC = () => {
     const { user } = useAuth();
-    const { createPayOsUrl } = usePayment();
     // Đảm bảo lấy đúng kiểu dữ liệu từ hook
     const { bookings = [], isLoading, actions } = useStaffDashboard();
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);

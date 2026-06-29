@@ -28,13 +28,6 @@ interface DashboardBooking {
   bayId?: string;
 }
 
-interface DashboardActions {
-  updateStatus: (params: {
-    id: string;
-    payload: { targetStatus: number; reason?: string; staffId?: string }
-  }) => Promise<unknown>;
-}
-
 export const QueueMonitor: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -57,10 +50,9 @@ export const QueueMonitor: React.FC = () => {
   const { staffProfile, isLoading: isStaffLoading } = useStaff();
   const branchId = staffProfile?.branchId || staffProfile?.branch?.id;
 
-  const { bookings = [], isLoading: isBookingsLoading, actions, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
+  const { bookings = [], isLoading: isBookingsLoading, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
     bookings: DashboardBooking[];
     isLoading: boolean;
-    actions: DashboardActions;
     selectedDate: string;
     setSelectedDate: (date: string) => void;
   };
