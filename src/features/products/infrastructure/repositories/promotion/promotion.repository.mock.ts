@@ -4,6 +4,7 @@ import type { Promotion, ValidatePromotionRequest, ValidatePromotionResponse } f
 const mockPromotions: Promotion[] = [
     {
         id: 'promo_1',
+        name: 'Weekend Special - 30% Off',
         title: 'Weekend Special - 30% Off',
         description: 'Get 30% off on all premium wash services every weekend',
         code: 'WEEKEND30',
@@ -17,6 +18,7 @@ const mockPromotions: Promotion[] = [
     },
     {
         id: 'promo_2',
+        name: 'Early Bird Special',
         title: 'Early Bird Special',
         description: '20% off on bookings before 9 AM',
         code: 'EARLY20',
@@ -30,6 +32,7 @@ const mockPromotions: Promotion[] = [
     },
     {
         id: 'promo_3',
+        name: 'Exclusive for Gold: Free Upgrade',
         title: 'Exclusive for Gold: Free Upgrade',
         description: 'Fixed discount 100.000đ for Gold members',
         code: 'GOLDVIP',

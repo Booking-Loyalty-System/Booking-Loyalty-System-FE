@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
 import type { DailyTimeSlotsSummaryDto } from "../../domain/models/time-slot/time-slot.dto.ts";
 
@@ -27,6 +28,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                                                         onSelectTime,
                                                                         isLoadingSlots
                                                                     }) => {
+    const { t } = useTranslation('customer');
 
     // 1. Tìm danh sách ca giờ thuộc riêng ngày đang được chọn trên UI (selectedDate)
     const currentDayData = weeklySummary.find(slot => slot.date === selectedDate);
@@ -63,10 +65,11 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         <div className="space-y-6">
             {/* --- Phần chọn ngày (Tabs) --- */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold text-[#0f172a]">Select Date</h3>
+                <h3 className="text-xl font-bold text-[#0f172a]">{t('bookWash.dateTime.selectDateTitle', { defaultValue: "Select Date" })}</h3>
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
                     {dynamicDateSlots.map((slot) => {
                         const isDateSelected = selectedDate === slot.apiDate;
+                        const translatedDayName = t(`common.days.${slot.dayName.toLowerCase()}`, { defaultValue: slot.dayName });
                         return (
                             <div
                                 key={slot.apiDate}
@@ -81,7 +84,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                 }`}
                             >
                                 <span className={`block text-xs font-semibold uppercase ${isDateSelected ? 'text-[#1e6ffd]' : 'text-[#64748b]'}`}>
-                                    {slot.dayName}
+                                    {translatedDayName}
                                 </span>
                                 <span className={`block text-2xl font-black mt-2 ${isDateSelected ? 'text-[#1e6ffd]' : 'text-[#0f172a]'}`}>
                                     {slot.dayNum}
@@ -94,16 +97,16 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
             {/* --- Phần chọn giờ dịch từ Real-time API --- */}
             <div className="space-y-4 pt-2">
-                <h4 className="text-lg font-bold text-[#0f172a]">Available Time Slots</h4>
+                <h4 className="text-lg font-bold text-[#0f172a]">{t('bookWash.dateTime.availableTimeSlotsTitle', { defaultValue: "Available Time Slots" })}</h4>
 
                 {isLoadingSlots ? (
                     <div className="text-sm font-medium text-blue-500 py-4 flex items-center gap-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                        Đang tải dữ liệu ca trống...
+                        {t('bookWash.dateTime.loadingSlots', { defaultValue: "Đang tải dữ liệu ca trống..." })}
                     </div>
                 ) : activeTimeSlots.length === 0 ? (
                     <div className="text-sm font-medium text-slate-400 py-4 italic">
-                        Vui lòng chọn chi nhánh để cập nhật ca trống...
+                        {t('bookWash.dateTime.selectBranchPrompt', { defaultValue: "Vui lòng chọn chi nhánh để cập nhật ca trống..." })}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -142,7 +145,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                         <span className="text-sm font-black">{displayTime}</span>
                                     </div>
                                     <span className="text-xs font-semibold pl-6">
-                                        {isDisabled ? (isPast ? 'Closed' : 'Full') : slot.slotRatio}
+                                        {isDisabled ? (isPast ? t('bookWash.dateTime.closed', { defaultValue: 'Closed' }) : t('bookWash.dateTime.full', { defaultValue: 'Full' })) : slot.slotRatio}
                                     </span>
                                 </div>
                             );
