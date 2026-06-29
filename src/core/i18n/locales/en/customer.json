@@ -224,6 +224,12 @@
   },
   "loyaltyTier": {
     "title": "Your Loyalty & Tier",
+    "stats": {
+      "pointsEarned": "Total Points Earned",
+      "pointsRedeemed": "Points Redeemed",
+      "totalBookings": "Total Bookings",
+      "allTime": "All Time"
+    },
     "currentTier": "Current Tier",
     "pointsToNext": "points to next tier",
     "tierMember": "Member",
