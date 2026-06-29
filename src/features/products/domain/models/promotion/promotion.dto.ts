@@ -24,6 +24,8 @@ export interface PromotionResponse {
 export interface ValidatePromotionRequest {
     code: string;
     serviceId: string;
+    branchId: string;
+    subtotal: number;
 }
 
 export interface ValidatePromotionResponse {

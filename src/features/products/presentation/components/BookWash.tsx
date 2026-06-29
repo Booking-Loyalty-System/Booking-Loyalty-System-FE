@@ -118,13 +118,18 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
           {t("bookWash.successTitle", { defaultValue: "Đặt Lịch Thành Công!" })}
         </h1>
         <p className="text-sm font-medium text-slate-400">
-          {t("bookWash.successSubtitle", { defaultValue: "Vui lòng kiểm tra lại thông tin biên nhận cuối cùng của bạn dưới đây." })}
+          {t("bookWash.successSubtitle", {
+            defaultValue:
+              "Vui lòng kiểm tra lại thông tin biên nhận cuối cùng của bạn dưới đây.",
+          })}
         </p>
       </div>
 
       <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-8 flex flex-col items-center justify-center">
         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-          {t("bookWash.bookingCodeLabel", { defaultValue: "Mã Đặt Lịch (Booking Code)" })}
+          {t("bookWash.bookingCodeLabel", {
+            defaultValue: "Mã Đặt Lịch (Booking Code)",
+          })}
         </span>
         <span className="text-3xl font-mono font-black text-blue-600 tracking-wider mb-6 block">
           {qrValue}
@@ -138,7 +143,10 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
           />
         </div>
         <p className="text-xs font-medium text-slate-500 mt-4 text-center">
-          {t("bookWash.qrInstruction", { defaultValue: "Đưa mã này cho nhân viên quét khi bạn đến cửa hàng nhé!" })}
+          {t("bookWash.qrInstruction", {
+            defaultValue:
+              "Đưa mã này cho nhân viên quét khi bạn đến cửa hàng nhé!",
+          })}
         </p>
       </div>
 
@@ -161,7 +169,9 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
           <CreditCard className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              {t("bookWash.serviceSelectedLabel", { defaultValue: "Gói Dịch Vụ Đã Chọn" })}
+              {t("bookWash.serviceSelectedLabel", {
+                defaultValue: "Gói Dịch Vụ Đã Chọn",
+              })}
             </p>
             <p className="text-sm font-extrabold text-slate-800 mt-0.5">
               {booking.washPackageName || packageInfo?.name}
@@ -194,7 +204,9 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
 
       <div className="flex items-center justify-between p-2 px-4 mb-8">
         <span className="text-base font-bold text-slate-500">
-          {t("bookWash.totalCostLabel", { defaultValue: "Tổng chi phí thanh toán:" })}
+          {t("bookWash.totalCostLabel", {
+            defaultValue: "Tổng chi phí thanh toán:",
+          })}
         </span>
         <span className="text-2xl font-black text-slate-900">
           {formatCurrency(booking.totalPrice)}
@@ -205,7 +217,11 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
         onClick={onContinue}
         className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
       >
-        <span>{t("bookWash.viewHistoryBtn", { defaultValue: "Xem Lịch Sử Đặt Lịch" })}</span>
+        <span>
+          {t("bookWash.viewHistoryBtn", {
+            defaultValue: "Xem Lịch Sử Đặt Lịch",
+          })}
+        </span>
         <ArrowRight className="w-5 h-5" />
       </button>
     </div>
@@ -324,10 +340,28 @@ export const BookWash: React.FC = () => {
   };
 
   const handleConfirmBooking = async () => {
-    if (!selectedVehicleId) return toast.error(t("bookWash.toastNoVehicle", { defaultValue: "Vui lòng chọn xe của bạn!" }));
-    if (!selectedBranchId) return toast.error(t("bookWash.toastNoBranch", { defaultValue: "Vui lòng chọn chi nhánh!" }));
-    if (!selectedPackageId) return toast.error(t("bookWash.toastNoPackage", { defaultValue: "Vui lòng chọn gói rửa xe!" }));
-    if (!selectedTime) return toast.error(t("bookWash.toastNoTime", { defaultValue: "Vui lòng chọn khung giờ!" }));
+    if (!selectedVehicleId)
+      return toast.error(
+        t("bookWash.toastNoVehicle", {
+          defaultValue: "Vui lòng chọn xe của bạn!",
+        }),
+      );
+    if (!selectedBranchId)
+      return toast.error(
+        t("bookWash.toastNoBranch", {
+          defaultValue: "Vui lòng chọn chi nhánh!",
+        }),
+      );
+    if (!selectedPackageId)
+      return toast.error(
+        t("bookWash.toastNoPackage", {
+          defaultValue: "Vui lòng chọn gói rửa xe!",
+        }),
+      );
+    if (!selectedTime)
+      return toast.error(
+        t("bookWash.toastNoTime", { defaultValue: "Vui lòng chọn khung giờ!" }),
+      );
 
     setIsCreating(true);
     try {
@@ -346,7 +380,11 @@ export const BookWash: React.FC = () => {
       setCreatedBooking(newBookingData as unknown as CreatedBookingData);
     } catch (err) {
       console.error("Booking failed:", err);
-      toast.error(t("bookWash.toastBookingError", { defaultValue: "Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại." }));
+      toast.error(
+        t("bookWash.toastBookingError", {
+          defaultValue: "Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại.",
+        }),
+      );
     } finally {
       setIsCreating(false);
     }
@@ -356,7 +394,9 @@ export const BookWash: React.FC = () => {
   if (isLoadingVehicles || isLoadingPackages || isLoadingRedemptions) {
     return (
       <div className="p-10 text-center font-medium">
-        {t("bookWash.loadingInfo", { defaultValue: "Đang tải thông tin đặt lịch..." })}
+        {t("bookWash.loadingInfo", {
+          defaultValue: "Đang tải thông tin đặt lịch...",
+        })}
       </div>
     );
   }
@@ -400,7 +440,10 @@ export const BookWash: React.FC = () => {
 
         <NearestBranches
           selectedBranchId={selectedBranchId}
-          onSelectBranch={setSelectedBranchId}
+          onSelectBranch={(branchId) => {
+            setSelectedBranchId(branchId);
+            setAppliedPromotion(null);
+          }}
         />
 
         <WashPackageSelection
@@ -409,12 +452,12 @@ export const BookWash: React.FC = () => {
           onSelectPackage={setSelectedPackageId}
         />
 
-        {/* 🌟 VOUCHER SELECTION ĐÃ ĐƯỢC DỌN DẸP, CHỈ TRUYỀN HÀM ĐỒNG BỘ SET VOUCHER */}
         <VoucherSelection
           activeVouchers={redeemedVouchersOnly as any}
           selectedVoucherId={selectedVoucher?.id || ""}
-          onSelectVoucher={setSelectedVoucher} // Truyền thẳng hàm gốc vào, không dùng async
-          totalPoints={customerMe?.totalPoints || 0}
+          onSelectVoucher={setSelectedVoucher}
+          totalPoints={customerMe?.availablePoint ?? 0}
+          currentCycleWashes={(customerMe as any)?.currentCycleWashes ?? 0}
         />
 
         <DateTimeSelection
@@ -440,15 +483,56 @@ export const BookWash: React.FC = () => {
         selectedVoucher={selectedVoucher}
         appliedPromotion={appliedPromotion}
         onApplyPromotion={async (code) => {
-          const res = await validatePromotion({
-            code,
-            serviceId: selectedPackageId,
-          });
-          if (res.isValid && res.promotion) {
-            setAppliedPromotion(res.promotion);
-            return true;
+          const subtotal = currentPackage?.price || 0;
+
+          if (!selectedBranchId) {
+            return "Vui lòng chọn chi nhánh trước khi áp dụng mã giảm giá.";
           }
-          return res.errorMessage || t("bookWash.invalidPromoCode", { defaultValue: "Mã giảm giá không hợp lệ" });
+
+          try {
+            const res = await validatePromotion({
+              code,
+              subtotal,
+              branchId: selectedBranchId,
+              serviceId: selectedPackageId,
+            });
+
+            // In ra console để xem chính xác dữ liệu có hình thù như thế nào
+            console.log("🔥 Kết quả nhận được từ API Promotion:", res);
+
+            const payload = res as any;
+
+            // Kịch bản 1: API trả về đúng form { success: true, data: {...} }
+            if (
+              payload.success === true &&
+              payload.data &&
+              typeof payload.data.discountAmount !== "undefined"
+            ) {
+              setAppliedPromotion(payload.data);
+              return true;
+            }
+
+            // Kịch bản 2: httpClient đã tự bóc tách vỏ, payload chính là data chứa discountAmount luôn
+            if (typeof payload.discountAmount !== "undefined") {
+              setAppliedPromotion(payload);
+              return true;
+            }
+
+            // Kịch bản 3: Rớt vào catch của block try/catch (isValid = false)
+            if (payload.isValid === false) {
+              return payload.errorMessage || "Mã giảm giá không hợp lệ.";
+            }
+
+            // Fallback cuối cùng
+            return (
+              payload.message ||
+              payload.errorMessage ||
+              "Mã giảm giá không hợp lệ."
+            );
+          } catch (error) {
+            console.error("Lỗi Exception khi apply mã:", error);
+            return "Đã xảy ra lỗi hệ thống, vui lòng thử lại sau.";
+          }
         }}
         onRemovePromotion={() => setAppliedPromotion(null)}
       />

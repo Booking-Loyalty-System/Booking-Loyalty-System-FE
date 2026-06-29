@@ -11,7 +11,15 @@ export class PromotionRepositoryImplement implements IPromotionRepository {
     }
 
     async validatePromotion(request: ValidatePromotionRequest): Promise<ValidatePromotionResponse> {
-        const response = await httpClient.post<ApiResponse<ValidatePromotionResponse>>(ENDPOINTS.PROMOTION.VALIDATE, request);
+        const response = await httpClient.get<ApiResponse<ValidatePromotionResponse>>(
+            `/promotions/${request.code}/preview`,
+            {
+                params: {
+                    subtotal: request.subtotal,
+                    branchId: request.branchId
+                }
+            }
+        );
         return response.data;
     }
 }
