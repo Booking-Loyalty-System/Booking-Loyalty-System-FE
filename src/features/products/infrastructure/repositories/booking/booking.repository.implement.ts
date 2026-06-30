@@ -72,7 +72,7 @@ export class BookingRepositoryImplement implements IBookingRepository {
         const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
             ENDPOINTS.BOOKING.CHECKOUT(id)
         );
-        return response.data;
+        return response ? response.data : {} as BookingResponseData;
     }
 
     async staffCancelBooking(id: string, cancel: string): Promise<BookingResponseData> {

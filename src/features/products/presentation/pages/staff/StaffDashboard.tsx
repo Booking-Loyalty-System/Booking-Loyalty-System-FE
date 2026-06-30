@@ -4,7 +4,6 @@ import { useStaff } from "@/features/products/application/useStaff.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import { usePayment } from "@/features/products/application/usePayment.ts";
 import { toast } from "sonner";
-import * as signalR from "@microsoft/signalr";
 import { Car, MapPin, User, X } from "lucide-react";
 import { type DashboardBooking, DashboardStats } from "@/features/products/presentation/components/DashboardStats.tsx";
 import { BookingTableFilters } from "@/features/products/presentation/components/BookingTableFilters.tsx";

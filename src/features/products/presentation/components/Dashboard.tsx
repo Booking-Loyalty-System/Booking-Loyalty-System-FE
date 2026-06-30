@@ -352,7 +352,7 @@ export const Dashboard: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 border border-[#e2e8f0] dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col min-h-[340px]">
           <div className="flex items-center justify-between border-b border-[#f1f5f9] dark:border-slate-800 pb-3 mb-4">
             <h3 className="text-base font-bold text-[#0f172a] dark:text-white flex items-center gap-2">
-              {t('dashboard.upcomingBooking', 'Upcoming Booking')}
+              {t('dashboard.upcomingBooking.title', 'Upcoming Booking')}
             </h3>
             <Clock className="w-4 h-4 text-[#94a3b8] dark:text-slate-500" />
           </div>
@@ -434,13 +434,13 @@ export const Dashboard: React.FC = () => {
                 <Calendar className="w-8 h-8 text-slate-300 dark:text-slate-650" />
               </div>
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                {t('dashboard.noUpcomingBookings', 'Bạn chưa có lịch hẹn nào sắp tới.')}
+                {t('dashboard.upcomingBooking.noBooking', 'Bạn chưa có lịch hẹn nào sắp tới.')}
               </p>
               <button
                 onClick={() => navigate("/book-wash")}
                 className="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition"
               >
-                {t('dashboard.bookNow', 'Đặt lịch ngay')}
+                {t('dashboard.upcomingBooking.bookNow', 'Đặt lịch ngay')}
               </button>
             </div>
           )}

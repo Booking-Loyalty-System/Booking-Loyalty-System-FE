@@ -10,30 +10,37 @@ import {
     CalendarDays
 } from 'lucide-react';
 import { useStaffDashboard } from '../../../application/useStaffDashboard';
-import { useAuth } from '../../../application/useAuth';
 import { usePayment } from '../../../application/usePayment';
+import { useBooking } from '../../../application/useBooking';
+import { useStaff } from '../../../application/useStaff';
+import { useWashBay } from '../../../application/useWashBay';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 import { toast } from 'sonner';
 import { CheckoutSummaryModal } from '../../components/staff/CheckoutSummaryModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 type StaffAction = 'checkIn' | 'queue' | 'start' | 'finish' | 'checkout';
 
 export const StaffQueuePage: React.FC = () => {
-    const { user } = useAuth();
     const { createPayOsUrl } = usePayment();
+    const queryClient = useQueryClient();
+    const { staffProfile } = useStaff();
+    const branchId = staffProfile?.branchId || staffProfile?.branch?.id;
+    const { washBays = [] } = useWashBay(branchId);
+
+    const {
+        checkInBooking,
+        queueBooking,
+        startBooking,
+        completedBooking,
+        checkoutBooking
+    } = useBooking({ loadMyBookings: false });
+
     // Đảm bảo lấy đúng kiểu dữ liệu từ hook
-    const { bookings = [], isLoading, actions } = useStaffDashboard();
+    const { bookings = [], isLoading } = useStaffDashboard();
     const [selectedBookingForCheckout, setSelectedBookingForCheckout] = useState<BookingResponseData | null>(null);
 
     const handleAction = async (id: string, action: StaffAction) => {
-        const statusMap: Record<StaffAction, number> = {
-            checkIn: 1,  // VD: 1 là trạng thái CheckedIn
-            queue: 2,    // VD: 2 là trạng thái Queued
-            start: 3,    // VD: 3 là trạng thái InProgress
-            finish: 4,   // VD: 4 là trạng thái Completed
-            checkout: 5  // VD: 5 là trạng thái CheckedOut
-        };
-
         try {
             if (action === 'checkout') {
                 const booking = bookings.find(b => b.id === id);
@@ -41,30 +48,44 @@ export const StaffQueuePage: React.FC = () => {
                 return;
             }
 
-            await actions.updateStatus({
-                id: id,
-                payload: {
-                    targetStatus: statusMap[action],
-                    staffId: action === 'start' ? (user?.id || 'staff-id') : undefined
+            if (action === 'checkIn') {
+                await checkInBooking({ id, staffId: staffProfile?.id || 'staff-id' });
+                toast.success('Check-in thành công!');
+            } else if (action === 'queue') {
+                const targetBay = washBays.find(b => b.status === 'Available') || washBays[0];
+                if (!targetBay) {
+                    toast.error('Không tìm thấy buồng rửa nào ở chi nhánh này!');
+                    return;
                 }
-            });
+                await queueBooking({ id, bayId: targetBay.id });
+                toast.success(`Đã đưa xe vào hàng đợi của buồng ${targetBay.name}!`);
+            } else if (action === 'start') {
+                const targetBay = washBays.find(b => b.status === 'Available') || washBays[0];
+                if (!targetBay) {
+                    toast.error('Không tìm thấy buồng rửa nào ở chi nhánh này!');
+                    return;
+                }
+                await startBooking({ id, bayId: targetBay.id });
+                toast.success(`Bắt đầu rửa xe tại buồng ${targetBay.name}!`);
+            } else if (action === 'finish') {
+                await completedBooking(id);
+                toast.success('Rửa xe hoàn tất!');
+            }
 
-            toast.success(`Action ${action} successful!`);
+            queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
         } catch (error) {
             console.error(error);
-            toast.error(`Failed to perform ${action}`);
+            toast.error(`Thao tác thất bại`);
         }
     };
 
     const handleCashCheckout = async () => {
         if (!selectedBookingForCheckout) return;
         try {
-            await actions.updateStatus({
-                id: selectedBookingForCheckout.id,
-                payload: { targetStatus: 5 } // 5 tương ứng với trạng thái CheckedOut trực tiếp
-            });
+            await checkoutBooking(selectedBookingForCheckout.id);
             toast.success('Thanh toán tiền mặt thành công! Điểm thưởng đã được cộng.');
             setSelectedBookingForCheckout(null);
+            queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
         } catch (error) {
             console.error(error);
             toast.error('Thanh toán tiền mặt thất bại');
@@ -73,16 +94,23 @@ export const StaffQueuePage: React.FC = () => {
 
     const handlePayOSCheckout = async (): Promise<string> => {
         if (!selectedBookingForCheckout) return '';
+        const toastId = toast.loading('Đang khởi tạo link thanh toán QR...');
         try {
-            // Gọi API của bạn để tạo Link thanh toán PayOS từ Backend
-            // Ví dụ: const response = await actions.createPayOsLink({ bookingId: selectedBookingForCheckout.id });
-            // return response.checkoutUrl;
+            const response = await createPayOsUrl(selectedBookingForCheckout.id);
+            toast.dismiss(toastId);
 
-            toast.loading('Đang khởi tạo link thanh toán QR...');
-            return 'https://example.com/checkout-link-tu-backend'; // 👈 Thay thế bằng hàm gọi API thực tế của bạn
+            if (!response) {
+                throw new Error("Không nhận được phản hồi từ máy chủ");
+            }
+
+            if (typeof response === 'object' && 'checkoutUrl' in response) {
+                return (response as any).checkoutUrl;
+            }
+
+            return response as unknown as string;
         } catch (error) {
             console.error(error);
-            toast.error('Không thể khởi tạo cổng thanh toán PayOS');
+            toast.error('Không thể khởi tạo cổng thanh toán PayOS', { id: toastId });
             return '';
         }
     };
