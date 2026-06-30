@@ -24,6 +24,14 @@ export const useVehicle = () => {
         },
     });
 
+    const updateVehicleMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: CreateVehicleInput }) =>
+            vehicleRepository.updateVehicle(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my_vehicles'] });
+        },
+    });
+
     const deleteVehicleMutation = useMutation({
         mutationFn: (id: string) => vehicleRepository.deleteVehicle(id),
         onSuccess: () => {
@@ -35,8 +43,10 @@ export const useVehicle = () => {
         vehicles,
         isLoading: isLoadingVehicles,
         isCreating: createVehicleMutation.isPending,
+        isUpdating: updateVehicleMutation.isPending,
         error: fetchError || createVehicleMutation.error,
         createVehicle: createVehicleMutation.mutateAsync,
+        updateVehicle: updateVehicleMutation.mutateAsync,
         deleteVehicle: deleteVehicleMutation.mutateAsync,
     };
 };

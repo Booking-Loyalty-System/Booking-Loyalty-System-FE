@@ -13,7 +13,10 @@ export const useReward = () => {
         queryKey: ['available_rewards'],
         queryFn: async () => {
             const data = await rewardRepository.getAvailableRewards();
-            return Array.isArray(data) ? data : [];
+            if (Array.isArray(data)) {
+                return data.filter(reward => reward.isFreeWash === false);
+            }
+            return [];
         },
         staleTime: 1000 * 60 * 5,
     });

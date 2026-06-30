@@ -5,10 +5,16 @@ import type { Vehicle } from "@/features/products/domain/models/vehicle/vehicle.
 interface VehicleCardProps {
   car: Vehicle;
   onDelete: (id: string) => void;
+  onEdit: () => void;
+  onViewHistory: (plate: string, name: string) => void;
 }
 
-// 1. NHỚ THÊM onDelete VÀO ĐÂY BÊN CẠNH car
-export const VehicleCard: React.FC<VehicleCardProps> = ({ car, onDelete }) => {
+export const VehicleCard: React.FC<VehicleCardProps> = ({
+  car,
+  onDelete,
+  onEdit,
+  onViewHistory,
+}) => {
   const getIconBgClass = (type: string) => {
     switch (type) {
       case "Small":
@@ -22,6 +28,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ car, onDelete }) => {
     }
   };
 
+  // 💡 Lấy loại xe từ car.type (ưu tiên) hoặc car.vehicleType
+  const vehicleTypeToDisplay = car.type || car.vehicleType || "Small";
+
   return (
     <div
       className={`bg-white rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${
@@ -33,20 +42,21 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ car, onDelete }) => {
       <div>
         <div className="flex items-center justify-between border-b border-slate-50 pb-4 mb-4">
           <div
-            className={`w-12 h-12 rounded-xl flex items-center justify-center ${getIconBgClass(car.vehicleType)}`}
+            className={`w-12 h-12 rounded-xl flex items-center justify-center ${getIconBgClass(vehicleTypeToDisplay)}`}
           >
-            {car.vehicleType === "Large" ? (
+            {vehicleTypeToDisplay === "Large" ? (
               <Truck className="w-6 h-6" />
             ) : (
               <Car className="w-6 h-6" />
             )}
           </div>
           <div className="flex items-center gap-1">
-            <button className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50">
+            <button
+              onClick={onEdit}
+              className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50"
+            >
               <Edit2 className="w-4 h-4" />
             </button>
-
-            {/* 2. GẮN SỰ KIỆN onClick VÀO NÚT THÙNG RÁC */}
             <button
               onClick={() => onDelete(car.id)}
               className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50/50"
@@ -59,7 +69,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ car, onDelete }) => {
           <div>
             <p className="text-xs font-semibold text-slate-400">Vehicle Type</p>
             <p className="text-base font-extrabold text-slate-900">
-              {car.vehicleType}
+              {/* Sửa ở đây để render giá trị đúng */}
+              {vehicleTypeToDisplay}
             </p>
           </div>
           <div>
@@ -82,7 +93,13 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ car, onDelete }) => {
           </div>
         </div>
       </div>
-      <button className="mt-6 w-full flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 py-2 rounded-xl text-sm font-bold hover:bg-blue-50">
+
+      <button
+        onClick={() =>
+          onViewHistory(car.licensePlate, `${car.brand} - ${car.vehicleName}`)
+        }
+        className="mt-6 w-full flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 py-2 rounded-xl text-sm font-bold hover:bg-blue-50 transition-colors"
+      >
         <History className="w-4 h-4" /> View History
       </button>
     </div>

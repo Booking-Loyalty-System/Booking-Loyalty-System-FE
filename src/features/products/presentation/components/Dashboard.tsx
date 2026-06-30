@@ -22,7 +22,6 @@ import { useAuth } from "@/features/products/application/useAuth.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
 
 export const Dashboard: React.FC = () => {
-  // 🌟 Lấy thông tin từ các Hook chuẩn của hệ thống
   const { customerMe, isLoading: isCustomerLoading } = useCustomerMe();
   const { user } = useAuth();
   const {
@@ -31,14 +30,49 @@ export const Dashboard: React.FC = () => {
     cancelBooking,
   } = useBooking();
   const navigate = useNavigate();
-  const { t } = useTranslation('customer');
+  const { t } = useTranslation("customer");
 
   // Map dữ liệu
   const displayName = customerMe?.fullName || user?.fullName || "Khách hàng";
-  const totalPoints = customerMe?.totalPoints ?? 0;
-  const tier = customerMe?.tier ?? "Member";
+
+  // SỬA LẠI: Đổi totalPoints thành totalPoint (bỏ chữ s) để khớp với BE
+  const totalPoints = customerMe?.totalPoint ?? 0;
+  const tier = customerMe?.tier ?? "Bronze";
   const washesCount = customerMe?.totalWashes ?? 0;
   const totalSpent = customerMe?.totalSpent ?? 0;
+
+  // THÊM MỚI: Đồng bộ logic tính Target Point, Next Tier, Multiplier và Booking Days
+  let targetPoints = 2000;
+  let nextTierName = "Silver";
+  let multiplier = "1x";
+  let bookingDays = 7;
+
+  if (totalPoints >= 15000) {
+    targetPoints = totalPoints;
+    nextTierName = "Max Tier";
+    multiplier = "3x";
+    bookingDays = 30; // Diamond
+  } else if (totalPoints >= 6000) {
+    targetPoints = 15000;
+    nextTierName = "Diamond";
+    multiplier = "2x";
+    bookingDays = 21; // Gold
+  } else if (totalPoints >= 2000) {
+    targetPoints = 6000;
+    nextTierName = "Gold";
+    multiplier = "1.5x";
+    bookingDays = 14; // Silver
+  } else {
+    // Bronze
+    targetPoints = 2000;
+    nextTierName = "Silver";
+    multiplier = "1x";
+    bookingDays = 7;
+  }
+
+  const pointsToGo = Math.max(0, targetPoints - totalPoints);
+  const progressPercentage =
+    totalPoints >= 15000 ? 100 : (totalPoints / targetPoints) * 100;
 
   // 🌟 Tìm Booking sắp tới gần nhất (Lọc các trạng thái chưa hoàn thành)
   const nextBooking = useMemo(() => {
@@ -57,35 +91,35 @@ export const Dashboard: React.FC = () => {
   const stats = [
     {
       id: 1,
-      label: t('dashboard.stats.allTime', 'All time'),
+      label: t("dashboard.stats.allTime", "All time"),
       value: isCustomerLoading ? "..." : washesCount.toString(),
-      sub: t('dashboard.stats.totalBookings', 'Total Bookings'),
+      sub: t("dashboard.stats.totalBookings", "Total Bookings"),
       icon: <Calendar className="w-5 h-5 text-blue-500" />,
       bg: "bg-blue-50 dark:bg-blue-950/30",
     },
     {
       id: 2,
-      label: t('dashboard.stats.loyalty', 'Loyalty'),
+      label: t("dashboard.stats.loyalty", "Loyalty"),
       value: isCustomerLoading ? "..." : totalPoints.toString(),
-      sub: t('dashboard.stats.totalPoints', 'Total Points'),
+      sub: t("dashboard.stats.totalPoints", "Total Points"),
       icon: <Star className="w-5 h-5 text-emerald-500" />,
       bg: "bg-emerald-50 dark:bg-emerald-950/30",
     },
     {
       id: 3,
-      label: t('dashboard.stats.status', 'Status'),
+      label: t("dashboard.stats.status", "Status"),
       value: isCustomerLoading ? "..." : tier,
-      sub: t('dashboard.stats.membershipTier', 'Membership Tier'),
+      sub: t("dashboard.stats.membershipTier", "Membership Tier"),
       icon: <Award className="w-5 h-5 text-purple-500" />,
       bg: "bg-purple-50 dark:bg-purple-950/30",
     },
     {
       id: 4,
-      label: t('dashboard.stats.savings', 'Spent'),
+      label: t("dashboard.stats.savings", "Spent"),
       value: isCustomerLoading
         ? "..."
         : `${totalSpent.toLocaleString("vi-VN")}đ`,
-      sub: t('dashboard.stats.totalSaved', 'Total Spent'),
+      sub: t("dashboard.stats.totalSaved", "Total Spent"),
       icon: <TrendingUp className="w-5 h-5 text-orange-500" />,
       bg: "bg-orange-50 dark:bg-orange-950/30",
     },
@@ -93,29 +127,29 @@ export const Dashboard: React.FC = () => {
 
   const quickActions = [
     {
-      name: t('dashboard.quickActions.bookWash', 'Book Wash'),
-      desc: t('dashboard.quickActions.bookWashDesc', 'Schedule a new wash'),
+      name: t("dashboard.quickActions.bookWash", "Book Wash"),
+      desc: t("dashboard.quickActions.bookWashDesc", "Schedule a new wash"),
       icon: <Calendar className="w-5 h-5 text-blue-600" />,
       bg: "bg-blue-50 dark:bg-blue-950/30",
       path: "/book-wash",
     },
     {
-      name: t('dashboard.quickActions.rewards', 'Rewards'),
-      desc: t('dashboard.quickActions.rewardsDesc', 'Redeem your points'),
+      name: t("dashboard.quickActions.rewards", "Rewards"),
+      desc: t("dashboard.quickActions.rewardsDesc", "Redeem your points"),
       icon: <Gift className="w-5 h-5 text-emerald-600" />,
       bg: "bg-emerald-50 dark:bg-emerald-950/30",
       path: "/rewards",
     },
     {
-      name: t('dashboard.quickActions.promotions', 'Promotions'),
-      desc: t('dashboard.quickActions.promotionsDesc', 'View active deals'),
+      name: t("dashboard.quickActions.promotions", "Promotions"),
+      desc: t("dashboard.quickActions.promotionsDesc", "View active deals"),
       icon: <Megaphone className="w-5 h-5 text-purple-600" />,
       bg: "bg-purple-50 dark:bg-purple-950/30",
       path: "/promotions",
     },
     {
-      name: t('dashboard.quickActions.history', 'History'),
-      desc: t('dashboard.quickActions.historyDesc', 'View past bookings'),
+      name: t("dashboard.quickActions.history", "History"),
+      desc: t("dashboard.quickActions.historyDesc", "View past bookings"),
       icon: <History className="w-5 h-5 text-orange-600" />,
       bg: "bg-orange-50 dark:bg-orange-950/30",
       path: "/booking-history",
@@ -123,21 +157,24 @@ export const Dashboard: React.FC = () => {
   ];
 
   // Logic tính tiến trình rửa xe miễn phí (Mỗi 7 lần)
-  let currentCycleWashes = washesCount % 7;
-  if (currentCycleWashes === 0 && washesCount > 0) {
-    currentCycleWashes = 7;
-  }
+  const currentCycleWashes = washesCount % 7;
   const remainingWashes = 7 - currentCycleWashes;
   const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
 
   // Hủy lịch từ Dashboard
   const handleCancel = async (id: string) => {
-    if (window.confirm(t('dashboard.cancelConfirm', 'Bạn có chắc chắn muốn hủy lịch hẹn này?'))) {
+    if (
+      window.confirm(
+        t("dashboard.cancelConfirm", "Bạn có chắc chắn muốn hủy lịch hẹn này?"),
+      )
+    ) {
       try {
         await cancelBooking({ id, reason: "Khách hàng hủy từ Dashboard" });
-        toast.success(t('dashboard.cancelSuccess', 'Đã hủy lịch hẹn thành công'));
+        toast.success(
+          t("dashboard.cancelSuccess", "Đã hủy lịch hẹn thành công"),
+        );
       } catch {
-        toast.error(t('dashboard.cancelError', 'Không thể hủy lịch hẹn'));
+        toast.error(t("dashboard.cancelError", "Không thể hủy lịch hẹn"));
       }
     }
   };
@@ -147,11 +184,14 @@ export const Dashboard: React.FC = () => {
       {/* WELCOME HEADER */}
       <div className="space-y-1">
         <h1 className="text-3xl font-extrabold text-[#0f172a] dark:text-white flex items-center gap-2">
-          {t('dashboard.welcomeBack', 'Welcome back,')} {displayName}!{" "}
+          {t("dashboard.welcomeBack", "Welcome back,")} {displayName}!{" "}
           <span className="animate-bounce">👋</span>
         </h1>
         <p className="text-sm text-[#64748b] dark:text-slate-400 font-medium">
-          {t('dashboard.accountToday', "Here's what's happening with your account today.")}
+          {t(
+            "dashboard.accountToday",
+            "Here's what's happening with your account today.",
+          )}
         </p>
       </div>
 
@@ -193,10 +233,16 @@ export const Dashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="text-lg font-bold text-[#14532d] dark:text-emerald-400">
-                {t('dashboard.freeWashRewardProgress', 'Free Wash Reward Progress')}
+                {t(
+                  "dashboard.freeWashRewardProgress",
+                  "Free Wash Reward Progress",
+                )}
               </h3>
               <p className="text-xs text-[#166534] dark:text-emerald-500 font-medium">
-                {t('dashboard.completeWashesToEarn', 'Complete 7 washes to earn a FREE wash!')}
+                {t(
+                  "dashboard.completeWashesToEarn",
+                  "Complete 7 washes to earn a FREE wash!",
+                )}
               </p>
             </div>
           </div>
@@ -205,7 +251,7 @@ export const Dashboard: React.FC = () => {
               {currentCycleWashes}/7
             </span>
             <span className="text-[10px] text-[#166534] dark:text-emerald-500 font-bold uppercase tracking-wider">
-              {t('dashboard.washesDone', 'Washes Done')}
+              {t("dashboard.washesDone", "Washes Done")}
             </span>
           </div>
         </div>
@@ -228,13 +274,19 @@ export const Dashboard: React.FC = () => {
             {remainingWashes > 0 ? (
               <>
                 <span className="text-[#16a34a] font-bold">
-                  {remainingWashes} {t('dashboard.moreWashes', 'more washes')}
+                  {remainingWashes} {t("dashboard.moreWashes", "more washes")}
                 </span>{" "}
-                {t('dashboard.unlockReward', 'to unlock your FREE wash reward!')}
+                {t(
+                  "dashboard.unlockReward",
+                  "to unlock your FREE wash reward!",
+                )}
               </>
             ) : (
               <span className="text-[#16a34a] font-bold">
-                {t('dashboard.unlockedReward', 'You unlocked a FREE wash reward! 🎉')}
+                {t(
+                  "dashboard.unlockedReward",
+                  "You unlocked a FREE wash reward! 🎉",
+                )}
               </span>
             )}
           </p>
@@ -278,81 +330,82 @@ export const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <span className="block text-xs text-blue-100 font-semibold tracking-wider uppercase">
-                    {t('dashboard.currentTier', 'Current Tier')}
+                    {t("dashboard.currentTier", "Current Tier")}
                   </span>
                   <h2 className="text-3xl font-black tracking-tight">
-                    {isCustomerLoading ? t('dashboard.loading', 'Loading...') : `${tier} ${t('dashboard.member', 'Member')}`}
+                    {isCustomerLoading
+                      ? t("dashboard.loading", "Loading...")
+                      : `${tier} ${t("dashboard.member", "Member")}`}
                   </h2>
                 </div>
               </div>
               <Sparkles className="w-8 h-8 text-blue-200 animate-pulse" />
             </div>
 
+            {/* CẬP NHẬT: Thanh Progress */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold text-blue-100">
-                <span>{t('dashboard.progressToNextTier', 'Progress to Next Tier')}</span>
-                <span>{totalPoints}/1000 points</span>
+                <span>
+                  {t(
+                    "dashboard.progressToNextTier",
+                    `Progress to ${nextTierName}`,
+                  )}
+                </span>
+                <span>
+                  {totalPoints}/{totalPoints >= 15000 ? "MAX" : targetPoints}{" "}
+                  points
+                </span>
               </div>
               <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
                 <div
-                  className="bg-white h-full rounded-full"
+                  className="bg-white h-full rounded-full transition-all duration-500"
                   style={{
-                    width: `${Math.min(100, (totalPoints / 1000) * 100)}%`,
+                    width: `${progressPercentage}%`,
                   }}
                 ></div>
               </div>
               <p className="text-xs text-blue-100 font-medium pt-1">
-                {Math.max(0, 1000 - totalPoints)} {t('dashboard.pointsToNextTier', 'points to next tier')} <br />
+                {totalPoints >= 15000
+                  ? t("dashboard.maxTierReached", "Max Tier Reached")
+                  : `${pointsToGo} ${t("dashboard.pointsToNextTier", "points to next tier")}`}{" "}
+                <br />
                 <span className="opacity-75 text-[11px]">
-                  {t('dashboard.tiersAutoReviewed', "Tiers are auto-reviewed monthly based on your past 3 months' data")}
+                  {t(
+                    "dashboard.tiersAutoReviewed",
+                    "Tiers are auto-reviewed monthly based on your past 3 months' data",
+                  )}
                 </span>
               </p>
             </div>
           </div>
 
+          {/* CẬP NHẬT: Thống kê Multiplier & Booking Days */}
           <div className="grid grid-cols-3 gap-4 pt-6 mt-4 border-t border-white/10 relative z-10">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
               <span className="block text-xl font-black">{totalPoints}</span>
               <span className="text-[10px] text-blue-100 font-semibold uppercase">
-                {t('dashboard.totalPoints', 'Total Points')}
+                {t("dashboard.totalPoints", "Total Points")}
               </span>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-              <span className="block text-xl font-black">
-                {tier === "Gold"
-                  ? "2x"
-                  : tier === "Platinum"
-                    ? "3x"
-                    : tier === "Silver"
-                      ? "1.5x"
-                      : "1x"}
-              </span>
+              <span className="block text-xl font-black">{multiplier}</span>
               <span className="text-[10px] text-blue-100 font-semibold uppercase">
-                {t('dashboard.multiplier', 'Points Multiplier')}
+                {t("dashboard.multiplier", "Points Multiplier")}
               </span>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-              <span className="block text-xl font-black">
-                {tier === "Platinum"
-                  ? 14
-                  : tier === "Gold"
-                    ? 12
-                    : tier === "Silver"
-                      ? 10
-                      : 7}
-              </span>
+              <span className="block text-xl font-black">{bookingDays}</span>
               <span className="text-[10px] text-blue-100 font-semibold uppercase">
-                {t('dashboard.bookingDays', 'Booking Days')}
+                {t("dashboard.bookingDays", "Booking Days")}
               </span>
             </div>
           </div>
         </div>
 
-        {/* UPCOMING BOOKING */}
         <div className="bg-white dark:bg-slate-900 border border-[#e2e8f0] dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col min-h-[340px]">
           <div className="flex items-center justify-between border-b border-[#f1f5f9] dark:border-slate-800 pb-3 mb-4">
             <h3 className="text-base font-bold text-[#0f172a] dark:text-white flex items-center gap-2">
-              {t('dashboard.upcomingBooking.title', 'Upcoming Booking')}
+              {t("dashboard.upcomingBooking.title", "Upcoming Booking")}
             </h3>
             <Clock className="w-4 h-4 text-[#94a3b8] dark:text-slate-500" />
           </div>
@@ -382,13 +435,17 @@ export const Dashboard: React.FC = () => {
 
                 <div className="space-y-2 text-xs font-semibold pt-1">
                   <div className="flex justify-between">
-                    <span className="text-[#94a3b8] dark:text-slate-500">{t('dashboard.bookingTime', 'Time')}</span>
+                    <span className="text-[#94a3b8] dark:text-slate-500">
+                      {t("dashboard.bookingTime", "Time")}
+                    </span>
                     <span className="text-[#0f172a] dark:text-slate-300">
                       {nextBooking.startTime}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#94a3b8] dark:text-slate-500">{t('dashboard.bookingVehicle', 'Vehicle')}</span>
+                    <span className="text-[#94a3b8] dark:text-slate-500">
+                      {t("dashboard.bookingVehicle", "Vehicle")}
+                    </span>
                     <span className="text-[#0f172a] dark:text-slate-300 uppercase">
                       {(nextBooking as any).licensePlate ||
                         (nextBooking as any).vehiclePlate ||
@@ -396,7 +453,9 @@ export const Dashboard: React.FC = () => {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[#94a3b8] dark:text-slate-500">{t('dashboard.bookingStatus', 'Status')}</span>
+                    <span className="text-[#94a3b8] dark:text-slate-500">
+                      {t("dashboard.bookingStatus", "Status")}
+                    </span>
                     <span
                       className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                         nextBooking.status === "Confirmed"
@@ -417,13 +476,13 @@ export const Dashboard: React.FC = () => {
                   className="flex items-center gap-1.5 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 px-3 py-2 rounded-xl text-xs font-bold transition-colors"
                 >
                   <XCircle className="w-4 h-4" />
-                  {t('dashboard.cancel', 'Cancel')}
+                  {t("dashboard.cancel", "Cancel")}
                 </button>
                 <button
                   onClick={() => navigate("/booking-history")}
                   className="flex items-center gap-1 text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
                 >
-                  {t('dashboard.viewAll', 'View All')}
+                  {t("dashboard.viewAll", "View All")}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -434,13 +493,16 @@ export const Dashboard: React.FC = () => {
                 <Calendar className="w-8 h-8 text-slate-300 dark:text-slate-650" />
               </div>
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                {t('dashboard.upcomingBooking.noBooking', 'Bạn chưa có lịch hẹn nào sắp tới.')}
+                {t(
+                  "dashboard.upcomingBooking.noBooking",
+                  "Bạn chưa có lịch hẹn nào sắp tới.",
+                )}
               </p>
               <button
                 onClick={() => navigate("/book-wash")}
                 className="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition"
               >
-                {t('dashboard.upcomingBooking.bookNow', 'Đặt lịch ngay')}
+                {t("dashboard.upcomingBooking.bookNow", "Đặt lịch ngay")}
               </button>
             </div>
           )}
@@ -449,7 +511,9 @@ export const Dashboard: React.FC = () => {
 
       {/* QUICK ACTIONS */}
       <div className="space-y-4">
-        <h3 className="text-xl font-bold text-[#0f172a] dark:text-white">{t('dashboard.quickActionsTitle', 'Quick Actions')}</h3>
+        <h3 className="text-xl font-bold text-[#0f172a] dark:text-white">
+          {t("dashboard.quickActionsTitle", "Quick Actions")}
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {quickActions.map((action, i) => (
             <div
