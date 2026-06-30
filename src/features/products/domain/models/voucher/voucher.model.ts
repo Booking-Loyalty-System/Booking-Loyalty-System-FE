@@ -19,6 +19,7 @@ export interface RewardDto {
     pointsCost: number;
     isActive: boolean;
     discountAmount: number;
+    isFreeWash: boolean;
     iconType?: 'GIFT' | 'TICKET' | 'STAR' | 'SPARKLES';
 }
 
