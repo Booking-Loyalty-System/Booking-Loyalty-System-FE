@@ -81,11 +81,11 @@ export const Dashboard: React.FC = () => {
     },
     {
       id: 4,
-      label: t('dashboard.stats.savings', 'Spent'),
+      label: t('dashboard.stats.savings', 'Đã Chi'),
       value: isCustomerLoading
         ? "..."
         : `${totalSpent.toLocaleString("vi-VN")}đ`,
-      sub: t('dashboard.stats.totalSaved', 'Total Spent'),
+      sub: t('dashboard.stats.totalSaved', 'Tổng tiền đã sử dụng dịch vụ'),
       icon: <TrendingUp className="w-5 h-5 text-orange-500" />,
       bg: "bg-orange-50 dark:bg-orange-950/30",
     },

@@ -9,8 +9,8 @@
       "totalPoints": "Total Points",
       "status": "Status",
       "membershipTier": "Membership Tier",
-      "savings": "Savings",
-      "totalSaved": "Total Saved"
+      "savings": "Spent",
+      "totalSaved": "Total Amount Spent"
     },
     "quickActions": {
       "title": "Quick Actions",

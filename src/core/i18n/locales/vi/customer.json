@@ -9,8 +9,8 @@
       "totalPoints": "Tổng Điểm",
       "status": "Trạng Thái",
       "membershipTier": "Hạng Thành Viên",
-      "savings": "Tiết Kiệm",
-      "totalSaved": "Đã Tiết Kiệm"
+      "savings": "Đã Chi",
+      "totalSaved": "Tổng tiền đã sử dụng dịch vụ"
     },
     "quickActions": {
       "title": "Thao Tác Nhanh",
