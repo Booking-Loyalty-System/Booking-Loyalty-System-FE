@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { Clock } from "lucide-react";
+import { ChevronDown, Clock, Info } from "lucide-react";
 import type { DailyTimeSlotsSummaryDto } from "../../domain/models/time-slot/time-slot.dto.ts";
+import { useEffect, useState } from "react";
 
 export interface DynamicDateSlot {
     apiDate: string;
@@ -20,16 +21,24 @@ interface DateTimeSelectionProps {
 }
 
 export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
-                                                                        dynamicDateSlots,
-                                                                        weeklySummary,
-                                                                        selectedDate,
-                                                                        onSelectDate,
-                                                                        selectedTime,
-                                                                        onSelectTime,
-                                                                        isLoadingSlots
-                                                                    }) => {
+    dynamicDateSlots,
+    weeklySummary,
+    selectedDate,
+    onSelectDate,
+    selectedTime,
+    onSelectTime,
+    isLoadingSlots
+}) => {
     const { t } = useTranslation('customer');
-
+    const [visibleDaysCount, setVisibleDaysCount] = useState(7);
+    useEffect(() => {
+        setVisibleDaysCount(7);
+    }, [dynamicDateSlots]);
+    const visibleSlots = dynamicDateSlots.slice(0, visibleDaysCount);
+    const hasMoreDays = visibleDaysCount < dynamicDateSlots.length;
+    const handleShowMore = () => {
+        setVisibleDaysCount(prev => Math.min(prev + 7, dynamicDateSlots.length));
+    };
     // 1. Tìm danh sách ca giờ thuộc riêng ngày đang được chọn trên UI (selectedDate)
     const currentDayData = weeklySummary.find(slot => slot.date === selectedDate);
     // Nếu API chưa về kịp hoặc trống, fallback về mảng rỗng để tránh crash giao diện
@@ -61,13 +70,22 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         return slotDate <= limitTime;
     };
 
+    const maxDateSlot = dynamicDateSlots[dynamicDateSlots.length - 1];
+    const maxDateString = maxDateSlot
+        ? new Date(maxDateSlot.apiDate).toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        })
+        : "";
+
     return (
         <div className="space-y-6">
             {/* --- Phần chọn ngày (Tabs) --- */}
             <div className="space-y-4">
                 <h3 className="text-xl font-bold text-[#0f172a]">{t('bookWash.dateTime.selectDateTitle', { defaultValue: "Select Date" })}</h3>
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
-                    {dynamicDateSlots.map((slot) => {
+                    {visibleSlots.map((slot) => {
                         const isDateSelected = selectedDate === slot.apiDate;
                         const translatedDayName = t(`common.days.${slot.dayName.toLowerCase()}`, { defaultValue: slot.dayName });
                         return (
@@ -75,13 +93,12 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                 key={slot.apiDate}
                                 onClick={() => {
                                     onSelectDate(slot.apiDate);
-                                    onSelectTime(''); // Reset giờ đã chọn khi nhảy ngày
+                                    onSelectTime('');
                                 }}
-                                className={`cursor-pointer border rounded-2xl p-4 text-center transition-all ${
-                                    isDateSelected
-                                        ? 'border-[#1e6ffd] bg-white ring-2 ring-blue-100 font-bold'
-                                        : 'border-[#e2e8f0] bg-white hover:border-[#cbd5e1]'
-                                }`}
+                                className={`cursor-pointer border rounded-2xl p-4 text-center transition-all ${isDateSelected
+                                    ? 'border-[#1e6ffd] bg-white ring-2 ring-blue-100 font-bold'
+                                    : 'border-[#e2e8f0] bg-white hover:border-[#cbd5e1]'
+                                    }`}
                             >
                                 <span className={`block text-xs font-semibold uppercase ${isDateSelected ? 'text-[#1e6ffd]' : 'text-[#64748b]'}`}>
                                     {translatedDayName}
@@ -93,6 +110,30 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                         );
                     })}
                 </div>
+                {hasMoreDays && (
+                    <div className="flex justify-center mt-2">
+                        <button
+                            onClick={handleShowMore}
+                            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors"
+                        >
+                            <span>
+                                {t('bookWash.dateTime.showMore', { defaultValue: "Xem tiếp 7 ngày tới" })}
+                            </span>
+                            <ChevronDown className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
+
+                {maxDateString && (
+                    <div className="flex items-center gap-2 mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl text-blue-700 text-sm">
+                        <Info className="w-5 h-5 shrink-0" />
+                        <p>
+                            {t('bookWash.dateTime.tierLimit', {
+                                defaultValue: `Hạng của bạn chỉ được đặt trước tới ngày ${maxDateString}`
+                            })}
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* --- Phần chọn giờ dịch từ Real-time API --- */}

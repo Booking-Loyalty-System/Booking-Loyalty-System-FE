@@ -130,7 +130,7 @@ export const StaffDashboard: React.FC = () => {
 
             // 🌟 3. THẦN CHÚ TỰ ĐỘNG CẬP NHẬT: Ép React Query gọi lại API lấy danh sách mới ngay lập tức
             toast.success(`Thao tác thành công!`);
-            queryClient.invalidateQueries();
+            queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
 
         } catch (error) {
             console.error(error);
@@ -144,7 +144,7 @@ export const StaffDashboard: React.FC = () => {
             await actions.checkout(selectedBookingForCheckout.id);
             toast.success('Thanh toán tiền mặt thành công!');
             setSelectedBookingForCheckout(null);
-            queryClient.invalidateQueries(); // Làm mới danh sách
+            queryClient.invalidateQueries({ queryKey: ['staff-bookings'] }); // Làm mới danh sách
         } catch (error) {
             console.error(error);
             toast.error('Xử lý thu tiền mặt thất bại');
@@ -179,26 +179,27 @@ export const StaffDashboard: React.FC = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const paymentStatus = urlParams.get('paymentStatus');
 
-        if (paymentStatus === 'cancel') {
+        if (paymentStatus) {
             queryClient.invalidateQueries({ queryKey: ['staff-bookings'] });
 
-            toast.error(`Hủy thanh toán!`, {
-                description: `Giao dịch link thanh toán đã bị hủy bỏ hoặc hết hạn.`,
-                duration: 10000,
-            });
+            const isSuccess = paymentStatus === 'success';
+            const audioFile = isSuccess ? '/sound/payment.mp3' : '/sound/payment.mp3';
+            const message = isSuccess ? 'Thanh toán thành công!' : 'Hủy thanh toán!';
+            const desc = isSuccess
+                ? 'Giao dịch đã được xác nhận.'
+                : 'Giao dịch link thanh toán đã bị hủy bỏ hoặc hết hạn.';
+            if (isSuccess) {
+                toast.success(message, { description: desc, duration: 5000 });
+            } else {
+                toast.error(message, { description: desc, duration: 10000 });
+            }
 
             // 🎯 THỦ THUẬT: Đợi 500ms để trang ổn định, rồi mới phát âm thanh
             setTimeout(() => {
-                const audioCancel = new Audio('/sound/payment.mp3');
-
-                // Dùng hàm promise để kiểm tra nếu bị chặn
-                audioCancel.play().catch(() => {
-                    console.log("Bị trình duyệt chặn, đang chờ thao tác click...");
-
-                    // Gài "bẫy" click: Chỉ cần nhân viên click vào bất cứ đâu (để tắt toast, để chọn bảng, để làm việc...)
-                    // Âm thanh sẽ nổ lên ngay lập tức mà không cần click vào nút "Nghe lại"
+                const audio = new Audio(audioFile);
+                audio.play().catch(() => {
                     const playOnFirstClick = () => {
-                        audioCancel.play().catch(e => console.error(e));
+                        audio.play().catch(e => console.error(e));
                         window.removeEventListener('click', playOnFirstClick);
                     };
                     window.addEventListener('click', playOnFirstClick);

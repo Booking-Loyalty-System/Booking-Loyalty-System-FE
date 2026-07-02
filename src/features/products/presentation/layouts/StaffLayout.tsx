@@ -24,8 +24,8 @@ export const StaffLayout: React.FC = () => {
   const staffLinks = [
     { to: "/staff/dashboard", icon: LayoutDashboard, label: "Overview" },
     { to: "/staff/monitor", icon: LayoutGrid, label: "Queue Monitor" },
-    { to: "/staff/queue", icon: Car, label: "Live Queue" },
-    { to: "/staff/bookings", icon: ClipboardList, label: "Bookings" },
+    // { to: "/staff/queue", icon: Car, label: "Live Queue" },
+    // { to: "/staff/bookings", icon: ClipboardList, label: "Bookings" },
   ];
 
   const systemLinks = [
