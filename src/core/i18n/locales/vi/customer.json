@@ -203,7 +203,7 @@
     "redeem": "Đổi",
     "points": "điểm",
     "notEnoughPoints": "Không đủ điểm",
-    "redeemSuccess": "Đổi phần thưởng thành công!",
+    "redeemSuccess": "Đổi thành công: {{title}}! Voucher đã được thêm vào tài khoản của bạn.",
     "categories": {
       "all": "Tất Cả",
       "discount": "Giảm Giá",
@@ -220,7 +220,29 @@
     "history": {
       "title": "Lịch Sử Đổi Thưởng",
       "empty": "Chưa có lịch sử đổi thưởng"
-    }
+    },
+    "infoTitle": "Tự động áp dụng khi đặt lịch",
+    "infoDesc": "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!",
+    "availableRewardsTitle": "Phần thưởng khả dụng",
+    "redeemableCountMsg": "Bạn có thể đổi được {{n}} phần thưởng",
+    "noRewardsAvailable": "Hiện tại không có phần thưởng nào khả dụng.",
+    "comingSoonBadge": "Sắp ra mắt",
+    "validDaysLabel": "Hạn dùng {{n}} ngày sau khi đổi",
+    "requirementLabel": "Yêu cầu",
+    "washesUnit": "lượt",
+    "pointsUnit": "điểm",
+    "processingBtn": "Đang xử lý...",
+    "redeemNowBtn": "Đổi Ngay",
+    "toastNotEnoughWashes": "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
+    "toastNotEnoughPoints": "Bạn không đủ điểm tích lũy để đổi phần thưởng này!",
+    "toastRedeemFailed": "Đổi quà thất bại, vui lòng thử lại sau.",
+    "redemptionHistoryTitle": "Lịch sử đổi thưởng",
+    "noRedemptionHistory": "Bạn chưa đổi phần thưởng nào.",
+    "statusLabel": "Trạng thái:",
+    "statusAvailable": "Khả dụng",
+    "statusUsed": "Đã dùng",
+    "statusExpired": "Hết hạn",
+    "codeLabel": "· Mã:"
   },
   "loyaltyTier": {
     "title": "Tích Điểm & Hạng Thành Viên",
