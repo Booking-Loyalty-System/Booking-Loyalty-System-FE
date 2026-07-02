@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import confetti from "canvas-confetti";
 import { useTranslation } from "react-i18next";
 import {
@@ -244,8 +244,10 @@ export const BookWash: React.FC = () => {
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
   const { redeemedVouchersOnly, isLoadingRedemptions } = useReward();
-
-  const dynamicDateSlots = generateUpcomingDates(7);
+  const bookingWindow = (customerMe as any)?.bookingWindow || 7;
+  const dynamicDateSlots = useMemo(() => {
+    return generateUpcomingDates(bookingWindow);
+  }, [bookingWindow]);
   const navigate = useNavigate();
 
   // 2. Local States
@@ -267,9 +269,7 @@ export const BookWash: React.FC = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
   const [selectedBranchId, setSelectedBranchId] = useState<string>("");
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>(
-    dynamicDateSlots[0].apiDate,
-  );
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const [appliedPromotion, setAppliedPromotion] = useState<Promotion | null>(
@@ -389,6 +389,12 @@ export const BookWash: React.FC = () => {
       setIsCreating(false);
     }
   };
+
+  useEffect(() => {
+    if (dynamicDateSlots.length > 0 && !selectedDate) {
+      setSelectedDate(dynamicDateSlots[0].apiDate);
+    }
+  }, [dynamicDateSlots, selectedDate]);
 
   // 6. Renders
   if (isLoadingVehicles || isLoadingPackages || isLoadingRedemptions) {
