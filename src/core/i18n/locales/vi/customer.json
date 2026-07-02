@@ -9,8 +9,8 @@
       "totalPoints": "Tổng Điểm",
       "status": "Trạng Thái",
       "membershipTier": "Hạng Thành Viên",
-      "savings": "Tiết Kiệm",
-      "totalSaved": "Đã Tiết Kiệm"
+      "savings": "Đã Chi",
+      "totalSaved": "Tổng tiền đã sử dụng dịch vụ"
     },
     "quickActions": {
       "title": "Thao Tác Nhanh",
@@ -152,6 +152,29 @@
       "back": "Quay Lại",
       "next": "Tiếp Theo",
       "confirm": "Xác Nhận Đặt Lịch"
+    },
+    "successTitle": "Đặt Lịch Thành Công!",
+    "successSubtitle": "Vui lòng kiểm tra lại thông tin biên nhận cuối cùng của bạn dưới đây.",
+    "bookingCodeLabel": "Mã Đặt Lịch (Booking Code)",
+    "qrInstruction": "Đưa mã này cho nhân viên quét khi bạn đến cửa hàng nhé!",
+    "vehicleInfoLabel": "Thông Tin Xe",
+    "serviceSelectedLabel": "Gói Dịch Vụ Đã Chọn",
+    "appointmentDateLabel": "Ngày Hẹn",
+    "timeSlotLabel": "Khung Giờ",
+    "totalCostLabel": "Tổng chi phí thanh toán:",
+    "viewHistoryBtn": "Xem Lịch Sử Đặt Lịch",
+    "toastNoVehicle": "Vui lòng chọn xe của bạn!",
+    "toastNoBranch": "Vui lòng chọn chi nhánh!",
+    "toastNoPackage": "Vui lòng chọn gói rửa xe!",
+    "toastNoTime": "Vui lòng chọn khung giờ!",
+    "toastBookingError": "Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại.",
+    "loadingInfo": "Đang tải thông tin đặt lịch...",
+    "successCard": {
+      "title": "🎉 Đặt lịch thành công! Chúc mừng bạn!",
+      "bookingCode": "Mã Đặt Lịch",
+      "servicePackage": "Gói Dịch Vụ",
+      "time": "Thời Gian",
+      "totalAmount": "Tổng Tiền"
     }
   },
   "bookingHistory": {
@@ -203,7 +226,7 @@
     "redeem": "Đổi",
     "points": "điểm",
     "notEnoughPoints": "Không đủ điểm",
-    "redeemSuccess": "Đổi phần thưởng thành công!",
+    "redeemSuccess": "Đổi thành công: {{title}}! Voucher đã được thêm vào tài khoản của bạn.",
     "categories": {
       "all": "Tất Cả",
       "discount": "Giảm Giá",
@@ -220,7 +243,29 @@
     "history": {
       "title": "Lịch Sử Đổi Thưởng",
       "empty": "Chưa có lịch sử đổi thưởng"
-    }
+    },
+    "infoTitle": "Tự động áp dụng khi đặt lịch",
+    "infoDesc": "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!",
+    "availableRewardsTitle": "Phần thưởng khả dụng",
+    "redeemableCountMsg": "Bạn có thể đổi được {{n}} phần thưởng",
+    "noRewardsAvailable": "Hiện tại không có phần thưởng nào khả dụng.",
+    "comingSoonBadge": "Sắp ra mắt",
+    "validDaysLabel": "Hạn dùng {{n}} ngày sau khi đổi",
+    "requirementLabel": "Yêu cầu",
+    "washesUnit": "lượt",
+    "pointsUnit": "điểm",
+    "processingBtn": "Đang xử lý...",
+    "redeemNowBtn": "Đổi Ngay",
+    "toastNotEnoughWashes": "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
+    "toastNotEnoughPoints": "Bạn không đủ điểm tích lũy để đổi phần thưởng này!",
+    "toastRedeemFailed": "Đổi quà thất bại, vui lòng thử lại sau.",
+    "redemptionHistoryTitle": "Lịch sử đổi thưởng",
+    "noRedemptionHistory": "Bạn chưa đổi phần thưởng nào.",
+    "statusLabel": "Trạng thái:",
+    "statusAvailable": "Khả dụng",
+    "statusUsed": "Đã dùng",
+    "statusExpired": "Hết hạn",
+    "codeLabel": "· Mã:"
   },
   "loyaltyTier": {
     "title": "Tích Điểm & Hạng Thành Viên",

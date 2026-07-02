@@ -9,8 +9,8 @@
       "totalPoints": "Total Points",
       "status": "Status",
       "membershipTier": "Membership Tier",
-      "savings": "Savings",
-      "totalSaved": "Total Saved"
+      "savings": "Spent",
+      "totalSaved": "Total Amount Spent"
     },
     "quickActions": {
       "title": "Quick Actions",
@@ -152,6 +152,29 @@
       "back": "Back",
       "next": "Next",
       "confirm": "Confirm Booking"
+    },
+    "successTitle": "Booking Confirmed!",
+    "successSubtitle": "Please review your final booking receipt below.",
+    "bookingCodeLabel": "Booking Code",
+    "qrInstruction": "Show this code to our staff to scan when you arrive!",
+    "vehicleInfoLabel": "Vehicle Info",
+    "serviceSelectedLabel": "Selected Package",
+    "appointmentDateLabel": "Appointment Date",
+    "timeSlotLabel": "Time Slot",
+    "totalCostLabel": "Total Amount:",
+    "viewHistoryBtn": "View Booking History",
+    "toastNoVehicle": "Please select your vehicle!",
+    "toastNoBranch": "Please select a branch!",
+    "toastNoPackage": "Please select a wash package!",
+    "toastNoTime": "Please select a time slot!",
+    "toastBookingError": "An error occurred while creating your booking, please try again.",
+    "loadingInfo": "Loading booking information...",
+    "successCard": {
+      "title": "🎉 Booking successful! Congratulations!",
+      "bookingCode": "Booking Code",
+      "servicePackage": "Service Package",
+      "time": "Time",
+      "totalAmount": "Total Amount"
     }
   },
   "bookingHistory": {
@@ -203,7 +226,7 @@
     "redeem": "Redeem",
     "points": "pts",
     "notEnoughPoints": "Not enough points",
-    "redeemSuccess": "Reward redeemed successfully!",
+    "redeemSuccess": "Redeemed successfully: {{title}}! Voucher has been added to your account.",
     "categories": {
       "all": "All",
       "discount": "Discounts",
@@ -220,7 +243,29 @@
     "history": {
       "title": "Redemption History",
       "empty": "No redemption history yet"
-    }
+    },
+    "infoTitle": "Automatically applied at checkout",
+    "infoDesc": "All vouchers after redemption will be automatically optimized at the payment page. No manual code entry required!",
+    "availableRewardsTitle": "Available Rewards",
+    "redeemableCountMsg": "You can redeem {{n}} reward(s)",
+    "noRewardsAvailable": "No rewards available at the moment.",
+    "comingSoonBadge": "Coming Soon",
+    "validDaysLabel": "Valid for {{n}} days after redemption",
+    "requirementLabel": "Requirement",
+    "washesUnit": "wash(es)",
+    "pointsUnit": "pts",
+    "processingBtn": "Processing...",
+    "redeemNowBtn": "Redeem Now",
+    "toastNotEnoughWashes": "You don't have any free wash credits to redeem!",
+    "toastNotEnoughPoints": "You don't have enough points to redeem this reward!",
+    "toastRedeemFailed": "Redemption failed, please try again later.",
+    "redemptionHistoryTitle": "Redemption History",
+    "noRedemptionHistory": "You haven't redeemed any rewards yet.",
+    "statusLabel": "Status:",
+    "statusAvailable": "Available",
+    "statusUsed": "Used",
+    "statusExpired": "Expired",
+    "codeLabel": "· Code:"
   },
   "loyaltyTier": {
     "title": "Your Loyalty & Tier",
