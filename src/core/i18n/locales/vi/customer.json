@@ -152,6 +152,29 @@
       "back": "Quay Lại",
       "next": "Tiếp Theo",
       "confirm": "Xác Nhận Đặt Lịch"
+    },
+    "successTitle": "Đặt Lịch Thành Công!",
+    "successSubtitle": "Vui lòng kiểm tra lại thông tin biên nhận cuối cùng của bạn dưới đây.",
+    "bookingCodeLabel": "Mã Đặt Lịch (Booking Code)",
+    "qrInstruction": "Đưa mã này cho nhân viên quét khi bạn đến cửa hàng nhé!",
+    "vehicleInfoLabel": "Thông Tin Xe",
+    "serviceSelectedLabel": "Gói Dịch Vụ Đã Chọn",
+    "appointmentDateLabel": "Ngày Hẹn",
+    "timeSlotLabel": "Khung Giờ",
+    "totalCostLabel": "Tổng chi phí thanh toán:",
+    "viewHistoryBtn": "Xem Lịch Sử Đặt Lịch",
+    "toastNoVehicle": "Vui lòng chọn xe của bạn!",
+    "toastNoBranch": "Vui lòng chọn chi nhánh!",
+    "toastNoPackage": "Vui lòng chọn gói rửa xe!",
+    "toastNoTime": "Vui lòng chọn khung giờ!",
+    "toastBookingError": "Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại.",
+    "loadingInfo": "Đang tải thông tin đặt lịch...",
+    "successCard": {
+      "title": "🎉 Đặt lịch thành công! Chúc mừng bạn!",
+      "bookingCode": "Mã Đặt Lịch",
+      "servicePackage": "Gói Dịch Vụ",
+      "time": "Thời Gian",
+      "totalAmount": "Tổng Tiền"
     }
   },
   "bookingHistory": {
