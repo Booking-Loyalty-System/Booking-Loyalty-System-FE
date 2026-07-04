@@ -34,8 +34,7 @@ export const RegisterPage: React.FC = () => {
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [vehicleType, setVehicleType] = useState<number>(0);
-  const [licensePlate, setLicensePlate] = useState("");
+
   const { register, registerWithPhone, isPending, isPendingPhone } = useAuth();
   const [registerMode, setRegisterMode] = useState<"email" | "phone">("email");
 
@@ -65,8 +64,8 @@ export const RegisterPage: React.FC = () => {
         fullName,
         phoneNumber,
         dateOfBirth: new Date(dateOfBirth).toISOString(),
-        vehicleType,
-        licensePlate,
+
+
       });
       toast.success(t("auth.register.toastSuccess", { defaultValue: "Đăng ký tài khoản thành công!" }));
       navigate("/dashboard");
@@ -293,37 +292,12 @@ export const RegisterPage: React.FC = () => {
                   placeholder="0912345678"
                 />
 
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <InputField
-                      icon={<Calendar />}
-                      label={t('auth.register.labelDOB')}
-                      value={dateOfBirth}
-                      onChange={setDateOfBirth}
-                      type="date"
-                    />
-                  </div>
-                  <div className="space-y-1.5 flex-1">
-                    <label className="text-sm font-semibold text-[#334155] dark:text-slate-350">
-                      {t('auth.register.labelVehicleType')}
-                    </label>
-                    <select
-                      value={vehicleType}
-                      onChange={(e) => setVehicleType(Number(e.target.value))}
-                      className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl text-base text-[#0f172a] dark:text-slate-200 focus:border-[#4a90e2] dark:focus:border-blue-500 outline-none transition-all h-[46px]"
-                    >
-                      <option value={0}>{t('auth.register.optionSmall')}</option>
-                      <option value={1}>{t('auth.register.optionMedium')}</option>
-                      <option value={2}>{t('auth.register.optionLarge')}</option>
-                    </select>
-                  </div>
-                </div>
                 <InputField
-                  icon={<User />}
-                  label={t('auth.register.labelLicensePlate', { defaultValue: "License Plate (Optional)" })}
-                  value={licensePlate}
-                  onChange={setLicensePlate}
-                  placeholder="e.g. 29A-12345"
+                  icon={<Calendar />}
+                  label={t('auth.register.labelDOB')}
+                  value={dateOfBirth}
+                  onChange={setDateOfBirth}
+                  type="date"
                 />
 
                 <InputField
