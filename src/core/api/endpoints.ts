@@ -70,7 +70,7 @@ export const ENDPOINTS = {
         WASH_PACKAGE_DETAIL: (id: string) => `/admin/wash-packages/${id}`,
         BRANCHES: '/admin/branches',
         BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
-    // Promotions
+        // Promotions
         PROMOTIONS: '/admin/promotions',
         PROMOTION_DETAIL: (id: string) => `/admin/promotions/${id}`,
 
@@ -137,5 +137,30 @@ export const ENDPOINTS = {
         IPN: "/payments/vnpay/ipn",
         RETURN: "/payments/vnpay/return",
         CREATE_PAY_OS_URL: (id: string) => `/payments/payos/${id}/create-link`
+    },
+
+    AI: {
+        CHAT: '/AI/chat',
+        MODERATE_FEEDBACK: '/AI/moderate-feedback'
+    },
+
+    FEEDBACK: {
+        SUBMIT: '/Feedback/customer/submit',
+        PUBLIC_ALL: '/Feedback/public/all'
+    },
+
+    CHAT: {
+        CUSTOMER_SEND: '/Chat/customer/send',
+        CUSTOMER_TOGGLE_STATUS: (target: string) => `/Chat/customer/toggle-status?target=${target}`,
+        CUSTOMER_HISTORY: '/Chat/customer/history',
+        STAFF_WAITING_LIST: '/Chat/staff/waiting-list',
+        STAFF_ACTIVE_SESSION: '/Chat/staff/active-session',
+        STAFF_ACCEPT: (sessionId: string) => `/Chat/staff/accept/${sessionId}`,
+        STAFF_SEND: (sessionId: string) => `/Chat/staff/send/${sessionId}`,
+        STAFF_CLOSE: (sessionId: string) => `/Chat/staff/close/${sessionId}`,
+    },
+
+    CHAT_FEEDBACK: {
+        SUBMIT: '/ChatFeedback'
     }
 };
