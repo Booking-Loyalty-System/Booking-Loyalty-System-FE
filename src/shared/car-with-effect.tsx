@@ -127,10 +127,6 @@ export const CarWithEffects = ({
                 />
             </group>
 
-            {/* ==============================================================
-                🌊 HỆ THỐNG HIỆU ỨNG HẠT VÀ LINH KIỆN THEO BƯỚC
-                ============================================================== */}
-
             {stepStr === 'exterior_wash' && <HighPressureWaterParticles />}
 
             {stepStr === 'tire_cleaning' && <TireWashParticles carPos={VISUAL_CAR_POS} />}

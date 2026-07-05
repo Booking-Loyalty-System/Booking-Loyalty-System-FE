@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { StaffChatPanel } from "../components/staff/StaffChatPanel";
 import { NavLink, useNavigate, Outlet } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -104,10 +105,9 @@ export const StaffLayout: React.FC = () => {
                   key={link.to}
                   to={link.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${
-                      isActive
-                        ? "bg-blue-50 text-blue-600 shadow-sm"
-                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${isActive
+                      ? "bg-blue-50 text-blue-600 shadow-sm"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                     }`
                   }
                 >
@@ -129,10 +129,9 @@ export const StaffLayout: React.FC = () => {
                   key={link.to}
                   to={link.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${
-                      isActive
-                        ? "bg-blue-50 text-blue-600 shadow-sm"
-                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${isActive
+                      ? "bg-blue-50 text-blue-600 shadow-sm"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                     }`
                   }
                 >
@@ -168,6 +167,9 @@ export const StaffLayout: React.FC = () => {
           <Outlet />
         </div>
       </main>
+
+      {/* Chatbox staff để nhận và trả lời chat với khách hàng */}
+      <StaffChatPanel />
     </div>
   );
 };

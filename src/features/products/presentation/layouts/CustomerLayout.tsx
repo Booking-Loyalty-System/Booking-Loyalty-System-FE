@@ -24,6 +24,7 @@ import { ProfileDropdown } from "../components/ProfileDropdown";
 import { TierUpgradeModal } from "../components/TierUpgradeModal";
 import { useLanguage } from "@/core/context/LanguageContext.tsx";
 import { useTheme } from "@/core/context/ThemeContext.tsx";
+import { Chatbox } from "../components/Chatbox";
 
 // Đưa các Hook chuẩn kiến trúc của bạn vào đây
 import { useAuth } from "../../application/useAuth.ts";
@@ -48,7 +49,7 @@ export const CustomerLayout: React.FC = () => {
   const { logout, userId } = useAuth();
   const { myBookings, isLoading } = useBooking();
   const { unreadCount } = useNotification();
-  
+
   // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
   const hasInProgressBooking =
     !isLoading && myBookings.some((booking) => booking.status === "InProgress");
@@ -120,7 +121,7 @@ export const CustomerLayout: React.FC = () => {
         connection.state === "Connected" ||
         connection.state === "Connecting"
       ) {
-        connection.stop().catch(() => {});
+        connection.stop().catch(() => { });
       }
     };
   }, [userId, queryClient, baseUrl]);
@@ -132,9 +133,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.dashboard", { defaultValue: "Dashboard" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${
-            isActive ? "bg-[#1e6ffd] text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-[#1e6ffd]"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${isActive ? "bg-[#1e6ffd] text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-[#1e6ffd]"
+            }`}
         >
           <LayoutDashboard className="w-4 h-4" />
         </div>
@@ -145,9 +145,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.bookWash", { defaultValue: "Book Wash" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-1 ${
-            isActive ? "bg-[#10b981] text-white shadow-sm" : "bg-emerald-50 dark:bg-emerald-950/30 text-[#10b981]"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-1 ${isActive ? "bg-[#10b981] text-white shadow-sm" : "bg-emerald-50 dark:bg-emerald-950/30 text-[#10b981]"
+            }`}
         >
           <Car className="w-4 h-4" />
         </div>
@@ -169,9 +168,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.loyaltyTier", { defaultValue: "Loyalty & Tier" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${
-            isActive ? "bg-[#f59e0b] text-white shadow-sm" : "bg-amber-50 dark:bg-amber-950/30 text-[#f59e0b]"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${isActive ? "bg-[#f59e0b] text-white shadow-sm" : "bg-amber-50 dark:bg-amber-950/30 text-[#f59e0b]"
+            }`}
         >
           <Award className="w-4 h-4" />
         </div>
@@ -182,9 +180,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.rewards", { defaultValue: "Rewards" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive ? "bg-pink-500 text-white shadow-sm" : "bg-pink-50 dark:bg-pink-950/30 text-pink-500 group-hover:animate-bounce"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-pink-500 text-white shadow-sm" : "bg-pink-50 dark:bg-pink-950/30 text-pink-500 group-hover:animate-bounce"
+            }`}
         >
           <Gift className="w-4 h-4" />
         </div>
@@ -195,9 +192,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.promotions", { defaultValue: "Promotions" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:-rotate-12 ${
-            isActive ? "bg-[#a855f7] text-white shadow-sm" : "bg-purple-50 dark:bg-purple-950/30 text-[#a855f7]"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:-rotate-12 ${isActive ? "bg-[#a855f7] text-white shadow-sm" : "bg-purple-50 dark:bg-purple-950/30 text-[#a855f7]"
+            }`}
         >
           <Megaphone className="w-4 h-4" />
         </div>
@@ -208,9 +204,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.bookingHistory", { defaultValue: "Booking History" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive ? "bg-[#06b6d4] text-white shadow-sm" : "bg-cyan-50 dark:bg-cyan-950/30 text-[#06b6d4]"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-[#06b6d4] text-white shadow-sm" : "bg-cyan-50 dark:bg-cyan-950/30 text-[#06b6d4]"
+            }`}
         >
           <History className="w-4 h-4" />
         </div>
@@ -221,9 +216,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.myVehicles", { defaultValue: "My Vehicles" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-0.5 ${
-            isActive ? "bg-[#14b8a6] text-white shadow-sm" : "bg-teal-50 dark:bg-teal-950/30 text-[#14b8a6]"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-0.5 ${isActive ? "bg-[#14b8a6] text-white shadow-sm" : "bg-teal-50 dark:bg-teal-950/30 text-[#14b8a6]"
+            }`}
         >
           <Car className="w-4 h-4" />
         </div>
@@ -234,9 +228,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.notifications", { defaultValue: "Notifications" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 ${
-            isActive ? "bg-slate-700 text-white shadow-sm" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-slate-700 text-white shadow-sm" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+            }`}
         >
           <Bell className="w-4 h-4" />
         </div>
@@ -247,9 +240,8 @@ export const CustomerLayout: React.FC = () => {
       label: t("sidebar.settings", { defaultValue: "Settings" }),
       icon: (isActive) => (
         <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:rotate-45 ${
-            isActive ? "bg-blue-600 text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-blue-600"
-          }`}
+          className={`p-2 rounded-lg transition-all duration-300 group-hover:rotate-45 ${isActive ? "bg-blue-600 text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-blue-600"
+            }`}
         >
           <Settings className="w-4 h-4" />
         </div>
@@ -367,11 +359,10 @@ export const CustomerLayout: React.FC = () => {
             <button
               id="language-toggle-header"
               onClick={toggleLanguage}
-              title={`${t("language.switchTo", { defaultValue: "Switch to" })} ${
-                language === "en"
+              title={`${t("language.switchTo", { defaultValue: "Switch to" })} ${language === "en"
                   ? t("language.vi", { defaultValue: "Vietnamese" })
                   : t("language.en", { defaultValue: "English" })
-              }`}
+                }`}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200"
             >
               <span className="text-base leading-none">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
@@ -380,11 +371,10 @@ export const CustomerLayout: React.FC = () => {
 
             <button
               onClick={() => navigate("/notifications")}
-              className={`relative p-2 rounded-xl transition-all duration-200 focus:outline-none ${
-                location.pathname === "/notifications"
+              className={`relative p-2 rounded-xl transition-all duration-200 focus:outline-none ${location.pathname === "/notifications"
                   ? "bg-[#f1f5f9] dark:bg-slate-800 text-[#0f172a] dark:text-white"
                   : "text-[#64748b] hover:text-[#0f172a] dark:hover:text-white hover:bg-[#f1f5f9] dark:hover:bg-slate-800"
-              }`}
+                }`}
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
@@ -402,6 +392,9 @@ export const CustomerLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* Unified Chatbox: AI + Live Staff – single floating widget */}
+      <Chatbox />
 
       {/* Modal thông báo thăng hạng đặt ở Layout để luôn sẵn sàng */}
       <TierUpgradeModal />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {XCircle, Calendar, Star, Clock, DollarSign, AlertTriangle} from 'lucide-react';
+import {XCircle, Calendar, Star, Clock, DollarSign, AlertTriangle, MessageSquarePlus} from 'lucide-react';
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import type { MyBookingRecord } from "@/features/products/domain/models/booking/booking.model.ts";
 import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
@@ -9,11 +9,13 @@ import {BookingSuccessCard} from "@/features/products/presentation/components/Bo
 import {useLocation} from "react-router-dom";
 import {toast} from "sonner";
 import {ReschedulePicker} from "@/features/products/presentation/components/ReschedulePicker.tsx";
+import { FeedbackModal } from '@/features/products/presentation/components/FeedbackModal';
 
 export const BookingHistory: React.FC = () => {
     const { t } = useTranslation('customer');
     const location = useLocation();
     const [selectedBooking, setSelectedBooking] = useState<MyBookingRecord | null>(null);
+    const [feedbackBooking, setFeedbackBooking] = useState<MyBookingRecord | null>(null);
 
     const [bookingToCancel, setBookingToCancel] = useState<MyBookingRecord | null>(null);
     const [cancelReason, setCancelReason] = useState<string>('Change of personal plans');
@@ -131,6 +133,15 @@ export const BookingHistory: React.FC = () => {
                 booking={selectedBooking}
                 onClose={() => setSelectedBooking(null)}
             />
+
+            {/* Modal Feedback - Hiển thị khi nhấn nút Đánh giá ở booking Completed/CheckedOut */}
+            {feedbackBooking && (
+                <FeedbackModal
+                    bookingId={feedbackBooking.id}
+                    bookingCode={feedbackBooking.bookingCode}
+                    onClose={() => setFeedbackBooking(null)}
+                />
+            )}
 
             {/* Khối Banner Thông Báo Thành Công + Hiệu Ứng Bắn Pháo */}
             {newBooking && (
@@ -262,7 +273,7 @@ export const BookingHistory: React.FC = () => {
                                           </span>
                                     </td>
                                     <td className="py-4 px-6 font-extrabold text-slate-900">{formatCurrency(item.totalPrice)}</td>
-                                    <td className="py-4 px-6 text-right space-x-3">
+                                    <td className="py-4 px-6 text-right space-x-2">
                                         <button
                                             onClick={() => setSelectedBooking(item)}
                                             className="text-blue-600 hover:text-blue-700 font-bold text-xs"
@@ -276,6 +287,15 @@ export const BookingHistory: React.FC = () => {
                                             >
                                                 <XCircle className="w-3.5 h-3.5" />
                                                 <span>{t('bookingHistory.actions.cancel')}</span>
+                                            </button>
+                                        )}
+                                        {(item.status === 'Completed' || item.status === 'CheckedOut') && (
+                                            <button
+                                                onClick={() => setFeedbackBooking(item)}
+                                                className="text-amber-500 hover:text-amber-600 font-bold text-xs inline-flex items-center gap-0.5"
+                                            >
+                                                <MessageSquarePlus className="w-3.5 h-3.5" />
+                                                <span>Đánh giá</span>
                                             </button>
                                         )}
                                     </td>
