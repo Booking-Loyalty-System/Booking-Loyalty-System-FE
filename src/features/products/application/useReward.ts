@@ -2,11 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { RewardRepositoryImplement } from '../infrastructure/repositories/reward/reward.repository.implement.ts';
 import type { RewardDto, RedemptionDto, MappedVoucher } from '../domain/models/voucher/voucher.model.ts';
+import { useTranslation } from 'react-i18next';
+import { translateDynamic } from '@/shared/utils/translateDynamic.ts';
 
 const rewardRepository = new RewardRepositoryImplement();
 
 export const useReward = () => {
     const queryClient = useQueryClient();
+    const { i18n } = useTranslation();
 
     // Query danh sách phần thưởng có thể đổi (tại quầy / bằng điểm)
     const availableRewardsQuery = useQuery<RewardDto[]>({
@@ -72,15 +75,15 @@ export const useReward = () => {
                 return {
                     id: item.id, // ID của bản ghi giao dịch đổi thưởng dùng để truyền lên API đặt lịch
                     code: `REDEEM-${item.pointsSpent}PTS`,
-                    title: item.rewardName,
-                    description: `Đã đổi thành công bằng ${item.pointsSpent} điểm`,
+                    title: translateDynamic(item.rewardName, i18n.language),
+                    description: i18n.language === 'en' ? `Successfully redeemed with ${item.pointsSpent} points` : `Đã đổi thành công bằng ${item.pointsSpent} điểm`,
                     status: item.status,
                     discountValue: discountAmount,
                     expiryDate: 'Khả dụng',
                     isRewardItem: true
                 };
             });
-    }, [redemptions]);
+    }, [redemptions, i18n.language]);
 
     return {
         availableRewards,

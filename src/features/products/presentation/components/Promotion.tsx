@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Tag, Sparkles, Calendar, Copy, Check } from 'lucide-react';
 import { usePromotion } from '@/features/products/application/usePromotion.ts';
 import { useTranslation } from 'react-i18next';
+import { translateDynamic } from '@/shared/utils/translateDynamic.ts';
 
 export const Promotions: React.FC = () => {
-    const { t } = useTranslation('customer');
+    const { t, i18n } = useTranslation('customer');
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
     const { promotions, isLoading } = usePromotion();
 
@@ -74,9 +75,9 @@ export const Promotions: React.FC = () => {
                                     <div className="space-y-1.5">
                                         {/* Fallback sang .title nếu mock data dùng title, còn api thật dùng name */}
                                         <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-                                            {promo.name || promo.title}
+                                            {translateDynamic(promo.name || promo.title, i18n.language)}
                                         </h3>
-                                        <p className="text-sm text-slate-500 font-medium leading-relaxed">{promo.description}</p>
+                                        <p className="text-sm text-slate-500 font-medium leading-relaxed">{translateDynamic(promo.description, i18n.language)}</p>
                                         <div className="flex flex-wrap items-center gap-3 pt-1">
                                             {promo.targetTiers && promo.targetTiers.length > 0 && (
                                                 <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">
@@ -120,7 +121,7 @@ export const Promotions: React.FC = () => {
                             <div className="mt-5 pt-4 border-t border-slate-100">
                                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{t('promotions.featured.termsAndConditions')}</h4>
                                 <ul className="text-xs text-slate-500 font-medium space-y-1 list-disc pl-4 leading-relaxed">
-                                    {promo.conditions?.map((c, i) => <li key={i}>{c}</li>)}
+                                    {promo.conditions?.map((c, i) => <li key={i}>{translateDynamic(c, i18n.language)}</li>)}
                                     {(!promo.conditions || promo.conditions.length === 0) && (
                                         <li>
                                             {t('promotions.featured.defaultCondition', { defaultValue: 'Áp dụng cho các hóa đơn thỏa mãn điều kiện tối thiểu.' })}
@@ -145,14 +146,14 @@ export const Promotions: React.FC = () => {
                                 </div>
                                 <div className="space-y-1">
                                     <h3 className="text-base font-bold text-slate-900 tracking-tight">
-                                        {item.name || item.title}
+                                        {translateDynamic(item.name || item.title, i18n.language)}
                                     </h3>
                                     {item.targetTiers && item.targetTiers.length > 0 && (
                                         <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-md mt-1">
                                             {item.targetTiers.join(', ')}
                                         </span>
                                     )}
-                                    <p className="text-sm text-slate-500 font-medium pt-2 leading-relaxed">{item.description}</p>
+                                    <p className="text-sm text-slate-500 font-medium pt-2 leading-relaxed">{translateDynamic(item.description, i18n.language)}</p>
                                 </div>
                                 <div className="bg-slate-50 rounded-xl p-3">
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('promotions.allActive.labelCode')}</p>

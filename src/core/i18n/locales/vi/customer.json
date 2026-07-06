@@ -583,5 +583,29 @@
       "upToDays": "Tối đa {{days}} ngày",
       "pointsMultiplier": "Hệ số tích điểm: {{mult}}"
     }
+  },
+  "feedback": {
+    "title": "Đánh giá dịch vụ",
+    "subtitle": "Trải nghiệm của bạn với chúng tôi như thế nào? Đánh giá của bạn giúp chúng tôi cải thiện dịch vụ!",
+    "subtitleChat": "Ý kiến của bạn giúp chúng tôi cải thiện tốt hơn.",
+    "labels": {
+      "service": "Dịch vụ",
+      "staff": "Nhân viên",
+      "price": "Giá cả",
+      "comment": "Bình luận (tuỳ chọn)",
+      "commentPlaceholder": "Chia sẻ trải nghiệm của bạn...",
+      "bookingCode": "Mã lịch hẹn"
+    },
+    "buttons": {
+      "submit": "Gửi đánh giá",
+      "submitting": "Đang gửi...",
+      "later": "Để sau",
+      "endSession": "Kết thúc",
+      "skip": "Bỏ qua"
+    },
+    "toast": {
+      "success": "Cảm ơn bạn đã gửi đánh giá! 🌟",
+      "error": "Gửi đánh giá thất bại, vui lòng thử lại."
+    }
   }
 }

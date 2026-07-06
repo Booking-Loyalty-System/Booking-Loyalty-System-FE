@@ -295,7 +295,7 @@ export const BookingHistory: React.FC = () => {
                                                 className="text-amber-500 hover:text-amber-600 font-bold text-xs inline-flex items-center gap-0.5"
                                             >
                                                 <MessageSquarePlus className="w-3.5 h-3.5" />
-                                                <span>Đánh giá</span>
+                                                <span>{t('bookingHistory.actions.review', { defaultValue: 'Đánh giá' })}</span>
                                             </button>
                                         )}
                                     </td>
