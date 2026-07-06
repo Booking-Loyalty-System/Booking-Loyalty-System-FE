@@ -27,10 +27,10 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     availableRewards,
   } = useReward();
   const [showQuickRedeem, setShowQuickRedeem] = useState(false);
-
+  const [confirmReward, setConfirmReward] = useState<{ id: string, title: string, cost: number, isFreeWash: boolean } | null>(null);
   const quickRedeemList = availableRewards.slice(0, 4);
 
-  const handleQuickRedeem = async (
+  const handleQuickRedeem = (
     rewardId: string,
     requiredPts: number,
     title: string,
@@ -56,8 +56,16 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
       return;
     }
 
+    setConfirmReward({ id: rewardId, title, cost: requiredPts, isFreeWash });
+  };
+
+  const executeRedeem = async () => {
+    if (!confirmReward) return;
+    const { id, title } = confirmReward;
+    setConfirmReward(null);
+
     try {
-      const newVoucher = await redeemVoucher(rewardId);
+      const newVoucher = await redeemVoucher(id);
       toast.success(
         t("bookWash.voucher.toastRedeemSuccess", {
           title,
@@ -304,6 +312,38 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
           </div>
         )}
       </div>
+      {confirmReward && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <h3 className="text-xl font-bold text-slate-800 mb-2">
+              Xác nhận đổi thưởng
+            </h3>
+            <p className="text-slate-600 text-sm mb-6 leading-relaxed">
+              Bạn có chắc chắn muốn dùng{" "}
+              {confirmReward.isFreeWash ? (
+                <span className="font-bold text-slate-800">1 lượt rửa xe miễn phí</span>
+              ) : (
+                <span className="font-bold text-slate-800">{confirmReward.cost} điểm</span>
+              )}{" "}
+              để đổi lấy <span className="font-bold text-emerald-600">{confirmReward.title}</span> không? Hành động này không thể hoàn tác.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setConfirmReward(null)}
+                className="px-5 py-2.5 font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={executeRedeem}
+                className="px-5 py-2.5 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-sm active:scale-95"
+              >
+                Xác nhận đổi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
