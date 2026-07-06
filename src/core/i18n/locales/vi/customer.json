@@ -326,7 +326,8 @@
       "date": "Ngày",
       "description": "Mô Tả",
       "type": "Loại Giao Dịch",
-      "points": "Điểm Số"
+      "points": "Điểm Số",
+      "balance": "Số Dư"
     },
     "txTypeEarned": "Tích Lũy",
     "txTypeRedeemed": "Đã Đổi",

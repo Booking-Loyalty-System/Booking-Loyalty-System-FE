@@ -129,6 +129,30 @@ export const LoyaltyTier: React.FC = () => {
   const totalBookings =
     customerMe?.totalWashes || historyData?.totalBookingsThisMonth || 0;
 
+  // Tính toán số dư sau mỗi giao dịch
+  const transactionsWithBalance = React.useMemo(() => {
+    if (!transactions.length) return [];
+    
+    // Sắp xếp giảm dần theo ngày (mới nhất lên đầu)
+    const sortedTx = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    let currentBalance = availablePoints;
+    
+    return sortedTx.map((tx) => {
+      const balanceAfter = currentBalance;
+      // Nếu backend trả tx.points âm cho Redeem thì dùng luôn, nếu trả dương thì ép âm
+      const pointDiff = (tx.type === "Redeemed" && tx.points > 0) ? -tx.points : tx.points;
+      
+      // Lùi về số dư của thời điểm trước khi có giao dịch này
+      currentBalance = currentBalance - pointDiff;
+
+      return {
+        ...tx,
+        balanceAfter
+      };
+    });
+  }, [transactions, availablePoints]);
+
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans antialiased text-slate-800">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -386,10 +410,11 @@ export const LoyaltyTier: React.FC = () => {
                       <th className="py-4 px-6">{t("loyaltyTier.table.description")}</th>
                       <th className="py-4 px-6">{t("loyaltyTier.table.type")}</th>
                       <th className="py-4 px-6 text-right">{t("loyaltyTier.table.points")}</th>
+                      <th className="py-4 px-6 text-right">{t("loyaltyTier.table.balance", { defaultValue: "Balance" })}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                    {transactions.map((tx, idx) => (
+                    {transactionsWithBalance.map((tx, idx) => (
                       <tr
                         key={idx}
                         className="hover:bg-slate-50/80 transition-colors"
@@ -413,10 +438,13 @@ export const LoyaltyTier: React.FC = () => {
                         </td>
                         <td
                           className={`py-4 px-6 text-right font-bold text-base ${
-                            tx.points > 0 ? "text-emerald-600" : "text-rose-600"
+                            tx.points > 0 && tx.type === "Earned" ? "text-emerald-600" : "text-rose-600"
                           }`}
                         >
-                          {tx.points > 0 ? `+${tx.points}` : tx.points}
+                          {tx.points > 0 && tx.type === "Earned" ? `+${tx.points}` : (tx.points > 0 ? `-${tx.points}` : tx.points)}
+                        </td>
+                        <td className="py-4 px-6 text-right font-bold text-slate-800 text-base">
+                          {tx.balanceAfter}
                         </td>
                       </tr>
                     ))}
