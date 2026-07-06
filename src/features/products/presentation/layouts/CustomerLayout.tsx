@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
@@ -30,6 +30,7 @@ import { Chatbox } from "../components/Chatbox";
 import { useAuth } from "../../application/useAuth.ts";
 import { useBooking } from "../../application/useBooking.ts";
 import { useNotification } from "@/features/products/application/useNotification.ts";
+import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 
 interface MenuItem {
   path: string;
@@ -49,6 +50,17 @@ export const CustomerLayout: React.FC = () => {
   const { logout, userId } = useAuth();
   const { myBookings, isLoading } = useBooking();
   const { unreadCount } = useNotification();
+  const { customerMe } = useCustomerMe();
+
+  const myBookingsRef = useRef(myBookings);
+  useEffect(() => {
+    myBookingsRef.current = myBookings;
+  }, [myBookings]);
+
+  const customerMeRef = useRef(customerMe);
+  useEffect(() => {
+    customerMeRef.current = customerMe;
+  }, [customerMe]);
 
   // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
   const hasInProgressBooking =
@@ -86,6 +98,25 @@ export const CustomerLayout: React.FC = () => {
                 "Your vehicle has entered the service bay! Opening Live Tracking...",
                 { icon: "🚗" },
               );
+            } else if (currentStatus === "Completed") {
+              const booking = myBookingsRef.current.find(b => b.id === data.bookingId);
+              if (booking) {
+                const tier = customerMeRef.current?.tier || "Member";
+                const multiplier = tier === "Platinum" ? 3 : tier === "Gold" ? 2 : tier === "Silver" ? 1.5 : 1;
+                const points = Math.floor((booking.totalPrice || 0) / 1000) * multiplier;
+                
+                toast.success(
+                  `Thanh toán thành công! Bạn được cộng ${points.toLocaleString("vi-VN")} điểm thưởng.`,
+                  { icon: "🎉" }
+                );
+                // Bắn event báo hiệu để reload lại các query liên quan đến customerMe
+                window.dispatchEvent(new Event("customer_points_changed"));
+              } else {
+                toast.success(
+                  "Thanh toán thành công! Điểm thưởng đã được cộng vào tài khoản.",
+                  { icon: "🎉" }
+                );
+              }
             } else {
               toast.info(`Current order status: ${currentStatus}`, {
                 icon: "ℹ️",
