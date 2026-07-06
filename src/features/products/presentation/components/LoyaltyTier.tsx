@@ -423,13 +423,32 @@ export const LoyaltyTier: React.FC = () => {
                           {tx.date}
                         </td>
                         <td className="py-4 px-6 font-semibold text-slate-800">
-                          {tx.description.includes("Earned from booking") 
-                            ? `${t("loyaltyTier.earnedFromBooking", { defaultValue: "Earned from booking" })} ${tx.description.split("Earned from booking ")[1]}`
-                            : tx.description.includes("Redeemed Voucher")
-                            ? `${t("loyaltyTier.redeemedVoucher", { defaultValue: "Redeemed Voucher" })} ${tx.description.split("Redeemed Voucher ")[1]}`
-                            : tx.description.includes("No-show penalty")
-                            ? `${t("loyaltyTier.noShowPenalty", { defaultValue: "No-show penalty" })} ${tx.description.split("No-show penalty ")[1] || ""}`
-                            : tx.description}
+                          {(() => {
+                            const desc = tx.description;
+                            // Match EN pattern: "Earned from booking {code}"
+                            // Match VI pattern: "Cộng điểm từ đơn hàng {code}"
+                            if (desc.includes("Earned from booking") || desc.includes("Cộng điểm từ đơn hàng")) {
+                              const code = desc.includes("Earned from booking")
+                                ? desc.split("Earned from booking ")[1]
+                                : desc.split("Cộng điểm từ đơn hàng ")[1];
+                              return `${t("loyaltyTier.earnedFromBooking", { defaultValue: "Earned from booking" })} ${code ?? ""}`;
+                            }
+                            // Match EN pattern: "Redeemed Voucher {name}"
+                            // Match VI pattern: "Đổi điểm lấy Voucher {name}"
+                            if (desc.includes("Redeemed Voucher") || desc.includes("Đổi điểm lấy Voucher")) {
+                              const name = desc.includes("Redeemed Voucher")
+                                ? desc.split("Redeemed Voucher ")[1]
+                                : desc.split("Đổi điểm lấy Voucher ")[1];
+                              return `${t("loyaltyTier.redeemedVoucher", { defaultValue: "Redeemed Voucher" })} ${name ?? ""}`;
+                            }
+                            // Match EN pattern: "No-show penalty..."
+                            // Match VI pattern: "Phạt vắng mặt..."
+                            if (desc.includes("No-show penalty") || desc.includes("Phạt vắng mặt")) {
+                              return t("loyaltyTier.noShowPenalty", { defaultValue: "No-show penalty" });
+                            }
+                            // Fallback: hiển thị nguyên chuỗi
+                            return desc;
+                          })()}
                         </td>
                         <td className="py-4 px-6">
                           <span
