@@ -331,6 +331,9 @@
     },
     "txTypeEarned": "Earned",
     "txTypeRedeemed": "Redeemed",
+    "earnedFromBooking": "Earned from booking",
+    "redeemedVoucher": "Redeemed Voucher",
+    "noShowPenalty": "No-show penalty",
     "progress": {
       "title": "Progress to Next Tier",
       "washes": "Washes",

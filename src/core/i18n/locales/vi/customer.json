@@ -331,6 +331,9 @@
     },
     "txTypeEarned": "Tích Lũy",
     "txTypeRedeemed": "Đã Đổi",
+    "earnedFromBooking": "Tích điểm từ đơn",
+    "redeemedVoucher": "Đổi điểm lấy Voucher",
+    "noShowPenalty": "Phạt điểm do không đến (No-show)",
     "progress": {
       "title": "Tiến Trình Lên Hạng",
       "washes": "Lượt Rửa",

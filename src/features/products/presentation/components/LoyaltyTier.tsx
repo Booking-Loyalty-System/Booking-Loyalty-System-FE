@@ -39,28 +39,28 @@ export const LoyaltyTier: React.FC = () => {
   const currentTierName = customerMe?.tier || "Bronze";
 
   // Tính toán target dựa trên mức TỔNG ĐIỂM (totalPoints)
-  let targetPoints = 300;
+  let targetPoints = 2000;
   let nextTierName = "Silver";
-  if (totalPoints >= 300 && totalPoints < 600) {
-    targetPoints = 600;
+  if (totalPoints >= 2000 && totalPoints < 6000) {
+    targetPoints = 6000;
     nextTierName = "Gold";
-  } else if (totalPoints >= 600 && totalPoints < 1000) {
-    targetPoints = 1000;
-    nextTierName = "Platinum";
-  } else if (totalPoints >= 1000) {
+  } else if (totalPoints >= 6000 && totalPoints < 15000) {
+    targetPoints = 15000;
+    nextTierName = "Diamond";
+  } else if (totalPoints >= 15000) {
     targetPoints = totalPoints;
     nextTierName = "Max Tier";
   }
 
   const pointsToGo = Math.max(0, targetPoints - totalPoints);
   const progressPercentage =
-    totalPoints >= 1000 ? 100 : (totalPoints / targetPoints) * 100;
+    totalPoints >= 15000 ? 100 : (totalPoints / targetPoints) * 100;
 
   const baseTiers: MembershipTier[] = [
     {
       name: "Bronze",
       pointsRangeKey: "loyaltyTier.tierBronzeRange",
-      pointsRangeDefault: "0 - 299 points",
+      pointsRangeDefault: "0 - 1999 points",
       discount: "5%",
       multiplier: "1x",
       advanceBooking: 7,
@@ -73,10 +73,10 @@ export const LoyaltyTier: React.FC = () => {
     {
       name: "Silver",
       pointsRangeKey: "loyaltyTier.tierSilverRange",
-      pointsRangeDefault: "300 - 599 points",
+      pointsRangeDefault: "2000 - 5999 points",
       discount: "10%",
       multiplier: "1.5x",
-      advanceBooking: 10,
+      advanceBooking: 14,
       benefits: ["benefitPrioritySupport", "benefitExclusiveOffers"],
       isCurrent: false,
       colorClass: "border-slate-200 text-slate-400",
@@ -86,10 +86,10 @@ export const LoyaltyTier: React.FC = () => {
     {
       name: "Gold",
       pointsRangeKey: "loyaltyTier.tierGoldRange",
-      pointsRangeDefault: "600 - 999 points",
+      pointsRangeDefault: "6000 - 14999 points",
       discount: "15%",
       multiplier: "2x",
-      advanceBooking: 12,
+      advanceBooking: 21,
       benefits: ["benefitPriorityBooking", "benefitFreeWashBirthday"],
       isCurrent: false,
       colorClass: "border-amber-200 text-amber-500",
@@ -97,12 +97,12 @@ export const LoyaltyTier: React.FC = () => {
       icon: <Crown className="w-6 h-6 text-amber-500" />,
     },
     {
-      name: "Platinum",
-      pointsRangeKey: "loyaltyTier.tierPlatinumRange",
-      pointsRangeDefault: "1000+ points",
+      name: "Diamond",
+      pointsRangeKey: "loyaltyTier.tierDiamondRange",
+      pointsRangeDefault: "15000+ points",
       discount: "20%",
       multiplier: "3x",
-      advanceBooking: 14,
+      advanceBooking: 30,
       benefits: ["benefitVipAccess", "benefitDedicatedManager"],
       isCurrent: false,
       colorClass: "border-purple-200 text-purple-600",
@@ -423,7 +423,13 @@ export const LoyaltyTier: React.FC = () => {
                           {tx.date}
                         </td>
                         <td className="py-4 px-6 font-semibold text-slate-800">
-                          {tx.description}
+                          {tx.description.includes("Earned from booking") 
+                            ? `${t("loyaltyTier.earnedFromBooking", { defaultValue: "Earned from booking" })} ${tx.description.split("Earned from booking ")[1]}`
+                            : tx.description.includes("Redeemed Voucher")
+                            ? `${t("loyaltyTier.redeemedVoucher", { defaultValue: "Redeemed Voucher" })} ${tx.description.split("Redeemed Voucher ")[1]}`
+                            : tx.description.includes("No-show penalty")
+                            ? `${t("loyaltyTier.noShowPenalty", { defaultValue: "No-show penalty" })} ${tx.description.split("No-show penalty ")[1] || ""}`
+                            : tx.description}
                         </td>
                         <td className="py-4 px-6">
                           <span
