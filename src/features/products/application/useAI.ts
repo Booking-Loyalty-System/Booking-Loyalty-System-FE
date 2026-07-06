@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { AIRepositoryImplement } from '../infrastructure/repositories/ai/ai.repository.implement';
 import type {
     FeedbackModerationRequest,
