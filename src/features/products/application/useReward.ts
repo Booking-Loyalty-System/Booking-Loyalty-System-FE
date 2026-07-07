@@ -43,6 +43,15 @@ export const useReward = () => {
         }
     });
 
+    const giftRewardMutation = useMutation({
+        mutationFn: ({ customerId, rewardId }: { customerId: string; rewardId: string }) =>
+            rewardRepository.giftReward(customerId, rewardId),
+        onSuccess: () => {
+            // Làm tươi lại lịch sử/danh sách voucher nếu cần
+            queryClient.invalidateQueries({ queryKey: ['my_redemptions'] });
+        }
+    });
+
     // Lắng nghe sự kiện cập nhật điểm từ hệ thống
     useEffect(() => {
         const handlePointsChanged = () => {
@@ -92,5 +101,8 @@ export const useReward = () => {
 
         redeemReward: redeemRewardMutation.mutateAsync,
         isRedeeming: redeemRewardMutation.isPending,
+
+        giftReward: giftRewardMutation.mutateAsync,
+        isGifting: giftRewardMutation.isPending
     };
 };

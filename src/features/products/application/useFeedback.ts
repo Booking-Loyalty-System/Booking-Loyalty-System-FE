@@ -9,12 +9,34 @@ export type { SubmitFeedbackInput, FeedbackRecord } from '../domain/models/feedb
 const feedbackRepo = new FeedbackRepositoryImplement();
 const aiRepo = new AIRepositoryImplement();
 
-export const useFeedback = () => {
-    // Query lấy toàn bộ public feedback
+export const useFeedback = (options?: { isDescending?: boolean; topCount?: number }) => {
+    const isDescending = options?.isDescending ?? true;
+    const topCount = options?.topCount ?? 5;
+
     const { data: publicFeedbacks = [], isLoading: isLoadingFeedbacks } = useQuery({
         queryKey: ['feedback_public_all'],
         queryFn: () => feedbackRepo.getAllPublic(),
         staleTime: 5 * 60 * 1000 // cache 5 phút
+    });
+
+    const {
+        data: filteredFeedbacks = [],
+        isLoading: isLoadingFiltered,
+        refetch: refetchFiltered
+    } = useQuery({
+        queryKey: ['feedback_admin_filter', isDescending],
+        queryFn: () => feedbackRepo.getAdminFilteredFeedbacks(isDescending),
+        staleTime: 1 * 60 * 1000 // cache 1 phút
+    });
+
+    const {
+        data: statistics = null,
+        isLoading: isLoadingStats,
+        refetch: refetchStats
+    } = useQuery({
+        queryKey: ['feedback_admin_statistics', topCount],
+        queryFn: () => feedbackRepo.getFeedbackStatistics(topCount),
+        staleTime: 3 * 60 * 1000 // dữ liệu thống kê nặng hơn nên cache 3 phút
     });
 
     // Mutation gửi feedback kèm kiểm duyệt nội dung bằng AI trước khi submit
@@ -43,7 +65,15 @@ export const useFeedback = () => {
     return {
         publicFeedbacks,
         isLoadingFeedbacks,
+        filteredFeedbacks,
+        statistics,
         submitFeedback: submitMutation.mutateAsync,
-        isSubmitting: submitMutation.isPending
+        isSubmitting: submitMutation.isPending,
+        isLoadingFiltered,
+        isLoadingStats,
+        refreshAllAdminData: () => {
+            refetchFiltered();
+            refetchStats();
+        }
     };
 };

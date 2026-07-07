@@ -109,7 +109,8 @@ export const Chatbox: React.FC = () => {
 
     const {
         messages, isLoading, isLiveChat, viewMode, historySessions, selectedOldMessages, selectedSessionInfo, currentSessionId,
-        sendMessage, connectToStaff, connectToAI, clearMessages, loadHistoryList, handleSelectHistorySession, setViewMode, endSession
+        sendMessage, connectToStaff, connectToAI, clearMessages, loadHistoryList, handleSelectHistorySession, setViewMode, endSession,
+        isRemoteClosed, setIsRemoteClosed
     } = useCustomerChat();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -120,6 +121,15 @@ export const Chatbox: React.FC = () => {
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages, selectedOldMessages, isOpen, isMinimized, isLoading, viewMode]);
+
+    useEffect(() => {
+        if (isRemoteClosed) {
+            setIsFeedbackVisible(true);
+            toast.info("Nhân viên đã kết thúc phiên hỗ trợ. Vui lòng đánh giá dịch vụ!");
+
+            setIsRemoteClosed(false);
+        }
+    }, [isRemoteClosed, setIsRemoteClosed]);
 
     useEffect(() => {
         if (isOpen && !isMinimized && viewMode === 'chat') {
@@ -240,7 +250,13 @@ export const Chatbox: React.FC = () => {
 
                                     <div className="flex gap-3 mt-auto">
                                         <button
-                                            onClick={() => setIsFeedbackVisible(false)}
+                                            onClick={() => {
+                                                setIsFeedbackVisible(false)
+                                                setIsOpen(false);
+                                                clearMessages();
+                                                setRating(5);
+                                                setComment('');
+                                            }}
                                             className="flex-1 py-3 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50"
                                         >
                                             Bỏ qua

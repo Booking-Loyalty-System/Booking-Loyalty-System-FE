@@ -192,15 +192,14 @@ export const useStaffChat = () => {
         setIsSending(true);
 
         try {
-            await chatRepo.staffSend(selectedSessionId, { message: text.trim() });
-            const myMsg: LiveChatMessage = {
-                role: 'staff',
-                content: text.trim(),
-                timestamp: new Date()
-            };
+            const cleanText = text.trim();
+            await chatRepo.staffSend(selectedSessionId, { message: cleanText });
 
             setActiveSessions(prev =>
-                prev.map(s => s.id === selectedSessionId ? { ...s, messages: [...(s.messages || []), myMsg] } : s)
+                prev.map(s => s.id === selectedSessionId
+                    ? { ...s, lastMessage: cleanText }
+                    : s
+                )
             );
         } catch (err) {
             console.error('Failed to send staff message', err);
