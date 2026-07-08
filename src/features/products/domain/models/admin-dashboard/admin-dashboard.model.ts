@@ -1,6 +1,3 @@
-// Domain model đại diện cho dữ liệu của Admin Dashboard
-// Dùng TypeScript interface để định nghĩa cấu trúc dữ liệu chặt chẽ từ API trả về, giúp việc mapping và render UI an toàn hơn.
-
 export interface AdminDashboardMetrics {
     totalRevenue: number;
     totalBookings: number;
@@ -38,4 +35,46 @@ export interface TierConfig {
     silverMultiplier: number;
     goldMultiplier: number;
     platinumMultiplier: number;
+}
+
+export interface RevenueComparison {
+    currentRevenue: number;
+    previousRevenue: number;
+    revenueDifference: number;
+    growthRate: number;
+}
+
+export interface RevenueComparisonParams {
+    fromDate: string;
+    toDate: string;
+    compareFromDate: string;
+    compareToDate: string;
+}
+
+export interface BranchRevenue {
+    branchId: string;
+    branchName: string;
+    revenue: number;
+}
+
+export interface RevenueChartResponse {
+    label: string;
+    currentPeriodRevenue: number;
+    previousPeriodRevenue: number;
+    differenceAmount: number;
+    growthPercentage: number;
+    branchRevenues: BranchRevenue[];
+}
+
+export interface DashboardFilterRequest {
+    type: 'MONTH' | 'QUARTER' | 'YEAR';
+    year: number;
+    value?: number;
+}
+
+export interface DashboardAnalyticResponse {
+    totalRevenue: number;
+    monthlyRevenue: RevenueChartResponse[];
+    quarterlyRevenue: RevenueChartResponse[];
+    yearlyRevenue: RevenueChartResponse[];
 }

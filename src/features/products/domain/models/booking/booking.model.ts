@@ -63,4 +63,14 @@ export interface MyBookingRecord {
     qrData: string | null;
     createdAt: string;
     features: string | string[];
+    feedbackResponse: {
+        bookingCode: string;
+        customerName: string;
+        staffRating: number;
+        serviceRating: number;
+        priceRating: number;
+        overallRating: number;
+        comment: string;
+        createdAt: string;
+    } | null;
 }

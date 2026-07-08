@@ -4,8 +4,8 @@ import { Car, Plus } from 'lucide-react';
 import type { VehicleSelectionProps } from "@/features/products/domain/models/vehicle/vehicle.model.ts";
 
 export const VehicleSelection: React.FC<VehicleSelectionProps> = ({
-                                                                      vehicles, selectedVehicleId, onSelectVehicle, onAddNewVehicle
-                                                                  }) => {
+    vehicles, selectedVehicleId, onSelectVehicle, onAddNewVehicle
+}) => {
     const { t } = useTranslation('customer');
     return (
         <div className="space-y-4">
@@ -17,9 +17,8 @@ export const VehicleSelection: React.FC<VehicleSelectionProps> = ({
                         <div
                             key={vehicle.id}
                             onClick={() => onSelectVehicle(vehicle.id)}
-                            className={`cursor-pointer bg-white border rounded-2xl p-5 transition-all duration-200 flex flex-col gap-4 relative group ${
-                                isSelected ? 'border-[#1e6ffd] ring-2 ring-blue-50 shadow-sm' : 'border-[#e2e8f0] hover:border-[#cbd5e1]'
-                            }`}
+                            className={`cursor-pointer bg-white border rounded-2xl p-5 transition-all duration-200 flex flex-col gap-4 relative group ${isSelected ? 'border-[#1e6ffd] ring-2 ring-blue-50 shadow-sm' : 'border-[#e2e8f0] hover:border-[#cbd5e1]'
+                                }`}
                         >
                             <div className="flex items-center gap-4">
                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isSelected ? 'bg-blue-50 text-[#1e6ffd]' : 'bg-slate-50 text-slate-400 group-hover:text-slate-600'}`}>

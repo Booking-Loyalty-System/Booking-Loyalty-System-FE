@@ -32,13 +32,11 @@ export class BookingRepositoryImplement implements IBookingRepository {
         );
     }
 
-    // --- CÁC HÀM CỦA STAFF (Dùng PATCH và params) ---
-
     async confirmBooking(id: string): Promise<BookingResponseData> {
         const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
             ENDPOINTS.BOOKING.CONFIRM(id)
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async checkInBooking(id: string, staffId: string): Promise<BookingResponseData> {
@@ -47,7 +45,7 @@ export class BookingRepositoryImplement implements IBookingRepository {
             undefined, // Không có body
             { params: { staffId } } // Truyền qua Query Params theo chuẩn ASP.NET Core
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async queueBooking(id: string, bayId: string): Promise<BookingResponseData> {
@@ -56,7 +54,7 @@ export class BookingRepositoryImplement implements IBookingRepository {
             undefined,
             { params: { bayId } }
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async startBooking(id: string, bayId: string): Promise<BookingResponseData> {
@@ -65,14 +63,14 @@ export class BookingRepositoryImplement implements IBookingRepository {
             undefined,
             { params: { bayId } }
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async checkOutBooking(id: string): Promise<BookingResponseData> {
         const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
             ENDPOINTS.BOOKING.CHECKOUT(id)
         );
-        return response ? response.data : {} as BookingResponseData;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async staffCancelBooking(id: string, cancel: string): Promise<BookingResponseData> {
@@ -81,21 +79,21 @@ export class BookingRepositoryImplement implements IBookingRepository {
             undefined,
             { params: { cancel } }
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async noShowBooking(id: string): Promise<BookingResponseData> {
         const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
             ENDPOINTS.BOOKING.NO_SHOW(id)
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async completed(id: string): Promise<BookingResponseData> {
         const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
             ENDPOINTS.BOOKING.COMPLETED(id)
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
     }
 
     async scan_qr(qr: string): Promise<BookingResponseData> {
@@ -107,6 +105,14 @@ export class BookingRepositoryImplement implements IBookingRepository {
                 }
             }
         );
-        return response.data;
+        return (response?.data || response || {}) as BookingResponseData;
+    }
+
+    async downloadInvoice(id: string): Promise<any> {
+        const response = await httpClient.get<any>(
+            ENDPOINTS.BOOKING.DOWNLOAD_INVOICE(id),
+            { responseType: 'blob' }
+        );
+        return response.data || response;
     }
 }

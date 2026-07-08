@@ -39,28 +39,28 @@ export const LoyaltyTier: React.FC = () => {
   const currentTierName = customerMe?.tier || "Bronze";
 
   // Tính toán target dựa trên mức TỔNG ĐIỂM (totalPoints)
-  let targetPoints = 300;
+  let targetPoints = 2000;
   let nextTierName = "Silver";
-  if (totalPoints >= 300 && totalPoints < 600) {
-    targetPoints = 600;
+  if (totalPoints >= 2000 && totalPoints < 6000) {
+    targetPoints = 6000;
     nextTierName = "Gold";
-  } else if (totalPoints >= 600 && totalPoints < 1000) {
-    targetPoints = 1000;
-    nextTierName = "Platinum";
-  } else if (totalPoints >= 1000) {
+  } else if (totalPoints >= 6000 && totalPoints < 15000) {
+    targetPoints = 15000;
+    nextTierName = "Diamond";
+  } else if (totalPoints >= 15000) {
     targetPoints = totalPoints;
     nextTierName = "Max Tier";
   }
 
   const pointsToGo = Math.max(0, targetPoints - totalPoints);
   const progressPercentage =
-    totalPoints >= 1000 ? 100 : (totalPoints / targetPoints) * 100;
+    totalPoints >= 15000 ? 100 : (totalPoints / targetPoints) * 100;
 
   const baseTiers: MembershipTier[] = [
     {
       name: "Bronze",
       pointsRangeKey: "loyaltyTier.tierBronzeRange",
-      pointsRangeDefault: "0 - 299 points",
+      pointsRangeDefault: "0 - 1999 points",
       discount: "5%",
       multiplier: "1x",
       advanceBooking: 7,
@@ -73,10 +73,10 @@ export const LoyaltyTier: React.FC = () => {
     {
       name: "Silver",
       pointsRangeKey: "loyaltyTier.tierSilverRange",
-      pointsRangeDefault: "300 - 599 points",
+      pointsRangeDefault: "2000 - 5999 points",
       discount: "10%",
       multiplier: "1.5x",
-      advanceBooking: 10,
+      advanceBooking: 14,
       benefits: ["benefitPrioritySupport", "benefitExclusiveOffers"],
       isCurrent: false,
       colorClass: "border-slate-200 text-slate-400",
@@ -86,10 +86,10 @@ export const LoyaltyTier: React.FC = () => {
     {
       name: "Gold",
       pointsRangeKey: "loyaltyTier.tierGoldRange",
-      pointsRangeDefault: "600 - 999 points",
+      pointsRangeDefault: "6000 - 14999 points",
       discount: "15%",
       multiplier: "2x",
-      advanceBooking: 12,
+      advanceBooking: 21,
       benefits: ["benefitPriorityBooking", "benefitFreeWashBirthday"],
       isCurrent: false,
       colorClass: "border-amber-200 text-amber-500",
@@ -97,12 +97,12 @@ export const LoyaltyTier: React.FC = () => {
       icon: <Crown className="w-6 h-6 text-amber-500" />,
     },
     {
-      name: "Platinum",
-      pointsRangeKey: "loyaltyTier.tierPlatinumRange",
-      pointsRangeDefault: "1000+ points",
+      name: "Diamond",
+      pointsRangeKey: "loyaltyTier.tierDiamondRange",
+      pointsRangeDefault: "15000+ points",
       discount: "20%",
       multiplier: "3x",
-      advanceBooking: 14,
+      advanceBooking: 30,
       benefits: ["benefitVipAccess", "benefitDedicatedManager"],
       isCurrent: false,
       colorClass: "border-purple-200 text-purple-600",
@@ -128,6 +128,30 @@ export const LoyaltyTier: React.FC = () => {
   const totalRedeemed = historyData?.totalRedeemedThisMonth || 0;
   const totalBookings =
     customerMe?.totalWashes || historyData?.totalBookingsThisMonth || 0;
+
+  // Tính toán số dư sau mỗi giao dịch
+  const transactionsWithBalance = React.useMemo(() => {
+    if (!transactions.length) return [];
+    
+    // Sắp xếp giảm dần theo ngày (mới nhất lên đầu)
+    const sortedTx = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    let currentBalance = availablePoints;
+    
+    return sortedTx.map((tx) => {
+      const balanceAfter = currentBalance;
+      // Nếu backend trả tx.points âm cho Redeem thì dùng luôn, nếu trả dương thì ép âm
+      const pointDiff = (tx.type === "Redeemed" && tx.points > 0) ? -tx.points : tx.points;
+      
+      // Lùi về số dư của thời điểm trước khi có giao dịch này
+      currentBalance = currentBalance - pointDiff;
+
+      return {
+        ...tx,
+        balanceAfter
+      };
+    });
+  }, [transactions, availablePoints]);
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans antialiased text-slate-800">
@@ -386,10 +410,11 @@ export const LoyaltyTier: React.FC = () => {
                       <th className="py-4 px-6">{t("loyaltyTier.table.description")}</th>
                       <th className="py-4 px-6">{t("loyaltyTier.table.type")}</th>
                       <th className="py-4 px-6 text-right">{t("loyaltyTier.table.points")}</th>
+                      <th className="py-4 px-6 text-right">{t("loyaltyTier.table.balance", { defaultValue: "Balance" })}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                    {transactions.map((tx, idx) => (
+                    {transactionsWithBalance.map((tx, idx) => (
                       <tr
                         key={idx}
                         className="hover:bg-slate-50/80 transition-colors"
@@ -398,7 +423,32 @@ export const LoyaltyTier: React.FC = () => {
                           {tx.date}
                         </td>
                         <td className="py-4 px-6 font-semibold text-slate-800">
-                          {tx.description}
+                          {(() => {
+                            const desc = tx.description;
+                            // Match EN pattern: "Earned from booking {code}"
+                            // Match VI pattern: "Cộng điểm từ đơn hàng {code}"
+                            if (desc.includes("Earned from booking") || desc.includes("Cộng điểm từ đơn hàng")) {
+                              const code = desc.includes("Earned from booking")
+                                ? desc.split("Earned from booking ")[1]
+                                : desc.split("Cộng điểm từ đơn hàng ")[1];
+                              return `${t("loyaltyTier.earnedFromBooking", { defaultValue: "Earned from booking" })} ${code ?? ""}`;
+                            }
+                            // Match EN pattern: "Redeemed Voucher {name}"
+                            // Match VI pattern: "Đổi điểm lấy Voucher {name}"
+                            if (desc.includes("Redeemed Voucher") || desc.includes("Đổi điểm lấy Voucher")) {
+                              const name = desc.includes("Redeemed Voucher")
+                                ? desc.split("Redeemed Voucher ")[1]
+                                : desc.split("Đổi điểm lấy Voucher ")[1];
+                              return `${t("loyaltyTier.redeemedVoucher", { defaultValue: "Redeemed Voucher" })} ${name ?? ""}`;
+                            }
+                            // Match EN pattern: "No-show penalty..."
+                            // Match VI pattern: "Phạt vắng mặt..."
+                            if (desc.includes("No-show penalty") || desc.includes("Phạt vắng mặt")) {
+                              return t("loyaltyTier.noShowPenalty", { defaultValue: "No-show penalty" });
+                            }
+                            // Fallback: hiển thị nguyên chuỗi
+                            return desc;
+                          })()}
                         </td>
                         <td className="py-4 px-6">
                           <span
@@ -413,10 +463,13 @@ export const LoyaltyTier: React.FC = () => {
                         </td>
                         <td
                           className={`py-4 px-6 text-right font-bold text-base ${
-                            tx.points > 0 ? "text-emerald-600" : "text-rose-600"
+                            tx.points > 0 && tx.type === "Earned" ? "text-emerald-600" : "text-rose-600"
                           }`}
                         >
-                          {tx.points > 0 ? `+${tx.points}` : tx.points}
+                          {tx.points > 0 && tx.type === "Earned" ? `+${tx.points}` : (tx.points > 0 ? `-${tx.points}` : tx.points)}
+                        </td>
+                        <td className="py-4 px-6 text-right font-bold text-slate-800 text-base">
+                          {tx.balanceAfter}
                         </td>
                       </tr>
                     ))}

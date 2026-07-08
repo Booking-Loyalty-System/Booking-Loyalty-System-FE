@@ -30,6 +30,8 @@ import { AdminStaff } from "@/features/products/presentation/pages/admin/AdminSt
 import { AdminBranches } from "@/features/products/presentation/pages/admin/AdminBranches";
 import { AutoWashSimulationTest } from "@/shared/auto-wash-simulation-test.tsx";
 import { AdminLayout } from "@/features/products/presentation/layouts/AdminLayout.tsx";
+import { AdminChatFeedbacks } from "./features/products/presentation/pages/admin/AdminChatFeedback.tsx";
+import { AdminBookingFeedback } from "./features/products/presentation/pages/admin/AdminBookingFeedback.tsx";
 
 function App() {
   return (
@@ -88,6 +90,8 @@ function App() {
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/promotions" element={<AdminPromotions />} />
               <Route path="/admin/staff" element={<AdminStaff />} />
+              <Route path="/admin/chat-feedbacks" element={<AdminChatFeedbacks />} />
+              <Route path="/admin/feedbacks" element={<AdminBookingFeedback />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/login" replace />} />

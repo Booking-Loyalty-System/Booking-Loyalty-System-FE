@@ -28,7 +28,7 @@ export const ENDPOINTS = {
         MY_BOOKING: '/bookings/my-bookings',
         CANCEL: (id: string) => `/bookings/${id}/cancel`,
         CONFIRM: (id: string) => `/staff/bookings/${id}/confirm`,
-        CHECK_IN: (id: string) => `staff/bookings/${id}/check-in`,
+        CHECK_IN: (id: string) => `/staff/bookings/${id}/check-in`,
         QUEUE: (id: string) => `/staff/bookings/${id}/queue`,
         START: (id: string) => `/staff/bookings/${id}/start`,
         CHECKOUT: (id: string) => `/staff/bookings/${id}/checkout`,
@@ -36,6 +36,7 @@ export const ENDPOINTS = {
         NO_SHOW: (id: string) => `/staff/bookings/${id}/no-show`,
         COMPLETED: (id: string) => `/staff/bookings/${id}/completed`,
         QR: `/staff/bookings/scan-qr`,
+        DOWNLOAD_INVOICE: (id: string) => `/bookings/${id}/download-invoice`,
     },
 
     BRANCH: {
@@ -70,7 +71,7 @@ export const ENDPOINTS = {
         WASH_PACKAGE_DETAIL: (id: string) => `/admin/wash-packages/${id}`,
         BRANCHES: '/admin/branches',
         BRANCH_DETAIL: (id: string) => `/admin/branches/${id}`,
-    // Promotions
+        // Promotions
         PROMOTIONS: '/admin/promotions',
         PROMOTION_DETAIL: (id: string) => `/admin/promotions/${id}`,
 
@@ -94,6 +95,7 @@ export const ENDPOINTS = {
             TOP_CUSTOMERS: '/admin/statistics/top-customers',
             BRANCH_PERFORMANCE: '/admin/statistics/branch-performance',
             TIER_DISTRIBUTION: '/admin/statistics/tier-distribution',
+            TIER_STATISTICS: '/admin/statistics/tier-statistics',
         },
 
         // Tiers
@@ -115,17 +117,22 @@ export const ENDPOINTS = {
         SUMMARY: '/AdminDashboard/summary',
         RECENT_BOOKINGS: '/AdminDashboard/recent-bookings',
         TIER_CONFIG: '/AdminDashboard/tier-config',
-        EXPORT_RBL: '/AdminDashboard/export-rbl'
+        EXPORT_RBL: '/AdminDashboard/export-rbl',
+        REVENUE_COMPARISON: '/AdminDashboard/revenue-comparison',
+        ANALYTIC: '/AdminAnalytic/revenue',
+        TIER_STATISTIC: '/admin/statistics/tier-statistics'
     },
 
     PROMOTION: {
         BASE: '/promotions',
         VALIDATE: '/promotions/validate',
     },
+
     REWARDS: {
         BASE: '/rewards',
         REWARD_DETAIL: (id: string) => `/rewards/${id}/redeem`,
         REDEMPTION_HISTORY: '/rewards/me/redemptions',
+        GIFT: 'rewards/gift'
     },
 
     WASH_BAY: {
@@ -137,5 +144,35 @@ export const ENDPOINTS = {
         IPN: "/payments/vnpay/ipn",
         RETURN: "/payments/vnpay/return",
         CREATE_PAY_OS_URL: (id: string) => `/payments/payos/${id}/create-link`
+    },
+
+    AI: {
+        CHAT: '/AI/chat',
+        MODERATE_FEEDBACK: '/AI/moderate-feedback'
+    },
+
+    FEEDBACK: {
+        SUBMIT: '/Feedback/customer/submit',
+        PUBLIC_ALL: '/Feedback/public/all',
+        STATISTICS: '/Feedback/statistics',
+        FILTER: '/Feedback/filter'
+    },
+
+    CHAT: {
+        CUSTOMER_SEND: '/Chat/customer/send',
+        CUSTOMER_TOGGLE_STATUS: (target: string) => `/Chat/customer/toggle-status?target=${target}`,
+        CUSTOMER_HISTORY: '/Chat/customer/history',
+        STAFF_WAITING_LIST: '/Chat/staff/waiting-list',
+        STAFF_ACTIVE_SESSION: '/Chat/staff/active-session',
+        STAFF_ACCEPT: (sessionId: string) => `/Chat/staff/accept/${sessionId}`,
+        STAFF_SEND: (sessionId: string) => `/Chat/staff/send/${sessionId}`,
+        STAFF_CLOSE: (sessionId: string) => `/Chat/staff/close/${sessionId}`,
+    },
+
+    CHAT_FEEDBACK: {
+        SUBMIT: '/ChatFeedback',
+        LATEST: (count = 10) => `/ChatFeedback/latest?count=${count}`,
+        STAFF_STATISTICS: (topCount = 5) => `/ChatFeedback/staff-statistics?topCount=${topCount}`,
+        DETAIL: (id: string) => `/ChatFeedback/${id}`,
     }
 };

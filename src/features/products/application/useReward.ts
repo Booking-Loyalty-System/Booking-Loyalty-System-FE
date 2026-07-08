@@ -13,7 +13,11 @@ export const useReward = () => {
         queryKey: ['available_rewards'],
         queryFn: async () => {
             const data = await rewardRepository.getAvailableRewards();
-            return Array.isArray(data) ? data : [];
+            console.log("data trong useReward", data.filter(reward => reward.isFreeWash === false));
+            if (Array.isArray(data)) {
+                return data.filter(reward => reward.isFreeWash === false);
+            }
+            return [];
         },
         staleTime: 1000 * 60 * 5,
     });
@@ -36,6 +40,15 @@ export const useReward = () => {
             queryClient.invalidateQueries({ queryKey: ['my_vouchers'] });
             queryClient.invalidateQueries({ queryKey: ['customer_me'] });
             queryClient.invalidateQueries({ queryKey: ['available_rewards'] });
+        }
+    });
+
+    const giftRewardMutation = useMutation({
+        mutationFn: ({ customerId, rewardId, bookingId }: { customerId: string; rewardId: string; bookingId?: string }) =>
+            rewardRepository.giftReward(customerId, rewardId, bookingId),
+        onSuccess: () => {
+            // Làm tươi lại lịch sử/danh sách voucher nếu cần
+            queryClient.invalidateQueries({ queryKey: ['my_redemptions'] });
         }
     });
 
@@ -88,5 +101,8 @@ export const useReward = () => {
 
         redeemReward: redeemRewardMutation.mutateAsync,
         isRedeeming: redeemRewardMutation.isPending,
+
+        giftReward: giftRewardMutation.mutateAsync,
+        isGifting: giftRewardMutation.isPending
     };
 };
