@@ -265,7 +265,17 @@
     "statusAvailable": "Available",
     "statusUsed": "Used",
     "statusExpired": "Expired",
-    "codeLabel": "· Code:"
+    "codeLabel": "· Code:",
+    "confirmModal": {
+      "title": "Confirm Redemption",
+      "descPre": "Are you sure you want to spend ",
+      "freeWashText": "1 free wash credit",
+      "pointsText": "{{cost}} points",
+      "descPost": " to redeem ",
+      "descWarning": "? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Confirm Redeem"
+    }
   },
   "loyaltyTier": {
     "title": "Your Loyalty & Tier",
@@ -316,10 +326,14 @@
       "date": "Date",
       "description": "Description",
       "type": "Type",
-      "points": "Points"
+      "points": "Points",
+      "balance": "Balance"
     },
     "txTypeEarned": "Earned",
     "txTypeRedeemed": "Redeemed",
+    "earnedFromBooking": "Earned from booking",
+    "redeemedVoucher": "Redeemed Voucher",
+    "noShowPenalty": "No-show penalty",
     "progress": {
       "title": "Progress to Next Tier",
       "washes": "Washes",

@@ -265,7 +265,17 @@
     "statusAvailable": "Khả dụng",
     "statusUsed": "Đã dùng",
     "statusExpired": "Hết hạn",
-    "codeLabel": "· Mã:"
+    "codeLabel": "· Mã:",
+    "confirmModal": {
+      "title": "Xác nhận đổi thưởng",
+      "descPre": "Bạn có chắc chắn muốn dùng ",
+      "freeWashText": "1 lượt rửa xe miễn phí",
+      "pointsText": "{{cost}} điểm",
+      "descPost": " để đổi lấy ",
+      "descWarning": " không? Hành động này không thể hoàn tác.",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận đổi"
+    }
   },
   "loyaltyTier": {
     "title": "Tích Điểm & Hạng Thành Viên",
@@ -316,10 +326,14 @@
       "date": "Ngày",
       "description": "Mô Tả",
       "type": "Loại Giao Dịch",
-      "points": "Điểm Số"
+      "points": "Điểm Số",
+      "balance": "Số Dư"
     },
     "txTypeEarned": "Tích Lũy",
     "txTypeRedeemed": "Đã Đổi",
+    "earnedFromBooking": "Tích điểm từ đơn",
+    "redeemedVoucher": "Đổi điểm lấy Voucher",
+    "noShowPenalty": "Phạt điểm do không đến (No-show)",
     "progress": {
       "title": "Tiến Trình Lên Hạng",
       "washes": "Lượt Rửa",

@@ -37,7 +37,7 @@ export const LoyaltyTier: React.FC = () => {
   const totalPoints = customerMe?.totalPoint || 0;
   const currentTierName = customerMe?.tier || "Bronze";
 
-  // CẬP NHẬT: Tính toán target dựa trên mức TỔNG ĐIỂM (totalPoints) đồng bộ với BE
+  // Tính toán target dựa trên mức TỔNG ĐIỂM (totalPoints)
   let targetPoints = 2000;
   let nextTierName = "Silver";
   if (totalPoints >= 2000 && totalPoints < 6000) {
@@ -61,7 +61,7 @@ export const LoyaltyTier: React.FC = () => {
     {
       name: "Bronze",
       pointsRangeKey: "loyaltyTier.tierBronzeRange",
-      pointsRangeDefault: "0 - 1,999 points",
+      pointsRangeDefault: "0 - 1999 points",
       discount: "5%",
       multiplier: "1x",
       advanceBooking: 7, // BE: 7 ngày
@@ -74,10 +74,10 @@ export const LoyaltyTier: React.FC = () => {
     {
       name: "Silver",
       pointsRangeKey: "loyaltyTier.tierSilverRange",
-      pointsRangeDefault: "2,000 - 5,999 points",
+      pointsRangeDefault: "2000 - 5999 points",
       discount: "10%",
       multiplier: "1.5x",
-      advanceBooking: 14, // BE: 14 ngày
+      advanceBooking: 14,
       benefits: ["benefitPrioritySupport", "benefitExclusiveOffers"],
       isCurrent: false,
       colorClass: "border-slate-200 text-slate-400",
@@ -87,10 +87,10 @@ export const LoyaltyTier: React.FC = () => {
     {
       name: "Gold",
       pointsRangeKey: "loyaltyTier.tierGoldRange",
-      pointsRangeDefault: "6,000 - 14,999 points",
+      pointsRangeDefault: "6000 - 14999 points",
       discount: "15%",
       multiplier: "2x",
-      advanceBooking: 21, // BE: 21 ngày
+      advanceBooking: 21,
       benefits: ["benefitPriorityBooking", "benefitFreeWashBirthday"],
       isCurrent: false,
       colorClass: "border-amber-200 text-amber-500",
@@ -98,12 +98,12 @@ export const LoyaltyTier: React.FC = () => {
       icon: <Crown className="w-6 h-6 text-amber-500" />,
     },
     {
-      name: "Diamond", // BE: Chuyển từ Platinum sang Diamond
+      name: "Diamond",
       pointsRangeKey: "loyaltyTier.tierDiamondRange",
-      pointsRangeDefault: "15,000+ points",
+      pointsRangeDefault: "15000+ points",
       discount: "20%",
       multiplier: "3x",
-      advanceBooking: 30, // BE: 30 ngày
+      advanceBooking: 30,
       benefits: ["benefitVipAccess", "benefitDedicatedManager"],
       isCurrent: false,
       colorClass: "border-purple-200 text-purple-600",
@@ -128,6 +128,33 @@ export const LoyaltyTier: React.FC = () => {
   const totalRedeemed = historyData?.totalRedeemedThisMonth || 0;
   const totalBookings =
     customerMe?.totalWashes || historyData?.totalBookingsThisMonth || 0;
+
+  // Tính toán số dư sau mỗi giao dịch
+  const transactionsWithBalance = React.useMemo(() => {
+    if (!transactions.length) return [];
+
+    // Sắp xếp giảm dần theo ngày (mới nhất lên đầu)
+    const sortedTx = [...transactions].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+
+    let currentBalance = availablePoints;
+
+    return sortedTx.map((tx) => {
+      const balanceAfter = currentBalance;
+      // Nếu backend trả tx.points âm cho Redeem thì dùng luôn, nếu trả dương thì ép âm
+      const pointDiff =
+        tx.type === "Redeemed" && tx.points > 0 ? -tx.points : tx.points;
+
+      // Lùi về số dư của thời điểm trước khi có giao dịch này
+      currentBalance = currentBalance - pointDiff;
+
+      return {
+        ...tx,
+        balanceAfter,
+      };
+    });
+  }, [transactions, availablePoints]);
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans antialiased text-slate-800">
@@ -352,7 +379,197 @@ export const LoyaltyTier: React.FC = () => {
           </div>
         </div>
 
-        {/* ... (Phần UI thống kê và bảng lịch sử bên dưới giữ nguyên như cũ) */}
+        <div className="space-y-6">
+          {/* Hộp chỉ số Thống kê tháng */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+              <div>
+                <p className="text-sm font-medium text-slate-500">
+                  {/* Sử dụng hook useTranslation và hàm t() để lấy nội dung dịch thuật đa ngôn ngữ từ locale files */}
+                  {t("loyaltyTier.stats.pointsEarned", {
+                    defaultValue: "Total Points Earned",
+                  })}
+                </p>
+                {/* Sử dụng Total Earned dựa trên Total Points trọn đời để thể hiện tổng điểm tích lũy */}
+                <p className="text-3xl font-bold text-slate-800 mt-1">
+                  {totalEarned}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}
+                </p>
+              </div>
+              <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+              <div>
+                <p className="text-sm font-medium text-slate-500">
+                  {/* Sử dụng t() từ react-i18next hiển thị thống kê điểm thưởng đã đổi */}
+                  {t("loyaltyTier.stats.pointsRedeemed", {
+                    defaultValue: "Points Redeemed",
+                  })}
+                </p>
+                <p className="text-3xl font-bold text-slate-800 mt-1">
+                  {totalRedeemed}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}
+                </p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-xl text-purple-600">
+                <Gift className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+              <div>
+                <p className="text-sm font-medium text-slate-500">
+                  {/* Sử dụng t() từ react-i18next hiển thị thống kê tổng số lượt đặt lịch của thành viên */}
+                  {t("loyaltyTier.stats.totalBookings", {
+                    defaultValue: "Total Bookings",
+                  })}
+                </p>
+                <p className="text-3xl font-bold text-slate-800 mt-1">
+                  {totalBookings}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}
+                </p>
+              </div>
+              <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
+                <Calendar className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
+
+          {/* Bảng Lịch sử Giao dịch */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex items-center gap-3">
+              <History className="w-5 h-5 text-slate-400" />
+              <h3 className="text-lg font-bold text-slate-800">
+                {t("loyaltyTier.transactionHistory")}
+              </h3>
+            </div>
+
+            <div className="overflow-x-auto">
+              {isLoadingHistory ? (
+                <div className="p-8 text-center text-slate-500">
+                  {t("loyaltyTier.loadingTransactions")}
+                </div>
+              ) : transactions.length === 0 ? (
+                <div className="p-8 text-center text-slate-500">
+                  {t("loyaltyTier.noTransactions")}
+                </div>
+              ) : (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                      <th className="py-4 px-6">
+                        {t("loyaltyTier.table.date")}
+                      </th>
+                      <th className="py-4 px-6">
+                        {t("loyaltyTier.table.description")}
+                      </th>
+                      <th className="py-4 px-6">
+                        {t("loyaltyTier.table.type")}
+                      </th>
+                      <th className="py-4 px-6 text-right">
+                        {t("loyaltyTier.table.points")}
+                      </th>
+                      <th className="py-4 px-6 text-right">
+                        {t("loyaltyTier.table.balance", {
+                          defaultValue: "Balance",
+                        })}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                    {transactionsWithBalance.map((tx, idx) => (
+                      <tr
+                        key={idx}
+                        className="hover:bg-slate-50/80 transition-colors"
+                      >
+                        <td className="py-4 px-6 font-medium text-slate-400">
+                          {tx.date}
+                        </td>
+                        <td className="py-4 px-6 font-semibold text-slate-800">
+                          {(() => {
+                            const desc = tx.description;
+                            // Match EN pattern: "Earned from booking {code}"
+                            // Match VI pattern: "Cộng điểm từ đơn hàng {code}"
+                            if (
+                              desc.includes("Earned from booking") ||
+                              desc.includes("Cộng điểm từ đơn hàng")
+                            ) {
+                              const code = desc.includes("Earned from booking")
+                                ? desc.split("Earned from booking ")[1]
+                                : desc.split("Cộng điểm từ đơn hàng ")[1];
+                              return `${t("loyaltyTier.earnedFromBooking", { defaultValue: "Earned from booking" })} ${code ?? ""}`;
+                            }
+                            // Match EN pattern: "Redeemed Voucher {name}"
+                            // Match VI pattern: "Đổi điểm lấy Voucher {name}"
+                            if (
+                              desc.includes("Redeemed Voucher") ||
+                              desc.includes("Đổi điểm lấy Voucher")
+                            ) {
+                              const name = desc.includes("Redeemed Voucher")
+                                ? desc.split("Redeemed Voucher ")[1]
+                                : desc.split("Đổi điểm lấy Voucher ")[1];
+                              return `${t("loyaltyTier.redeemedVoucher", { defaultValue: "Redeemed Voucher" })} ${name ?? ""}`;
+                            }
+                            // Match EN pattern: "No-show penalty..."
+                            // Match VI pattern: "Phạt vắng mặt..."
+                            if (
+                              desc.includes("No-show penalty") ||
+                              desc.includes("Phạt vắng mặt")
+                            ) {
+                              return t("loyaltyTier.noShowPenalty", {
+                                defaultValue: "No-show penalty",
+                              });
+                            }
+                            // Fallback: hiển thị nguyên chuỗi
+                            return desc;
+                          })()}
+                        </td>
+                        <td className="py-4 px-6">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
+                              tx.type === "Earned"
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "bg-rose-50 text-rose-700"
+                            }`}
+                          >
+                            {t(`loyaltyTier.txType${tx.type}`, {
+                              defaultValue: tx.type,
+                            })}
+                          </span>
+                        </td>
+                        <td
+                          className={`py-4 px-6 text-right font-bold text-base ${
+                            tx.points > 0 && tx.type === "Earned"
+                              ? "text-emerald-600"
+                              : "text-rose-600"
+                          }`}
+                        >
+                          {tx.points > 0 && tx.type === "Earned"
+                            ? `+${tx.points}`
+                            : tx.points > 0
+                              ? `-${tx.points}`
+                              : tx.points}
+                        </td>
+                        <td className="py-4 px-6 text-right font-bold text-slate-800 text-base">
+                          {tx.balanceAfter}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

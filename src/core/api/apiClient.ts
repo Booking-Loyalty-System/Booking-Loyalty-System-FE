@@ -19,6 +19,14 @@ apiClient.interceptors.request.use(
         if (token && config.headers && !isRefreshRequest) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        // BÍ KÍP ĐA NGÔN NGỮ (i18n): Gắn ngôn ngữ hiện tại vào mọi request
+        // Backend sẽ dùng Header này để trả về dữ liệu tương ứng (tiếng Việt hoặc Anh)
+        const currentLang = localStorage.getItem('autowash-lang') || 'en';
+        if (config.headers) {
+            config.headers['Accept-Language'] = currentLang;
+        }
+
         return config;
     },
     (error) => Promise.reject(error)
