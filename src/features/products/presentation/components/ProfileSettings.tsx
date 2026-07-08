@@ -4,10 +4,6 @@ import {
   Edit3,
   Lock,
   Bell,
-  ShieldCheck,
-  Download,
-  ExternalLink,
-  Trash2,
   Check,
   X,
   Loader2,
@@ -15,6 +11,8 @@ import {
   Moon,
   Monitor,
   Globe,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
   useCustomerMe,
@@ -44,6 +42,7 @@ export const ProfileSettings: React.FC = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
+    dateOfBirth: "",
   });
 
   // Form state for Password
@@ -53,39 +52,67 @@ export const ProfileSettings: React.FC = () => {
     confirmPassword: "",
   });
 
+  // States to toggle password visibility
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   useEffect(() => {
     if (customerMe && !isEditing) {
       setFormData({
         fullName: customerMe.fullName || user?.fullName || "",
         phoneNumber: customerMe.phoneNumber || "",
+        dateOfBirth: customerMe.dateOfBirth
+          ? new Date(customerMe.dateOfBirth).toISOString().split("T")[0]
+          : "",
       });
     }
   }, [customerMe, user, isEditing]);
 
   const handleSave = async () => {
     if (!formData.fullName.trim() || !formData.phoneNumber.trim()) {
-      toast.error(t("settings.toast.fillRequired", { defaultValue: "Please fill in all required fields" }));
+      toast.error(
+        t("settings.toast.fillRequired", {
+          defaultValue: "Please fill in all required fields",
+        }),
+      );
       return;
     }
 
     try {
+      // Ép chuẩn định dạng ngày tháng sang ISO 8601 (có đuôi T00:00:00.000Z) để Backend C# dễ dàng parse thành DateTime
+      const formattedDate = formData.dateOfBirth
+        ? `${formData.dateOfBirth}T00:00:00.000Z`
+        : null;
+
       await updateCustomer({
         fullName: formData.fullName,
         phoneNumber: formData.phoneNumber,
+        dateOfBirth: formattedDate,
       });
-      toast.success(t("settings.toast.updateSuccess", { defaultValue: "Profile updated successfully!" }));
+
+      toast.success(
+        t("settings.toast.updateSuccess", {
+          defaultValue: "Profile updated successfully!",
+        }),
+      );
       setIsEditing(false);
     } catch (error) {
-      toast.error(t("settings.toast.updateFailed", { defaultValue: "Failed to update profile. Please try again." }));
+      toast.error(
+        t("settings.toast.updateFailed", {
+          defaultValue: "Failed to update profile. Please try again.",
+        }),
+      );
       console.error("Update profile error:", error);
     }
   };
-
   const handleCancel = () => {
     setIsEditing(false);
     setFormData({
       fullName: customerMe?.fullName || user?.fullName || "",
       phoneNumber: customerMe?.phoneNumber || "",
+      dateOfBirth: customerMe?.dateOfBirth
+        ? new Date(customerMe.dateOfBirth).toISOString().split("T")[0]
+        : "",
     });
   };
 
@@ -93,23 +120,39 @@ export const ProfileSettings: React.FC = () => {
     const { currentPassword, newPassword, confirmPassword } = passwordData;
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error(t("settings.toast.fillPassword", { defaultValue: "Please fill in all password fields" }));
+      toast.error(
+        t("settings.toast.fillPassword", {
+          defaultValue: "Please fill in all password fields",
+        }),
+      );
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error(t("settings.toast.passwordMismatch", { defaultValue: "New passwords do not match" }));
+      toast.error(
+        t("settings.toast.passwordMismatch", {
+          defaultValue: "New passwords do not match",
+        }),
+      );
       return;
     }
 
     if (newPassword.length < 6) {
-      toast.error(t("settings.toast.passwordLength", { defaultValue: "Password must be at least 6 characters long" }));
+      toast.error(
+        t("settings.toast.passwordLength", {
+          defaultValue: "Password must be at least 6 characters long",
+        }),
+      );
       return;
     }
 
     try {
       await changePassword({ currentPassword, newPassword });
-      toast.success(t("settings.toast.passwordSuccess", { defaultValue: "Password updated successfully!" }));
+      toast.success(
+        t("settings.toast.passwordSuccess", {
+          defaultValue: "Password updated successfully!",
+        }),
+      );
       setPasswordData({
         currentPassword: "",
         newPassword: "",
@@ -117,7 +160,10 @@ export const ProfileSettings: React.FC = () => {
       });
     } catch (error) {
       toast.error(
-        t("settings.toast.passwordFailed", { defaultValue: "Failed to change password. Please check your current password and try again." })
+        t("settings.toast.passwordFailed", {
+          defaultValue:
+            "Failed to change password. Please check your current password and try again.",
+        }),
       );
       console.error("Change password error:", error);
     }
@@ -126,7 +172,9 @@ export const ProfileSettings: React.FC = () => {
   return (
     <div className="w-full font-sans text-slate-800 dark:text-slate-100">
       <p className="text-sm font-medium text-slate-400 dark:text-slate-500 mb-6">
-        {t("settings.subtitle", { defaultValue: "Manage your account information and preferences" })}
+        {t("settings.subtitle", {
+          defaultValue: "Manage your account information and preferences",
+        })}
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -137,7 +185,11 @@ export const ProfileSettings: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white">
                 <User className="w-5 h-5 text-blue-600" />
-                <span>{t("settings.personalInfo.sectionTitle", { defaultValue: "Personal Information" })}</span>
+                <span>
+                  {t("settings.personalInfo.sectionTitle", {
+                    defaultValue: "Personal Information",
+                  })}
+                </span>
               </div>
 
               {!isEditing ? (
@@ -146,7 +198,11 @@ export const ProfileSettings: React.FC = () => {
                   className="inline-flex items-center gap-1 border-2 border-blue-600 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/30 transition"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
-                  <span>{t("settings.personalInfo.btnEdit", { defaultValue: "Edit" })}</span>
+                  <span>
+                    {t("settings.personalInfo.btnEdit", {
+                      defaultValue: "Edit",
+                    })}
+                  </span>
                 </button>
               ) : (
                 <div className="flex gap-2">
@@ -156,7 +212,11 @@ export const ProfileSettings: React.FC = () => {
                     className="inline-flex items-center gap-1 border-2 border-slate-300 text-slate-600 dark:text-slate-400 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50"
                   >
                     <X className="w-3.5 h-3.5" />
-                    <span>{t("settings.personalInfo.btnCancel", { defaultValue: "Cancel" })}</span>
+                    <span>
+                      {t("settings.personalInfo.btnCancel", {
+                        defaultValue: "Cancel",
+                      })}
+                    </span>
                   </button>
                   <button
                     onClick={handleSave}
@@ -168,7 +228,11 @@ export const ProfileSettings: React.FC = () => {
                     ) : (
                       <Check className="w-3.5 h-3.5" />
                     )}
-                    <span>{t("settings.personalInfo.btnSave", { defaultValue: "Save" })}</span>
+                    <span>
+                      {t("settings.personalInfo.btnSave", {
+                        defaultValue: "Save",
+                      })}
+                    </span>
                   </button>
                 </div>
               )}
@@ -177,7 +241,9 @@ export const ProfileSettings: React.FC = () => {
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {t("settings.personalInfo.labelFullName", { defaultValue: "Full Name" })}
+                  {t("settings.personalInfo.labelFullName", {
+                    defaultValue: "Full Name",
+                  })}
                 </label>
                 <input
                   type="text"
@@ -202,12 +268,18 @@ export const ProfileSettings: React.FC = () => {
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {t("settings.personalInfo.labelPhoneNumber", { defaultValue: "Phone Number" })}
+                  {t("settings.personalInfo.labelPhoneNumber", {
+                    defaultValue: "Phone Number",
+                  })}
                 </label>
                 <input
                   type="text"
                   readOnly={!isEditing}
-                  value={isEditing ? formData.phoneNumber : customerMe?.phoneNumber || ""}
+                  value={
+                    isEditing
+                      ? formData.phoneNumber
+                      : customerMe?.phoneNumber || ""
+                  }
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
@@ -221,11 +293,41 @@ export const ProfileSettings: React.FC = () => {
                   }`}
                 />
               </div>
+
+              {/* Input Date Of Birth */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {t("settings.personalInfo.labelEmailAddress", { defaultValue: "Email Address" })}{" "}
+                  {t("settings.personalInfo.labelDateOfBirth", {
+                    defaultValue: "Date of Birth",
+                  })}
+                </label>
+                <input
+                  type="date"
+                  readOnly={!isEditing}
+                  value={formData.dateOfBirth}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      dateOfBirth: e.target.value,
+                    }))
+                  }
+                  className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-900 border-blue-300 dark:border-blue-700 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
+                      : "bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-slate-850 text-slate-800 dark:text-slate-200 cursor-not-allowed"
+                  }`}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  {t("settings.personalInfo.labelEmailAddress", {
+                    defaultValue: "Email Address",
+                  })}{" "}
                   <span className="normal-case text-[10px] text-slate-400 font-medium">
-                    {t("settings.personalInfo.emailReadOnly", { defaultValue: "(Read-only)" })}
+                    {t("settings.personalInfo.emailReadOnly", {
+                      defaultValue: "(Read-only)",
+                    })}
                   </span>
                 </label>
                 <input
@@ -242,17 +344,26 @@ export const ProfileSettings: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-6 shadow-sm space-y-5">
             <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-800 pb-3">
               <Lock className="w-5 h-5 text-blue-600" />
-              <span>{t("settings.passwordSecurity.sectionTitle", { defaultValue: "Password & Security" })}</span>
+              <span>
+                {t("settings.passwordSecurity.sectionTitle", {
+                  defaultValue: "Password & Security",
+                })}
+              </span>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-1.5 relative">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {t("settings.passwordSecurity.labelCurrentPassword", { defaultValue: "Current Password" })}
+                  {t("settings.passwordSecurity.labelCurrentPassword", {
+                    defaultValue: "Current Password",
+                  })}
                 </label>
                 <input
                   type="password"
-                  placeholder={t("settings.passwordSecurity.placeholderCurrentPassword", { defaultValue: "Enter current password" })}
+                  placeholder={t(
+                    "settings.passwordSecurity.placeholderCurrentPassword",
+                    { defaultValue: "Enter current password" },
+                  )}
                   value={passwordData.currentPassword}
                   onChange={(e) =>
                     setPasswordData((prev) => ({
@@ -263,39 +374,79 @@ export const ProfileSettings: React.FC = () => {
                   className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
                 />
               </div>
+
+              {/* New Password With Toggle */}
               <div className="space-y-1.5 relative">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {t("settings.passwordSecurity.labelNewPassword", { defaultValue: "New Password" })}
+                  {t("settings.passwordSecurity.labelNewPassword", {
+                    defaultValue: "New Password",
+                  })}
                 </label>
-                <input
-                  type="password"
-                  placeholder={t("settings.passwordSecurity.placeholderNewPassword", { defaultValue: "Enter new password" })}
-                  value={passwordData.newPassword}
-                  onChange={(e) =>
-                    setPasswordData((prev) => ({
-                      ...prev,
-                      newPassword: e.target.value,
-                    }))
-                  }
-                  className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
-                />
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    placeholder={t(
+                      "settings.passwordSecurity.placeholderNewPassword",
+                      { defaultValue: "Enter new password" },
+                    )}
+                    value={passwordData.newPassword}
+                    onChange={(e) =>
+                      setPasswordData((prev) => ({
+                        ...prev,
+                        newPassword: e.target.value,
+                      }))
+                    }
+                    className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none"
+                  >
+                    {showNewPassword ? (
+                      <Eye className="w-4 h-4" />
+                    ) : (
+                      <EyeOff className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
+
+              {/* Confirm New Password With Toggle */}
               <div className="space-y-1.5 relative">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  {t("settings.passwordSecurity.labelConfirmNewPassword", { defaultValue: "Confirm New Password" })}
+                  {t("settings.passwordSecurity.labelConfirmNewPassword", {
+                    defaultValue: "Confirm New Password",
+                  })}
                 </label>
-                <input
-                  type="password"
-                  placeholder={t("settings.passwordSecurity.placeholderConfirmNewPassword", { defaultValue: "Confirm new password" })}
-                  value={passwordData.confirmPassword}
-                  onChange={(e) =>
-                    setPasswordData((prev) => ({
-                      ...prev,
-                      confirmPassword: e.target.value,
-                    }))
-                  }
-                  className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder={t(
+                      "settings.passwordSecurity.placeholderConfirmNewPassword",
+                      { defaultValue: "Confirm new password" },
+                    )}
+                    value={passwordData.confirmPassword}
+                    onChange={(e) =>
+                      setPasswordData((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
+                    }
+                    className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none"
+                  >
+                    {showConfirmPassword ? (
+                      <Eye className="w-4 h-4" />
+                    ) : (
+                      <EyeOff className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <button
@@ -303,19 +454,30 @@ export const ProfileSettings: React.FC = () => {
                 disabled={isChangingPassword}
                 className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-bold w-full sm:w-auto px-6 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm disabled:opacity-50"
               >
-                {isChangingPassword && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isChangingPassword && (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                )}
                 {isChangingPassword
-                  ? t("settings.passwordSecurity.btnUpdating", { defaultValue: "Updating..." })
-                  : t("settings.passwordSecurity.btnUpdatePassword", { defaultValue: "Update Password" })}
+                  ? t("settings.passwordSecurity.btnUpdating", {
+                      defaultValue: "Updating...",
+                    })
+                  : t("settings.passwordSecurity.btnUpdatePassword", {
+                      defaultValue: "Update Password",
+                    })}
               </button>
 
               <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
                 <div>
                   <h4 className="text-sm font-bold text-slate-800 dark:text-white">
-                    {t("settings.passwordSecurity.twoFactorTitle", { defaultValue: "Two-Factor Authentication" })}
+                    {t("settings.passwordSecurity.twoFactorTitle", {
+                      defaultValue: "Two-Factor Authentication",
+                    })}
                   </h4>
                   <p className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">
-                    {t("settings.passwordSecurity.twoFactorDesc", { defaultValue: "Add an extra layer of security to your account" })}
+                    {t("settings.passwordSecurity.twoFactorDesc", {
+                      defaultValue:
+                        "Add an extra layer of security to your account",
+                    })}
                   </p>
                 </div>
                 {/* Custom Toggle Switch */}
@@ -346,31 +508,50 @@ export const ProfileSettings: React.FC = () => {
               </div>
               <div>
                 <p className="text-xs text-blue-100 font-medium">
-                  {t("settings.memberCard.memberSince", { defaultValue: "Member Since" })}
+                  {t("settings.memberCard.memberSince", {
+                    defaultValue: "Member Since",
+                  })}
                 </p>
                 <p className="text-lg font-black tracking-wide">
                   {customerMe?.createdAt
-                    ? new Date(customerMe.createdAt).toLocaleDateString("vi-VN", {
-                        month: "long",
-                        year: "numeric",
-                      })
+                    ? new Date(customerMe.createdAt).toLocaleDateString(
+                        "vi-VN",
+                        {
+                          month: "long",
+                          year: "numeric",
+                        },
+                      )
                     : "2026"}
                 </p>
               </div>
             </div>
             <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
               <div className="flex justify-between opacity-90">
-                <span>{t("settings.memberCard.totalBookings", { defaultValue: "Total Bookings" })}</span>
-                <span className="font-bold">{customerMe?.totalWashes ?? 0}</span>
+                <span>
+                  {t("settings.memberCard.totalBookings", {
+                    defaultValue: "Total Bookings",
+                  })}
+                </span>
+                <span className="font-bold">
+                  {customerMe?.totalWashes ?? 0}
+                </span>
               </div>
               <div className="flex justify-between opacity-90">
-                <span>{t("settings.memberCard.totalSpent", { defaultValue: "Total Spent" })}</span>
+                <span>
+                  {t("settings.memberCard.totalSpent", {
+                    defaultValue: "Total Spent",
+                  })}
+                </span>
                 <span className="font-bold">
                   {(customerMe?.totalSpent ?? 0).toLocaleString("vi-VN")}đ
                 </span>
               </div>
               <div className="flex justify-between items-baseline">
-                <span>{t("settings.memberCard.pointsBalance", { defaultValue: "Points Balance" })}</span>
+                <span>
+                  {t("settings.memberCard.pointsBalance", {
+                    defaultValue: "Points Balance",
+                  })}
+                </span>
                 <span className="text-base font-black text-amber-300">
                   {customerMe?.totalPoints ?? 0} pts
                 </span>
@@ -382,17 +563,25 @@ export const ProfileSettings: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-850 pb-2">
               <Bell className="w-4 h-4 text-blue-600" />
-              <span>{t("settings.notificationsSection.sectionTitle", { defaultValue: "Notifications" })}</span>
+              <span>
+                {t("settings.notificationsSection.sectionTitle", {
+                  defaultValue: "Notifications",
+                })}
+              </span>
             </div>
             <div className="space-y-3.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                  {t("settings.notificationsSection.emailNotifications", { defaultValue: "Email Notifications" })}
+                  {t("settings.notificationsSection.emailNotifications", {
+                    defaultValue: "Email Notifications",
+                  })}
                 </span>
                 <button
                   onClick={() => setEmailNotify(!emailNotify)}
                   className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${
-                    emailNotify ? "bg-blue-600" : "bg-slate-200 dark:bg-slate-700"
+                    emailNotify
+                      ? "bg-blue-600"
+                      : "bg-slate-200 dark:bg-slate-700"
                   }`}
                 >
                   <span
@@ -404,7 +593,9 @@ export const ProfileSettings: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                  {t("settings.notificationsSection.smsNotifications", { defaultValue: "SMS Notifications" })}
+                  {t("settings.notificationsSection.smsNotifications", {
+                    defaultValue: "SMS Notifications",
+                  })}
                 </span>
                 <button
                   onClick={() => setSMSNotify(!smsNotify)}
@@ -421,12 +612,16 @@ export const ProfileSettings: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                  {t("settings.notificationsSection.marketingEmails", { defaultValue: "Marketing Emails" })}
+                  {t("settings.notificationsSection.marketingEmails", {
+                    defaultValue: "Marketing Emails",
+                  })}
                 </span>
                 <button
                   onClick={() => setMarketingEmail(!marketingEmail)}
                   className={`w-11 h-6 rounded-full transition-colors relative shrink-0 ${
-                    marketingEmail ? "bg-blue-600" : "bg-slate-200 dark:bg-slate-700"
+                    marketingEmail
+                      ? "bg-blue-600"
+                      : "bg-slate-200 dark:bg-slate-700"
                   }`}
                 >
                   <span
@@ -443,7 +638,11 @@ export const ProfileSettings: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-800 pb-2">
               <Monitor className="w-4 h-4 text-blue-600" />
-              <span>{t("settings.appearance.sectionTitle", { defaultValue: "Appearance" })}</span>
+              <span>
+                {t("settings.appearance.sectionTitle", {
+                  defaultValue: "Appearance",
+                })}
+              </span>
             </div>
 
             <div
@@ -456,15 +655,23 @@ export const ProfileSettings: React.FC = () => {
               <div className="absolute inset-0 flex items-center justify-center gap-3">
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500 ${
-                    isDark ? "bg-slate-600 text-slate-300" : "bg-white text-amber-500 shadow-sm"
+                    isDark
+                      ? "bg-slate-600 text-slate-300"
+                      : "bg-white text-amber-500 shadow-sm"
                   }`}
                 >
                   <Sun className="w-3.5 h-3.5" />
                 </div>
-                <div className={`h-5 w-px ${isDark ? "bg-slate-600" : "bg-slate-200"}`} />
+                <div
+                  className={`h-5 w-px ${
+                    isDark ? "bg-slate-600" : "bg-slate-200"
+                  }`}
+                />
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-500 ${
-                    isDark ? "bg-blue-600 text-white shadow-md" : "bg-slate-100 text-slate-400"
+                    isDark
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "bg-slate-100 text-slate-400"
                   }`}
                 >
                   <Moon className="w-3.5 h-3.5" />
@@ -475,8 +682,12 @@ export const ProfileSettings: React.FC = () => {
                   }`}
                 >
                   {isDark
-                    ? t("settings.appearance.darkMode", { defaultValue: "Dark Mode" })
-                    : t("settings.appearance.lightMode", { defaultValue: "Light Mode" })}
+                    ? t("settings.appearance.darkMode", {
+                        defaultValue: "Dark Mode",
+                      })
+                    : t("settings.appearance.lightMode", {
+                        defaultValue: "Light Mode",
+                      })}
                 </span>
               </div>
             </div>
@@ -490,8 +701,12 @@ export const ProfileSettings: React.FC = () => {
                 )}
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                   {isDark
-                    ? t("settings.appearance.darkMode", { defaultValue: "Dark Mode" })
-                    : t("settings.appearance.lightMode", { defaultValue: "Light Mode" })}
+                    ? t("settings.appearance.darkMode", {
+                        defaultValue: "Dark Mode",
+                      })
+                    : t("settings.appearance.lightMode", {
+                        defaultValue: "Light Mode",
+                      })}
                 </span>
               </div>
               <button
@@ -517,7 +732,8 @@ export const ProfileSettings: React.FC = () => {
             </div>
             <p className="text-[11px] text-slate-400 dark:text-slate-500">
               {t("settings.appearance.persistNote", {
-                defaultValue: "Your theme preference is saved and applied automatically on your next visits.",
+                defaultValue:
+                  "Your theme preference is saved and applied automatically on your next visits.",
               })}
             </p>
           </div>
@@ -526,11 +742,16 @@ export const ProfileSettings: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-850 pb-2">
               <Globe className="w-4 h-4 text-blue-600" />
-              <span>{t("settings.language.sectionTitle", { defaultValue: "Language" })}</span>
+              <span>
+                {t("settings.language.sectionTitle", {
+                  defaultValue: "Language",
+                })}
+              </span>
             </div>
             <p className="text-[11px] text-slate-400 dark:text-slate-500">
               {t("settings.language.description", {
-                defaultValue: "Select your preferred language for the portal layout and notifications.",
+                defaultValue:
+                  "Select your preferred language for the portal layout and notifications.",
               })}
             </p>
             <div className="flex gap-2">
@@ -563,35 +784,10 @@ export const ProfileSettings: React.FC = () => {
             </div>
             <p className="text-[11px] text-slate-400 dark:text-slate-500">
               {t("settings.language.persistNote", {
-                defaultValue: "Language settings are saved in your local preferences.",
+                defaultValue:
+                  "Language settings are saved in your local preferences.",
               })}
             </p>
-          </div>
-
-          {/* Khối Quyền Riêng Tư (Privacy) */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-sm space-y-3">
-            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-850 pb-2">
-              <ShieldCheck className="w-4 h-4 text-blue-600" />
-              <span>{t("settings.privacy.sectionTitle", { defaultValue: "Privacy" })}</span>
-            </div>
-            <div className="space-y-1 text-xs font-bold text-slate-600 dark:text-slate-400">
-              <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left">
-                <span>{t("settings.privacy.downloadMyData", { defaultValue: "Download My Data" })}</span>
-                <Download className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-              <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left">
-                <span>{t("settings.privacy.privacyPolicy", { defaultValue: "Privacy Policy" })}</span>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-              <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left">
-                <span>{t("settings.privacy.termsOfService", { defaultValue: "Terms of Service" })}</span>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-              <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-600 transition text-left pt-2 border-t border-slate-50 dark:border-slate-800 mt-1">
-                <span>{t("settings.privacy.deleteAccount", { defaultValue: "Delete Account" })}</span>
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
