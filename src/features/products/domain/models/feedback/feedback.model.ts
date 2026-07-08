@@ -26,6 +26,7 @@ export interface AdminFeedbackFilterRecord {
     customerName: string;
     overallRating: number;
     comment: string | null;
+    isGifted: boolean;
     createdAt: string;
 }
 

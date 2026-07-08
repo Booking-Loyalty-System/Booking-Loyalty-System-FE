@@ -43,7 +43,7 @@ export const AdminChatFeedbacks: React.FC = () => {
 
         try {
             await giftReward({
-                userId: targetCustomer.id, // ID của khách hàng nhận đền bù[cite: 16]
+                customerId: targetCustomer.id, // ID của khách hàng nhận đền bù[cite: 16]
                 rewardId: rewardId          // ID loại phần thưởng được chọn từ danh sách[cite: 16]
             });
 

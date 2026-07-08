@@ -31,7 +31,6 @@ import { AdminBranches } from "@/features/products/presentation/pages/admin/Admi
 import { AutoWashSimulationTest } from "@/shared/auto-wash-simulation-test.tsx";
 import { AdminLayout } from "@/features/products/presentation/layouts/AdminLayout.tsx";
 import { AdminChatFeedbacks } from "./features/products/presentation/pages/admin/AdminChatFeedback.tsx";
-import { AdminTierAnalytics } from "./features/products/presentation/pages/admin/AdminTierAnalytics.tsx";
 import { AdminBookingFeedback } from "./features/products/presentation/pages/admin/AdminBookingFeedback.tsx";
 
 function App() {

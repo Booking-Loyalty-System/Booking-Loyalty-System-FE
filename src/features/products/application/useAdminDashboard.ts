@@ -17,7 +17,7 @@ export const useAdminDashboard = (
         value: new Date().getMonth() + 1 // Mặc định lấy tháng hiện tại
     });
 
-    const { data, isLoading, isError, refetch } = useQuery({
+    const { data, refetch } = useQuery({
         queryKey: ['admin_revenue_analytics', filters],
         queryFn: () => dashboardRepo.getRevenueAnalytics(filters),
     });

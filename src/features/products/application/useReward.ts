@@ -44,8 +44,8 @@ export const useReward = () => {
     });
 
     const giftRewardMutation = useMutation({
-        mutationFn: ({ customerId, rewardId }: { customerId: string; rewardId: string }) =>
-            rewardRepository.giftReward(customerId, rewardId),
+        mutationFn: ({ customerId, rewardId, bookingId }: { customerId: string; rewardId: string; bookingId?: string }) =>
+            rewardRepository.giftReward(customerId, rewardId, bookingId),
         onSuccess: () => {
             // Làm tươi lại lịch sử/danh sách voucher nếu cần
             queryClient.invalidateQueries({ queryKey: ['my_redemptions'] });
