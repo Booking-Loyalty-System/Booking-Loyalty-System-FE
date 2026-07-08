@@ -1,20 +1,35 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminDashboardRepositoryImplement } from '../infrastructure/repositories/admin-dashboard/admin-dashboard.repository.implement';
 import { toast } from 'sonner';
-import type { TierConfig } from '../domain/models/admin-dashboard/admin-dashboard.model';
+import type { DashboardFilterRequest, TierConfig } from '../domain/models/admin-dashboard/admin-dashboard.model';
+import { useState } from 'react';
 
 // Khởi tạo Repository một lần duy nhất ngoài Hook để tránh việc khởi tạo lại đối tượng trong mỗi lần render.
 const dashboardRepo = new AdminDashboardRepositoryImplement();
 
-export const useAdminDashboard = () => {
-    // Dùng QueryClient để quản lý việc cache và làm mới dữ liệu của React Query.
-    const queryClient = useQueryClient();
+export const useAdminDashboard = (
+    dateFilter?: { fromDate: string; toDate: string; compareFromDate: string; compareToDate: string },
+) => {
+    const queryClient = useQueryClient();;
+    const [filters, setFilters] = useState<DashboardFilterRequest>({
+        type: 'MONTH',
+        year: new Date().getFullYear(),
+        value: new Date().getMonth() + 1 // Mặc định lấy tháng hiện tại
+    });
 
-    // 1. Lấy dữ liệu tổng quan (Metrics, Revenue Chart, Tier Distribution)
-    // Dùng useQuery để tự động gọi API khi hook được mount và quản lý caching.
-    const { 
-        data: summary, 
-        isLoading: isSummaryLoading, 
+    const { data, refetch } = useQuery({
+        queryKey: ['admin_revenue_analytics', filters],
+        queryFn: () => dashboardRepo.getRevenueAnalytics(filters),
+    });
+    const getActiveChartData = () => {
+        if (!data) return [];
+        if (filters.type === 'MONTH') return data.monthlyRevenue;
+        if (filters.type === 'QUARTER') return data.quarterlyRevenue;
+        return data.yearlyRevenue;
+    };
+    const {
+        data: summary,
+        isLoading: isSummaryLoading,
         isError: isSummaryError,
         refetch: refetchSummary
     } = useQuery({
@@ -22,11 +37,9 @@ export const useAdminDashboard = () => {
         queryFn: () => dashboardRepo.getSummary(),
     });
 
-    // 2. Lấy danh sách booking gần đây
-    // Dùng query riêng để có thể tải bất đồng bộ song song với summary, tránh chặn luồng render của UI.
-    const { 
-        data: recentBookings = [], 
-        isLoading: isBookingsLoading, 
+    const {
+        data: recentBookings = [],
+        isLoading: isBookingsLoading,
         isError: isBookingsError,
         refetch: refetchBookings
     } = useQuery({
@@ -35,9 +48,9 @@ export const useAdminDashboard = () => {
     });
 
     // 3. Lấy cấu hình Multiplier của các Tiers
-    const { 
-        data: tierConfig, 
-        isLoading: isTierConfigLoading, 
+    const {
+        data: tierConfig,
+        isLoading: isTierConfigLoading,
         isError: isTierConfigError,
         refetch: refetchTierConfig
     } = useQuery({
@@ -45,12 +58,9 @@ export const useAdminDashboard = () => {
         queryFn: () => dashboardRepo.getTierConfig(),
     });
 
-    // 4. Mutation cập nhật cấu hình Tier Multipliers
-    // Dùng useMutation để xử lý hành động cập nhật trạng thái dữ liệu (PUT request) bất đồng bộ.
     const updateTierConfigMutation = useMutation({
         mutationFn: (config: TierConfig) => dashboardRepo.updateTierConfig(config),
         onSuccess: () => {
-            // Khi cập nhật thành công, xoá cache (invalidate) để React Query tự động fetch lại dữ liệu mới nhất.
             queryClient.invalidateQueries({ queryKey: ['admin_dashboard_tier_config'] });
             toast.success("Cập nhật cấu hình hạng thành công!");
         },
@@ -59,8 +69,6 @@ export const useAdminDashboard = () => {
         }
     });
 
-    // 5. Hàm tải file CSV Dataset RBL
-    // Nhận dữ liệu nhị phân (Blob) từ API và thực hiện tạo URL tạm để download Client-side.
     const exportRbl = async () => {
         try {
             const blob = await dashboardRepo.exportRbl();
@@ -78,12 +86,34 @@ export const useAdminDashboard = () => {
         }
     };
 
+    const {
+        data: revenueComparison,
+        isLoading: isComparisonLoading,
+        isError: isComparisonError,
+        refetch: refetchComparison
+    } = useQuery({
+        queryKey: ['admin_dashboard_revenue_comparison', dateFilter],
+        queryFn: async () => {
+            if (!dateFilter) return null;
+            const res = await dashboardRepo.getRevenueComparison(dateFilter);
+            return res;
+        },
+        select: (data) => data ?? null
+    });
+
     return {
         summary,
         recentBookings,
         tierConfig,
-        isLoading: isSummaryLoading || isBookingsLoading || isTierConfigLoading,
-        isError: isSummaryError || isBookingsError || isTierConfigError,
+        revenueComparison,
+        dateFilter,
+        analyticsData: data,
+        chartData: getActiveChartData(),
+        filters,
+        setFilters,
+        refetch,
+        isLoading: isSummaryLoading || isBookingsLoading || isTierConfigLoading || isComparisonLoading,
+        isError: isSummaryError || isBookingsError || isTierConfigError || isComparisonError,
         updateTierConfig: updateTierConfigMutation.mutateAsync,
         isUpdatingTierConfig: updateTierConfigMutation.isPending,
         exportRbl,
@@ -91,6 +121,7 @@ export const useAdminDashboard = () => {
             refetchSummary();
             refetchBookings();
             refetchTierConfig();
+            refetchComparison();
         }
     };
 };

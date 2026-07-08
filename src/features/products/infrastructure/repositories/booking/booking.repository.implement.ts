@@ -32,15 +32,6 @@ export class BookingRepositoryImplement implements IBookingRepository {
         );
     }
 
-    // --- CÁC HÀM CỦA STAFF (Dùng PATCH và params) ---
-    // Chú thích tiếng Việt (theo rule dự án):
-    // Sử dụng toán tử kiểm tra an toàn (response?.data || response || {}) để bọc kết quả trả về từ API.
-    // TẠI SAO CHỌN GIẢI PHÁP NÀY?
-    // Khi các endpoint PATCH của Staff xử lý thành công trên Backend, Backend có thể trả về HTTP 200/204
-    // với response body trống rỗng (null/undefined). Việc truy cập trực tiếp response.data sẽ ném ra lỗi TypeError.
-    // Giải pháp này giúp client không bị crash runtime, Promise sẽ resolve thành công, giúp UI hiển thị
-    // thông báo thành công và tự động trigger cơ chế re-fetch (invalidateQueries) của React Query mà không cần F5.
-
     async confirmBooking(id: string): Promise<BookingResponseData> {
         const response = await httpClient.patch<ApiResponse<BookingResponseData>>(
             ENDPOINTS.BOOKING.CONFIRM(id)
@@ -115,5 +106,13 @@ export class BookingRepositoryImplement implements IBookingRepository {
             }
         );
         return (response?.data || response || {}) as BookingResponseData;
+    }
+
+    async downloadInvoice(id: string): Promise<any> {
+        const response = await httpClient.get<any>(
+            ENDPOINTS.BOOKING.DOWNLOAD_INVOICE(id),
+            { responseType: 'blob' }
+        );
+        return response.data || response;
     }
 }

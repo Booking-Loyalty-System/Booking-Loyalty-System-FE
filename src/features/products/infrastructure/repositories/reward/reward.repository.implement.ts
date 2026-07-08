@@ -25,4 +25,17 @@ export class RewardRepositoryImplement implements IRewardRepository {
         );
         return response.data;
     }
+
+    async giftReward(customerId: string, rewardId: string, bookingId?: string): Promise<Voucher> {
+        const response = await httpClient.patch<ApiResponse<Voucher>>(
+            ENDPOINTS.REWARDS.GIFT,
+            null,
+            {
+                params: { customerId, rewardId, ...(bookingId && { bookingId }) }
+            }
+        );
+        return response.data;
+    }
+
+
 }

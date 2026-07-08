@@ -44,6 +44,7 @@ export const useCustomerChat = () => {
     const [historySessions, setHistorySessions] = useState<HistorySession[]>([]);
     const [selectedOldMessages, setSelectedOldMessages] = useState<UnifiedMessage[]>([]);
     const [selectedSessionInfo, setSelectedSessionInfo] = useState<HistorySession | null>(null);
+    const [isRemoteClosed, setIsRemoteClosed] = useState(false);
 
     // ─── Khởi tạo SignalR ─────────────────────────────────────────────────────
     useEffect(() => {
@@ -83,6 +84,12 @@ export const useCustomerChat = () => {
                         if (isExist) return prev;
                         return [...prev, newMsg];
                     });
+                });
+
+                connection.on("SessionClosed", (data: { chatSessionId: string, message: string }) => {
+                    console.log("Nhận được sự kiện đóng phòng:", data);
+                    // Đổi state sang true để kích hoạt mở Feedback bên phía Chatbox
+                    setIsRemoteClosed(true);
                 });
             })
             .catch(err => console.error("SignalR Connection Error: ", err));
@@ -227,11 +234,12 @@ export const useCustomerChat = () => {
         setViewMode('chat');
         setIsLiveChat(false);
         setCurrentSessionId(null);
+        setIsRemoteClosed(false);
         setMessages([{ role: 'assistant', content: 'Xin chào! Tôi là trợ lý AI của AutoWash Pro 🚗 Bạn cần hỗ trợ gì ạ?', timestamp: new Date() }]);
     };
 
     return {
-        messages, isLoading, isLiveChat, viewMode, historySessions, selectedOldMessages, selectedSessionInfo, currentSessionId,
-        sendMessage, connectToStaff, connectToAI, clearMessages, loadHistoryList, handleSelectHistorySession, setViewMode, endSession
+        messages, isLoading, isLiveChat, viewMode, historySessions, selectedOldMessages, selectedSessionInfo, currentSessionId, isRemoteClosed,
+        sendMessage, connectToStaff, connectToAI, clearMessages, loadHistoryList, handleSelectHistorySession, setViewMode, endSession, setIsRemoteClosed
     };
 };

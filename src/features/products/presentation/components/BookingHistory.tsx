@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {XCircle, Calendar, Star, Clock, DollarSign, AlertTriangle, MessageSquarePlus} from 'lucide-react';
+import { XCircle, Calendar, Star, Clock, DollarSign, AlertTriangle, MessageSquarePlus } from 'lucide-react';
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import type { MyBookingRecord } from "@/features/products/domain/models/booking/booking.model.ts";
 import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
 import { BookingDetailModal } from '@/features/products/presentation/components/BookingDetailModal';
-import {BookingSuccessCard} from "@/features/products/presentation/components/BookingSuccessCard.tsx";
-import {useLocation} from "react-router-dom";
-import {toast} from "sonner";
-import {ReschedulePicker} from "@/features/products/presentation/components/ReschedulePicker.tsx";
+import { BookingSuccessCard } from "@/features/products/presentation/components/BookingSuccessCard.tsx";
+import { useLocation } from "react-router-dom";
+import { toast } from "sonner";
+import { ReschedulePicker } from "@/features/products/presentation/components/ReschedulePicker.tsx";
 import { FeedbackModal } from '@/features/products/presentation/components/FeedbackModal';
 
 export const BookingHistory: React.FC = () => {
@@ -239,69 +239,79 @@ export const BookingHistory: React.FC = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                        <tr className="bg-slate-50/70 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                            <th className="py-4 px-6">{t('bookingHistory.table.id')}</th>
-                            <th className="py-4 px-6">{t('bookingHistory.table.package')}</th>
-                            <th className="py-4 px-6">{t('bookingHistory.table.dateTime')}</th>
-                            <th className="py-4 px-6">{t('bookingHistory.table.vehicle')}</th>
-                            <th className="py-4 px-6">{t('bookingHistory.table.status')}</th>
-                            <th className="py-4 px-6">{t('bookingHistory.table.price')}</th>
-                            <th className="py-4 px-6 text-right">{t('bookingHistory.table.actions')}</th>
-                        </tr>
+                            <tr className="bg-slate-50/70 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                                <th className="py-4 px-6">{t('bookingHistory.table.id')}</th>
+                                <th className="py-4 px-6">{t('bookingHistory.table.package')}</th>
+                                <th className="py-4 px-6">{t('bookingHistory.table.dateTime')}</th>
+                                <th className="py-4 px-6">{t('bookingHistory.table.vehicle')}</th>
+                                <th className="py-4 px-6">{t('bookingHistory.table.status')}</th>
+                                <th className="py-4 px-6">{t('bookingHistory.table.price')}</th>
+                                <th className="py-4 px-6 text-right">{t('bookingHistory.table.actions')}</th>
+                            </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-sm font-medium text-slate-600">
-                        {sortedBookings.length === 0 ? (
-                            <tr>
-                                <td colSpan={7} className="py-8 text-center text-slate-400">{t('bookingHistory.empty.title')}</td>
-                            </tr>
-                        ) : (
-                            sortedBookings.map((item) => (
-                                <tr key={item.id} className="hover:bg-slate-50/40 transition-colors">
-                                    <td className="py-4 px-6 font-mono font-bold text-blue-600">{item.bookingCode}</td>
-                                    <td className="py-4 px-6 text-slate-900 font-bold">{item.washPackageName}</td>
-                                    <td className="py-4 px-6">
-                                        <div>{item.bookingDate}</div>
-                                        <div className="text-xs text-slate-400 mt-0.5">{item.startTime} - {item.endTime}</div>
-                                    </td>
-                                    <td className="py-4 px-6 font-semibold">
-                                        <div>{item.vehiclePlate}</div>
-                                        <div className="text-xs text-slate-400">{item.vehicleName}</div>
-                                    </td>
-                                    <td className="py-4 px-6">
-                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${getStatusStyles(item.status)}`}>
-                                            {t(`bookingHistory.status.${item.status.replace(' ', '')}` as any, { defaultValue: item.status })}
-                                          </span>
-                                    </td>
-                                    <td className="py-4 px-6 font-extrabold text-slate-900">{formatCurrency(item.totalPrice)}</td>
-                                    <td className="py-4 px-6 text-right space-x-2">
-                                        <button
-                                            onClick={() => setSelectedBooking(item)}
-                                            className="text-blue-600 hover:text-blue-700 font-bold text-xs"
-                                        >
-                                            {t('bookingHistory.actions.viewDetails')}
-                                        </button>
-                                        {(item.status === 'Confirmed' || item.status === 'Pending') && (
-                                            <button
-                                                onClick={() => setBookingToCancel(item)}
-                                                className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
-                                            >
-                                                <XCircle className="w-3.5 h-3.5" />
-                                                <span>{t('bookingHistory.actions.cancel')}</span>
-                                            </button>
-                                        )}
-                                        {(item.status === 'Completed' || item.status === 'CheckedOut') && (
-                                            <button
-                                                onClick={() => setFeedbackBooking(item)}
-                                                className="text-amber-500 hover:text-amber-600 font-bold text-xs inline-flex items-center gap-0.5"
-                                            >
-                                                <MessageSquarePlus className="w-3.5 h-3.5" />
-                                                <span>{t('bookingHistory.actions.review', { defaultValue: 'Đánh giá' })}</span>
-                                            </button>
-                                        )}
-                                    </td>
+                            {sortedBookings.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="py-8 text-center text-slate-400">{t('bookingHistory.empty.title')}</td>
+
                                 </tr>
-                            ))
-                        )}
+                            ) : (
+                                sortedBookings.map((item) => (
+                                    <tr key={item.id} className="hover:bg-slate-50/40 transition-colors">
+                                        <td className="py-4 px-6 font-mono font-bold text-blue-600">{item.bookingCode}</td>
+                                        <td className="py-4 px-6 text-slate-900 font-bold">{item.washPackageName}</td>
+                                        <td className="py-4 px-6">
+                                            <div>{item.bookingDate}</div>
+                                            <div className="text-xs text-slate-400 mt-0.5">{item.startTime} - {item.endTime}</div>
+                                        </td>
+                                        <td className="py-4 px-6 font-semibold">
+                                            <div>{item.vehiclePlate}</div>
+                                            <div className="text-xs text-slate-400">{item.vehicleName}</div>
+                                        </td>
+                                        <td className="py-4 px-6">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${getStatusStyles(item.status)}`}>
+                                                {t(`bookingHistory.status.${item.status.replace(' ', '')}` as any, { defaultValue: item.status })}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-6 font-extrabold text-slate-900">{formatCurrency(item.totalPrice)}</td>
+                                        <td className="py-4 px-6 text-right space-x-2">
+                                            <button
+                                                onClick={() => setSelectedBooking(item)}
+                                                className="text-blue-600 hover:text-blue-700 font-bold text-xs"
+                                            >
+                                                {t('bookingHistory.actions.viewDetails')}
+                                            </button>
+                                            {(item.status === 'Confirmed' || item.status === 'Pending') && (
+                                                <button
+                                                    onClick={() => setBookingToCancel(item)}
+                                                    className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
+                                                >
+                                                    <XCircle className="w-3.5 h-3.5" />
+                                                    <span>{t('bookingHistory.actions.cancel')}</span>
+                                                </button>
+                                            )}
+                                            {(item.status === 'Completed' || item.status === 'CheckedOut') && !item.feedbackResponse && (
+                                                <button
+                                                    onClick={() => setFeedbackBooking(item)}
+                                                    className="text-amber-500 hover:text-amber-600 font-bold text-xs inline-flex items-center gap-0.5"
+                                                >
+                                                    <MessageSquarePlus className="w-3.5 h-3.5" />
+                                                    <span>Đánh giá</span>
+                                                </button>
+                                            )}
+                                            {(item.status === 'Completed' || item.status === 'CheckedOut') && item.feedbackResponse && (
+                                                <div className="text-right">
+                                                    <span className="text-slate-400 text-xs italic block">Đã đánh giá</span>
+                                                    <div className="flex items-center justify-end gap-0.5 text-amber-500 mt-0.5">
+                                                        <Star className="w-3 h-3 fill-current" />
+                                                        <span className="text-xs font-bold">{item.feedbackResponse.overallRating}/5</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>

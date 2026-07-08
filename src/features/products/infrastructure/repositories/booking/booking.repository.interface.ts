@@ -19,4 +19,5 @@ export interface IBookingRepository {
     noShowBooking(id: string): Promise<BookingResponseData>;
     scan_qr(qr: string): Promise<BookingResponseData>;
     cancelBooking(id: string, reason: string): Promise<void>;
+    downloadInvoice(id: string): Promise<any>;
 }
