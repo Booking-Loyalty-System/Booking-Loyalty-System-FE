@@ -156,9 +156,9 @@ export const LoyaltyTier: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black p-4 md:p-8 font-sans antialiased text-slate-800 dark:text-white">
       <div className="max-w-6xl mx-auto space-y-8">
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 to-[#111] dark:from-[#050505] dark:to-[#111] border border-slate-800/50 dark:border-white/10 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl group">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#050505] dark:to-[#111] border border-blue-500/50 dark:border-white/10 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl group">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
-          <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-500/30 transition-colors duration-700"></div>
+          <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
           <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-700"></div>
           
           <div className="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">

@@ -339,10 +339,10 @@ export const ProfileSettings: React.FC = () => {
         {/* CỘT PHẢI (1/3): THẺ THÔNG TIN TỔNG QUAN & CONFIG PHỤ */}
         <div className="space-y-6">
           {/* Khối Thẻ Thành Viên Premium Dark */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 to-[#111] dark:from-[#050505] dark:to-[#111] border border-slate-800/50 dark:border-white/10 text-white rounded-[2rem] p-6 shadow-xl group">
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#050505] dark:to-[#111] border border-blue-500/50 dark:border-white/10 text-white rounded-[2rem] p-6 shadow-xl group">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
-            <div className="absolute -right-20 -top-20 w-40 h-40 bg-blue-500/20 rounded-full blur-[60px] pointer-events-none group-hover:bg-blue-500/30 transition-colors duration-700"></div>
-            <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-[60px] pointer-events-none group-hover:bg-indigo-500/30 transition-colors duration-700"></div>
+            <div className="absolute -right-20 -top-20 w-40 h-40 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[60px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
+            <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-[60px] pointer-events-none group-hover:bg-indigo-400/30 dark:group-hover:bg-indigo-500/30 transition-colors duration-700"></div>
 
             <div className="relative z-10 space-y-5">
               <div className="flex items-center gap-3">
