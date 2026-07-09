@@ -340,6 +340,40 @@ export function AdminBranches() {
     }
   };
 
+  const handleLinkPromotion = async () => {
+    if (!selectedBranchForPromo || !selectedPromoId) return;
+
+    const promoToUpdate = promotions.find((p) => p.id === selectedPromoId);
+    if (!promoToUpdate) return;
+
+    try {
+      const currentBranchIds = (promoToUpdate as any).branchIds || [];
+      const updatedBranchIds = Array.from(new Set([...currentBranchIds, selectedBranchForPromo.id]));
+
+      await updatePromotion({
+        id: selectedPromoId,
+        data: {
+          description: promoToUpdate.description,
+          discountType: promoToUpdate.discountType,
+          discountValue: promoToUpdate.discountValue,
+          startDate: promoToUpdate.startDate,
+          endDate: promoToUpdate.endDate,
+          maxUses: promoToUpdate.maxUses,
+          minSpend: promoToUpdate.minSpend,
+          isActive: promoToUpdate.isActive,
+          branchIds: updatedBranchIds,
+        },
+      });
+
+      alert(`Đã liên kết Khuyến mãi thành công với Chi nhánh: ${selectedBranchForPromo.name}`);
+      setSelectedBranchForPromo(null);
+      setSelectedPromoId("");
+    } catch (error) {
+      console.error("Lỗi khi liên kết khuyến mãi:", error);
+      alert("Có lỗi xảy ra khi liên kết khuyến mãi!");
+    }
+  };
+
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       {/* Top Section */}
@@ -782,7 +816,7 @@ export function AdminBranches() {
                   <option value="">-- Chọn Khuyến Mãi --</option>
                   {promotions.filter(p => p.isActive).map((promo) => (
                     <option key={promo.id} value={promo.id}>
-                      {promo.name || promo.description} (Giảm: {promo.discountValue})
+                      {(promo as any).name || promo.description} (Giảm: {promo.discountValue})
                     </option>
                   ))}
                 </select>
@@ -824,7 +858,7 @@ export function AdminBranches() {
                     </button>
                     <button
                       disabled={!selectedPromoId || isUpdating}
-                      onClick={handleSkipPromotion}
+                      onClick={handleLinkPromotion}
                       className="px-5 py-2 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 disabled:opacity-50"
                     >
                       {isUpdating ? "Đang liên kết..." : "Kích hoạt ngay"}
