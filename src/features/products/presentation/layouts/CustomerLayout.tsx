@@ -276,8 +276,8 @@ export const CustomerLayout: React.FC = () => {
   return (
     <div className="flex h-screen w-screen bg-[#fafafa] dark:bg-[#050505] overflow-hidden antialiased font-sans text-slate-800 dark:text-slate-200">
       {/* SIDEBAR - Premium Look */}
-      <aside className="w-72 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col justify-between p-5 shrink-0 h-full relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
-        <div className="flex flex-col h-[calc(100vh-100px)]">
+      <aside className="w-72 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col p-5 shrink-0 h-full relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+        <div className="flex-1 flex flex-col min-h-0">
           <div className="flex items-center gap-4 px-3 py-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
               <Radio className="w-6 h-6 animate-pulse" />
@@ -305,7 +305,7 @@ export const CustomerLayout: React.FC = () => {
           </nav>
         </div>
 
-        <div className="pt-4 border-t border-slate-100 dark:border-white/5 space-y-3 mt-4">
+        <div className="shrink-0 pt-4 border-t border-slate-100 dark:border-white/5 space-y-3 mt-4">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all duration-300 group"
