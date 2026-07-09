@@ -21,7 +21,7 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
     return (
         <div className="space-y-4">
             <h3 className="text-xl font-bold text-[#0f172a]">{t('bookWash.package.selectTitle', { defaultValue: "Select Wash Package" })}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {washPackages.map((pkg) => {
                     const isSelected = selectedPackageId === pkg.id;
                     const visual = getPackageUIVisual(pkg.name);
@@ -42,9 +42,9 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                                     <h4 className="font-bold text-[#0f172a] text-lg">{pkg.name}</h4>
                                     <p className="text-xs text-[#64748b] mt-1 font-medium line-clamp-2">{pkg.description}</p>
                                 </div>
-                                <div className="flex items-baseline gap-3 pt-2">
-                                    <span className="text-3xl font-extrabold text-[#0f172a]">{pkg.price.toLocaleString('vi-VN')}đ</span>
-                                    <span className="text-xs text-[#64748b] font-semibold">⏱ {pkg.durationMinutes} {t('bookWash.package.minutes', { defaultValue: "min" })}</span>
+                                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-2">
+                                    <span className="text-2xl xl:text-3xl font-extrabold text-[#0f172a] break-words">{pkg.price.toLocaleString('vi-VN')}đ</span>
+                                    <span className="text-xs text-[#64748b] font-semibold whitespace-nowrap shrink-0">⏱ {pkg.durationMinutes} {t('bookWash.package.minutes', { defaultValue: "min" })}</span>
                                 </div>
                                 {pkg.features && pkg.features.length > 0 && (
                                     <ul className="space-y-2 pt-2 border-t border-[#f1f5f9]">
