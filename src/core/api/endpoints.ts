@@ -58,7 +58,8 @@ export const ENDPOINTS = {
     STAFF: {
         BOOKINGS: '/staff/bookings',
         PROFILE: '/staff/profile',
-        ID: (id: string) => `/staff/${id}`
+        ID: (id: string) => `/staff/${id}`,
+        STAFF: '/staff'
     },
 
     LOYALTY: {
