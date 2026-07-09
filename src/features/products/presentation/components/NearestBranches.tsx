@@ -82,8 +82,8 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
-                    <h2 className="text-xl font-bold text-slate-800 tracking-tight">{t('bookWash.branch.selectTitle', { defaultValue: "Select Branch" })}</h2>
-                    <p className="text-xs text-slate-400 mt-0.5">{t('bookWash.branch.sortedByProximity', { defaultValue: "Automatically sorted based on your proximity" })}</p>
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">{t('bookWash.branch.selectTitle', { defaultValue: "Select Branch" })}</h2>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('bookWash.branch.sortedByProximity', { defaultValue: "Automatically sorted based on your proximity" })}</p>
                 </div>
                 <button
                     type="button"
@@ -107,24 +107,24 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                         <div
                             key={branch.id}
                             onClick={() => onSelectBranch(branch.id)}
-                            className={`group relative bg-white border rounded-2xl p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
+                            className={`group relative bg-white dark:bg-[#111] border rounded-2xl p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
                                 isSelected
-                                    ? 'border-blue-600 ring-2 ring-blue-500/10 bg-blue-50/5 shadow-md shadow-blue-500/5'
-                                    : 'border-slate-200 hover:border-blue-300 hover:shadow-md'
+                                    ? 'border-blue-600 dark:border-blue-500 ring-2 ring-blue-500/10 dark:ring-blue-900/30 bg-blue-50/5 dark:bg-blue-900/10 shadow-md shadow-blue-500/5'
+                                    : 'border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-white/30 hover:shadow-md'
                             }`}
                         >
                             <div>
                                 <div className="flex justify-between items-start gap-3">
                                     <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-lg text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1">
+                                        <h3 className="font-bold text-lg text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                                             {branch.branchName}
                                         </h3>
-                                        {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />}
+                                        {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />}
                                     </div>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
                                         branch.status === 'Active'
-                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                                            : 'bg-slate-100 text-slate-500'
+                                            ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20'
+                                            : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400'
                                     }`}>
                                         {branch.status === 'Active' ? t('bookWash.branch.statusOpen', { defaultValue: 'Open' }) : t('bookWash.branch.statusClosed', { defaultValue: 'Closed' })}
                                     </span>
@@ -132,25 +132,25 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
 
                                 {/* Distance Badge */}
                                 {distance && (
-                                    <div className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 bg-blue-50 rounded-md text-[11px] font-bold text-blue-600 border border-blue-100">
+                                    <div className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 rounded-md text-[11px] font-bold text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/30">
                                         <Navigation className="w-2.5 h-2.5 fill-current" />
                                         {t('bookWash.branch.kmAway', { n: distance, defaultValue: `${distance} km away` })}
                                     </div>
                                 )}
 
                                 {/* Info List */}
-                                <div className="space-y-2.5 mt-4 border-t border-slate-50 pt-3">
-                                    <div className="flex items-start gap-2.5 text-xs text-slate-500">
+                                <div className="space-y-2.5 mt-4 border-t border-slate-50 dark:border-white/5 pt-3">
+                                    <div className="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400">
                                         <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
                                         <span className="line-clamp-2">{branch.address}</span>
                                     </div>
-                                    <div className="flex items-center gap-2.5 text-xs text-slate-500">
+                                    <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
                                         <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                         <span>{branch.operatingHours || '08:00 AM - 10:00 PM'}</span>
                                     </div>
-                                    <div className="flex items-center gap-2.5 text-xs text-slate-500">
+                                    <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
                                         <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                        <span className="font-semibold text-slate-600">{branch.hotline}</span>
+                                        <span className="font-semibold text-slate-600 dark:text-slate-300">{branch.hotline}</span>
                                     </div>
                                 </div>
                             </div>
@@ -165,7 +165,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                                 className={`mt-4 w-full py-2 text-xs font-bold rounded-xl border transition-all duration-200 ${
                                     isSelected
                                         ? 'bg-blue-600 text-white border-transparent hover:bg-blue-700'
-                                        : 'bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100'
+                                        : 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10'
                                 }`}
                             >
                                 {t('bookWash.branch.viewOnMap', { defaultValue: "View on Map" })}

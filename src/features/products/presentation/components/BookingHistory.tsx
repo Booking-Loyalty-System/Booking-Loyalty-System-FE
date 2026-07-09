@@ -113,10 +113,10 @@ export const BookingHistory: React.FC = () => {
 
     const completedBookings = sortedBookings.filter(b => b.status === 'Completed');
     const stats = [
-        { title: 'Total Bookings', value: sortedBookings.length.toString(), icon: <Calendar className="w-6 h-6 text-blue-600" />, bg: 'bg-blue-50/50' },
-        { title: 'Points Earned', value: (customerMe?.totalPoints || 0).toLocaleString('en-US'), icon: <Star className="w-6 h-6 text-emerald-600" />, bg: 'bg-emerald-50/50' },
-        { title: 'Minutes Saved', value: completedBookings.reduce((sum, b) => sum + (b.durationMinutes || 0), 0).toLocaleString('en-US'), icon: <Clock className="w-6 h-6 text-purple-600" />, bg: 'bg-purple-50/50' },
-        { title: 'Total Spent', value: formatCurrency(completedBookings.reduce((sum, b) => sum + b.totalPrice, 0)), icon: <DollarSign className="w-6 h-6 text-orange-600" />, bg: 'bg-orange-50/50' },
+        { title: 'Total Bookings', value: sortedBookings.length.toString(), icon: <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />, bg: 'bg-blue-50/50 dark:bg-blue-500/10' },
+        { title: 'Points Earned', value: (customerMe?.totalPoints || 0).toLocaleString('en-US'), icon: <Star className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />, bg: 'bg-emerald-50/50 dark:bg-emerald-500/10' },
+        { title: 'Minutes Saved', value: completedBookings.reduce((sum, b) => sum + (b.durationMinutes || 0), 0).toLocaleString('en-US'), icon: <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />, bg: 'bg-purple-50/50 dark:bg-purple-500/10' },
+        { title: 'Total Spent', value: formatCurrency(completedBookings.reduce((sum, b) => sum + b.totalPrice, 0)), icon: <DollarSign className="w-6 h-6 text-orange-600 dark:text-orange-400" />, bg: 'bg-orange-50/50 dark:bg-orange-500/10' },
     ];
 
     const predefinedReasons = [
@@ -150,30 +150,30 @@ export const BookingHistory: React.FC = () => {
 
             {bookingToCancel && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-                    <div className="bg-white rounded-3xl border border-slate-100 max-w-md w-full p-6 shadow-2xl space-y-5 animate-scale-up">
+                    <div className="bg-white dark:bg-[#111] rounded-3xl border border-slate-100 dark:border-white/5 max-w-md w-full p-6 shadow-2xl space-y-5 animate-scale-up">
                         <div className="flex items-center gap-3 text-amber-500">
-                            <div className="p-2 bg-amber-50 rounded-xl">
+                            <div className="p-2 bg-amber-50 dark:bg-amber-500/10 rounded-xl">
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 tracking-tight">Confirm Cancellation</h3>
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Confirm Cancellation</h3>
                         </div>
 
-                        <p className="text-sm font-medium text-slate-400 leading-relaxed">
-                            You are requesting to cancel booking <span className="font-mono font-bold text-blue-600">{bookingToCancel.bookingCode}</span>. This action cannot be undone. Please select a reason:
+                        <p className="text-sm font-medium text-slate-400 dark:text-slate-500 leading-relaxed">
+                            You are requesting to cancel booking <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{bookingToCancel.bookingCode}</span>. This action cannot be undone. Please select a reason:
                         </p>
 
                         {/* Danh sách lý do dạng Radio Buttons */}
                         <div className="space-y-2.5">
                             {predefinedReasons.map((reason) => (
-                                <label key={reason} className="flex items-start gap-3 p-3 border border-slate-100 rounded-xl hover:bg-slate-50/80 cursor-pointer transition-all">
+                                <label key={reason} className="flex items-start gap-3 p-3 border border-slate-100 dark:border-white/5 rounded-xl hover:bg-slate-50/80 dark:hover:bg-white/5 cursor-pointer transition-all">
                                     <input
                                         type="radio"
                                         name="cancelReason"
                                         checked={cancelReason === reason}
                                         onChange={() => setCancelReason(reason)}
-                                        className="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300"
+                                        className="mt-0.5 w-4 h-4 text-blue-600 dark:text-blue-500 focus:ring-blue-500 border-slate-300 dark:border-white/10 dark:bg-black/50"
                                     />
-                                    <span className="text-sm font-bold text-slate-700">{reason}</span>
+                                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{reason}</span>
                                 </label>
                             ))}
                         </div>
@@ -196,7 +196,7 @@ export const BookingHistory: React.FC = () => {
                                 onChange={(e) => setCustomReason(e.target.value)}
                                 placeholder="Please enter detailed reason here..."
                                 rows={3}
-                                className="w-full border border-slate-200 rounded-2xl p-3.5 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                                className="w-full border border-slate-200 dark:border-white/10 dark:bg-black/20 rounded-2xl p-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20 transition-all"
                             />
                         )}
 
@@ -205,7 +205,7 @@ export const BookingHistory: React.FC = () => {
                             <button
                                 onClick={() => { setBookingToCancel(null); setCustomReason(''); }}
                                 disabled={isCanceling}
-                                className="border border-slate-200 hover:bg-slate-50 text-slate-600 font-extrabold py-3 px-4 rounded-xl text-sm transition-all"
+                                className="border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 font-extrabold py-3 px-4 rounded-xl text-sm transition-all"
                             >
                                 Back
                             </button>
@@ -224,22 +224,22 @@ export const BookingHistory: React.FC = () => {
             {/* Khối Thống Kê */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {stats.map((stat, i) => (
-                    <div key={i} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex items-center gap-4">
-                        <div className={`p-3.5 rounded-xl ${stat.bg} shrink-0`}>{stat.icon}</div>
+                    <div key={i} className="bg-white dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[2rem] p-5 shadow-sm flex items-center gap-4">
+                        <div className={`p-3.5 rounded-2xl ${stat.bg} shrink-0`}>{stat.icon}</div>
                         <div className="space-y-0.5">
-                            <p className="text-3xl font-black text-slate-900 tracking-tight">{stat.value}</p>
-                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{stat.title}</p>
+                            <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</p>
+                            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{stat.title}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Bảng Dữ Liệu */}
-            <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[2rem] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-slate-50/70 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                            <tr className="bg-slate-50/70 dark:bg-white/5 border-b border-slate-100 dark:border-white/5 text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider">
                                 <th className="py-4 px-6">{t('bookingHistory.table.id')}</th>
                                 <th className="py-4 px-6">{t('bookingHistory.table.package')}</th>
                                 <th className="py-4 px-6">{t('bookingHistory.table.dateTime')}</th>
@@ -249,31 +249,31 @@ export const BookingHistory: React.FC = () => {
                                 <th className="py-4 px-6 text-right">{t('bookingHistory.table.actions')}</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 text-sm font-medium text-slate-600">
+                        <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-sm font-medium text-slate-600 dark:text-slate-300">
                             {sortedBookings.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="py-8 text-center text-slate-400">{t('bookingHistory.empty.title')}</td>
+                                    <td colSpan={7} className="py-8 text-center text-slate-400 dark:text-slate-500">{t('bookingHistory.empty.title')}</td>
 
                                 </tr>
                             ) : (
                                 sortedBookings.map((item) => (
-                                    <tr key={item.id} className="hover:bg-slate-50/40 transition-colors">
-                                        <td className="py-4 px-6 font-mono font-bold text-blue-600">{item.bookingCode}</td>
-                                        <td className="py-4 px-6 text-slate-900 font-bold">{item.washPackageName}</td>
+                                    <tr key={item.id} className="hover:bg-slate-50/40 dark:hover:bg-white/5 transition-colors">
+                                        <td className="py-4 px-6 font-mono font-bold text-blue-600 dark:text-blue-400">{item.bookingCode}</td>
+                                        <td className="py-4 px-6 text-slate-900 dark:text-white font-bold">{item.washPackageName}</td>
                                         <td className="py-4 px-6">
                                             <div>{item.bookingDate}</div>
-                                            <div className="text-xs text-slate-400 mt-0.5">{item.startTime} - {item.endTime}</div>
+                                            <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{item.startTime} - {item.endTime}</div>
                                         </td>
                                         <td className="py-4 px-6 font-semibold">
                                             <div>{item.vehiclePlate}</div>
-                                            <div className="text-xs text-slate-400">{item.vehicleName}</div>
+                                            <div className="text-xs text-slate-400 dark:text-slate-500">{item.vehicleName}</div>
                                         </td>
                                         <td className="py-4 px-6">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${getStatusStyles(item.status)}`}>
                                                 {t(`bookingHistory.status.${item.status.replace(' ', '')}` as any, { defaultValue: item.status })}
                                             </span>
                                         </td>
-                                        <td className="py-4 px-6 font-extrabold text-slate-900">{formatCurrency(item.totalPrice)}</td>
+                                        <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">{formatCurrency(item.totalPrice)}</td>
                                         <td className="py-4 px-6 text-right space-x-2">
                                             <button
                                                 onClick={() => setSelectedBooking(item)}
@@ -296,12 +296,12 @@ export const BookingHistory: React.FC = () => {
                                                     className="text-amber-500 hover:text-amber-600 font-bold text-xs inline-flex items-center gap-0.5"
                                                 >
                                                     <MessageSquarePlus className="w-3.5 h-3.5" />
-                                                    <span>Đánh giá</span>
+                                                    <span>{t('bookingHistory.actions.review', { defaultValue: 'Leave Review' })}</span>
                                                 </button>
                                             )}
                                             {(item.status === 'Completed' || item.status === 'CheckedOut') && item.feedbackResponse && (
                                                 <div className="text-right">
-                                                    <span className="text-slate-400 text-xs italic block">Đã đánh giá</span>
+                                                    <span className="text-slate-400 text-xs italic block">{t('bookingHistory.actions.reviewed', { defaultValue: 'Reviewed' })}</span>
                                                     <div className="flex items-center justify-end gap-0.5 text-amber-500 mt-0.5">
                                                         <Star className="w-3 h-3 fill-current" />
                                                         <span className="text-xs font-bold">{item.feedbackResponse.overallRating}/5</span>

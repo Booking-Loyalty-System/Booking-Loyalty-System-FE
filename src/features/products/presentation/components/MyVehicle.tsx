@@ -73,7 +73,7 @@ export const MyVehicles: React.FC = () => {
     <div className="w-full space-y-6 p-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-black text-slate-900">{t("vehicles.title", { defaultValue: "My Vehicles" })}</h1>
+        <h1 className="text-3xl font-black text-slate-900 dark:text-white">{t("vehicles.title", { defaultValue: "My Vehicles" })}</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 transition active:scale-95"
