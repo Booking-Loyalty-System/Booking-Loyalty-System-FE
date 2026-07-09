@@ -12,7 +12,8 @@ import {
   KeyRound,
   Sun,
   Moon,
-  ArrowRight
+  ArrowRight,
+  Award
 } from "lucide-react";
 import { useAuth } from "@/features/products/application/useAuth.ts";
 import { auth } from "@/firebase-config.ts";
