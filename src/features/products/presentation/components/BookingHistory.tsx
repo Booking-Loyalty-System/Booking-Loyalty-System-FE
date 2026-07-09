@@ -253,6 +253,7 @@ export const BookingHistory: React.FC = () => {
                             {sortedBookings.length === 0 ? (
                                 <tr>
                                     <td colSpan={7} className="py-8 text-center text-slate-400">{t('bookingHistory.empty.title')}</td>
+
                                 </tr>
                             ) : (
                                 sortedBookings.map((item) => (

@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useReward } from "@/features/products/application/useReward.ts";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { toast } from "sonner";
+import { translateDynamic } from "@/shared/utils/translateDynamic.ts";
 
 interface RewardItem {
   id: string;
@@ -27,7 +28,7 @@ interface RewardItem {
 }
 
 export const RewardsSection: React.FC = () => {
-  const { t } = useTranslation("customer");
+  const { t, i18n } = useTranslation("customer");
   const { customerMe } = useCustomerMe();
   const {
     redemptions,
@@ -87,9 +88,9 @@ export const RewardsSection: React.FC = () => {
 
         return {
           id: reward.id,
-          title: reward.name ?? "Voucher đặc biệt",
+          title: translateDynamic(reward.name ?? "Voucher đặc biệt", i18n.language),
           description:
-            reward.description ?? "Đổi điểm để nhận ưu đãi giảm giá.",
+            translateDynamic(reward.description ?? "Đổi điểm để nhận ưu đãi giảm giá.", i18n.language),
           validDays: reward.validDays ?? 30,
           requiredPts: reward.pointsCost ?? 0,
           comingSoon: !reward.isActive,
@@ -98,7 +99,7 @@ export const RewardsSection: React.FC = () => {
         };
       })
       .filter((item) => item !== null) as RewardItem[];
-  }, [availableRewards]);
+  }, [availableRewards, i18n.language]);
 
   // Tính toán số lượng phần thưởng khả dụng
   const redeemableCount = useMemo(() => {
@@ -364,7 +365,7 @@ export const RewardsSection: React.FC = () => {
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-800 text-base tracking-tight">
-                        {v.rewardName ?? "Voucher giảm giá"}
+                        {translateDynamic(v.rewardName ?? "Voucher giảm giá", i18n.language)}
                       </h4>
                       {(() => {
                         const statusLower = String(v.status).toLowerCase();

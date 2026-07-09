@@ -37,7 +37,7 @@ export const LandingPage: React.FC = () => {
         t('landing.tiers.benefit_member_3'),
         t('landing.tiers.benefit_member_4')
       ],
-      bgColor: 'from-blue-500 to-blue-600',
+      bgColor: 'from-blue-500 to-cyan-500',
     },
     {
       tier: t('landing.tiers.silver'),
@@ -51,7 +51,7 @@ export const LandingPage: React.FC = () => {
         t('landing.tiers.benefit_silver_3'),
         t('landing.tiers.benefit_silver_4')
       ],
-      bgColor: 'from-gray-400 to-gray-500',
+      bgColor: 'from-slate-400 to-slate-600',
     },
     {
       tier: t('landing.tiers.gold'),
@@ -65,7 +65,7 @@ export const LandingPage: React.FC = () => {
         t('landing.tiers.benefit_gold_3'),
         t('landing.tiers.benefit_gold_4')
       ],
-      bgColor: 'from-yellow-400 to-yellow-500',
+      bgColor: 'from-amber-400 to-orange-500',
     },
     {
       tier: t('landing.tiers.platinum'),
@@ -79,7 +79,7 @@ export const LandingPage: React.FC = () => {
         t('landing.tiers.benefit_platinum_3'),
         t('landing.tiers.benefit_platinum_4')
       ],
-      bgColor: 'from-purple-500 to-purple-600',
+      bgColor: 'from-purple-500 to-pink-500',
     },
   ];
 
@@ -93,122 +93,148 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-500 selection:text-white antialiased transition-colors duration-200">
-      {/* HEADER NAVBAR */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-6 lg:px-12 py-4 flex items-center justify-between transition-colors duration-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+    <div className="w-full min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-500 selection:text-white antialiased transition-colors duration-300 overflow-x-hidden">
+      {/* HEADER NAVBAR - Ultra Glassmorphism */}
+      <header className="fixed top-0 inset-x-0 z-50 bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/10 px-6 lg:px-12 py-4 flex items-center justify-between transition-all duration-300">
+        <div className="flex items-center gap-3 group cursor-pointer">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all duration-300 group-hover:scale-105">
             <Droplets className="w-6 h-6" />
           </div>
           <div>
-            <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">AutoWash Pro</span>
-            <span className="text-[10px] block font-semibold text-slate-400 dark:text-slate-500 -mt-1">{t('landing.subtitle')}</span>
+            <span className="font-extrabold text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">AutoWash Pro</span>
+            <span className="text-[10px] block font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest -mt-1">{t('landing.subtitle')}</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle Button */}
-          <button
-            id="theme-toggle-landing"
-            onClick={toggleTheme}
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="flex items-center justify-center p-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200 cursor-pointer"
-          >
-            {isDark ? (
-              <Sun className="w-4 h-4 text-amber-500" />
-            ) : (
-              <Moon className="w-4 h-4 text-blue-600" />
-            )}
-          </button>
+        <div className="flex items-center gap-3 lg:gap-6">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all duration-300"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all duration-300 text-xs font-bold"
+            >
+              <span className="text-sm leading-none">{language === 'en' ? '🇺🇸' : '🇻🇳'}</span>
+              <span className="uppercase">{language === 'en' ? 'EN' : 'VI'}</span>
+            </button>
+          </div>
 
-          {/* Language Toggle Button */}
-          <button
-            id="language-toggle-landing"
-            onClick={toggleLanguage}
-            title={language === 'en' ? "Switch to Vietnamese" : "Switch to English"}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200"
-          >
-            <span className="text-base leading-none">{language === 'en' ? '🇺🇸' : '🇻🇳'}</span>
-            <span className="uppercase tracking-wide">{language === 'en' ? 'EN' : 'VI'}</span>
-          </button>
+          <div className="hidden sm:block w-px h-6 bg-slate-200 dark:bg-white/10"></div>
 
           <Link
             to="/login"
-            className="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="hidden sm:block text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             {t('landing.login')}
           </Link>
           <Link
             to="/register"
-            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/10 active:scale-95 transition-all"
+            className="relative px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full font-bold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center gap-2 group"
           >
-            {t('landing.register')}
+            <span>{t('landing.register')}</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </header>
 
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 text-white py-24 px-6 lg:px-12">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-300 via-indigo-600 to-slate-950"></div>
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
-          <div className="flex-1 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-blue-200 text-xs font-semibold border border-white/10">
-              <Sparkles className="w-3.5 h-3.5" />
-              {t('landing.tagline')}
+      {/* HERO SECTION - Premium Modern Look */}
+      <section className="relative min-h-[100vh] flex items-center pt-24 pb-12 px-6 lg:px-12 overflow-hidden">
+        {/* Abstract Glowing Orbs */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
+          <div className="absolute top-[10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
+          <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-indigo-400/20 dark:bg-purple-600/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-16 relative z-10">
+          {/* Hero Content */}
+          <div className="flex-1 space-y-8 text-center lg:text-left pt-12 lg:pt-0">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-white/5 backdrop-blur-md rounded-full text-blue-600 dark:text-blue-300 text-xs font-bold border border-slate-200/50 dark:border-white/10 shadow-sm">
+              <Sparkles className="w-4 h-4" />
+              <span className="uppercase tracking-wider">{t('landing.tagline')}</span>
             </div>
             
-            <h1 className="text-4xl lg:text-6xl font-black tracking-tight leading-tight whitespace-pre-line">
-              {t('landing.title')}
+            <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tighter leading-[1.1]">
+              <span className="block text-slate-900 dark:text-white drop-shadow-sm">
+                {t('landing.title').split('\n')[0] || t('landing.title')}
+              </span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-400 mt-2 pb-2">
+                Premium Car Care
+              </span>
             </h1>
             
-            <p className="text-lg lg:text-xl text-blue-100 font-medium max-w-2xl">
+            <p className="text-lg text-slate-600 dark:text-slate-400 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
               {t('landing.description')}
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               <Link
                 to="/register"
-                className="w-full sm:w-auto px-8 py-4 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-2xl shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold shadow-[0_8px_30px_rgb(37,99,235,0.3)] transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
               >
                 <span>{t('landing.getStarted')}</span>
-                <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm text-white font-bold rounded-2xl transition-all flex items-center justify-center"
+                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-[#111] hover:bg-slate-50 dark:hover:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-full font-bold transition-all hover:-translate-y-1 flex items-center justify-center shadow-sm"
               >
                 {t('landing.bookService')}
               </Link>
             </div>
           </div>
           
-          <div className="flex-1 hidden lg:flex justify-center relative">
-            <div className="w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl absolute -top-10 -left-10"></div>
-            <div className="w-80 h-80 bg-indigo-500/20 rounded-full filter blur-3xl absolute -bottom-10 -right-10"></div>
-            
-            <div className="relative border border-white/10 bg-white/5 backdrop-blur-md rounded-3xl p-8 shadow-2xl max-w-md w-full">
-              <div className="flex justify-between items-center mb-6">
-                <span className="font-extrabold text-lg text-blue-200">{t('landing.bookingTitle')}</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full">{t('landing.save20')}</span>
-              </div>
-              <div className="space-y-4">
-                <div className="p-4 bg-white/5 rounded-xl border border-white/10 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-500/20 text-blue-200 rounded-lg flex items-center justify-center">
-                    <Star className="w-5 h-5" />
+          {/* Hero Image/Mockup Right side */}
+          <div className="flex-1 w-full max-w-lg lg:max-w-none relative perspective-1000">
+            <div className="relative transform-gpu lg:rotate-y-[-12deg] lg:rotate-x-[8deg] transition-transform duration-700 hover:rotate-0 hover:scale-[1.02]">
+              {/* Glow behind card */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/30 to-purple-500/30 blur-3xl rounded-[3rem] -z-10"></div>
+              
+              <div className="relative bg-white/80 dark:bg-[#111111]/80 backdrop-blur-2xl border border-white/50 dark:border-white/10 p-8 rounded-[2.5rem] shadow-2xl">
+                <div className="flex justify-between items-center mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                      <Crown className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">{t('landing.membershipBenefits')}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('landing.earnAndUpgrade')}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-blue-300 font-bold uppercase tracking-wider">{t('landing.membershipBenefits')}</p>
-                    <p className="font-bold text-sm">{t('landing.earnAndUpgrade')}</p>
+                  <div className="px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 rounded-full text-xs font-black tracking-widest">
+                    VIP
                   </div>
                 </div>
-                <div className="p-4 bg-white/5 rounded-xl border border-white/10 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-500/20 text-indigo-200 rounded-lg flex items-center justify-center">
-                    <Sparkles className="w-5 h-5" />
+                
+                {/* Visual Fake Data Blocks */}
+                <div className="space-y-4">
+                  <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center gap-4 border border-slate-100 dark:border-white/5">
+                     <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
+                       <Sparkles className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                     </div>
+                     <div className="flex-1">
+                       <div className="text-sm font-bold text-slate-900 dark:text-white">Premium Wash</div>
+                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">45 mins • Interior & Exterior</div>
+                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-blue-300 font-bold uppercase tracking-wider">{t('landing.recommendedPkg')}</p>
-                    <p className="font-bold text-sm">{t('landing.premiumWash')}</p>
+                  <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center gap-4 border border-slate-100 dark:border-white/5">
+                     <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
+                       <Star className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                     </div>
+                     <div className="flex-1">
+                       <div className="text-sm font-bold text-slate-900 dark:text-white">Earn 2x Points</div>
+                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Applied to your next booking</div>
+                     </div>
                   </div>
+                </div>
+                
+                <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/10 flex justify-between items-center">
+                   <div className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">{t('landing.save20')}</div>
+                   <button className="px-5 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-bold shadow-md hover:scale-105 transition-transform">
+                    {t('bookWash.dateTime.select', {defaultValue: 'Book Now'})}
+                   </button>
                 </div>
               </div>
             </div>
@@ -217,74 +243,87 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* SERVICES SECTION */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">{t('landing.ourPackages')}</h2>
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.ourPackagesDesc')}</p>
-        </div>
-
-        {isLoadingPackages ? (
-          <div className="text-center text-slate-400 font-semibold py-12">{t('landing.loadingPackages')}</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {washPackages.map((pkg, idx) => {
-              const colors = ['blue', 'purple', 'orange'];
-              const currentColor = colors[idx % colors.length];
-              
-              return (
-                <div
-                  key={pkg.id}
-                  className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
-                      currentColor === 'blue' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' :
-                      currentColor === 'purple' ? 'bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400' :
-                      'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400'
-                    }`}>
-                      {currentColor === 'blue' ? <Droplets className="w-7 h-7" /> :
-                       currentColor === 'purple' ? <Star className="w-7 h-7" /> :
-                       <Sparkles className="w-7 h-7" />}
-                    </div>
-                    
-                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{pkg.name}</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">{pkg.description}</p>
-                    
-                    <div className="flex items-baseline gap-2 mb-6">
-                      <span className="text-3xl font-black text-slate-900 dark:text-white">{formatCurrency(pkg.price)}</span>
-                      <span className="text-slate-400 dark:text-slate-500 text-xs font-semibold">• {pkg.durationMinutes} {t('bookWash.dateTime.mins', {defaultValue: 'mins'})}</span>
-                    </div>
-
-                    {pkg.features && (
-                      <ul className="space-y-3 mb-8">
-                        {pkg.features.map((feature, fIdx) => (
-                          <li key={fIdx} className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-300 font-medium">
-                            <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  <Link
-                    to="/login"
-                    className="block w-full py-3.5 text-center bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm shadow-md shadow-blue-500/10 transition-colors"
-                  >
-                    {t('bookWash.dateTime.select', {defaultValue: 'Book Now'})}
-                  </Link>
-                </div>
-              );
-            })}
+      <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0a0a0a] z-10 rounded-t-[3rem] -mt-10 shadow-[0_-20px_50px_rgba(0,0,0,0.02)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.2)]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
+            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.ourPackages')}</h2>
+            <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.ourPackagesDesc')}</p>
           </div>
-        )}
+
+          {isLoadingPackages ? (
+            <div className="flex justify-center"><div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {washPackages.map((pkg, idx) => {
+                const isPremium = idx === 1; // Highlight the middle card
+                return (
+                  <div
+                    key={pkg.id}
+                    className={`group relative bg-slate-50 dark:bg-[#111111] rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col justify-between ${
+                      isPremium 
+                        ? 'border-2 border-blue-500 shadow-2xl shadow-blue-500/10 dark:shadow-blue-500/5 lg:-mt-8 lg:mb-8' 
+                        : 'border border-slate-200 dark:border-white/5 hover:border-blue-300 dark:hover:border-white/20 hover:-translate-y-2 hover:shadow-xl'
+                    }`}
+                  >
+                    {isPremium && (
+                      <div className="absolute -top-4 inset-x-0 flex justify-center">
+                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-black tracking-widest px-6 py-2 rounded-full shadow-lg">
+                          MOST POPULAR
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-sm border group-hover:scale-110 transition-transform duration-300 ${
+                        isPremium ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/5'
+                      }`}>
+                         {idx === 0 ? <Droplets className={`w-8 h-8 ${!isPremium && 'text-blue-500'}`} /> :
+                          idx === 1 ? <Star className={`w-8 h-8 ${!isPremium && 'text-indigo-500'}`} /> :
+                          <Sparkles className={`w-8 h-8 ${!isPremium && 'text-purple-500'}`} />}
+                      </div>
+                      
+                      <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">{pkg.name}</h3>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed line-clamp-2">{pkg.description}</p>
+                      
+                      <div className="flex items-end gap-2 mb-10">
+                        <span className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{formatCurrency(pkg.price)}</span>
+                        <span className="text-slate-400 dark:text-slate-500 font-bold text-sm mb-1">/{pkg.durationMinutes}m</span>
+                      </div>
+
+                      {pkg.features && (
+                        <ul className="space-y-4 mb-10">
+                          {pkg.features.map((feature, fIdx) => (
+                            <li key={fIdx} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 font-medium">
+                              <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
+                              <span className="leading-tight">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    <Link
+                      to="/login"
+                      className={`block w-full py-4 text-center rounded-2xl font-bold transition-all duration-300 ${
+                        isPremium 
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-[0_8px_20px_rgb(37,99,235,0.3)] hover:-translate-y-1' 
+                          : 'bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-slate-900 dark:text-white'
+                      }`}
+                    >
+                      {t('bookWash.dateTime.select', {defaultValue: 'Select Plan'})}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* LOYALTY TIERS SECTION */}
-      <section className="bg-slate-100 dark:bg-slate-900/30 py-24 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">{t('landing.membershipTiersTitle')}</h2>
+      <section className="relative py-32 px-6 lg:px-12 bg-slate-50 dark:bg-[#050505] overflow-hidden border-t border-slate-200 dark:border-white/5">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
+            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.membershipTiersTitle')}</h2>
             <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.membershipTiersDesc')}</p>
           </div>
 
@@ -294,28 +333,32 @@ export const LandingPage: React.FC = () => {
               return (
                 <div
                   key={tItem.tier}
-                  className="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-xl transition-all duration-300"
+                  className="group relative bg-white dark:bg-[#111111] rounded-[2rem] overflow-hidden border border-slate-200 dark:border-white/5 hover:border-transparent dark:hover:border-transparent transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <div className={`bg-gradient-to-r ${tItem.bgColor} p-6 text-white`}>
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4">
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-1">{tItem.tier}</h3>
-                    <p className="text-xs opacity-90 font-medium">{t('landing.tiers.pointsMultiplier', { mult: tItem.multiplier })}</p>
-                  </div>
+                  {/* Glowing border effect on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${tItem.bgColor} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                  <div className={`absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r ${tItem.bgColor}`}></div>
                   
-                  <div className="p-6 space-y-5">
-                    <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
-                      <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">{t('landing.tiers.bookInAdvance')}</p>
-                      <p className="font-extrabold text-slate-800 dark:text-white text-sm mt-0.5">
+                  <div className="p-8 relative z-10">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br ${tItem.bgColor} text-white shadow-lg`}>
+                      <Icon className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-2xl font-extrabold mb-1 text-slate-900 dark:text-white">{tItem.tier}</h3>
+                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-8">
+                      {t('landing.tiers.pointsMultiplier', { mult: tItem.multiplier })}
+                    </p>
+                    
+                    <div className="pb-6 mb-6 border-b border-slate-100 dark:border-white/5">
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mb-1.5">{t('landing.tiers.bookInAdvance')}</p>
+                      <p className="font-black text-slate-900 dark:text-white text-xl">
                         {t('landing.tiers.upToDays', { days: tItem.bookingWindow.split(' ')[0] })}
                       </p>
                     </div>
-                    <ul className="space-y-3">
+                    <ul className="space-y-4">
                       {tItem.benefits.map((benefit, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium">
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                          <span>{benefit}</span>
+                        <li key={idx} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400 font-medium">
+                          <CheckCircle className={`w-5 h-5 shrink-0 ${idx < 2 ? 'text-emerald-500' : 'text-slate-300 dark:text-slate-700'}`} />
+                          <span className="leading-tight">{benefit}</span>
                         </li>
                       ))}
                     </ul>
@@ -324,126 +367,108 @@ export const LandingPage: React.FC = () => {
               );
             })}
           </div>
-
-          <div className="mt-16 text-center">
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white rounded-2xl font-bold shadow-xl transition-all hover:-translate-y-0.5"
-            >
-              <span>{t('landing.registerToExchange')}</span>
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* LOCATIONS & MAP SECTION */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 py-24">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h2 className="text-3xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">{t('landing.branchSystem')}</h2>
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.branchSystemDesc')}</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Dynamic Branch List */}
-          <div className="lg:col-span-1 space-y-4 max-h-[500px] overflow-y-auto pr-2">
-            {isLoadingBranches ? (
-              <div className="text-center text-slate-400 font-semibold py-8">{t('landing.loadingBranches')}</div>
-            ) : branches.length === 0 ? (
-              <div className="text-center text-slate-400 font-semibold py-8">{t('landing.noBranches')}</div>
-            ) : (
-              branches.map((branch) => (
-                <div
-                  key={branch.id}
-                  onClick={() => setSelectedBranchId(branch.id)}
-                  className={`bg-white dark:bg-slate-900 rounded-2xl p-5 border cursor-pointer transition-all duration-200 ${
-                    selectedBranchId === branch.id
-                      ? 'border-blue-600 bg-blue-50/5 dark:bg-blue-950/20 shadow-md shadow-blue-500/5'
-                      : 'border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-lg'
-                  }`}
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-extrabold text-slate-800 dark:text-white text-base">{branch.branchName}</h3>
-                    </div>
-                    <span className="text-[9px] font-bold px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50 rounded-full">
-                      {t('landing.open')}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-2 text-xs text-slate-500 dark:text-slate-400">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
-                      <span>{branch.address}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">{branch.hotline}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
-                      <span>{branch.operatingHours || '07:00 - 21:00'}</span>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenMap(branch.id);
-                    }}
-                    className="mt-4 w-full py-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-white bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-600 rounded-xl transition-all text-center border border-blue-100 dark:border-blue-900/50"
-                  >
-                    {t('landing.viewOnMap')}
-                  </button>
-                </div>
-              ))
-            )}
+      <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0a0a0a] z-10 border-t border-slate-200 dark:border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
+            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.branchSystem')}</h2>
+            <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.branchSystemDesc')}</p>
           </div>
 
-          {/* Dynamic Mock Map */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 h-full flex flex-col">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t('landing.mapTitle')}</h3>
-                <button
-                  onClick={() => handleOpenMap()}
-                  className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md shadow-blue-500/10 active:scale-95 transition-all"
-                >
-                  <Map className="w-3.5 h-3.5" /> {t('landing.detailMapBtn')}
-                </button>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-1 space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+              {isLoadingBranches ? (
+                <div className="flex justify-center py-12"><div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>
+              ) : branches.length === 0 ? (
+                <div className="text-center text-slate-400 font-bold py-12">{t('landing.noBranches')}</div>
+              ) : (
+                branches.map((branch) => (
+                  <div
+                    key={branch.id}
+                    onClick={() => setSelectedBranchId(branch.id)}
+                    className={`group rounded-[1.5rem] p-6 cursor-pointer transition-all duration-300 border ${
+                      selectedBranchId === branch.id
+                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-800 shadow-md'
+                        : 'bg-slate-50 dark:bg-[#111111] border-slate-200 dark:border-white/5 hover:border-blue-200 dark:hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">{branch.branchName}</h3>
+                      <span className="text-[10px] font-black tracking-widest px-2.5 py-1 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-full">
+                        {t('landing.open')}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400 font-medium">
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-4 h-4 shrink-0 text-slate-400 mt-0.5" />
+                        <span>{branch.address}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Phone className="w-4 h-4 shrink-0 text-slate-400" />
+                        <span>{branch.hotline}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-4 h-4 shrink-0 text-slate-400" />
+                        <span>{branch.operatingHours || '07:00 - 21:00'}</span>
+                      </div>
+                    </div>
 
-              <div className="relative w-full h-[400px] flex-1">
-                <LandingInteractiveMap 
-                  branches={branches} 
-                  selectedBranchId={selectedBranchId} 
-                  onSelectBranch={setSelectedBranchId} 
-                />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenMap(branch.id);
+                      }}
+                      className="mt-6 w-full py-3 text-sm font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-blue-50 dark:hover:bg-white/10 rounded-xl transition-all"
+                    >
+                      {t('landing.viewOnMap')}
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="lg:col-span-2">
+              <div className="bg-slate-50 dark:bg-[#111111] rounded-[2rem] p-4 border border-slate-200 dark:border-white/5 h-full min-h-[500px] flex flex-col relative overflow-hidden">
+                <div className="absolute top-6 right-6 z-10">
+                  <button
+                    onClick={() => handleOpenMap()}
+                    className="flex items-center gap-2 bg-white dark:bg-[#1a1a1a] hover:bg-slate-50 dark:hover:bg-[#222] text-slate-900 dark:text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg border border-slate-200 dark:border-white/10 transition-all"
+                  >
+                    <Map className="w-4 h-4" /> {t('landing.detailMapBtn')}
+                  </button>
+                </div>
+                <div className="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-slate-200 dark:bg-slate-800">
+                  <LandingInteractiveMap 
+                    branches={branches} 
+                    selectedBranchId={selectedBranchId} 
+                    onSelectBranch={setSelectedBranchId} 
+                  />
+                </div>
               </div>
-              
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-4 text-center font-medium italic">
-                {t('landing.mapFooter')}
-              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-slate-900 text-slate-400 py-12 px-6 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <footer className="bg-slate-50 dark:bg-[#050505] py-12 px-6 border-t border-slate-200 dark:border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
               <Droplets className="w-5 h-5" />
             </div>
-            <span className="font-extrabold text-white text-base tracking-tight">AutoWash Pro</span>
+            <span className="font-extrabold text-slate-900 dark:text-white text-xl tracking-tight">AutoWash Pro</span>
           </div>
-          <p className="text-xs font-medium">{t('landing.allRightsReserved')}</p>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('landing.allRightsReserved')}</p>
         </div>
       </footer>
 
-      {/* MODAL BẢN ĐỒ CHI TIẾT SỐ */}
+      {/* MAP MODAL */}
       <MapModal
         isOpen={isMapOpen}
         onClose={() => setIsMapOpen(false)}

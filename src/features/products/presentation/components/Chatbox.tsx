@@ -6,6 +6,7 @@ import {
 import { useCustomerChat, type UnifiedMessage } from '../../application/useCustomerChat';
 import { useChatFeedback } from '../../application/useChatFeedback';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 // ─── Markdown helper ─────────────────────────────────────────────────────────
 function renderMarkdown(text: string) {
@@ -79,6 +80,7 @@ export const Chatbox: React.FC = () => {
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
     const { submitFeedback } = useChatFeedback();
+    const { t } = useTranslation('customer');
 
     const handleConfirmFeedback = async () => {
         if (!currentSessionId) {
@@ -94,7 +96,7 @@ export const Chatbox: React.FC = () => {
         };
         try {
             await submitFeedback(feedbackData);
-            toast.success("Cảm ơn bạn đã gửi đánh giá cho hệ thống!");
+            toast.success(t('feedback.toast.success', { defaultValue: 'Cảm ơn bạn đã gửi đánh giá cho hệ thống!' }));
             setIsFeedbackVisible(false);
             setIsOpen(false);
             clearMessages();
@@ -103,7 +105,7 @@ export const Chatbox: React.FC = () => {
         }
         catch (error) {
             console.error("Lỗi khi gửi feedback:", error);
-            toast.error("Có lỗi xảy ra khi gửi đánh giá, vui lòng thử lại sau.");
+            toast.error(t('feedback.toast.error', { defaultValue: 'Có lỗi xảy ra khi gửi đánh giá, vui lòng thử lại sau.' }));
         }
     };
 
@@ -222,14 +224,14 @@ export const Chatbox: React.FC = () => {
                                     onClick={handleEndSession}
                                     className="px-2 py-1 bg-red-500/20 hover:bg-red-500/40 text-white text-[10px] font-bold rounded-lg mr-2 transition-colors"
                                 >
-                                    Kết thúc
+                                    {t('feedback.buttons.endSession', { defaultValue: 'Kết thúc' })}
                                 </button>
                             )}
 
                             {isFeedbackVisible && (
                                 <div className="absolute inset-0 z-[60] bg-white flex flex-col p-6 animate-in fade-in zoom-in duration-300">
-                                    <h3 className="text-lg font-black text-slate-800 mb-1">Đánh giá dịch vụ</h3>
-                                    <p className="text-sm text-slate-500 mb-6">Ý kiến của bạn giúp chúng tôi cải thiện tốt hơn.</p>
+                                    <h3 className="text-lg font-black text-slate-800 mb-1">{t('feedback.title', { defaultValue: 'Đánh giá dịch vụ' })}</h3>
+                                    <p className="text-sm text-slate-500 mb-6">{t('feedback.subtitleChat', { defaultValue: 'Ý kiến của bạn giúp chúng tôi cải thiện tốt hơn.' })}</p>
 
                                     {/* Rating Stars */}
                                     <div className="flex gap-2 mb-6 justify-center">
@@ -244,7 +246,7 @@ export const Chatbox: React.FC = () => {
                                     <textarea
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
-                                        placeholder="Để lại nhận xét của bạn..."
+                                        placeholder={t('feedback.labels.commentPlaceholder', { defaultValue: 'Để lại nhận xét của bạn...' })}
                                         className="w-full h-24 p-3 mb-6 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
                                     />
 
@@ -259,13 +261,13 @@ export const Chatbox: React.FC = () => {
                                             }}
                                             className="flex-1 py-3 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50"
                                         >
-                                            Bỏ qua
+                                            {t('feedback.buttons.skip', { defaultValue: 'Bỏ qua' })}
                                         </button>
                                         <button
                                             onClick={handleConfirmFeedback}
                                             className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold shadow-lg hover:bg-blue-700"
                                         >
-                                            Gửi đánh giá
+                                            {t('feedback.buttons.submit', { defaultValue: 'Gửi đánh giá' })}
                                         </button>
                                     </div>
                                 </div>

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import type { BookingSummaryProps } from "@/features/products/domain/models/booking/booking.model.ts";
 import { Tag, X, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { translateDynamic } from "@/shared/utils/translateDynamic.ts";
 
 export const BookingSummary: React.FC<BookingSummaryProps> = ({
   selectedPackageId,
@@ -15,6 +17,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   onApplyPromotion,
   onRemovePromotion,
 }) => {
+  const { i18n } = useTranslation("customer");
   const originalPrice = currentPackage?.price || 0;
 
   // 1. Tính tiền giảm từ Voucher (nếu có)
@@ -149,9 +152,9 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                       Applied Voucher
                     </span>
                     <span className="text-xs font-bold truncate max-w-[150px]">
-                      {(selectedVoucher as any).title ||
+                      {translateDynamic((selectedVoucher as any).title ||
                         (selectedVoucher as any).name ||
-                        "Voucher"}
+                        "Voucher", i18n.language)}
                     </span>
                   </div>
                   <span className="font-bold">
@@ -200,8 +203,8 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                         {appliedPromotion.code}
                       </p>
                       <p className="text-[10px] text-slate-500">
-                        {(appliedPromotion as any).title ||
-                          "Khuyến mãi đã áp dụng"}
+                        {translateDynamic((appliedPromotion as any).title ||
+                          "Khuyến mãi đã áp dụng", i18n.language)}
                       </p>
                     </div>
                     <div className="text-right">

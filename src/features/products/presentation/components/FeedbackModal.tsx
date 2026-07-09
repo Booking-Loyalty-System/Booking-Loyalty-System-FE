@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, X, Send, Loader2 } from 'lucide-react';
 import { useFeedback } from '@/features/products/application/useFeedback';
+import { useTranslation } from 'react-i18next';
 
 interface FeedbackModalProps {
     bookingId: string;
@@ -46,6 +47,7 @@ const StarRating: React.FC<StarRatingProps> = ({ label, value, onChange, hovered
 );
 
 export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, bookingCode, onClose }) => {
+    const { t } = useTranslation('customer');
     const { submitFeedback, isSubmitting } = useFeedback();
 
     const [serviceRating, setServiceRating] = useState(0);
@@ -85,23 +87,23 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, booking
                         <div className="p-2 bg-white/20 rounded-xl">
                             <Star className="w-5 h-5 fill-white text-white" />
                         </div>
-                        <h2 className="text-lg font-black tracking-tight">Đánh giá dịch vụ</h2>
+                        <h2 className="text-lg font-black tracking-tight">{t('feedback.title', { defaultValue: 'Đánh giá dịch vụ' })}</h2>
                     </div>
                     <p className="text-sm text-blue-100">
-                        Booking <span className="font-mono font-bold text-white">{bookingCode}</span>
+                        {t('feedback.labels.bookingCode', { defaultValue: 'Booking' })} <span className="font-mono font-bold text-white">{bookingCode}</span>
                     </p>
                 </div>
 
                 {/* Body */}
                 <div className="p-6 space-y-5">
                     <p className="text-sm text-slate-500 font-medium">
-                        Trải nghiệm của bạn với chúng tôi như thế nào? Đánh giá của bạn giúp chúng tôi cải thiện dịch vụ!
+                        {t('feedback.subtitle', { defaultValue: 'Trải nghiệm của bạn với chúng tôi như thế nào? Đánh giá của bạn giúp chúng tôi cải thiện dịch vụ!' })}
                     </p>
 
                     {/* Rating rows */}
                     <div className="space-y-4 py-2">
                         <StarRating
-                            label="Dịch vụ"
+                            label={t('feedback.labels.service', { defaultValue: 'Dịch vụ' })}
                             value={serviceRating}
                             onChange={setServiceRating}
                             hovered={hoveredService}
@@ -110,7 +112,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, booking
                         />
                         <div className="border-t border-slate-50" />
                         <StarRating
-                            label="Nhân viên"
+                            label={t('feedback.labels.staff', { defaultValue: 'Nhân viên' })}
                             value={staffRating}
                             onChange={setStaffRating}
                             hovered={hoveredStaff}
@@ -119,7 +121,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, booking
                         />
                         <div className="border-t border-slate-50" />
                         <StarRating
-                            label="Giá cả"
+                            label={t('feedback.labels.price', { defaultValue: 'Giá cả' })}
                             value={priceRating}
                             onChange={setPriceRating}
                             hovered={hoveredPrice}
@@ -131,12 +133,12 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, booking
                     {/* Comment */}
                     <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                            Bình luận (tuỳ chọn)
+                            {t('feedback.labels.comment', { defaultValue: 'Bình luận (tuỳ chọn)' })}
                         </label>
                         <textarea
                             value={comment}
                             onChange={e => setComment(e.target.value)}
-                            placeholder="Chia sẻ trải nghiệm của bạn..."
+                            placeholder={t('feedback.labels.commentPlaceholder', { defaultValue: 'Chia sẻ trải nghiệm của bạn...' })}
                             rows={3}
                             maxLength={500}
                             className="w-full border border-slate-200 rounded-2xl p-3.5 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
@@ -151,7 +153,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, booking
                             disabled={isSubmitting}
                             className="border border-slate-200 hover:bg-slate-50 text-slate-600 font-extrabold py-3 px-4 rounded-xl text-sm transition-all disabled:opacity-50"
                         >
-                            Để sau
+                            {t('feedback.buttons.later', { defaultValue: 'Để sau' })}
                         </button>
                         <button
                             onClick={handleSubmit}
@@ -159,9 +161,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, booking
                             className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-xl text-sm shadow-md hover:shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? (
-                                <><Loader2 className="w-4 h-4 animate-spin" /> Đang gửi...</>
+                                <><Loader2 className="w-4 h-4 animate-spin" /> {t('feedback.buttons.submitting', { defaultValue: 'Đang gửi...' })}</>
                             ) : (
-                                <><Send className="w-4 h-4" /> Gửi đánh giá</>
+                                <><Send className="w-4 h-4" /> {t('feedback.buttons.submit', { defaultValue: 'Gửi đánh giá' })}</>
                             )}
                         </button>
                     </div>
