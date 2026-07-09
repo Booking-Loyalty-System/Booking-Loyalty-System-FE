@@ -3,16 +3,20 @@ export type DiscountType = 'Percentage' | 'FixedAmount';
 export interface AdminPromotionResponseData {
     id: string;
     code: string;
+    name: string;
     description: string;
     discountType: DiscountType;
     discountValue: number;
+    priorityLevel: number;
     startDate: string;
     endDate: string;
     maxUses: number | null;
-    usedCount: number;
     minSpend: number | null;
+    requiresBirthday: boolean;
+    tierIds: string[];
+    branchIds: string[];
     isActive: boolean;
-    createdAt: string;
+    usedCount: number;
 }
 
 export interface CreateAdminPromotionInput {
@@ -39,4 +43,5 @@ export interface UpdateAdminPromotionInput {
     maxUses?: number | null;
     minSpend?: number | null;
     isActive: boolean;
+    branchIds?: string[];
 }

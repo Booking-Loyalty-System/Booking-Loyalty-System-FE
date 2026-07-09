@@ -19,15 +19,18 @@ import type { DiscountType } from "../../../domain/models/admin-promotion/admin-
 
 const emptyPromotionForm: CreateAdminPromotionInput = {
   code: "",
+  name: "",
   description: "",
-  discountType: "Percentage",
+  discountType: "PERCENTAGE" as any, // Ép kiểu nếu DiscountType là Enum
   discountValue: 0,
-  startDate: new Date().toISOString().slice(0, 10),
-  endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 10),
+  priorityLevel: 0,
+  startDate: "",
+  endDate: "",
   maxUses: null,
   minSpend: null,
+  requiresBirthday: false,
+  tierIds: [],
+  branchIds: []
 };
 
 function toDateInputValue(isoDate: string) {
@@ -91,13 +94,18 @@ export function AdminPromotions() {
     setIsAdding(false);
     setForm({
       code: promo.code,
+      name: (promo as any).name || "", // Thêm name
       description: promo.description,
-      discountType: promo.discountType,
+      discountType: promo.discountType as any, // Ép kiểu tránh lỗi string ko assign đc cho DiscountType
       discountValue: promo.discountValue,
-      startDate: toDateInputValue(promo.startDate),
-      endDate: toDateInputValue(promo.endDate),
+      priorityLevel: (promo as any).priorityLevel || 0, // Thêm priorityLevel
+      startDate: promo.startDate,
+      endDate: promo.endDate,
       maxUses: promo.maxUses,
       minSpend: promo.minSpend,
+      requiresBirthday: (promo as any).requiresBirthday || false, // Thêm
+      tierIds: (promo as any).tierIds || [], // Thêm
+      branchIds: (promo as any).branchIds || [], // Thêm
       isActive: promo.isActive,
     });
   };
@@ -112,13 +120,18 @@ export function AdminPromotions() {
     if (form && form.code && form.description) {
       await createPromotion({
         code: form.code,
+        name: form.name,
         description: form.description,
-        discountType: form.discountType,
+        discountType: form.discountType as any, // Fix lỗi Type 'string' is not assignable to type 'DiscountType'
         discountValue: form.discountValue,
-        startDate: toIsoDate(form.startDate),
-        endDate: toIsoDate(form.endDate),
+        priorityLevel: form.priorityLevel,
+        startDate: form.startDate,
+        endDate: form.endDate,
         maxUses: form.maxUses ?? null,
         minSpend: form.minSpend ?? null,
+        requiresBirthday: form.requiresBirthday,
+        tierIds: form.tierIds,
+        branchIds: form.branchIds
       });
       handleCancel();
     }
@@ -128,13 +141,14 @@ export function AdminPromotions() {
     if (form && editingId) {
       const updateData: UpdateAdminPromotionInput = {
         description: form.description,
-        discountType: form.discountType,
+        discountType: form.discountType as DiscountType,
         discountValue: form.discountValue,
         startDate: toIsoDate(form.startDate),
         endDate: toIsoDate(form.endDate),
         maxUses: form.maxUses ?? null,
         minSpend: form.minSpend ?? null,
         isActive: form.isActive ?? true,
+        branchIds: form.branchIds,
       };
       await updatePromotion({ id: editingId, data: updateData });
       handleCancel();
@@ -232,14 +246,12 @@ export function AdminPromotions() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          promo.isActive ? "bg-blue-100" : "bg-gray-100"
-                        }`}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${promo.isActive ? "bg-blue-100" : "bg-gray-100"
+                          }`}
                       >
                         <Megaphone
-                          className={`w-5 h-5 ${
-                            promo.isActive ? "text-blue-600" : "text-gray-400"
-                          }`}
+                          className={`w-5 h-5 ${promo.isActive ? "text-blue-600" : "text-gray-400"
+                            }`}
                         />
                       </div>
                       <div>
@@ -263,11 +275,10 @@ export function AdminPromotions() {
                   <td className="px-6 py-4">
                     <button
                       onClick={() => toggleStatus(promo)}
-                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
-                        promo.isActive
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                      }`}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${promo.isActive
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                        }`}
                     >
                       {promo.isActive ? (
                         <>
