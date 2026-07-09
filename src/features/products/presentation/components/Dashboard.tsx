@@ -269,10 +269,10 @@ export const Dashboard: React.FC = () => {
       {/* TWO COLUMNS LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* CURRENT TIER CARD - Premium */}
-        <div className="lg:col-span-2 bg-gradient-to-br from-slate-900 to-[#111] dark:from-[#050505] dark:to-[#111] border border-slate-800/50 dark:border-white/10 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden shadow-2xl min-h-[380px] flex flex-col justify-between group">
+        <div className="lg:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#050505] dark:to-[#111] border border-blue-500/50 dark:border-white/10 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden shadow-2xl min-h-[380px] flex flex-col justify-between group">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
           
-          <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-500/30 transition-colors duration-700"></div>
+          <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
           <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-700"></div>
 
           <div className="space-y-8 relative z-10">

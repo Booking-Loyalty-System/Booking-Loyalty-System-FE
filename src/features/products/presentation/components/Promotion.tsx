@@ -33,10 +33,10 @@ export const Promotions: React.FC = () => {
     return (
         <div className="w-full space-y-10 font-sans antialiased text-slate-800 dark:text-slate-100 pb-12 animate-fade-in">
             {/* Banner Khuyến Mãi */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 to-[#111] dark:from-[#050505] dark:to-[#111] border border-slate-800/50 dark:border-white/10 text-white rounded-[2.5rem] p-8 lg:p-10 shadow-2xl group">
+            <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#050505] dark:to-[#111] border border-blue-500/50 dark:border-white/10 text-white rounded-[2.5rem] p-8 lg:p-10 shadow-2xl group">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
-                <div className="absolute -right-20 -top-20 w-80 h-80 bg-orange-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-orange-500/30 transition-colors duration-700"></div>
-                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-pink-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-pink-500/30 transition-colors duration-700"></div>
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-orange-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-orange-500/30 transition-colors duration-700"></div>
+                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-blue-500/20 dark:bg-pink-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-500/30 dark:group-hover:bg-pink-500/30 transition-colors duration-700"></div>
                 
                 <div className="relative z-10 space-y-6 max-w-2xl">
                     <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/10 px-4 py-1.5 rounded-full text-xs font-bold text-orange-400">
