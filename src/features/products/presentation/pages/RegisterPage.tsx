@@ -12,6 +12,7 @@ import {
   KeyRound,
   Sun,
   Moon,
+  ArrowRight
 } from "lucide-react";
 import { useAuth } from "@/features/products/application/useAuth.ts";
 import { auth } from "@/firebase-config.ts";
@@ -47,12 +48,10 @@ export const RegisterPage: React.FC = () => {
 
   const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (password !== confirmPassword) {
       toast.error(t("auth.register.toastPasswordMismatch", { defaultValue: "Mật khẩu xác nhận không khớp!" }));
       return;
@@ -64,8 +63,6 @@ export const RegisterPage: React.FC = () => {
         fullName,
         phoneNumber,
         dateOfBirth: new Date(dateOfBirth).toISOString(),
-
-
       });
       toast.success(t("auth.register.toastSuccess", { defaultValue: "Đăng ký tài khoản thành công!" }));
       navigate("/dashboard");
@@ -80,17 +77,11 @@ export const RegisterPage: React.FC = () => {
   };
 
   const setupRecaptcha = () => {
-    if (
-      !recaptchaVerifierRef.current &&
-      recaptchaContainerRef.current &&
-      auth
-    ) {
+    if (!recaptchaVerifierRef.current && recaptchaContainerRef.current && auth) {
       recaptchaVerifierRef.current = new RecaptchaVerifier(
         auth,
         recaptchaContainerRef.current,
-        {
-          size: "visible",
-        },
+        { size: "visible" },
       );
     }
   };
@@ -102,21 +93,12 @@ export const RegisterPage: React.FC = () => {
     try {
       setupRecaptcha();
       const appVerifier = recaptchaVerifierRef.current;
-
       if (!appVerifier) {
         toast.error(t("auth.register.toastRecaptchaError", { defaultValue: "Không thể khởi tạo bộ xác thực reCaptcha." }));
         return;
       }
-
-      const formattedPhone = phoneNumber.startsWith("0")
-        ? "+84" + phoneNumber.slice(1)
-        : phoneNumber;
-
-      const result = await signInWithPhoneNumber(
-        auth,
-        formattedPhone,
-        appVerifier,
-      );
+      const formattedPhone = phoneNumber.startsWith("0") ? "+84" + phoneNumber.slice(1) : phoneNumber;
+      const result = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmResult(result);
       setIsOtpSent(true);
       toast.success(t("auth.register.toastOtpSent", { defaultValue: "Đã gửi mã OTP thành công!" }));
@@ -130,18 +112,12 @@ export const RegisterPage: React.FC = () => {
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!otp || !confirmResult) return;
-
     try {
       const result = await confirmResult.confirm(otp);
       const user = result.user;
-
       const idToken = await user.getIdToken();
       const verifiedPhone = user.phoneNumber ?? phoneNumber;
-
-      await registerWithPhone({
-        phoneNumber: verifiedPhone,
-        idToken: idToken,
-      });
+      await registerWithPhone({ phoneNumber: verifiedPhone, idToken: idToken });
       toast.success(t("auth.register.toastOtpSuccess", { defaultValue: "Xác thực OTP thành công! Đang đăng nhập..." }));
       navigate("/dashboard");
     } catch (error) {
@@ -151,261 +127,221 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#e6f0fa] dark:bg-slate-950 flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-200">
+    <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#050505] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
       
+      {/* Background Orbs */}
+      <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-emerald-400/20 dark:bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-400/20 dark:bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
+
       {/* Theme & Language Switchers */}
-      <div className="absolute top-4 right-4 flex items-center gap-2 z-50">
+      <div className="absolute top-6 right-6 flex items-center gap-3 z-50">
         <button
-          id="theme-toggle-register"
-          type="button"
           onClick={toggleTheme}
           title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className="flex items-center justify-center p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200 cursor-pointer shadow-sm"
+          className="flex items-center justify-center p-3 rounded-full border border-slate-200/50 dark:border-white/10 bg-white/50 dark:bg-black/50 backdrop-blur-md text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm hover:shadow-md"
         >
-          {isDark ? (
-            <Sun className="w-4 h-4 text-amber-500" />
-          ) : (
-            <Moon className="w-4 h-4 text-blue-600" />
-          )}
+          {isDark ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-blue-600" />}
         </button>
 
         <button
-          id="language-toggle-register"
-          type="button"
           onClick={toggleLanguage}
           title={language === 'en' ? "Switch to Vietnamese" : "Switch to English"}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200 shadow-sm"
+          className="flex items-center gap-1.5 px-4 py-3 rounded-full font-bold text-xs border border-slate-200/50 dark:border-white/10 bg-white/50 dark:bg-black/50 backdrop-blur-md text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 transition-all shadow-sm hover:shadow-md"
         >
           <span className="text-sm leading-none">{language === 'en' ? '🇺🇸' : '🇻🇳'}</span>
-          <span className="uppercase tracking-wide">{language === 'en' ? 'EN' : 'VI'}</span>
+          <span className="uppercase tracking-widest">{language === 'en' ? 'EN' : 'VI'}</span>
         </button>
       </div>
 
-      <div className="flex-grow"></div>
-      <div className="w-full max-w-6xl mx-auto bg-transparent flex flex-col lg:flex-row gap-5 h-auto">
-        {/* PANEL TRÁI: GIỚI THIỆU THÀNH VIÊN */}
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 flex flex-col justify-center shadow-sm border border-white/40 dark:border-slate-800/80 transition-colors duration-200">
-          <div>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-14 h-14 bg-[#4a90e2] rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-200 dark:shadow-none">
-                <Droplets className="w-8 h-7" strokeWidth={1.5} />
+      <div className="flex-grow flex items-center justify-center py-10">
+        <div className="w-full max-w-[1200px] mx-auto bg-transparent flex flex-col lg:flex-row gap-8 relative z-10">
+          
+          {/* PANEL TRÁI: GIỚI THIỆU THÀNH VIÊN */}
+          <div className="flex-[0.9] bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+            <div>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                  <Droplets className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 tracking-tight">
+                    {t('auth.register.appName')}
+                  </h1>
+                  <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+                    {t('auth.register.appTagline')}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-[#0f172a] dark:text-slate-100 leading-tight tracking-tight">
-                  {t('auth.register.appName')}
-                </h1>
-                <p className="text-base text-[#64748b] dark:text-slate-400 font-medium mt-0.5">
-                  {t('auth.register.appTagline')}
-                </p>
+              
+              <div className="w-full overflow-hidden rounded-[2rem] mb-10 aspect-[16/9] max-h-[300px] border border-slate-100 dark:border-white/5 shadow-inner">
+                <img
+                  src="https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&q=80&w=1000"
+                  alt="Car Wash Foam"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                />
               </div>
-            </div>
-            <div className="w-full overflow-hidden rounded-xl mb-6 aspect-[16/9] max-h-[300px] border border-slate-100 dark:border-slate-800">
-              <img
-                src="https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&q=80&w=1000"
-                alt="Car Wash Foam"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="bg-[#f0f6fe] dark:bg-slate-800/50 rounded-2xl pt-4 pb-6 px-6 transition-colors">
-              <h3 className="font-bold text-[#0f172a] dark:text-slate-200 text-xl mb-4">
-                {t('auth.register.membershipBenefitsTitle')}
-              </h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-base text-[#334155] dark:text-slate-350">
-                  <CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white dark:text-slate-900" />
-                  <span>{t('auth.register.benefit1')}</span>
-                </li>
-                <li className="flex items-center gap-3 text-base text-[#334155] dark:text-slate-350">
-                  <CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white dark:text-slate-900" />
-                  <span>{t('auth.register.benefit2')}</span>
-                </li>
-                <li className="flex items-center gap-3 text-base text-[#334155] dark:text-slate-350">
-                  <CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white dark:text-slate-900" />
-                  <span>{t('auth.register.benefit3')}</span>
-                </li>
-                <li className="flex items-center gap-3 text-base text-[#334155] dark:text-slate-350">
-                  <CheckCircle2 className="w-6 h-6 text-[#4a90e2] fill-current text-white dark:text-slate-900" />
-                  <span>{t('auth.register.benefit4')}</span>
-                </li>
-              </ul>
+              
+              <div className="bg-emerald-50/50 dark:bg-emerald-900/10 rounded-3xl p-8 border border-emerald-100/50 dark:border-emerald-500/10">
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
+                  <Award className="w-6 h-6 text-emerald-500" />
+                  {t('auth.register.membershipBenefitsTitle')}
+                </h3>
+                <ul className="space-y-4">
+                  {[
+                    t('auth.register.benefit1'),
+                    t('auth.register.benefit2'),
+                    t('auth.register.benefit3'),
+                    t('auth.register.benefit4')
+                  ].map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-4">
+                      <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 bg-emerald-100 dark:bg-emerald-900/50 rounded-full p-1" />
+                      <span className="text-base font-semibold text-slate-700 dark:text-slate-300 pt-0.5">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* PANEL PHẢI: FORM ĐĂNG KÝ */}
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 flex flex-col justify-start shadow-sm border border-white/40 dark:border-slate-800/80 transition-colors duration-200 overflow-y-auto">
-          <div className="w-full max-w-md mx-auto">
-            <div className="mb-5">
-              <h2 className="text-4xl font-bold text-[#0f172a] dark:text-slate-100 mb-1.5 tracking-tight">
-                {t('auth.register.formHeading')}
-              </h2>
-              <p className="text-[#64748b] dark:text-slate-400 text-base">
-                {t('auth.register.formSubtitle')}
-              </p>
-            </div>
+          {/* PANEL PHẢI: FORM ĐĂNG KÝ */}
+          <div className="flex-[1.1] bg-white/90 dark:bg-[#111]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-start shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+            <div className="w-full max-w-lg mx-auto">
+              <div className="mb-8">
+                <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
+                  {t('auth.register.formHeading')}
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                  {t('auth.register.formSubtitle')}
+                </p>
+              </div>
 
-            <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6 transition-colors">
-              <button
-                onClick={() => setRegisterMode('email')}
-                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
-                  registerMode === 'email'
-                    ? 'bg-white dark:bg-slate-700 shadow text-[#4a90e2] dark:text-blue-400'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
-              >
-                {t('auth.register.tabEmail', { defaultValue: "Bằng Email" })}
-              </button>
-              <button
-                onClick={() => setRegisterMode('phone')}
-                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
-                  registerMode === 'phone'
-                    ? 'bg-white dark:bg-slate-700 shadow text-[#4a90e2] dark:text-blue-400'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
-              >
-                {t('auth.register.tabPhone', { defaultValue: "Bằng SĐT (OTP)" })}
-              </button>
-            </div>
-
-            {registerMode === 'email' && (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <InputField
-                  icon={<User />}
-                  label={t('auth.register.labelFullName')}
-                  value={fullName}
-                  onChange={setFullName}
-                  placeholder="John Doe"
-                />
-                <InputField
-                  icon={<Mail />}
-                  label={t('auth.register.labelEmail')}
-                  value={email}
-                  onChange={setEmail}
-                  placeholder="john@example.com"
-                  type="email"
-                />
-                <InputField
-                  icon={<Phone />}
-                  label={t('auth.register.labelPhoneNumber')}
-                  value={phoneNumber}
-                  onChange={setPhoneNumber}
-                  placeholder="0912345678"
-                />
-
-                <InputField
-                  icon={<Calendar />}
-                  label={t('auth.register.labelDOB')}
-                  value={dateOfBirth}
-                  onChange={setDateOfBirth}
-                  type="date"
-                />
-
-                <InputField
-                  icon={<Lock />}
-                  label={t('auth.register.labelPassword')}
-                  value={password}
-                  onChange={setPassword}
-                  type="password"
-                  placeholder="••••••••"
-                />
-                <InputField
-                  icon={<Lock />}
-                  label={t('auth.register.labelConfirmPassword')}
-                  value={confirmPassword}
-                  onChange={setConfirmPassword}
-                  type="password"
-                  placeholder="••••••••"
-                />
+              {/* TABS */}
+              <div className="flex p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl mb-8 border border-slate-200/50 dark:border-white/5">
                 <button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full bg-[#4a90e2] text-white py-2.5 rounded-xl font-semibold hover:bg-[#357abd] disabled:opacity-50 transition-colors"
+                  onClick={() => setRegisterMode('email')}
+                  className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${
+                    registerMode === 'email'
+                      ? 'bg-white dark:bg-[#222] shadow-sm text-blue-600 dark:text-blue-400 border border-slate-200/50 dark:border-white/10'
+                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
                 >
-                  {isPending
-                    ? t('auth.register.processing', { defaultValue: "Đang xử lý..." })
-                    : t('auth.register.btnCreateAccount')}
+                  {t('auth.register.tabEmail', { defaultValue: "Bằng Email" })}
                 </button>
-                <div className="text-center text-sm text-[#475569] dark:text-slate-400 pt-2">
-                  {t('auth.register.alreadyHaveAccount')}{" "}
-                  <Link
-                    to="/login"
-                    className="text-[#4a90e2] dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    {t('auth.register.linkSignIn')}
-                  </Link>
-                </div>
-              </form>
-            )}
+                <button
+                  onClick={() => setRegisterMode('phone')}
+                  className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${
+                    registerMode === 'phone'
+                      ? 'bg-white dark:bg-[#222] shadow-sm text-blue-600 dark:text-blue-400 border border-slate-200/50 dark:border-white/10'
+                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  }`}
+                >
+                  {t('auth.register.tabPhone', { defaultValue: "Bằng SĐT (OTP)" })}
+                </button>
+              </div>
 
-            {registerMode === 'phone' && (
-              <form
-                onSubmit={handlePhoneSubmit}
-                className="space-y-4 animate-in fade-in zoom-in duration-300"
-              >
-                <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-[#334155] dark:text-slate-350">
-                    {t('auth.register.labelPhoneNumber')}
-                  </label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#94a3b8]">
-                        <Phone size={18} />
-                      </span>
-                      <input
-                        type="text"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="+84 901 234 567"
-                        disabled={isOtpSent}
-                        required
-                        className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl text-base text-[#0f172a] dark:text-slate-200 focus:border-[#4a90e2] dark:focus:border-blue-500 outline-none transition-all disabled:bg-slate-50 dark:disabled:bg-slate-900"
-                      />
-                    </div>
-                    {!isOtpSent && (
-                      <button
-                        onClick={handleSendOTP}
-                        className="bg-slate-900 dark:bg-slate-750 text-white dark:text-slate-200 px-4 py-2.5 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-slate-700 whitespace-nowrap"
-                      >
-                        {t('auth.register.sendCode', { defaultValue: "Gửi mã" })}
-                      </button>
-                    )}
+              {registerMode === 'email' && (
+                <form onSubmit={handleSubmit} className="space-y-5 animate-in fade-in duration-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <InputField icon={<User />} label={t('auth.register.labelFullName')} value={fullName} onChange={setFullName} placeholder="John Doe" />
+                    <InputField icon={<Phone />} label={t('auth.register.labelPhoneNumber')} value={phoneNumber} onChange={setPhoneNumber} placeholder="0912345678" />
                   </div>
-                </div>
-
-                <div ref={recaptchaContainerRef}></div>
-
-                {isOtpSent && (
-                  <>
-                    <InputField
-                      icon={<KeyRound />}
-                      label={t('auth.register.labelOtp', { defaultValue: "Mã OTP" })}
-                      value={otp}
-                      onChange={setOtp}
-                      placeholder={t('auth.register.placeholderOtp', { defaultValue: "Nhập 6 số OTP..." })}
-                      type="text"
-                    />
-                    <button
-                      type="submit"
-                      disabled={isPendingPhone}
-                      className="w-full bg-emerald-500 text-white py-2.5 rounded-xl font-semibold hover:bg-emerald-600 mt-4 transition-colors disabled:opacity-50"
-                    >
-                      {isPendingPhone
-                        ? t('auth.register.verifying', { defaultValue: "Đang xác thực..." })
-                        : t('auth.register.confirmAndRegister', { defaultValue: "Xác nhận & Đăng ký" })}
-                    </button>
-                  </>
-                )}
-                <div className="text-center text-sm text-[#475569] dark:text-slate-400 pt-2">
-                  {t('auth.register.alreadyHaveAccount')}{" "}
-                  <Link
-                    to="/login"
-                    className="text-[#4a90e2] dark:text-blue-400 hover:underline font-semibold"
+                  <InputField icon={<Mail />} label={t('auth.register.labelEmail')} value={email} onChange={setEmail} placeholder="john@example.com" type="email" />
+                  <InputField icon={<Calendar />} label={t('auth.register.labelDOB')} value={dateOfBirth} onChange={setDateOfBirth} type="date" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <InputField icon={<Lock />} label={t('auth.register.labelPassword')} value={password} onChange={setPassword} type="password" placeholder="••••••••" />
+                    <InputField icon={<Lock />} label={t('auth.register.labelConfirmPassword')} value={confirmPassword} onChange={setConfirmPassword} type="password" placeholder="••••••••" />
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl font-bold hover:shadow-[0_8px_30px_rgb(37,99,235,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 mt-4 flex items-center justify-center gap-2 group"
                   >
-                    {t('auth.register.linkSignIn')}
-                  </Link>
-                </div>
-              </form>
-            )}
+                    {isPending ? (
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <>
+                        {t('auth.register.btnCreateAccount')}
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {registerMode === 'phone' && (
+                <form onSubmit={handlePhoneSubmit} className="space-y-5 animate-in fade-in duration-300">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">
+                      {t('auth.register.labelPhoneNumber')}
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="relative flex-1 group">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                          <Phone className="w-5 h-5" />
+                        </span>
+                        <input
+                          type="text"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          placeholder="+84 901 234 567"
+                          disabled={isOtpSent}
+                          required
+                          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium disabled:opacity-60"
+                        />
+                      </div>
+                      {!isOtpSent && (
+                        <button
+                          onClick={handleSendOTP}
+                          className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3.5 rounded-2xl font-bold hover:bg-slate-800 dark:hover:bg-slate-100 whitespace-nowrap shadow-md transition-all hover:scale-105"
+                        >
+                          {t('auth.register.sendCode', { defaultValue: "Gửi mã" })}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div ref={recaptchaContainerRef} className="my-4"></div>
+
+                  {isOtpSent && (
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <InputField
+                        icon={<KeyRound />}
+                        label={t('auth.register.labelOtp', { defaultValue: "Mã OTP" })}
+                        value={otp}
+                        onChange={setOtp}
+                        placeholder={t('auth.register.placeholderOtp', { defaultValue: "Nhập 6 số OTP..." })}
+                        type="text"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isPendingPhone}
+                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-2xl font-bold hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 mt-6 flex items-center justify-center gap-2 group"
+                      >
+                        {isPendingPhone ? (
+                          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <>
+                            {t('auth.register.confirmAndRegister', { defaultValue: "Xác nhận & Đăng ký" })}
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </form>
+              )}
+
+              <div className="text-center text-sm font-medium text-slate-500 dark:text-slate-400 pt-8 mt-8 border-t border-slate-100 dark:border-white/5">
+                {t('auth.register.alreadyHaveAccount')}{" "}
+                <Link
+                  to="/login"
+                  className="text-blue-600 dark:text-blue-400 font-extrabold hover:text-blue-700 underline-offset-4 hover:underline transition-all"
+                >
+                  {t('auth.register.linkSignIn')}
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -431,13 +367,11 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   type = "text",
 }) => (
-  <div className="space-y-1.5">
-    <label className="text-sm font-semibold text-[#334155] dark:text-slate-350">{label}</label>
-    <div className="relative">
-      <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#94a3b8]">
-        {React.cloneElement(icon, {
-          size: 18,
-        } as React.SVGProps<SVGSVGElement>)}
+  <div className="space-y-2">
+    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">{label}</label>
+    <div className="relative group">
+      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+        {React.cloneElement(icon, { className: "w-5 h-5" } as React.SVGProps<SVGSVGElement>)}
       </span>
       <input
         type={type}
@@ -445,7 +379,7 @@ const InputField: React.FC<InputFieldProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={placeholder}
         required
-        className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl text-base text-[#0f172a] dark:text-slate-200 focus:border-[#4a90e2] dark:focus:border-blue-500 outline-none transition-all"
+        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
       />
     </div>
   </div>
