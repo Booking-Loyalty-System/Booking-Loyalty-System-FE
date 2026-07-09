@@ -17,15 +17,19 @@ export interface AdminPromotionResponseData {
 
 export interface CreateAdminPromotionInput {
     code: string;
+    name: string;
     description: string;
-    discountType: DiscountType;
+    discountType: string;
     discountValue: number;
+    priorityLevel: number;
     startDate: string;
     endDate: string;
     maxUses?: number | null;
     minSpend?: number | null;
+    requiresBirthday: boolean;
+    tierIds: string[];
+    branchIds: string[];
 }
-
 export interface UpdateAdminPromotionInput {
     description: string;
     discountType: DiscountType;

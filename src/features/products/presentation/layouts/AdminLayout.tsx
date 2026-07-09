@@ -8,7 +8,6 @@ import {
     PieChart,
     FileSpreadsheet,
     Megaphone,
-    Users,
     LogOut,
     ShieldCheck,
     MessageSquare,
@@ -102,15 +101,6 @@ export const AdminLayout: React.FC = () => {
             icon: (isActive) => (
                 <div className={`p-2 rounded-lg transition-all duration-300 group-hover:-rotate-12 ${isActive ? 'bg-[#ec4899] text-white shadow-md' : 'bg-pink-50 text-[#ec4899]'}`}>
                     <Megaphone className="w-4 h-4" />
-                </div>
-            )
-        },
-        {
-            path: '/admin/staff',
-            label: 'Staff Management',
-            icon: (isActive) => (
-                <div className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${isActive ? 'bg-[#10b981] text-white shadow-md' : 'bg-emerald-50 text-[#10b981]'}`}>
-                    <Users className="w-4 h-4" />
                 </div>
             )
         },
