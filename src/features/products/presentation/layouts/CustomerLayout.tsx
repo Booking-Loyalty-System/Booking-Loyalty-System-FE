@@ -65,15 +65,17 @@ export const CustomerLayout: React.FC = () => {
   // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
   const hasInProgressBooking =
     !isLoading && myBookings.some((booking) => booking.status === "InProgress");
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "";
 
   // 🌟 THIẾT LẬP SIGNALR ĐỂ ĐỒNG BỘ DATA REALTIME
   useEffect(() => {
     if (!userId) return;
 
     const connection = new HubConnectionBuilder()
-      .withUrl(`${baseUrl}/hubs/booking`, {
+      .withUrl(`${import.meta.env.VITE_SOCKET_URL}/booking`, {
         accessTokenFactory: () => localStorage.getItem("access_token") || "",
+        headers: {
+          "ngrok-skip-browser-warning": "true"
+        }
       })
       .configureLogging(LogLevel.Warning)
       .withAutomaticReconnect()
@@ -104,7 +106,7 @@ export const CustomerLayout: React.FC = () => {
                 const tier = customerMeRef.current?.tier || "Member";
                 const multiplier = tier === "Platinum" ? 3 : tier === "Gold" ? 2 : tier === "Silver" ? 1.5 : 1;
                 const points = Math.floor((booking.totalPrice || 0) / 1000) * multiplier;
-                
+
                 toast.success(
                   `Thanh toán thành công! Bạn được cộng ${points.toLocaleString("vi-VN")} điểm thưởng.`,
                   { icon: "🎉" }
@@ -153,7 +155,7 @@ export const CustomerLayout: React.FC = () => {
         connection.stop().catch(() => { });
       }
     };
-  }, [userId, queryClient, baseUrl]);
+  }, [userId, queryClient]);
 
   // Mảng Menu gốc
   const rawMenuItems: MenuItem[] = [
@@ -325,7 +327,7 @@ export const CustomerLayout: React.FC = () => {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         {/* Subtle background glow */}
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
-        
+
         {/* HEADER - Glassmorphic */}
         <header className="h-20 bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 flex items-center justify-between px-8 shrink-0 sticky top-0 z-10 transition-all duration-300">
           <div className="animate-fade-in flex items-center gap-4">
@@ -365,8 +367,8 @@ export const CustomerLayout: React.FC = () => {
             <button
               onClick={() => navigate("/notifications")}
               className={`relative p-2.5 rounded-full transition-all duration-300 border ${location.pathname === "/notifications"
-                  ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg"
-                  : "bg-white dark:bg-[#111] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:shadow-md"
+                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg"
+                : "bg-white dark:bg-[#111] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:shadow-md"
                 }`}
             >
               <Bell className="w-5 h-5" />

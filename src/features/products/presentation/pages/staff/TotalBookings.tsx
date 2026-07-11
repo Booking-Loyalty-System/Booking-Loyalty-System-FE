@@ -35,17 +35,17 @@ interface DashboardBooking {
   bookingDate: string;
   startTime: string;
   status:
-    | "Pending"
-    | "Confirmed"
-    | "CheckedIn"
-    | "Queued"
-    | "InProgress"
-    | "Completed"
-    | "CheckedOut"
-    | "Cancelled"
-    | "NoShow"
-    | "Rejected"
-    | string;
+  | "Pending"
+  | "Confirmed"
+  | "CheckedIn"
+  | "Queued"
+  | "InProgress"
+  | "Completed"
+  | "CheckedOut"
+  | "Cancelled"
+  | "NoShow"
+  | "Rejected"
+  | string;
   totalAmount: number;
   pointsEarned: number | null;
   createdAt: string;
@@ -96,8 +96,11 @@ export const TotalBookings: React.FC = () => {
     if (!staffBranchId) return; // Nếu chưa có BranchId thì chưa kết nối để tránh lỗi
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7001/hubs/booking", {
+      .withUrl(`${import.meta.env.VITE_SOCKET_URL}/booking`, {
         accessTokenFactory: () => localStorage.getItem("access_token") || "",
+        headers: {
+          "ngrok-skip-browser-warning": "true"
+        }
       })
       .withAutomaticReconnect()
       .build();
@@ -321,18 +324,17 @@ export const TotalBookings: React.FC = () => {
 
                     <td className="py-4 px-6">
                       <span
-                        className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          b.status === "Pending" ? "bg-amber-100 text-amber-700" :
+                        className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${b.status === "Pending" ? "bg-amber-100 text-amber-700" :
                           b.status === "Confirmed" ? "bg-blue-100 text-blue-700" :
-                          b.status === "CheckedIn" ? "bg-indigo-100 text-indigo-700" :
-                          b.status === "Queued" ? "bg-cyan-100 text-cyan-700" :
-                          b.status === "InProgress" ? "bg-purple-100 text-purple-700" :
-                          b.status === "Completed" ? "bg-emerald-100 text-emerald-700" :
-                          b.status === "CheckedOut" ? "bg-teal-100 text-teal-700" :
-                          b.status === "Cancelled" || b.status === "Rejected" ? "bg-rose-100 text-rose-700" :
-                          b.status === "NoShow" ? "bg-slate-100 text-slate-700" :
-                          "bg-slate-100 text-slate-700"
-                        }`}
+                            b.status === "CheckedIn" ? "bg-indigo-100 text-indigo-700" :
+                              b.status === "Queued" ? "bg-cyan-100 text-cyan-700" :
+                                b.status === "InProgress" ? "bg-purple-100 text-purple-700" :
+                                  b.status === "Completed" ? "bg-emerald-100 text-emerald-700" :
+                                    b.status === "CheckedOut" ? "bg-teal-100 text-teal-700" :
+                                      b.status === "Cancelled" || b.status === "Rejected" ? "bg-rose-100 text-rose-700" :
+                                        b.status === "NoShow" ? "bg-slate-100 text-slate-700" :
+                                          "bg-slate-100 text-slate-700"
+                          }`}
                       >
                         {b.status}
                       </span>
@@ -491,11 +493,10 @@ export const TotalBookings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMethod("Cash")}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${
-                  selectedMethod === "Cash"
-                    ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
-                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${selectedMethod === "Cash"
+                  ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
+                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                  }`}
               >
                 <Coins
                   className={`w-6 h-6 ${selectedMethod === "Cash" ? "text-blue-600" : "text-gray-400"}`}
@@ -507,11 +508,10 @@ export const TotalBookings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMethod("Transfer")}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${
-                  selectedMethod === "Transfer"
-                    ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
-                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                }`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${selectedMethod === "Transfer"
+                  ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
+                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                  }`}
               >
                 <CreditCard
                   className={`w-6 h-6 ${selectedMethod === "Transfer" ? "text-blue-600" : "text-gray-400"}`}

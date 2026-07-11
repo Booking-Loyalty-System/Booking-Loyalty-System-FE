@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { ChatRepositoryImplement } from '../infrastructure/repositories/chat/chat.repository.implement';
 import * as signalR from '@microsoft/signalr';
+import { HttpTransportType } from '@microsoft/signalr';
 
 // ─── Unified message type ────────────────────────────────────────────────────
 export interface UnifiedMessage {
@@ -51,8 +52,12 @@ export const useCustomerChat = () => {
         if (connectionRef.current) return;
 
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl("https://localhost:7001/hubs/chat", {
-                accessTokenFactory: () => localStorage.getItem('access_token') || ''
+            .withUrl(`${import.meta.env.VITE_SOCKET_URL}/chat`, {
+                accessTokenFactory: () => localStorage.getItem('access_token') || '',
+                headers: {
+                    "ngrok-skip-browser-warning": "true"
+                },
+                transport: HttpTransportType.LongPolling | HttpTransportType.ServerSentEvents
             })
             .withAutomaticReconnect()
             .build();
