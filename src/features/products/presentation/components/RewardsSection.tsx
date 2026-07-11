@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useReward } from "@/features/products/application/useReward.ts";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { toast } from "sonner";
+import { translateDynamic } from "@/shared/utils/translateDynamic.ts";
 
 interface RewardItem {
   id: string;
@@ -27,7 +28,7 @@ interface RewardItem {
 }
 
 export const RewardsSection: React.FC = () => {
-  const { t } = useTranslation("customer");
+  const { t, i18n } = useTranslation("customer");
   const { customerMe } = useCustomerMe();
   const {
     redemptions,
@@ -87,9 +88,9 @@ export const RewardsSection: React.FC = () => {
 
         return {
           id: reward.id,
-          title: reward.name ?? "Voucher đặc biệt",
+          title: translateDynamic(reward.name ?? "Voucher đặc biệt", i18n.language),
           description:
-            reward.description ?? "Đổi điểm để nhận ưu đãi giảm giá.",
+            translateDynamic(reward.description ?? "Đổi điểm để nhận ưu đãi giảm giá.", i18n.language),
           validDays: reward.validDays ?? 30,
           requiredPts: reward.pointsCost ?? 0,
           comingSoon: !reward.isActive,
@@ -98,7 +99,7 @@ export const RewardsSection: React.FC = () => {
         };
       })
       .filter((item) => item !== null) as RewardItem[];
-  }, [availableRewards]);
+  }, [availableRewards, i18n.language]);
 
   // Tính toán số lượng phần thưởng khả dụng
   const redeemableCount = useMemo(() => {
@@ -164,19 +165,19 @@ export const RewardsSection: React.FC = () => {
   };
 
   return (
-    <div className="w-full space-y-8 text-slate-800">
+    <div className="w-full space-y-8 text-slate-800 dark:text-white">
       {/* 1. Thanh thông báo tự động áp dụng */}
-      <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 flex items-start gap-4">
-        <div className="p-2 bg-white rounded-full text-emerald-600 shadow-sm shrink-0">
+      <div className="bg-emerald-50/60 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl p-5 flex items-start gap-4">
+        <div className="p-2 bg-white dark:bg-emerald-900/30 rounded-full text-emerald-600 dark:text-emerald-400 shadow-sm shrink-0">
           <Info className="w-5 h-5" />
         </div>
         <div className="space-y-1">
-          <h4 className="font-bold text-emerald-900 text-base">
+          <h4 className="font-bold text-emerald-900 dark:text-emerald-400 text-base">
             {t("rewards.infoTitle", {
               defaultValue: "Tự động áp dụng khi đặt lịch",
             })}
           </h4>
-          <p className="text-sm text-emerald-800 leading-relaxed">
+          <p className="text-sm text-emerald-800 dark:text-emerald-300 leading-relaxed">
             {t("rewards.infoDesc", {
               defaultValue:
                 "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!",
@@ -188,13 +189,13 @@ export const RewardsSection: React.FC = () => {
       {/* 2. Danh sách phần thưởng */}
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+          <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">
             {t("rewards.availableRewardsTitle", {
               defaultValue: "Phần thưởng khả dụng",
             })}
           </h2>
-          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500">
-            <CheckCircle className="w-4 h-4 text-slate-400" />
+          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">
+            <CheckCircle className="w-4 h-4 text-slate-400 dark:text-slate-500" />
             <span>
               {t("rewards.redeemableCountMsg", {
                 n: redeemableCount,
@@ -225,12 +226,12 @@ export const RewardsSection: React.FC = () => {
               return (
                 <div
                   key={item.id}
-                  className={`bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative ${
+                  className={`bg-white dark:bg-[#111] rounded-2xl p-6 border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative ${
                     item.comingSoon ? "opacity-75" : ""
                   }`}
                 >
                   {item.comingSoon && (
-                    <span className="absolute top-4 right-4 bg-slate-100 text-slate-500 text-xs font-bold px-2.5 py-1 rounded-full">
+                    <span className="absolute top-4 right-4 bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300 text-xs font-bold px-2.5 py-1 rounded-full">
                       {t("rewards.comingSoonBadge", {
                         defaultValue: "Sắp ra mắt",
                       })}
@@ -244,15 +245,15 @@ export const RewardsSection: React.FC = () => {
                       {item.icon}
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-slate-500 mt-2 leading-relaxed font-medium">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed font-medium">
                       {item.description}
                     </p>
 
-                    <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mt-4">
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-semibold mt-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
                       <span>
                         {t("rewards.validDaysLabel", {
                           n: item.validDays,
@@ -262,9 +263,9 @@ export const RewardsSection: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between gap-4">
+                  <div className="mt-6 pt-5 border-t border-slate-100 dark:border-white/10 flex items-center justify-between gap-4">
                     <div>
-                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                      <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t("rewards.requirementLabel", {
                           defaultValue: "Yêu cầu",
                         })}
@@ -272,9 +273,9 @@ export const RewardsSection: React.FC = () => {
 
                       {item.isFreeWashReward ? (
                         <div className="flex flex-col">
-                          <p className="text-xl font-black text-slate-800 mt-0.5">
+                          <p className="text-xl font-black text-slate-800 dark:text-white mt-0.5">
                             7{" "}
-                            <span className="text-sm font-bold text-slate-500">
+                            <span className="text-sm font-bold text-slate-500 dark:text-slate-400">
                               {t("rewards.washesUnit", {
                                 defaultValue: "lượt",
                               })}
@@ -282,9 +283,9 @@ export const RewardsSection: React.FC = () => {
                           </p>
                         </div>
                       ) : (
-                        <p className="text-xl font-black text-slate-800 mt-0.5">
+                        <p className="text-xl font-black text-slate-800 dark:text-white mt-0.5">
                           {item.requiredPts}{" "}
-                          <span className="text-sm font-bold text-slate-500">
+                          <span className="text-sm font-bold text-slate-500 dark:text-slate-400">
                             {t("rewards.pointsUnit", { defaultValue: "điểm" })}
                           </span>
                         </p>
@@ -309,7 +310,7 @@ export const RewardsSection: React.FC = () => {
                       className={`font-bold text-sm px-6 py-2.5 rounded-xl shadow-sm transition-all ${
                         !item.comingSoon && canAfford
                           ? "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
-                          : "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
+                          : "bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none"
                       }`}
                     >
                       {redeemingId === item.id
@@ -329,19 +330,19 @@ export const RewardsSection: React.FC = () => {
       </div>
 
       {/* 3. Phần lịch sử đổi thưởng gần đây */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex items-center gap-2.5">
-          <History className="w-5 h-5 text-slate-400" />
-          <h3 className="text-lg font-bold text-slate-800 tracking-tight">
+      <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden">
+        <div className="p-6 border-b border-slate-100 dark:border-white/10 flex items-center gap-2.5">
+          <History className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+          <h3 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
             {t("rewards.redemptionHistoryTitle", {
               defaultValue: "Lịch sử đổi thưởng",
             })}
           </h3>
         </div>
 
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 dark:divide-white/10">
           {!Array.isArray(redemptions) || redemptions.length === 0 ? (
-            <p className="text-sm text-slate-400 font-medium text-center py-8">
+            <p className="text-sm text-slate-400 dark:text-slate-500 font-medium text-center py-8">
               {t("rewards.noRedemptionHistory", {
                 defaultValue: "Bạn chưa đổi phần thưởng nào.",
               })}
@@ -356,15 +357,15 @@ export const RewardsSection: React.FC = () => {
               return (
                 <div
                   key={v.id}
-                  className="p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                  className="p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-emerald-50 text-emerald-600">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                       <Ticket className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-800 text-base tracking-tight">
-                        {v.rewardName ?? "Voucher giảm giá"}
+                      <h4 className="font-bold text-slate-800 dark:text-white text-base tracking-tight">
+                        {translateDynamic(v.rewardName ?? "Voucher giảm giá", i18n.language)}
                       </h4>
                       {(() => {
                         const statusLower = String(v.status).toLowerCase();
@@ -374,15 +375,15 @@ export const RewardsSection: React.FC = () => {
                           statusLower === "used" || statusLower === "fulfilled";
 
                         return (
-                          <p className="text-[11px] font-bold text-slate-400 mt-1">
+                          <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 mt-1">
                             {t("rewards.statusLabel", {
                               defaultValue: "Trạng thái: ",
                             })}{" "}
                             <span
                               className={
                                 isAvailable
-                                  ? "text-emerald-600"
-                                  : "text-slate-500"
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-slate-500 dark:text-slate-400"
                               }
                             >
                               {isAvailable
@@ -409,18 +410,18 @@ export const RewardsSection: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 dark:border-white/10">
                     {isHistoryFreeWash ? (
-                      <p className="text-lg font-black text-slate-800 tracking-tight">
+                      <p className="text-lg font-black text-slate-800 dark:text-white tracking-tight">
                         -1{" "}
-                        <span className="text-xs font-bold text-slate-500">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                           {t("rewards.washesUnit", { defaultValue: "lượt" })}
                         </span>
                       </p>
                     ) : (
-                      <p className="text-lg font-black text-slate-800 tracking-tight">
+                      <p className="text-lg font-black text-slate-800 dark:text-white tracking-tight">
                         -{v.pointsSpent ?? 0}{" "}
-                        <span className="text-xs font-bold text-slate-500">
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                           {t("rewards.pointsUnit", { defaultValue: "điểm" })}
                         </span>
                       </p>
@@ -437,10 +438,10 @@ export const RewardsSection: React.FC = () => {
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
                             isAvailable
-                              ? "bg-emerald-50 text-emerald-700"
+                              ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                               : isUsed
-                                ? "bg-slate-100 text-slate-600"
-                                : "bg-rose-50 text-rose-600"
+                                ? "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300"
+                                : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400"
                           }`}
                         >
                           {isAvailable
@@ -466,29 +467,29 @@ export const RewardsSection: React.FC = () => {
       </div>
       {confirmReward && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
-            <h3 className="text-xl font-bold text-slate-800 mb-2">
+          <div className="bg-white dark:bg-[#111] dark:border dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
               {t("rewards.confirmModal.title", { defaultValue: "Xác nhận đổi thưởng" })}
             </h3>
-            <p className="text-slate-600 text-sm mb-6 leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
               {t("rewards.confirmModal.descPre", { defaultValue: "Bạn có chắc chắn muốn dùng " })}
               {confirmReward.isFreeWash ? (
-                <span className="font-bold text-slate-800">
+                <span className="font-bold text-slate-800 dark:text-white">
                   {t("rewards.confirmModal.freeWashText", { defaultValue: "1 lượt rửa xe miễn phí" })}
                 </span>
               ) : (
-                <span className="font-bold text-slate-800">
+                <span className="font-bold text-slate-800 dark:text-white">
                   {t("rewards.confirmModal.pointsText", { cost: confirmReward.cost, defaultValue: `${confirmReward.cost} điểm` })}
                 </span>
               )}{" "}
               {t("rewards.confirmModal.descPost", { defaultValue: " để đổi lấy " })}
-              <span className="font-bold text-emerald-600">{confirmReward.title}</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">{confirmReward.title}</span>
               {t("rewards.confirmModal.descWarning", { defaultValue: " không? Hành động này không thể hoàn tác." })}
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setConfirmReward(null)}
-                className="px-5 py-2.5 font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all"
+                className="px-5 py-2.5 font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl transition-all"
               >
                 {t("rewards.confirmModal.cancel", { defaultValue: "Hủy" })}
               </button>

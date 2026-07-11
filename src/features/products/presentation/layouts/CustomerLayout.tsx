@@ -65,15 +65,17 @@ export const CustomerLayout: React.FC = () => {
   // 🌟 Kiểm tra thời gian thực: Có lịch đặt nào đang được rửa (InProgress) hay không?
   const hasInProgressBooking =
     !isLoading && myBookings.some((booking) => booking.status === "InProgress");
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace("/api", "") || "";
 
   // 🌟 THIẾT LẬP SIGNALR ĐỂ ĐỒNG BỘ DATA REALTIME
   useEffect(() => {
     if (!userId) return;
 
     const connection = new HubConnectionBuilder()
-      .withUrl(`${baseUrl}/hubs/booking`, {
+      .withUrl(`${import.meta.env.VITE_SOCKET_URL}/booking`, {
         accessTokenFactory: () => localStorage.getItem("access_token") || "",
+        headers: {
+          "ngrok-skip-browser-warning": "true"
+        }
       })
       .configureLogging(LogLevel.Warning)
       .withAutomaticReconnect()
@@ -104,12 +106,11 @@ export const CustomerLayout: React.FC = () => {
                 const tier = customerMeRef.current?.tier || "Member";
                 const multiplier = tier === "Platinum" ? 3 : tier === "Gold" ? 2 : tier === "Silver" ? 1.5 : 1;
                 const points = Math.floor((booking.totalPrice || 0) / 1000) * multiplier;
-                
+
                 toast.success(
                   `Thanh toán thành công! Bạn được cộng ${points.toLocaleString("vi-VN")} điểm thưởng.`,
                   { icon: "🎉" }
                 );
-                // Bắn event báo hiệu để reload lại các query liên quan đến customerMe
                 window.dispatchEvent(new Event("customer_points_changed"));
               } else {
                 toast.success(
@@ -147,7 +148,6 @@ export const CustomerLayout: React.FC = () => {
 
     return () => {
       connection.off("BookingStatusChanged");
-      // 🔥 CHỈ GỌI STOP KHI ĐANG TRONG TRẠNG THÁI KẾT NỐI HỢP LỆ
       if (
         connection.state === "Connected" ||
         connection.state === "Connecting"
@@ -155,18 +155,15 @@ export const CustomerLayout: React.FC = () => {
         connection.stop().catch(() => { });
       }
     };
-  }, [userId, queryClient, baseUrl]);
+  }, [userId, queryClient]);
 
-  // Mảng Menu gốc của bạn
+  // Mảng Menu gốc
   const rawMenuItems: MenuItem[] = [
     {
       path: "/dashboard",
       label: t("sidebar.dashboard", { defaultValue: "Dashboard" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${isActive ? "bg-[#1e6ffd] text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-[#1e6ffd]"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_4px_15px_rgba(59,130,246,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-blue-500 group-hover:scale-110"}`}>
           <LayoutDashboard className="w-4 h-4" />
         </div>
       ),
@@ -175,10 +172,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/book-wash",
       label: t("sidebar.bookWash", { defaultValue: "Book Wash" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-1 ${isActive ? "bg-[#10b981] text-white shadow-sm" : "bg-emerald-50 dark:bg-emerald-950/30 text-[#10b981]"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-emerald-500 group-hover:scale-110"}`}>
           <Car className="w-4 h-4" />
         </div>
       ),
@@ -187,9 +181,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/live-tracking",
       label: t("sidebar.liveTracking", { defaultValue: "Live Tracking" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg ${isActive ? "bg-red-500 text-white shadow-sm" : "bg-red-50 dark:bg-red-950/30 text-red-500"}`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-[0_4px_15px_rgba(239,68,68,0.4)]" : "bg-red-50 dark:bg-red-500/10 text-red-500"}`}>
           <Radio className="w-4 h-4 animate-pulse" />
         </div>
       ),
@@ -198,10 +190,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/loyalty-tier",
       label: t("sidebar.loyaltyTier", { defaultValue: "Loyalty & Tier" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${isActive ? "bg-[#f59e0b] text-white shadow-sm" : "bg-amber-50 dark:bg-amber-950/30 text-[#f59e0b]"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-amber-500 group-hover:scale-110"}`}>
           <Award className="w-4 h-4" />
         </div>
       ),
@@ -210,10 +199,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/rewards",
       label: t("sidebar.rewards", { defaultValue: "Rewards" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-pink-500 text-white shadow-sm" : "bg-pink-50 dark:bg-pink-950/30 text-pink-500 group-hover:animate-bounce"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-[0_4px_15px_rgba(236,72,153,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-pink-500 group-hover:animate-bounce"}`}>
           <Gift className="w-4 h-4" />
         </div>
       ),
@@ -222,10 +208,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/promotions",
       label: t("sidebar.promotions", { defaultValue: "Promotions" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:-rotate-12 ${isActive ? "bg-[#a855f7] text-white shadow-sm" : "bg-purple-50 dark:bg-purple-950/30 text-[#a855f7]"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white shadow-[0_4px_15px_rgba(168,85,247,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-purple-500 group-hover:-rotate-12"}`}>
           <Megaphone className="w-4 h-4" />
         </div>
       ),
@@ -234,10 +217,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/booking-history",
       label: t("sidebar.bookingHistory", { defaultValue: "Booking History" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-[#06b6d4] text-white shadow-sm" : "bg-cyan-50 dark:bg-cyan-950/30 text-[#06b6d4]"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_15px_rgba(6,182,212,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-cyan-500 group-hover:scale-110"}`}>
           <History className="w-4 h-4" />
         </div>
       ),
@@ -246,10 +226,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/my-vehicles",
       label: t("sidebar.myVehicles", { defaultValue: "My Vehicles" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:translate-x-0.5 ${isActive ? "bg-[#14b8a6] text-white shadow-sm" : "bg-teal-50 dark:bg-teal-950/30 text-[#14b8a6]"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-teal-400 to-emerald-500 text-white shadow-[0_4px_15px_rgba(20,184,166,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-teal-500 group-hover:translate-x-0.5"}`}>
           <Car className="w-4 h-4" />
         </div>
       ),
@@ -258,10 +235,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/notifications",
       label: t("sidebar.notifications", { defaultValue: "Notifications" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 ${isActive ? "bg-slate-700 text-white shadow-sm" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-[0_4px_15px_rgba(51,65,85,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white"}`}>
           <Bell className="w-4 h-4" />
         </div>
       ),
@@ -270,17 +244,13 @@ export const CustomerLayout: React.FC = () => {
       path: "/settings",
       label: t("sidebar.settings", { defaultValue: "Settings" }),
       icon: (isActive) => (
-        <div
-          className={`p-2 rounded-lg transition-all duration-300 group-hover:rotate-45 ${isActive ? "bg-blue-600 text-white shadow-sm" : "bg-blue-50 dark:bg-blue-950/30 text-blue-600"
-            }`}
-        >
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-[0_4px_15px_rgba(99,102,241,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-indigo-500 group-hover:rotate-45"}`}>
           <Settings className="w-4 h-4" />
         </div>
       ),
     },
   ];
 
-  // 🌟 LỌC MENU: Nếu không có lịch InProgress, loại bỏ hẳn mục Live Tracking khỏi thanh Sidebar
   const menuItems = rawMenuItems.filter(
     (item) => item.path !== "/live-tracking" || hasInProgressBooking,
   );
@@ -306,25 +276,25 @@ export const CustomerLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-[#f8fafc] dark:bg-slate-950 overflow-hidden antialiased">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-[#e2e8f0] dark:border-slate-800 flex flex-col justify-between p-4 shrink-0 h-full">
-        <div className="flex flex-col h-[calc(100vh-80px)]">
-          <div className="flex items-center gap-3 px-2 py-4 mb-4">
-            <div className="w-10 h-10 bg-[#1e6ffd] rounded-xl flex items-center justify-center text-white shadow-md">
-              <Radio className="w-5 h-5 text-white animate-pulse" />
+    <div className="flex h-screen w-screen bg-[#fafafa] dark:bg-[#050505] overflow-hidden antialiased font-sans text-slate-800 dark:text-slate-200">
+      {/* SIDEBAR - Premium Look */}
+      <aside className="w-72 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col p-5 shrink-0 h-full relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex items-center gap-4 px-3 py-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+              <Radio className="w-6 h-6 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#0f172a] dark:text-white leading-tight">
-                {t("sidebar.appName", { defaultValue: "AutoWash Pro" })}
+              <h2 className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+                {t("sidebar.appName", { defaultValue: "AutoWash" })}
               </h2>
-              <p className="text-xs text-[#94a3b8] font-medium">
-                {t("sidebar.tagline", { defaultValue: "Smart Car Wash" })}
+              <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 -mt-1">
+                {t("sidebar.tagline", { defaultValue: "Premium Care" })}
               </p>
             </div>
           </div>
 
-          <nav className="flex-1 space-y-1 overflow-y-auto pr-1">
+          <nav className="flex-1 space-y-1.5 overflow-y-auto pr-2 custom-scrollbar">
             {menuItems.map((item) => (
               <SidebarItem
                 key={item.path}
@@ -337,97 +307,92 @@ export const CustomerLayout: React.FC = () => {
           </nav>
         </div>
 
-        <div className="pt-2 border-t border-[#f1f5f9] dark:border-slate-800 space-y-2">
+        <div className="shrink-0 pt-4 border-t border-slate-100 dark:border-white/5 space-y-3 mt-4">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all duration-200 group"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all duration-300 group"
           >
-            <div className="p-2 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-600 group-hover:scale-110 transition-transform">
+            <div className="p-2.5 rounded-xl bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
               <LogOut className="w-4 h-4" />
             </div>
             <span>{t("sidebar.logout", { defaultValue: "Logout" })}</span>
           </button>
-          <div className="text-center text-[11px] text-[#94a3b8] font-medium">
+          <div className="text-center text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
             {t("sidebar.copyright", { defaultValue: "© 2026 AutoWash Pro" })}
           </div>
         </div>
       </aside>
 
-      {/* CONTENT */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-[#e2e8f0] dark:border-slate-800 flex items-center justify-between px-8 shrink-0">
-          <div className="animate-fade-in">
-            <h1 className="text-2xl font-bold text-[#0f172a] dark:text-white">
+      {/* CONTENT AREA */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        {/* Subtle background glow */}
+        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
+
+        {/* HEADER - Glassmorphic */}
+        <header className="h-20 bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 flex items-center justify-between px-8 shrink-0 sticky top-0 z-10 transition-all duration-300">
+          <div className="animate-fade-in flex items-center gap-4">
+            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               {currentTitle}
             </h1>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="w-72 relative">
+          <div className="flex items-center gap-4 lg:gap-6">
+            <div className="hidden md:block w-72 relative group">
               <input
                 type="text"
                 placeholder={t("header.searchPlaceholder", { defaultValue: "Search..." })}
-                className="w-full bg-[#f1f5f9] dark:bg-slate-850 dark:text-slate-200 dark:placeholder-slate-500 border border-transparent dark:border-slate-700 rounded-xl py-2 pl-4 pr-10 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-[#1e6ffd] transition-all"
+                className="w-full bg-slate-100/80 dark:bg-white/5 dark:text-slate-200 dark:placeholder-slate-500 border border-transparent dark:border-white/5 rounded-2xl py-2.5 pl-5 pr-12 text-sm font-medium focus:outline-none focus:bg-white dark:focus:bg-[#111] focus:border-blue-500 dark:focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm group-hover:shadow-md"
               />
-              <Search className="w-4 h-4 text-[#94a3b8] absolute right-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
             </div>
 
-            {/* Theme Toggle Button */}
-            <button
-              id="theme-toggle-header"
-              onClick={toggleTheme}
-              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className="flex items-center justify-center p-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200 cursor-pointer"
-            >
-              {isDark ? (
-                <Sun className="w-4 h-4 text-amber-500" />
-              ) : (
-                <Moon className="w-4 h-4 text-blue-600" />
-              )}
-            </button>
+            <div className="flex items-center gap-2 bg-slate-100/80 dark:bg-white/5 p-1 rounded-full border border-slate-200/50 dark:border-white/5">
+              <button
+                onClick={toggleTheme}
+                title={isDark ? "Light Mode" : "Dark Mode"}
+                className="p-2 rounded-full hover:bg-white dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all shadow-sm"
+              >
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
 
-            {/* Language Toggle Button */}
-            <button
-              id="language-toggle-header"
-              onClick={toggleLanguage}
-              title={`${t("language.switchTo", { defaultValue: "Switch to" })} ${language === "en"
-                  ? t("language.vi", { defaultValue: "Vietnamese" })
-                  : t("language.en", { defaultValue: "English" })
-                }`}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-all duration-200"
-            >
-              <span className="text-base leading-none">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
-              <span className="uppercase tracking-wide">{language === "en" ? "EN" : "VI"}</span>
-            </button>
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-white dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all text-xs font-bold shadow-sm"
+              >
+                <span className="text-sm leading-none">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
+                <span className="uppercase">{language === "en" ? "EN" : "VI"}</span>
+              </button>
+            </div>
 
             <button
               onClick={() => navigate("/notifications")}
-              className={`relative p-2 rounded-xl transition-all duration-200 focus:outline-none ${location.pathname === "/notifications"
-                  ? "bg-[#f1f5f9] dark:bg-slate-800 text-[#0f172a] dark:text-white"
-                  : "text-[#64748b] hover:text-[#0f172a] dark:hover:text-white hover:bg-[#f1f5f9] dark:hover:bg-slate-800"
+              className={`relative p-2.5 rounded-full transition-all duration-300 border ${location.pathname === "/notifications"
+                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg"
+                : "bg-white dark:bg-[#111] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:shadow-md"
                 }`}
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-white shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white border-2 border-white dark:border-[#0a0a0a] shadow-sm animate-bounce">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}
             </button>
 
-            <ProfileDropdown />
+            <div className="pl-2 border-l border-slate-200 dark:border-white/10">
+              <ProfileDropdown />
+            </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-8 bg-[#f8fafc] dark:bg-slate-950">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto p-6 lg:p-10 relative z-0 custom-scrollbar">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
 
-      {/* Unified Chatbox: AI + Live Staff – single floating widget */}
       <Chatbox />
-
-      {/* Modal thông báo thăng hạng đặt ở Layout để luôn sẵn sàng */}
       <TierUpgradeModal />
     </div>
   );

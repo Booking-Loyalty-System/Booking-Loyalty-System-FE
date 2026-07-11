@@ -29,7 +29,9 @@ export interface BookingResponseData {
     voucherId?: string;
     discountAmount?: number;
     totalPrice?: number;
-    bookingCode: string
+    bookingCode: string;
+    cancelReason?: string;
+    cancellationReason?: string;
 }
 
 export interface BookingSummaryProps {
@@ -63,4 +65,23 @@ export interface MyBookingRecord {
     qrData: string | null;
     createdAt: string;
     features: string | string[];
+    cancelReason?: string;
+    cancellationReason?: string;
+    images?: {
+        id: string;
+        imageUrl: string;
+        type: string;
+        note?: string;
+        createdAt: string;
+    }[];
+    feedbackResponse: {
+        bookingCode: string;
+        customerName: string;
+        staffRating: number;
+        serviceRating: number;
+        priceRating: number;
+        overallRating: number;
+        comment: string;
+        createdAt: string;
+    } | null;
 }

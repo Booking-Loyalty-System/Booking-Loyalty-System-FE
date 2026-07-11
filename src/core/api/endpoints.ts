@@ -36,6 +36,7 @@ export const ENDPOINTS = {
         NO_SHOW: (id: string) => `/staff/bookings/${id}/no-show`,
         COMPLETED: (id: string) => `/staff/bookings/${id}/completed`,
         QR: `/staff/bookings/scan-qr`,
+        DOWNLOAD_INVOICE: (id: string) => `/bookings/${id}/download-invoice`,
     },
 
     BRANCH: {
@@ -57,7 +58,8 @@ export const ENDPOINTS = {
     STAFF: {
         BOOKINGS: '/staff/bookings',
         PROFILE: '/staff/profile',
-        ID: (id: string) => `/staff/${id}`
+        ID: (id: string) => `/staff/${id}`,
+        STAFF: '/staff'
     },
 
     LOYALTY: {
@@ -94,6 +96,7 @@ export const ENDPOINTS = {
             TOP_CUSTOMERS: '/admin/statistics/top-customers',
             BRANCH_PERFORMANCE: '/admin/statistics/branch-performance',
             TIER_DISTRIBUTION: '/admin/statistics/tier-distribution',
+            TIER_STATISTICS: '/admin/statistics/tier-statistics',
         },
 
         // Tiers
@@ -115,17 +118,22 @@ export const ENDPOINTS = {
         SUMMARY: '/AdminDashboard/summary',
         RECENT_BOOKINGS: '/AdminDashboard/recent-bookings',
         TIER_CONFIG: '/AdminDashboard/tier-config',
-        EXPORT_RBL: '/AdminDashboard/export-rbl'
+        EXPORT_RBL: '/AdminDashboard/export-rbl',
+        REVENUE_COMPARISON: '/AdminDashboard/revenue-comparison',
+        ANALYTIC: '/AdminAnalytic/revenue',
+        TIER_STATISTIC: '/admin/statistics/tier-statistics'
     },
 
     PROMOTION: {
         BASE: '/promotions',
         VALIDATE: '/promotions/validate',
     },
+
     REWARDS: {
         BASE: '/rewards',
         REWARD_DETAIL: (id: string) => `/rewards/${id}/redeem`,
         REDEMPTION_HISTORY: '/rewards/me/redemptions',
+        GIFT: 'rewards/gift'
     },
 
     WASH_BAY: {
@@ -146,7 +154,9 @@ export const ENDPOINTS = {
 
     FEEDBACK: {
         SUBMIT: '/Feedback/customer/submit',
-        PUBLIC_ALL: '/Feedback/public/all'
+        PUBLIC_ALL: '/Feedback/public/all',
+        STATISTICS: '/Feedback/statistics',
+        FILTER: '/Feedback/filter'
     },
 
     CHAT: {
@@ -161,6 +171,9 @@ export const ENDPOINTS = {
     },
 
     CHAT_FEEDBACK: {
-        SUBMIT: '/ChatFeedback'
+        SUBMIT: '/ChatFeedback',
+        LATEST: (count = 10) => `/ChatFeedback/latest?count=${count}`,
+        STAFF_STATISTICS: (topCount = 5) => `/ChatFeedback/staff-statistics?topCount=${topCount}`,
+        DETAIL: (id: string) => `/ChatFeedback/${id}`,
     }
 };

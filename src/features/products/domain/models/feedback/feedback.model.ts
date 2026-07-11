@@ -17,3 +17,33 @@ export interface FeedbackRecord {
     comment: string;
     createdAt: string;
 }
+
+export interface AdminFeedbackFilterRecord {
+    id: string;
+    bookingCode: string;
+    bookingId: string;    // Bổ sung
+    customerId: string;   // Bổ sung
+    customerName: string;
+    overallRating: number;
+    comment: string | null;
+    isGifted: boolean;
+    createdAt: string;
+}
+
+export interface RatingStatDto {
+    staffId?: string;
+    serviceId?: string;
+    staffName?: string;
+    serviceName?: string;
+    averageRating: number;
+    totalFeedbacks: number;
+}
+
+export interface FeedbackStatisticsData {
+    topStaffs: RatingStatDto[];
+    lowestStaffs: RatingStatDto[];
+    topServices: RatingStatDto[];
+    lowestServices: RatingStatDto[];
+    topChatStaffs: RatingStatDto[];
+    lowestChatStaffs: RatingStatDto[];
+}

@@ -59,7 +59,7 @@ export const useBooking = (options?: { loadMyBookings?: boolean }) => {
     });
 
     const startMutation = useMutation({
-        mutationFn: ({ id, bayId }: { id: string; bayId: string}) => bookingRepository.startBooking(id, bayId),
+        mutationFn: ({ id, bayId }: { id: string; bayId: string }) => bookingRepository.startBooking(id, bayId),
         onSuccess: invalidateBookings,
     });
 
@@ -85,6 +85,29 @@ export const useBooking = (options?: { loadMyBookings?: boolean }) => {
 
     const qr = useMutation({
         mutationFn: (qrPayload: string) => bookingRepository.scan_qr(qrPayload)
+    });
+
+    const downloadInvoiceMutation = useMutation({
+        mutationFn: (id: string) => bookingRepository.downloadInvoice(id),
+        onSuccess: (blobData, id) => {
+            // Tạo URL ảo từ Blob nhị phân nhận về từ Backend
+            const url = window.URL.createObjectURL(blobData);
+
+            // Tạo thẻ a ngầm để kích hoạt download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Invoice_${id.substring(0, 8).toUpperCase()}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+
+            // Dọn dẹp bộ nhớ
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            // Kích hoạt làm mới lại cache để cập nhật trường `isInvoiceIssued` dưới DB nếu cần
+            invalidateBookings();
+        },
+        onError: (error) => console.error("Lỗi khi tải hóa đơn:", error)
     });
 
     return {
@@ -127,5 +150,8 @@ export const useBooking = (options?: { loadMyBookings?: boolean }) => {
 
         completedBooking: completedMutation.mutateAsync,
         isCompleted: completedMutation.isPending,
+
+        downloadInvoice: downloadInvoiceMutation.mutateAsync,
+        isDownloadingInvoice: downloadInvoiceMutation.isPending
     };
 };

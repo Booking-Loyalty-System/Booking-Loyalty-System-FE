@@ -3,7 +3,11 @@ import { ENDPOINTS } from '@/core/api/endpoints';
 import type { ApiResponse } from '../../../domain/apiResponse';
 import type {
     AdminDashboardSummary,
+    DashboardAnalyticResponse,
+    DashboardFilterRequest,
     RecentBooking,
+    RevenueComparison,
+    RevenueComparisonParams,
     TierConfig
 } from '../../../domain/models/admin-dashboard/admin-dashboard.model';
 import type { IAdminDashboardRepository } from './admin-dashboard.repository.interface';
@@ -41,10 +45,38 @@ export class AdminDashboardRepositoryImplement implements IAdminDashboardReposit
     }
 
     async exportRbl(): Promise<Blob> {
-        // Gửi request lấy file CSV dạng blob từ Backend
         const response = await httpClient.get<Blob>(
             ENDPOINTS.ADMIN_DASHBOARD.EXPORT_RBL,
             { responseType: 'blob' }
+        );
+        return response;
+    }
+
+    async getRevenueComparison(params: RevenueComparisonParams): Promise<RevenueComparison> {
+        const response = await httpClient.get<RevenueComparison>(
+            ENDPOINTS.ADMIN_DASHBOARD.REVENUE_COMPARISON,
+            {
+                params: {
+                    fromDate: params.fromDate,
+                    toDate: params.toDate,
+                    compareFromDate: params.compareFromDate,
+                    compareToDate: params.compareToDate,
+                }
+            }
+        );
+        return response;
+    }
+
+    async getRevenueAnalytics(params: DashboardFilterRequest): Promise<DashboardAnalyticResponse> {
+        const response = await httpClient.get<DashboardAnalyticResponse>(
+            ENDPOINTS.ADMIN_DASHBOARD.ANALYTIC,
+            {
+                params: {
+                    Type: params.type,
+                    Year: params.year,
+                    Value: params.value,
+                }
+            }
         );
         return response;
     }

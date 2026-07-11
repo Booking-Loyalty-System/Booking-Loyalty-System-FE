@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// 🔥 ĐÃ XÓA IMPORT LAYOUT CŨ Ở ĐÂY
 import {
   DollarSign,
   Users,
@@ -11,6 +10,8 @@ import {
   Download,
   Settings,
   Save,
+  ArrowDownRight,
+  ArrowUpRight,
 } from "lucide-react";
 import {
   BarChart,
@@ -23,6 +24,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  Legend,
 } from "recharts";
 import { useAdminDashboard } from "@/features/products/application/useAdminDashboard";
 import type { TierDistributionData, RecentBooking } from "@/features/products/domain/models/admin-dashboard/admin-dashboard.model";
@@ -30,20 +32,25 @@ import type { TierDistributionData, RecentBooking } from "@/features/products/do
 export function AdminDashboard() {
   const navigate = useNavigate();
 
-  // 🌟 DÙNG custom hook `useAdminDashboard` để gọi các API tổng quan, recent-bookings, tier-config và export-rbl.
-  // Lý do chọn giải pháp này: Tách biệt hoàn toàn logic lấy dữ liệu (Application Layer) ra khỏi tầng hiển thị (Presentation Layer) giúp code sạch và dễ bảo trì.
+  const [dateFilter, setDateFilter] = useState({
+    fromDate: "2026-06-01",
+    toDate: "2026-06-30",
+    compareFromDate: "2026-05-01",
+    compareToDate: "2026-05-31",
+  });
+
   const {
     summary,
     recentBookings,
     tierConfig: serverTierConfig,
+    revenueComparison,
     isLoading,
     isError,
     updateTierConfig,
     isUpdatingTierConfig,
     exportRbl
-  } = useAdminDashboard();
+  } = useAdminDashboard(dateFilter);
 
-  // 🌟 DÙNG `useState` để lưu cấu hình Tier Multipliers dưới client, cho phép người dùng thay đổi trước khi lưu lên server.
   const [tierConfigState, setTierConfigState] = useState({
     memberMultiplier: 1,
     silverMultiplier: 1.5,
@@ -51,8 +58,6 @@ export function AdminDashboard() {
     platinumMultiplier: 3,
   });
 
-  // 🌟 DÙNG `useEffect` để đồng bộ hóa dữ liệu cấu hình hạng thành viên từ server vào state client sau khi tải xong.
-  // Lý do: Đảm bảo khi API trả về kết quả, form cấu hình sẽ nhận đúng giá trị thực tế của server chứ không dùng mock mặc định.
   useEffect(() => {
     if (serverTierConfig) {
       setTierConfigState({
@@ -64,23 +69,22 @@ export function AdminDashboard() {
     }
   }, [serverTierConfig]);
 
-  // Hàm helper để map class CSS màu sắc tương ứng cho trạng thái của booking
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "Completed":
-        return "bg-green-100 text-green-700";
+        return "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30";
       case "InProgress":
       case "CheckedIn":
-        return "bg-orange-100 text-orange-700";
+        return "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30";
       case "Pending":
-        return "bg-yellow-100 text-yellow-700";
+        return "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/30";
       case "Confirmed":
-        return "bg-blue-100 text-blue-700";
+        return "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-500/20 dark:text-indigo-400 dark:border-indigo-500/30";
       case "NoShow":
       case "Cancelled":
-        return "bg-red-100 text-red-700";
+        return "bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:border-rose-500/30";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-slate-100 text-slate-700 border-slate-200 dark:bg-white/10 dark:text-slate-300 dark:border-white/20";
     }
   };
 
@@ -90,6 +94,10 @@ export function AdminDashboard() {
 
   const handleSaveTierConfig = async () => {
     await updateTierConfig(tierConfigState);
+  };
+
+  const handleDateChange = (field: keyof typeof dateFilter, value: string) => {
+    setDateFilter((prev) => ({ ...prev, [field]: value }));
   };
 
   if (isLoading) {
@@ -102,11 +110,11 @@ export function AdminDashboard() {
 
   if (isError) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500 font-semibold mb-4">Đã xảy ra lỗi khi tải dữ liệu dashboard.</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      <div className="text-center py-12 bg-white dark:bg-[#111] rounded-[2.5rem] border border-rose-200 dark:border-rose-900/50 shadow-xl">
+        <p className="text-rose-500 font-bold mb-4">Đã xảy ra lỗi khi tải dữ liệu dashboard.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30"
         >
           Thử lại
         </button>
@@ -114,485 +122,460 @@ export function AdminDashboard() {
     );
   }
 
+  const comparisonChartData = revenueComparison ? [
+    {
+      name: 'Đối soát Doanh thu',
+      'Kỳ trước': revenueComparison.previousRevenue,
+      'Kỳ này': revenueComparison.currentRevenue,
+    }
+  ] : [];
+
   return (
-      <div className="animate-fade-in">
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-            {/* Sử dụng định dạng tiền tệ vi-VN theo quy định của dự án */}
-            <p className="text-2xl font-bold text-gray-900 mb-1">
-              {(summary?.metrics?.totalRevenue || 0).toLocaleString("vi-VN")} đ
-            </p>
-            <p className="text-sm text-gray-600">Total Revenue</p>
-          </div>
+    <div className="animate-fade-in space-y-8 text-slate-900 dark:text-slate-100 pb-12">
+      
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight">Admin Overview</h1>
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">
+            Theo dõi tổng quan doanh thu và hiệu suất kinh doanh.
+          </p>
+        </div>
+      </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: 'Total Revenue', value: `${(summary?.metrics?.totalRevenue || 0).toLocaleString("vi-VN")} đ`, icon: DollarSign, color: 'emerald' },
+          { label: 'Total Bookings', value: summary?.metrics?.totalBookings || 0, icon: Calendar, color: 'blue' },
+          { label: 'Active Customers', value: summary?.metrics?.activeCustomers || 0, icon: Users, color: 'purple' },
+          { label: 'Average Order Value', value: `${Math.round(summary?.metrics?.averageOrderValue || 0).toLocaleString("vi-VN")} đ`, icon: TrendingUp, color: 'amber' }
+        ].map((metric, idx) => (
+          <div key={idx} className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2rem] p-6 border border-slate-200/60 dark:border-white/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-blue-600" />
+              <div className={`w-14 h-14 bg-${metric.color}-100 dark:bg-${metric.color}-500/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                <metric.icon className={`w-7 h-7 text-${metric.color}-600 dark:text-${metric.color}-400`} />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">
-              {summary?.metrics?.totalBookings || 0}
+            <p className="text-3xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">
+              {metric.value}
             </p>
-            <p className="text-sm text-gray-600">Total Bookings</p>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+              {metric.label}
+            </p>
           </div>
+        ))}
+      </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-purple-600" />
+      {/* REVENUE AUDITING & COMPARISON */}
+      <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg">
+        <div className="border-b border-slate-100 dark:border-white/5 pb-6 mb-8">
+          <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">Revenue Auditing & Comparison</h3>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">So sánh đối soát doanh thu dựa trên các khoảng thời gian tùy chọn</p>
+
+          {/* Form chọn khoảng mốc ngày */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 p-6 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
+            {/* Cụm Kỳ Này */}
+            <div className="space-y-3">
+              <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest block">Kỳ muốn coi (Kỳ này)</span>
+              <div className="flex items-center gap-3">
+                <input
+                  type="date"
+                  value={dateFilter.fromDate}
+                  onChange={(e) => handleDateChange('fromDate', e.target.value)}
+                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                />
+                <span className="text-slate-400 text-xs font-black uppercase">đến</span>
+                <input
+                  type="date"
+                  value={dateFilter.toDate}
+                  onChange={(e) => handleDateChange('toDate', e.target.value)}
+                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">
-              {summary?.metrics?.activeCustomers || 0}
-            </p>
-            <p className="text-sm text-gray-600">Active Customers</p>
-          </div>
 
-          <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-orange-600" />
+            {/* Cụm Kỳ Trước */}
+            <div className="space-y-3">
+              <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block">Kỳ đối chứng (Kỳ trước)</span>
+              <div className="flex items-center gap-3">
+                <input
+                  type="date"
+                  value={dateFilter.compareFromDate}
+                  onChange={(e) => handleDateChange('compareFromDate', e.target.value)}
+                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 focus:ring-4 focus:ring-slate-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                />
+                <span className="text-slate-400 text-xs font-black uppercase">đến</span>
+                <input
+                  type="date"
+                  value={dateFilter.compareToDate}
+                  onChange={(e) => handleDateChange('compareToDate', e.target.value)}
+                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 focus:ring-4 focus:ring-slate-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">
-              {Math.round(summary?.metrics?.averageOrderValue || 0).toLocaleString("vi-VN")} đ
-            </p>
-            <p className="text-sm text-gray-600">Average Order Value</p>
           </div>
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Revenue Chart */}
-          <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-gray-200">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">
-                Revenue Overview
-              </h3>
-              <div className="flex items-center gap-2">
-                <button
-                    onClick={handleExportRBL}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  Export RBL Dataset
-                </button>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center">
+          {/* Thống kê con số */}
+          <div className="space-y-6">
+            <div>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Doanh thu kỳ này</span>
+              <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                {(revenueComparison?.currentRevenue || 0).toLocaleString("vi-VN")} đ
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={summary?.revenueChart || []} id="revenue-bar-chart">
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+
+            {/* Tỉ lệ tăng trưởng (%) */}
+            <div>
+              {(revenueComparison?.growthRate || 0) >= 0 ? (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 shadow-sm">
+                  <ArrowUpRight className="w-5 h-5" />
+                  <span>+{revenueComparison?.growthRate}%</span>
+                  <span className="text-emerald-500 dark:text-emerald-500/70 ml-1">tăng trưởng</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 shadow-sm">
+                  <ArrowDownRight className="w-5 h-5" />
+                  <span>{revenueComparison?.growthRate}%</span>
+                  <span className="text-rose-500 dark:text-rose-500/70 ml-1">sụt giảm</span>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-6 border-t border-slate-100 dark:border-white/5">
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-1">Doanh thu kỳ trước</span>
+              <span className="text-xl font-bold text-slate-600 dark:text-slate-400">
+                {(revenueComparison?.previousRevenue || 0).toLocaleString("vi-VN")} đ
+              </span>
+            </div>
+          </div>
+
+          {/* Biểu đồ cột so sánh */}
+          <div className="lg:col-span-2 h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={comparisonChartData} barGap={16}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 13, fontWeight: 'bold' }} />
+                <YAxis hide />
                 <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#fff",
-                      border: "1px solid #e5e7eb",
-                      borderRadius: "8px",
-                    }}
-                    formatter={(value) => [`${Number(value).toLocaleString("vi-VN")} đ`, "Revenue"]}
+                  formatter={(value) => [`${Number(value).toLocaleString("vi-VN")} đ`]}
+                  contentStyle={{ borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', fontWeight: 'bold' }}
                 />
-                <Bar dataKey="revenue" fill="#2563eb" radius={[8, 8, 0, 0]} />
+                <Legend verticalAlign="top" height={40} iconType="circle" iconSize={10} wrapperStyle={{ fontWeight: 'bold' }} />
+                <Bar dataKey="Kỳ trước" fill="#94a3b8" radius={[8, 8, 0, 0]} maxBarSize={70} />
+                <Bar dataKey="Kỳ này" fill="#3b82f6" radius={[8, 8, 0, 0]} maxBarSize={70} />
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
 
-          {/* Tier Distribution */}
-          <div className="bg-white rounded-xl p-6 border border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">
-              Membership Tiers
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Revenue Chart */}
+        <div className="lg:col-span-2 bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+              Revenue Overview
             </h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart id="tier-pie-chart">
-                <Pie
-                    data={summary?.tierDistribution || []}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                >
-                  {(summary?.tierDistribution || []).map((entry: TierDistributionData, index: number) => (
-                      <Cell key={`cell-${index}`} fill={entry.color || "#3b82f6"} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => [`${value} customers`, "Count"]} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="mt-4 space-y-2">
-              {(summary?.tierDistribution || []).map((tier: TierDistributionData) => (
-                  <div
-                      key={tier.name}
-                      className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: tier.color || "#3b82f6" }}
-                      ></div>
-                      <span className="text-sm text-gray-700">{tier.name}</span>
-                    </div>
-                    <span className="text-sm font-semibold text-gray-900">
-                  {tier.value}
-                </span>
-                  </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Bookings */}
-        <div className="bg-white rounded-xl border border-gray-200 mb-8">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900">
-                Recent Bookings
-              </h3>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Booking ID
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Customer
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Service
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Status
-                </th>
-              </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-              {(recentBookings || []).map((booking: RecentBooking) => (
-                  <tr key={booking.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <code className="text-xs font-semibold text-blue-600" title={booking.id}>
-                        {booking.id.substring(0, 8)}...
-                      </code>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {booking.customer}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {booking.service}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900">
-                      {booking.amount.toLocaleString("vi-VN")} đ
-                    </td>
-                    <td className="px-6 py-4">
-                    <span
-                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(booking.status)}`}
-                    >
-                      {booking.status}
-                    </span>
-                    </td>
-                  </tr>
-              ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Tier Configuration Panel */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Settings className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900">
-                Tier Rules & Configuration
-              </h3>
-            </div>
             <button
-                onClick={handleSaveTierConfig}
-                disabled={isUpdatingTierConfig}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              onClick={handleExportRBL}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all"
             >
-              <Save className="w-4 h-4" />
-              {isUpdatingTierConfig ? "Saving..." : "Save Changes"}
+              <Download className="w-4 h-4" />
+              Export Dataset
             </button>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Member Tier Config */}
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Award className="w-5 h-5 text-blue-600" />
-                <h4 className="font-semibold text-gray-900">Member</h4>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Range
-                  </label>
-                  <input
-                      type="text"
-                      value="0 - 299"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Multiplier
-                  </label>
-                  <input
-                      type="number"
-                      value={tierConfigState.memberMultiplier}
-                      onChange={(e) =>
-                        setTierConfigState({
-                          ...tierConfigState,
-                          memberMultiplier: parseFloat(e.target.value) || 0,
-                        })
-                      }
-                      step="0.1"
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Booking Window
-                  </label>
-                  <input
-                      type="text"
-                      value="7 days"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Silver Tier Config */}
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-300">
-              <div className="flex items-center gap-2 mb-3">
-                <Award className="w-5 h-5 text-gray-600" />
-                <h4 className="font-semibold text-gray-900">Silver</h4>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Range
-                  </label>
-                  <input
-                      type="text"
-                      value="300 - 599"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Multiplier
-                  </label>
-                  <input
-                      type="number"
-                      value={tierConfigState.silverMultiplier}
-                      onChange={(e) =>
-                        setTierConfigState({
-                          ...tierConfigState,
-                          silverMultiplier: parseFloat(e.target.value) || 0,
-                        })
-                      }
-                      step="0.1"
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Booking Window
-                  </label>
-                  <input
-                      type="text"
-                      value="10 days"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Gold Tier Config */}
-            <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-300">
-              <div className="flex items-center gap-2 mb-3">
-                <Award className="w-5 h-5 text-yellow-600" />
-                <h4 className="font-semibold text-gray-900">Gold</h4>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Range
-                  </label>
-                  <input
-                      type="text"
-                      value="600 - 999"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Multiplier
-                  </label>
-                  <input
-                      type="number"
-                      value={tierConfigState.goldMultiplier}
-                      onChange={(e) =>
-                        setTierConfigState({
-                          ...tierConfigState,
-                          goldMultiplier: parseFloat(e.target.value) || 0,
-                        })
-                      }
-                      step="0.1"
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Booking Window
-                  </label>
-                  <input
-                      type="text"
-                      value="12 days"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Platinum Tier Config */}
-            <div className="bg-purple-50 rounded-lg p-4 border border-purple-300">
-              <div className="flex items-center gap-2 mb-3">
-                <Award className="w-5 h-5 text-purple-600" />
-                <h4 className="font-semibold text-gray-900">Platinum</h4>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Range
-                  </label>
-                  <input
-                      type="text"
-                      value="1000+"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Points Multiplier
-                  </label>
-                  <input
-                      type="number"
-                      value={tierConfigState.platinumMultiplier}
-                      onChange={(e) =>
-                        setTierConfigState({
-                          ...tierConfigState,
-                          platinumMultiplier: parseFloat(e.target.value) || 0,
-                        })
-                      }
-                      step="0.1"
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-600 mb-1 block">
-                    Booking Window
-                  </label>
-                  <input
-                      type="text"
-                      value="14 days"
-                      disabled
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Note:</strong> Points Formula: Points = (Payment Amount /
-              1000) × Tier Multiplier. Changes to multipliers will affect future
-              point calculations.
-            </p>
-          </div>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={summary?.revenueChart || []} id="revenue-bar-chart">
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="month" stroke="#64748b" tick={{ fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+              <YAxis stroke="#64748b" tick={{ fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "rgba(255, 255, 255, 0.95)",
+                  border: "none",
+                  borderRadius: "16px",
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                  fontWeight: 'bold',
+                }}
+                formatter={(value) => [`${Number(value).toLocaleString("vi-VN")} đ`, "Revenue"]}
+                cursor={{ fill: 'rgba(59,130,246,0.05)' }}
+              />
+              <Bar dataKey="revenue" fill="#3b82f6" radius={[8, 8, 0, 0]} maxBarSize={40} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Quick Actions */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">Management</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div
-                onClick={() => navigate("/admin/loyalty")}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all hover:border-blue-300 cursor-pointer group"
-            >
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors">
-                <Award className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">
-                Loyalty Programs
-              </h4>
-              <p className="text-sm text-gray-600">Manage tiers and rewards</p>
-            </div>
-
-            <div
-                onClick={() => navigate("/admin/promotions")}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all hover:border-blue-300 cursor-pointer group"
-            >
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-600 transition-colors">
-                <Megaphone className="w-6 h-6 text-orange-600 group-hover:text-white transition-colors" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Promotions</h4>
-              <p className="text-sm text-gray-600">Create and manage campaigns</p>
-            </div>
-
-            <div
-                onClick={() => navigate("/admin/analytics")}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all hover:border-blue-300 cursor-pointer group"
-            >
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
-                <TrendingUp className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">
-                Customer Analytics
-              </h4>
-              <p className="text-sm text-gray-600">View detailed reports</p>
-            </div>
-
-            <div
-                onClick={() => navigate("/admin/staff")}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all hover:border-blue-300 cursor-pointer group"
-            >
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-600 transition-colors">
-                <Users className="w-6 h-6 text-green-600 group-hover:text-white transition-colors" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">
-                Staff Management
-              </h4>
-              <p className="text-sm text-gray-600">Manage team and roles</p>
+        {/* Tier Distribution */}
+        <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg flex flex-col">
+          <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6">
+            Membership Tiers
+          </h3>
+          <div className="flex-1 flex flex-col justify-center">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart id="tier-pie-chart">
+                <Pie
+                  data={summary?.tierDistribution || []}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={95}
+                  paddingAngle={8}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {(summary?.tierDistribution || []).map((entry: TierDistributionData, index: number) => (
+                    <Cell key={`cell-${index}`} fill={entry.color || "#3b82f6"} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => [`${value} customers`, "Count"]}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', fontWeight: 'bold' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="mt-8 space-y-3">
+              {(summary?.tierDistribution || []).map((tier: TierDistributionData) => (
+                <div
+                  key={tier.name}
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-3.5 h-3.5 rounded-full shadow-sm"
+                      style={{ backgroundColor: tier.color || "#3b82f6" }}
+                    ></div>
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{tier.name}</span>
+                  </div>
+                  <span className="text-sm font-black text-slate-900 dark:text-white">
+                    {tier.value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Recent Bookings */}
+      <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg overflow-hidden">
+        <div className="p-8 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+          <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            Recent Bookings
+          </h3>
+        </div>
+        <div className="overflow-x-auto custom-scrollbar p-2">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-slate-100 dark:border-white/5">
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Booking ID</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Customer</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Service</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Amount</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50 dark:divide-white/5">
+              {(recentBookings || []).map((booking: RecentBooking) => (
+                <tr key={booking.id} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-5">
+                    <code className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 py-1 rounded-md" title={booking.id}>
+                      {booking.id.substring(0, 8)}...
+                    </code>
+                  </td>
+                  <td className="px-6 py-5 text-sm font-bold text-slate-900 dark:text-white">
+                    {booking.customer}
+                  </td>
+                  <td className="px-6 py-5 text-sm font-medium text-slate-600 dark:text-slate-300">
+                    {booking.service}
+                  </td>
+                  <td className="px-6 py-5 text-sm font-black text-slate-900 dark:text-white">
+                    {booking.amount.toLocaleString("vi-VN")} đ
+                  </td>
+                  <td className="px-6 py-5">
+                    <span
+                      className={`inline-flex px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border ${getStatusBadgeClass(booking.status)}`}
+                    >
+                      {booking.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Tier Configuration Panel */}
+      <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg p-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <Settings className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                Tier Rules & Configuration
+              </h3>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">Quản lý hệ số nhân điểm cho các hạng thành viên</p>
+            </div>
+          </div>
+          <button
+            onClick={handleSaveTierConfig}
+            disabled={isUpdatingTierConfig}
+            className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50"
+          >
+            <Save className="w-5 h-5" />
+            {isUpdatingTierConfig ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Member Tier Config */}
+          <div className="bg-slate-50 dark:bg-white/5 rounded-2xl p-6 border border-slate-100 dark:border-white/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-slate-200/50 dark:bg-slate-700/20 rounded-bl-full -mr-4 -mt-4"></div>
+            <div className="flex items-center gap-3 mb-5 relative z-10">
+              <Award className="w-6 h-6 text-slate-500" />
+              <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Member</h4>
+            </div>
+            <div className="space-y-4 relative z-10">
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">
+                  Points Range
+                </label>
+                <input type="text" value="0 - 299" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-500 opacity-70" />
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">
+                  Points Multiplier
+                </label>
+                <input
+                  type="number"
+                  value={tierConfigState.memberMultiplier}
+                  onChange={(e) => setTierConfigState({ ...tierConfigState, memberMultiplier: parseFloat(e.target.value) || 0 })}
+                  step="0.1"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Silver Tier Config */}
+          <div className="bg-slate-100/80 dark:bg-slate-800/40 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-slate-300/50 dark:bg-slate-600/30 rounded-bl-full -mr-4 -mt-4"></div>
+            <div className="flex items-center gap-3 mb-5 relative z-10">
+              <Award className="w-6 h-6 text-slate-600 dark:text-slate-300" />
+              <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Silver</h4>
+            </div>
+            <div className="space-y-4 relative z-10">
+              <div>
+                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">Points Range</label>
+                <input type="text" value="300 - 599" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-500 opacity-70" />
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">Points Multiplier</label>
+                <input
+                  type="number"
+                  value={tierConfigState.silverMultiplier}
+                  onChange={(e) => setTierConfigState({ ...tierConfigState, silverMultiplier: parseFloat(e.target.value) || 0 })}
+                  step="0.1"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Gold Tier Config */}
+          <div className="bg-amber-50 dark:bg-amber-500/10 rounded-2xl p-6 border border-amber-200 dark:border-amber-500/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-amber-200/50 dark:bg-amber-500/20 rounded-bl-full -mr-4 -mt-4"></div>
+            <div className="flex items-center gap-3 mb-5 relative z-10">
+              <Award className="w-6 h-6 text-amber-500" />
+              <h4 className="font-extrabold text-lg text-amber-700 dark:text-amber-400">Gold</h4>
+            </div>
+            <div className="space-y-4 relative z-10">
+              <div>
+                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">Points Range</label>
+                <input type="text" value="600 - 999" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-amber-200 dark:border-amber-500/20 rounded-xl text-sm font-bold text-amber-600/70 dark:text-amber-400/70 opacity-70" />
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">Points Multiplier</label>
+                <input
+                  type="number"
+                  value={tierConfigState.goldMultiplier}
+                  onChange={(e) => setTierConfigState({ ...tierConfigState, goldMultiplier: parseFloat(e.target.value) || 0 })}
+                  step="0.1"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-amber-200 dark:border-amber-500/20 rounded-xl text-sm font-bold text-amber-700 dark:text-amber-400 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Platinum Tier Config */}
+          <div className="bg-fuchsia-50 dark:bg-fuchsia-500/10 rounded-2xl p-6 border border-fuchsia-200 dark:border-fuchsia-500/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-fuchsia-200/50 dark:bg-fuchsia-500/20 rounded-bl-full -mr-4 -mt-4"></div>
+            <div className="flex items-center gap-3 mb-5 relative z-10">
+              <Award className="w-6 h-6 text-fuchsia-500" />
+              <h4 className="font-extrabold text-lg text-fuchsia-700 dark:text-fuchsia-400">Platinum</h4>
+            </div>
+            <div className="space-y-4 relative z-10">
+              <div>
+                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">Points Range</label>
+                <input type="text" value="1000+" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-fuchsia-200 dark:border-fuchsia-500/20 rounded-xl text-sm font-bold text-fuchsia-600/70 dark:text-fuchsia-400/70 opacity-70" />
+              </div>
+              <div>
+                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">Points Multiplier</label>
+                <input
+                  type="number"
+                  value={tierConfigState.platinumMultiplier}
+                  onChange={(e) => setTierConfigState({ ...tierConfigState, platinumMultiplier: parseFloat(e.target.value) || 0 })}
+                  step="0.1"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-fuchsia-200 dark:border-fuchsia-500/20 rounded-xl text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400 focus:outline-none focus:border-fuchsia-500 focus:ring-4 focus:ring-fuchsia-500/20 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 p-5 bg-blue-50/50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-xl flex items-start gap-3">
+          <div className="bg-blue-100 dark:bg-blue-500/30 p-1.5 rounded-lg shrink-0 mt-0.5">
+            <Settings className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">
+            <span className="font-extrabold uppercase tracking-widest text-[10px]">Công thức:</span><br/>
+            Điểm nhận được = (Tổng tiền thanh toán / 1000) × Hệ số hạng (Tier Multiplier). Việc thay đổi hệ số chỉ áp dụng cho các giao dịch trong tương lai.
+          </p>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6">Quick Management</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { title: 'Loyalty Programs', desc: 'Manage tiers and rewards', icon: Award, color: 'purple', path: '/admin/loyalty' },
+            { title: 'Promotions', desc: 'Create and manage campaigns', icon: Megaphone, color: 'orange', path: '/admin/promotions' },
+            { title: 'Customer Analytics', desc: 'View detailed reports', icon: TrendingUp, color: 'blue', path: '/admin/analytics' },
+            { title: 'Staff Management', desc: 'Manage team and roles', icon: Users, color: 'emerald', path: '/admin/staff' }
+          ].map((action, idx) => (
+            <div
+              key={idx}
+              onClick={() => navigate(action.path)}
+              className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2rem] p-6 border border-slate-200/60 dark:border-white/5 hover:shadow-xl hover:-translate-y-1 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 cursor-pointer group"
+            >
+              <div className={`w-14 h-14 bg-${action.color}-100 dark:bg-${action.color}-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-${action.color}-500 transition-colors duration-300`}>
+                <action.icon className={`w-7 h-7 text-${action.color}-600 dark:text-${action.color}-400 group-hover:text-white transition-colors`} />
+              </div>
+              <h4 className="text-lg font-extrabold text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {action.title}
+              </h4>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{action.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

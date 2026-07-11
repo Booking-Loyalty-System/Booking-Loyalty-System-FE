@@ -4,8 +4,7 @@ import { useStaff } from "@/features/products/application/useStaff.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import { usePayment } from "@/features/products/application/usePayment.ts";
 import { toast } from "sonner";
-// Đã thêm HelpCircle icon cho popup xác nhận
-import { Car, MapPin, User, X, HelpCircle } from "lucide-react";
+import { Car, MapPin, User, X, Loader2 } from "lucide-react";
 import {
   type DashboardBooking,
   DashboardStats,
@@ -46,12 +45,6 @@ export const StaffDashboard: React.FC = () => {
     useState<DashboardBooking | null>(null);
   const [selectedBookingForCheckout, setSelectedBookingForCheckout] =
     useState<DashboardBooking | null>(null);
-
-  // 🌟 1. State mới để quản lý Popup Xác Nhận Thanh Toán
-  const [confirmPaymentAction, setConfirmPaymentAction] = useState<
-    "cash" | "payos" | null
-  >(null);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -64,7 +57,6 @@ export const StaffDashboard: React.FC = () => {
     scanQr,
     noShowBooking,
   } = useBooking({ loadMyBookings: false });
-
   const { createPayOsUrl } = usePayment();
 
   const actions: DashboardActions = {
@@ -85,7 +77,6 @@ export const StaffDashboard: React.FC = () => {
       bookingCode.includes(search) ||
       vehicleName.includes(search) ||
       licensePlate.includes(search);
-
     const matchesStatus = statusFilter === "All" || b.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -156,7 +147,6 @@ export const StaffDashboard: React.FC = () => {
           }
           break;
       }
-
       toast.success(`Thao tác thành công!`);
       queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
     } catch (error) {
@@ -165,8 +155,7 @@ export const StaffDashboard: React.FC = () => {
     }
   };
 
-  // 🌟 2. Các hàm thực thi thanh toán chính thức
-  const executeCash = async () => {
+  const handleConfirmCash = async () => {
     if (!selectedBookingForCheckout) return;
     try {
       await actions.checkout(selectedBookingForCheckout.id);
@@ -179,33 +168,22 @@ export const StaffDashboard: React.FC = () => {
     }
   };
 
-  const executePayOS = async () => {
-    if (!selectedBookingForCheckout) return;
+  const handleConfirmPayOS = async (): Promise<string> => {
+    if (!selectedBookingForCheckout) return "";
     const toastId = toast.loading("Đang khởi tạo cổng thanh toán PayOS...");
     try {
       const response = await createPayOsUrl(selectedBookingForCheckout.id);
       toast.dismiss(toastId);
-
-      if (!response) {
-        throw new Error("Không nhận được phản hồi từ máy chủ");
-      }
-
-      let url = "";
-      if (typeof response === "object" && "checkoutUrl" in response) {
-        url = (response as any).checkoutUrl;
-      } else {
-        url = response as unknown as string;
-      }
-
-      // Chuyển hướng người dùng ngay tại đây sau khi xác nhận thành công
-      if (url) {
-        window.location.href = url;
-      }
+      if (!response) throw new Error("Không nhận được phản hồi từ máy chủ");
+      if (typeof response === "object" && "checkoutUrl" in response)
+        return (response as any).checkoutUrl;
+      return response as unknown as string;
     } catch (error) {
       console.error(error);
       toast.error("Không thể kết nối đến cổng thanh toán PayOS", {
         id: toastId,
       });
+      throw error;
     }
   };
 
@@ -215,18 +193,15 @@ export const StaffDashboard: React.FC = () => {
 
     if (paymentStatus) {
       queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
-
       const isSuccess = paymentStatus === "success";
       const audioFile = isSuccess ? "/sound/payment.mp3" : "/sound/payment.mp3";
       const message = isSuccess ? "Thanh toán thành công!" : "Hủy thanh toán!";
       const desc = isSuccess
         ? "Giao dịch đã được xác nhận."
         : "Giao dịch link thanh toán đã bị hủy bỏ hoặc hết hạn.";
-      if (isSuccess) {
+      if (isSuccess)
         toast.success(message, { description: desc, duration: 5000 });
-      } else {
-        toast.error(message, { description: desc, duration: 10000 });
-      }
+      else toast.error(message, { description: desc, duration: 10000 });
 
       setTimeout(() => {
         const audio = new Audio(audioFile);
@@ -238,114 +213,122 @@ export const StaffDashboard: React.FC = () => {
           window.addEventListener("click", playOnFirstClick);
         });
       }, 500);
-
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [queryClient]);
 
   if (isStaffLoading)
     return (
-      <div className="p-8 space-y-8 max-w-7xl mx-auto">
-        <div className="h-10 w-64 bg-slate-200 rounded-lg animate-pulse"></div>
+      <div className="space-y-10 w-full animate-pulse">
+        <div className="h-12 w-64 bg-slate-200 dark:bg-white/5 rounded-2xl"></div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="h-36 bg-slate-100 rounded-2xl animate-pulse"
+              className="h-40 bg-slate-200 dark:bg-white/5 rounded-[2rem]"
             ></div>
           ))}
         </div>
-        <div className="h-96 bg-slate-100 rounded-2xl animate-pulse"></div>
+        <div className="h-[500px] bg-slate-200 dark:bg-white/5 rounded-[2.5rem]"></div>
       </div>
     );
 
   return (
-    <div className="space-y-8 font-sans antialiased text-slate-800 pb-12">
-      {/* --- HEADER --- */}
+    <div className="space-y-10 text-slate-800 dark:text-slate-100 animate-fade-in w-full">
+      {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Staff Dashboard
           </h1>
-          {staffProfile && (
-            <div className="mt-4 inline-flex items-center gap-4 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2">
-                <div className="bg-blue-100 p-1.5 rounded-full text-blue-600">
-                  <User className="w-4 h-4" />
-                </div>
-                <span className="text-sm text-slate-600">
-                  Xin chào,{" "}
-                  <span className="font-bold text-slate-900">
-                    {staffProfile.fullName}
-                  </span>
-                </span>
-              </div>
-              <div className="w-px h-4 bg-slate-300"></div>
-              <div className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
-                <MapPin className="w-4 h-4 text-rose-500" />
-                {staffProfile.branch?.branchName || "Chi nhánh"}
-              </div>
-            </div>
-          )}
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+            Quản lý trạm rửa xe và theo dõi tiến độ công việc hôm nay.
+          </p>
         </div>
+
+        {staffProfile && (
+          <div className="inline-flex items-center gap-4 bg-white/80 dark:bg-[#111]/80 backdrop-blur-xl px-5 py-3 rounded-2xl border border-slate-200/50 dark:border-white/5 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-xl text-white shadow-md shadow-blue-500/20">
+                <User className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                Xin chào,{" "}
+                <span className="font-extrabold text-slate-900 dark:text-white">
+                  {staffProfile.fullName}
+                </span>
+              </span>
+            </div>
+            <div className="w-px h-5 bg-slate-200 dark:bg-white/10"></div>
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+              <MapPin className="w-4 h-4 text-rose-500" />
+              {staffProfile.branch?.branchName || "Chi nhánh"}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* --- THỐNG KÊ (DASHBOARD STATS) --- */}
+      {/* STATS */}
       <DashboardStats
         bookings={bookings}
         localDate={selectedDate}
         setLocalDate={setSelectedDate}
       />
 
-      {/* --- DANH SÁCH LỊCH ĐẶT --- */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <BookingTableFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          onOpenQr={() => setIsQrModalOpen(true)}
-        />
+      {/* DANH SÁCH LỊCH ĐẶT */}
+      <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-xl shadow-slate-200/20 dark:shadow-black/20 overflow-hidden flex flex-col transition-all duration-300">
+        <div className="p-2 border-b border-slate-100 dark:border-white/5">
+          <BookingTableFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            onOpenQr={() => setIsQrModalOpen(true)}
+          />
+        </div>
 
         {isBookingsLoading ? (
-          <div className="p-20 flex flex-col items-center justify-center bg-white">
-            <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-            <p className="text-sm font-semibold text-slate-500 animate-pulse">
-              Đang đồng bộ dữ liệu lịch đặt...
+          <div className="p-32 flex flex-col items-center justify-center bg-transparent">
+            <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
+            <p className="text-sm font-bold text-slate-500 dark:text-slate-400 animate-pulse">
+              Đang đồng bộ dữ liệu...
             </p>
           </div>
         ) : filteredBookings.length === 0 ? (
-          <div className="p-16 flex flex-col items-center justify-center text-slate-500 bg-white">
-            <p className="text-lg font-semibold text-slate-700">
-              Không có lịch đặt nào
+          <div className="p-32 flex flex-col items-center justify-center text-slate-500 bg-transparent text-center space-y-3">
+            <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-2">
+              <Car className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+            </div>
+            <p className="text-xl font-extrabold text-slate-700 dark:text-slate-300">
+              Không tìm thấy lịch đặt nào
             </p>
-            <p className="text-sm mt-1">
-              Thử thay đổi bộ lọc hoặc ngày xem sao nhé.
+            <p className="text-sm font-medium dark:text-slate-500">
+              Thử thay đổi bộ lọc hoặc chọn ngày khác xem sao nhé.
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-white border-b border-slate-200">
+              <thead className="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/5">
                 <tr>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
                     Mã Code
                   </th>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
                     Khách & Xe
                   </th>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
                     Dịch vụ
                   </th>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
                     Trạng thái
                   </th>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap text-right">
                     Thao tác
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="divide-y divide-slate-100 dark:divide-white/5 bg-transparent">
                 {filteredBookings.map((b) => (
                   <BookingTableRow
                     key={b.id}
@@ -360,20 +343,13 @@ export const StaffDashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Các Modal chức năng liên quan */}
+      {/* MODALS */}
       {selectedBookingForCheckout && (
         <CheckoutSummaryModal
           booking={selectedBookingForCheckout as BookingResponseData}
           onClose={() => setSelectedBookingForCheckout(null)}
-          // Thêm async để thỏa mãn Promise<void>
-          onConfirmCash={async () => {
-            setConfirmPaymentAction("cash");
-          }}
-          // Thêm async và return '' để thỏa mãn Promise<string>
-          onConfirmPayOS={async () => {
-            setConfirmPaymentAction("payos");
-            return "";
-          }}
+          onConfirmCash={handleConfirmCash}
+          onConfirmPayOS={handleConfirmPayOS}
         />
       )}
 
@@ -384,22 +360,22 @@ export const StaffDashboard: React.FC = () => {
         />
       )}
 
-      {/* Modal chi tiết lịch đặt */}
+      {/* Modal chi tiết lịch đặt - Premium */}
       {selectedBookingDetail && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden flex flex-col">
-            <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold">
-                  <Car className="w-5 h-5" />
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-[#111] rounded-[2rem] shadow-2xl border border-slate-200 dark:border-white/10 w-full max-w-md overflow-hidden flex flex-col transform scale-100 animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                  <Car className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="font-extrabold text-lg text-slate-900">
+                  <h2 className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
                     Chi Tiết Lịch Đặt
                   </h2>
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className="text-xs text-slate-500 font-bold mt-0.5">
                     Mã:{" "}
-                    <span className="font-bold text-blue-600">
+                    <span className="text-blue-600 dark:text-blue-400">
                       {selectedBookingDetail.bookingCode}
                     </span>
                   </p>
@@ -407,110 +383,94 @@ export const StaffDashboard: React.FC = () => {
               </div>
               <button
                 onClick={() => setSelectedBookingDetail(null)}
-                className="p-2 hover:bg-slate-200/70 text-slate-400 hover:text-slate-700 rounded-xl transition-all"
+                className="p-2.5 bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-xl transition-all shadow-sm border border-slate-200/50 dark:border-white/5"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
-              <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100/50">
+            <div className="p-6 space-y-6">
+              <div className="flex items-center justify-between p-5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-500/10 dark:to-indigo-500/10 rounded-2xl border border-blue-100 dark:border-blue-500/20">
                 <div>
-                  <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">
+                  <p className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1">
                     Biển số xe
                   </p>
-                  <p className="text-2xl font-black text-slate-900">
+                  <p className="text-2xl font-black text-slate-900 dark:text-white">
                     {selectedBookingDetail.licensePlate}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">
+                  <p className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1">
                     Dòng xe
                   </p>
-                  <p className="text-lg font-bold text-slate-700">
+                  <p className="text-lg font-bold text-slate-700 dark:text-slate-300">
                     {selectedBookingDetail.vehicleName}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
-                  <span className="text-sm font-medium text-slate-500">
-                    Dịch vụ:
-                  </span>
-                  <span className="text-sm font-bold text-slate-900 text-right max-w-[60%]">
-                    {selectedBookingDetail.serviceName}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
-                  <span className="text-sm font-medium text-slate-500">
-                    Khung giờ:
-                  </span>
-                  <span className="text-sm font-bold text-slate-900">
-                    {selectedBookingDetail.startTime} -{" "}
-                    {selectedBookingDetail.bookingDate}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-100 border-dashed">
-                  <span className="text-sm font-medium text-slate-500">
-                    Trạng thái:
-                  </span>
-                  <span className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded uppercase tracking-wider">
-                    {selectedBookingDetail.status}
-                  </span>
-                </div>
+              <div className="space-y-4">
+                {[
+                  {
+                    label: "Dịch vụ:",
+                    value: selectedBookingDetail.serviceName,
+                    primary: true,
+                  },
+                  {
+                    label: "Khung giờ:",
+                    value: `${selectedBookingDetail.startTime} - ${selectedBookingDetail.bookingDate}`,
+                  },
+                  {
+                    label: "Trạng thái:",
+                    value: selectedBookingDetail.status,
+                    isStatus: true,
+                  },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between items-center py-3 border-b border-slate-100 dark:border-white/5 border-dashed"
+                  >
+                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                      {item.label}
+                    </span>
+                    {item.isStatus ? (
+                      <span className="text-[10px] font-black px-3 py-1.5 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-lg uppercase tracking-widest shadow-sm">
+                        {item.value}
+                      </span>
+                    ) : (
+                      <span
+                        className={`text-sm font-bold text-right max-w-[60%] ${item.primary ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"}`}
+                      >
+                        {item.value}
+                      </span>
+                    )}
+                  </div>
+                ))}
+
+                {selectedBookingDetail.status === "Cancelled" &&
+                  (selectedBookingDetail.cancelReason ||
+                    selectedBookingDetail.cancellationReason) && (
+                    <div className="mt-4 p-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-xl">
+                      <div className="text-[10px] font-black text-rose-400 dark:text-rose-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <X size={12} className="text-rose-500" /> Lý do hủy
+                      </div>
+                      <div className="text-sm font-bold text-rose-700 dark:text-rose-400 italic leading-snug">
+                        "
+                        {selectedBookingDetail.cancelReason ||
+                          selectedBookingDetail.cancellationReason}
+                        "
+                      </div>
+                    </div>
+                  )}
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-3">
+            <div className="p-5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex gap-3">
               <button
                 onClick={() => setSelectedBookingDetail(null)}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-100 transition-colors"
+                className="flex-1 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111] text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm"
               >
                 Đóng
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 🌟 4. Popup Modal Xác Nhận Thanh Toán (Nằm trên cùng) */}
-      {confirmPaymentAction && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[150] p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col border border-slate-200 transform transition-all">
-            <div className="p-6 text-center space-y-4">
-              <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                <HelpCircle className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900">
-                Xác nhận thanh toán
-              </h3>
-              <p className="text-slate-500 text-sm leading-relaxed">
-                Bạn có chắc chắn muốn tiến hành thanh toán bằng phương thức{" "}
-                <br />
-                <span className="font-bold text-blue-600 text-base uppercase">
-                  {confirmPaymentAction === "cash" ? "Tiền mặt" : "PayOS"}
-                </span>{" "}
-                ?
-              </p>
-            </div>
-            <div className="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
-              <button
-                onClick={() => setConfirmPaymentAction(null)}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-200 transition-colors"
-              >
-                Hủy bỏ
-              </button>
-              <button
-                onClick={() => {
-                  const action = confirmPaymentAction;
-                  setConfirmPaymentAction(null); // Đóng popup xác nhận trước
-                  if (action === "cash") executeCash();
-                  else executePayOS();
-                }}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-md shadow-blue-200 transition-all active:scale-95"
-              >
-                Đồng ý
               </button>
             </div>
           </div>
