@@ -63,6 +63,15 @@ export interface MyBookingRecord {
     qrData: string | null;
     createdAt: string;
     features: string | string[];
+    cancelReason?: string;
+    cancellationReason?: string;
+    images?: {
+        id: string;
+        imageUrl: string;
+        type: string;
+        note?: string;
+        createdAt: string;
+    }[];
     feedbackResponse: {
         bookingCode: string;
         customerName: string;

@@ -8,6 +8,7 @@ export const apiClient = axios.create({
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
     },
 });
 
@@ -19,7 +20,9 @@ apiClient.interceptors.request.use(
         if (token && config.headers && !isRefreshRequest) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        
+        if (config.headers) {
+            config.headers['ngrok-skip-browser-warning'] = 'true';
+        }
         // BÍ KÍP ĐA NGÔN NGỮ (i18n): Gắn ngôn ngữ hiện tại vào mọi request
         // Backend sẽ dùng Header này để trả về dữ liệu tương ứng (tiếng Việt hoặc Anh)
         const currentLang = localStorage.getItem('autowash-lang') || 'en';
@@ -62,6 +65,7 @@ apiClient.interceptors.response.use(
                     }
 
                     originalRequest.headers.Authorization = `Bearer ${tokenData.accessToken}`;
+                    originalRequest.headers['ngrok-skip-browser-warning'] = 'true';
                     return apiClient(originalRequest);
                 }
             } catch (refreshError) {
