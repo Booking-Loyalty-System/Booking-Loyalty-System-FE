@@ -66,8 +66,13 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ bookingId, booking
         try {
             await submitFeedback({ bookingId, serviceRating, staffRating, priceRating, comment });
             onClose();
-        } catch {
+        } catch (error: any) {
             // Lỗi đã được xử lý và hiển thị toast trong useFeedback
+            // Nếu AI phát hiện văn tục/nội dung không phù hợp, tự động xoá ô comment
+            const errorMsg = (error?.message || '').toLowerCase();
+            if (errorMsg.includes('phù hợp') || errorMsg.includes('văn tục') || errorMsg.includes('tục tĩu') || errorMsg.includes('thô tục') || errorMsg.includes('vi phạm') || errorMsg.includes('chửi') || errorMsg.includes('lăng mạ') || errorMsg.includes('xúc phạm')) {
+                setComment('');
+            }
         }
     };
 
