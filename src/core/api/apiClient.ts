@@ -20,6 +20,7 @@ apiClient.interceptors.request.use(
         if (token && config.headers && !isRefreshRequest) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
         if (config.headers) {
             config.headers['ngrok-skip-browser-warning'] = 'true';
         }

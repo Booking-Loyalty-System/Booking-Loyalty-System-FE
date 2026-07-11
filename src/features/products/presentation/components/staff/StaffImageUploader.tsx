@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { uploadBookingImage, type BookingImageType } from "../../../../../services/bookingImage";
 import { Loader2, UploadCloud, CheckCircle2, Image as ImageIcon } from "lucide-react";
 
@@ -52,7 +52,7 @@ export function StaffImageUploader({
           Tải ảnh {type === "BeforeWash" ? "trước khi rửa" : "sau khi rửa"}
         </h4>
       </div>
-      
+
       <div className="flex flex-col gap-2">
         <input
           type="file"
@@ -61,7 +61,7 @@ export function StaffImageUploader({
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           disabled={busy}
         />
-        
+
         {file && (
           <div className="flex items-center gap-3 mt-2">
             <img
@@ -88,7 +88,7 @@ export function StaffImageUploader({
             </button>
           </div>
         )}
-        
+
         {error && <p className="text-xs font-semibold text-rose-500 mt-1">{error}</p>}
       </div>
     </div>

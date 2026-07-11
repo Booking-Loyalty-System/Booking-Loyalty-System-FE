@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { ChatRepositoryImplement } from '../infrastructure/repositories/chat/chat.repository.implement';
 import type { ChatSessionSummary, LiveChatMessage } from '../domain/models/chat/chat.model';
 import * as signalR from '@microsoft/signalr';
+import { HttpTransportType } from '@microsoft/signalr';
 
 const chatRepo = new ChatRepositoryImplement();
 
@@ -104,8 +105,12 @@ export const useStaffChat = () => {
         let isMounted = true;
 
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl("https://localhost:7001/hubs/chat", {
-                accessTokenFactory: () => localStorage.getItem('access_token') || ''
+            .withUrl(`${import.meta.env.VITE_SOCKET_URL}/chat`, {
+                accessTokenFactory: () => localStorage.getItem('access_token') || '',
+                headers: {
+                    "ngrok-skip-browser-warning": "true"
+                },
+                transport: HttpTransportType.LongPolling | HttpTransportType.ServerSentEvents
             })
             .withAutomaticReconnect()
             .build();
