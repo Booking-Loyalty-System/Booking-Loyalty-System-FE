@@ -66,7 +66,8 @@ export const LoyaltyTier: React.FC = () => {
       advanceBooking: 7,
       benefits: ["benefitBirthdayBonus"],
       isCurrent: false,
-      colorClass: "border-slate-200 dark:border-white/10 text-blue-600 dark:text-blue-400",
+      colorClass:
+        "border-slate-200 dark:border-white/10 text-blue-600 dark:text-blue-400",
       bgClass: "bg-blue-50 dark:bg-blue-900/30",
       icon: <Award className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
     },
@@ -79,7 +80,8 @@ export const LoyaltyTier: React.FC = () => {
       advanceBooking: 14,
       benefits: ["benefitPrioritySupport", "benefitExclusiveOffers"],
       isCurrent: false,
-      colorClass: "border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-300",
+      colorClass:
+        "border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-300",
       bgClass: "bg-slate-50 dark:bg-slate-800",
       icon: <Award className="w-6 h-6 text-slate-400 dark:text-slate-300" />,
     },
@@ -92,7 +94,8 @@ export const LoyaltyTier: React.FC = () => {
       advanceBooking: 21,
       benefits: ["benefitPriorityBooking", "benefitFreeWashBirthday"],
       isCurrent: false,
-      colorClass: "border-amber-200 dark:border-amber-500/30 text-amber-500 dark:text-amber-400",
+      colorClass:
+        "border-amber-200 dark:border-amber-500/30 text-amber-500 dark:text-amber-400",
       bgClass: "bg-amber-50 dark:bg-amber-500/10",
       icon: <Crown className="w-6 h-6 text-amber-500 dark:text-amber-400" />,
     },
@@ -105,7 +108,8 @@ export const LoyaltyTier: React.FC = () => {
       advanceBooking: 30,
       benefits: ["benefitVipAccess", "benefitDedicatedManager"],
       isCurrent: false,
-      colorClass: "border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-400",
+      colorClass:
+        "border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-400",
       bgClass: "bg-purple-50 dark:bg-purple-500/10",
       icon: <Gem className="w-6 h-6 text-purple-600 dark:text-purple-400" />,
     },
@@ -132,23 +136,26 @@ export const LoyaltyTier: React.FC = () => {
   // Tính toán số dư sau mỗi giao dịch
   const transactionsWithBalance = React.useMemo(() => {
     if (!transactions.length) return [];
-    
+
     // Sắp xếp giảm dần theo ngày (mới nhất lên đầu)
-    const sortedTx = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
+    const sortedTx = [...transactions].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+
     let currentBalance = availablePoints;
-    
+
     return sortedTx.map((tx) => {
       const balanceAfter = currentBalance;
       // Nếu backend trả tx.points âm cho Redeem thì dùng luôn, nếu trả dương thì ép âm
-      const pointDiff = (tx.type === "Redeemed" && tx.points > 0) ? -tx.points : tx.points;
-      
+      const pointDiff =
+        tx.type === "Redeemed" && tx.points > 0 ? -tx.points : tx.points;
+
       // Lùi về số dư của thời điểm trước khi có giao dịch này
       currentBalance = currentBalance - pointDiff;
 
       return {
         ...tx,
-        balanceAfter
+        balanceAfter,
       };
     });
   }, [transactions, availablePoints]);
@@ -160,14 +167,16 @@ export const LoyaltyTier: React.FC = () => {
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
           <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
           <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-700"></div>
-          
+
           <div className="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
             <div>
               <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">
                 {t("loyaltyTier.currentTier")}
               </p>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-1 flex flex-wrap items-center gap-2 capitalize text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
-                {t(`loyaltyTier.tiers.${currentTierName.toLowerCase()}`, { defaultValue: `${currentTierName} Member` })}
+                {t(`loyaltyTier.tiers.${currentTierName.toLowerCase()}`, {
+                  defaultValue: `${currentTierName} Member`,
+                })}
                 {currentTierInfo.icon && (
                   <span className="[&>svg]:text-amber-300 [&>svg]:fill-amber-300 [&>svg]:w-8 [&>svg]:h-8 inline-block shrink-0">
                     {currentTierInfo.icon}
@@ -176,7 +185,12 @@ export const LoyaltyTier: React.FC = () => {
               </h1>
               {/* Hiển thị số dư khả dụng ở Banner */}
               <p className="text-xl font-semibold text-slate-300 mt-2">
-                {totalPoints} <span className="text-sm font-medium opacity-80 text-slate-400">{t("loyaltyTier.pointsEarned", { defaultValue: "Points Earned" })}</span>
+                {totalPoints}{" "}
+                <span className="text-sm font-medium opacity-80 text-slate-400">
+                  {t("loyaltyTier.pointsEarned", {
+                    defaultValue: "Points Earned",
+                  })}
+                </span>
               </p>
             </div>
 
@@ -190,11 +204,23 @@ export const LoyaltyTier: React.FC = () => {
           {/* Thanh Tiến trình (Progress Bar) - Tính dựa trên totalPoints */}
           <div className="mt-8 relative z-10 bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
             <div className="flex flex-col sm:flex-row justify-between text-sm font-medium text-slate-300 mb-2 gap-1.5 flex-wrap">
-              <span>{t("loyaltyTier.progressToLabel", { nextTier: t(`loyaltyTier.tiers.${nextTierName.toLowerCase()}`, { defaultValue: nextTierName }) })}</span>
+              <span>
+                {t("loyaltyTier.progressToLabel", {
+                  nextTier: t(
+                    `loyaltyTier.tiers.${nextTierName.toLowerCase()}`,
+                    { defaultValue: nextTierName },
+                  ),
+                })}
+              </span>
               <span className="text-white font-bold">
                 {totalPoints >= 1000
-                  ? t("loyaltyTier.maxTierReached", { defaultValue: "Max Tier Reached" })
-                  : t("loyaltyTier.pointsToGoSuffix", { n: pointsToGo, defaultValue: `${pointsToGo} points to go` })}
+                  ? t("loyaltyTier.maxTierReached", {
+                      defaultValue: "Max Tier Reached",
+                    })
+                  : t("loyaltyTier.pointsToGoSuffix", {
+                      n: pointsToGo,
+                      defaultValue: `${pointsToGo} points to go`,
+                    })}
               </span>
             </div>
             <div className="w-full bg-black/50 h-3 rounded-full overflow-hidden p-0.5 border border-white/5">
@@ -207,7 +233,7 @@ export const LoyaltyTier: React.FC = () => {
             </div>
             <p className="text-xs text-slate-400 mt-3 italic">
               {t("loyaltyTier.tiersAutoReviewed", {
-                defaultValue: `Tiers are auto-reviewed & upgraded/downgraded monthly based on your past 3 months' data. Progression is based on Total Points (${totalPoints}).`
+                defaultValue: `Tiers are auto-reviewed & upgraded/downgraded monthly based on your past 3 months' data. Progression is based on Total Points (${totalPoints}).`,
               })}
             </p>
           </div>
@@ -217,17 +243,29 @@ export const LoyaltyTier: React.FC = () => {
             <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-white/10">
               <TrendingUp className="w-5 h-5 mx-auto mb-1 text-slate-400" />
               <p className="text-2xl font-bold">{availablePoints}</p>
-              <p className="text-xs text-slate-400">{t("loyaltyTier.availablePoints", { defaultValue: "Available Points" })}</p>
+              <p className="text-xs text-slate-400">
+                {t("loyaltyTier.availablePoints", {
+                  defaultValue: "Available Points",
+                })}
+              </p>
             </div>
             <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-white/10">
               <Gift className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className="text-2xl font-bold text-amber-400">{currentTierInfo.discount}</p>
-              <p className="text-xs text-slate-400">{t("loyaltyTier.discountRateCard")}</p>
+              <p className="text-2xl font-bold text-amber-400">
+                {currentTierInfo.discount}
+              </p>
+              <p className="text-xs text-slate-400">
+                {t("loyaltyTier.discountRateCard")}
+              </p>
             </div>
             <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-white/10">
               <Award className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className="text-2xl font-bold text-blue-400">{currentTierInfo.multiplier}</p>
-              <p className="text-xs text-slate-400">{t("loyaltyTier.pointsMultiplierCard")}</p>
+              <p className="text-2xl font-bold text-blue-400">
+                {currentTierInfo.multiplier}
+              </p>
+              <p className="text-xs text-slate-400">
+                {t("loyaltyTier.pointsMultiplierCard")}
+              </p>
             </div>
           </div>
         </div>
@@ -254,7 +292,11 @@ export const LoyaltyTier: React.FC = () => {
                 key={tItem.name}
                 className={`p-4 rounded-xl text-center border ${tItem.isCurrent ? "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-500/50 ring-2 ring-blue-500" : "bg-slate-50/50 dark:bg-white/5 border-slate-100 dark:border-white/10"}`}
               >
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t(`loyaltyTier.tiers.${tItem.name.toLowerCase()}`, { defaultValue: tItem.name })}</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {t(`loyaltyTier.tiers.${tItem.name.toLowerCase()}`, {
+                    defaultValue: tItem.name,
+                  })}
+                </p>
                 <p
                   className={`text-2xl font-black mt-1 ${tItem.isCurrent ? "text-blue-700 dark:text-blue-300" : "text-blue-600 dark:text-blue-400"}`}
                 >
@@ -270,7 +312,9 @@ export const LoyaltyTier: React.FC = () => {
 
         <div>
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-8">
-            {t("loyaltyTier.membershipTiers", { defaultValue: "Membership Tiers" })}
+            {t("loyaltyTier.membershipTiers", {
+              defaultValue: "Membership Tiers",
+            })}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
             {tiers.map((tier) => (
@@ -296,10 +340,14 @@ export const LoyaltyTier: React.FC = () => {
                   </div>
 
                   <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
-                    {t(`loyaltyTier.tiers.${tier.name.toLowerCase()}`, { defaultValue: tier.name })}
+                    {t(`loyaltyTier.tiers.${tier.name.toLowerCase()}`, {
+                      defaultValue: tier.name,
+                    })}
                   </h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                    {t(tier.pointsRangeKey, { defaultValue: tier.pointsRangeDefault })}
+                    {t(tier.pointsRangeKey, {
+                      defaultValue: tier.pointsRangeDefault,
+                    })}
                   </p>
 
                   <div className="mt-6 space-y-3 pt-6 border-t border-slate-100 dark:border-white/10">
@@ -312,13 +360,17 @@ export const LoyaltyTier: React.FC = () => {
                     <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <span className="text-emerald-500 font-bold">✓</span>
                       <span>
-                        {t("loyaltyTier.benefitMultiplier", { multiplier: tier.multiplier })}
+                        {t("loyaltyTier.benefitMultiplier", {
+                          multiplier: tier.multiplier,
+                        })}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <span className="text-emerald-500 font-bold">✓</span>
                       <span>
-                        {t("loyaltyTier.benefitAdvanceBooking", { n: tier.advanceBooking })}
+                        {t("loyaltyTier.benefitAdvanceBooking", {
+                          n: tier.advanceBooking,
+                        })}
                       </span>
                     </div>
                     {tier.benefits.map((benefit, idx) => (
@@ -327,7 +379,12 @@ export const LoyaltyTier: React.FC = () => {
                         className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
                       >
                         <span className="text-emerald-500 font-bold">✓</span>
-                        <span>{t(`loyaltyTier.benefit${benefit.replace("benefit", "")}`, { defaultValue: benefit })}</span>
+                        <span>
+                          {t(
+                            `loyaltyTier.benefit${benefit.replace("benefit", "")}`,
+                            { defaultValue: benefit },
+                          )}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -344,13 +401,17 @@ export const LoyaltyTier: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng hook useTranslation và hàm t() để lấy nội dung dịch thuật đa ngôn ngữ từ locale files */}
-                  {t("loyaltyTier.stats.pointsEarned", { defaultValue: "Total Points Earned" })}
+                  {t("loyaltyTier.stats.pointsEarned", {
+                    defaultValue: "Total Points Earned",
+                  })}
                 </p>
                 {/* Sử dụng Total Earned dựa trên Total Points trọn đời để thể hiện tổng điểm tích lũy */}
                 <p className="text-3xl font-bold text-slate-800 dark:text-white mt-1">
                   {totalEarned}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                  {t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}
+                </p>
               </div>
               <div className="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl text-emerald-600 dark:text-emerald-400">
                 <TrendingUp className="w-6 h-6" />
@@ -361,12 +422,16 @@ export const LoyaltyTier: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng t() từ react-i18next hiển thị thống kê điểm thưởng đã đổi */}
-                  {t("loyaltyTier.stats.pointsRedeemed", { defaultValue: "Points Redeemed" })}
+                  {t("loyaltyTier.stats.pointsRedeemed", {
+                    defaultValue: "Points Redeemed",
+                  })}
                 </p>
                 <p className="text-3xl font-bold text-slate-800 dark:text-white mt-1">
                   {totalRedeemed}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                  {t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}
+                </p>
               </div>
               <div className="p-3 bg-purple-50 dark:bg-purple-500/10 rounded-xl text-purple-600 dark:text-purple-400">
                 <Gift className="w-6 h-6" />
@@ -377,12 +442,16 @@ export const LoyaltyTier: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng t() từ react-i18next hiển thị thống kê tổng số lượt đặt lịch của thành viên */}
-                  {t("loyaltyTier.stats.totalBookings", { defaultValue: "Total Bookings" })}
+                  {t("loyaltyTier.stats.totalBookings", {
+                    defaultValue: "Total Bookings",
+                  })}
                 </p>
                 <p className="text-3xl font-bold text-slate-800 dark:text-white mt-1">
                   {totalBookings}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                  {t("loyaltyTier.stats.allTime", { defaultValue: "All Time" })}
+                </p>
               </div>
               <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400">
                 <Calendar className="w-6 h-6" />
@@ -412,11 +481,23 @@ export const LoyaltyTier: React.FC = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50 dark:bg-white/5 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-white/10">
-                      <th className="py-4 px-6">{t("loyaltyTier.table.date")}</th>
-                      <th className="py-4 px-6">{t("loyaltyTier.table.description")}</th>
-                      <th className="py-4 px-6">{t("loyaltyTier.table.type")}</th>
-                      <th className="py-4 px-6 text-right">{t("loyaltyTier.table.points")}</th>
-                      <th className="py-4 px-6 text-right">{t("loyaltyTier.table.balance", { defaultValue: "Balance" })}</th>
+                      <th className="py-4 px-6">
+                        {t("loyaltyTier.table.date")}
+                      </th>
+                      <th className="py-4 px-6">
+                        {t("loyaltyTier.table.description")}
+                      </th>
+                      <th className="py-4 px-6">
+                        {t("loyaltyTier.table.type")}
+                      </th>
+                      <th className="py-4 px-6 text-right">
+                        {t("loyaltyTier.table.points")}
+                      </th>
+                      <th className="py-4 px-6 text-right">
+                        {t("loyaltyTier.table.balance", {
+                          defaultValue: "Balance",
+                        })}
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/10 text-sm text-slate-700 dark:text-slate-300">
@@ -433,7 +514,10 @@ export const LoyaltyTier: React.FC = () => {
                             const desc = tx.description;
                             // Match EN pattern: "Earned from booking {code}"
                             // Match VI pattern: "Cộng điểm từ đơn hàng {code}"
-                            if (desc.includes("Earned from booking") || desc.includes("Cộng điểm từ đơn hàng")) {
+                            if (
+                              desc.includes("Earned from booking") ||
+                              desc.includes("Cộng điểm từ đơn hàng")
+                            ) {
                               const code = desc.includes("Earned from booking")
                                 ? desc.split("Earned from booking ")[1]
                                 : desc.split("Cộng điểm từ đơn hàng ")[1];
@@ -441,7 +525,10 @@ export const LoyaltyTier: React.FC = () => {
                             }
                             // Match EN pattern: "Redeemed Voucher {name}"
                             // Match VI pattern: "Đổi điểm lấy Voucher {name}"
-                            if (desc.includes("Redeemed Voucher") || desc.includes("Đổi điểm lấy Voucher")) {
+                            if (
+                              desc.includes("Redeemed Voucher") ||
+                              desc.includes("Đổi điểm lấy Voucher")
+                            ) {
                               const name = desc.includes("Redeemed Voucher")
                                 ? desc.split("Redeemed Voucher ")[1]
                                 : desc.split("Đổi điểm lấy Voucher ")[1];
@@ -449,8 +536,13 @@ export const LoyaltyTier: React.FC = () => {
                             }
                             // Match EN pattern: "No-show penalty..."
                             // Match VI pattern: "Phạt vắng mặt..."
-                            if (desc.includes("No-show penalty") || desc.includes("Phạt vắng mặt")) {
-                              return t("loyaltyTier.noShowPenalty", { defaultValue: "No-show penalty" });
+                            if (
+                              desc.includes("No-show penalty") ||
+                              desc.includes("Phạt vắng mặt")
+                            ) {
+                              return t("loyaltyTier.noShowPenalty", {
+                                defaultValue: "No-show penalty",
+                              });
                             }
                             // Fallback: hiển thị nguyên chuỗi
                             return desc;
@@ -464,15 +556,23 @@ export const LoyaltyTier: React.FC = () => {
                                 : "bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400"
                             }`}
                           >
-                            {t(`loyaltyTier.txType${tx.type}`, { defaultValue: tx.type })}
+                            {t(`loyaltyTier.txType${tx.type}`, {
+                              defaultValue: tx.type,
+                            })}
                           </span>
                         </td>
                         <td
                           className={`py-4 px-6 text-right font-bold text-base ${
-                            tx.points > 0 && tx.type === "Earned" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                            tx.points > 0 && tx.type === "Earned"
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-rose-600 dark:text-rose-400"
                           }`}
                         >
-                          {tx.points > 0 && tx.type === "Earned" ? `+${tx.points}` : (tx.points > 0 ? `-${tx.points}` : tx.points)}
+                          {tx.points > 0 && tx.type === "Earned"
+                            ? `+${tx.points}`
+                            : tx.points > 0
+                              ? `-${tx.points}`
+                              : tx.points}
                         </td>
                         <td className="py-4 px-6 text-right font-bold text-slate-800 dark:text-white text-base">
                           {tx.balanceAfter}

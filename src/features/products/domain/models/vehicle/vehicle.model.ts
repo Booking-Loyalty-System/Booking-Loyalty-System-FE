@@ -1,34 +1,26 @@
 export type VehicleType = 'Small' | 'Medium' | 'Large';
 
+// Dữ liệu thực tế API trả về
 export interface VehicleResponse {
     id: string;
-    customerId: string;
+    customerId?: string; // Có thể không trả về từ BE
     licensePlate: string;
-    vehicleType: VehicleType; // Khớp 100% với tên biến từ Backend API
+    type: VehicleType;   // SỬA Ở ĐÂY: Dùng "type" thay vì "vehicleType" để map với BE
     vehicleName: string;
     brand: string;
     model: string;
     color: string;
     isPrimary: boolean;
-    isDeleted: boolean;
     createdAt: string;
 }
 
-export interface VehicleRequest {
-    licensePlate: string;
-    vehicleType: VehicleType; // Khớp 100% với Swagger cần nhận
-    vehicleName: string;
-    brand: string;
-    model: string;
-    color: string;
-    isPrimary: boolean;
-}
-
+// Model chung dùng trong toàn app
 export interface Vehicle {
     id: string;
-    customerId: string;
+    customerId?: string;
     licensePlate: string;
-    vehicleType: VehicleType;
+    type: VehicleType; // SỬA Ở ĐÂY: Backend trả về "type"
+    vehicleType?: VehicleType; // Giữ lại dự phòng nếu cần
     vehicleName: string;
     brand: string;
     model: string;
