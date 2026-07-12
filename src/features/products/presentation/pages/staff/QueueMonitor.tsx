@@ -631,7 +631,7 @@ export const QueueMonitor: React.FC = () => {
                         Khoang Đang Bảo Trì
                       </p>
                       <p className="text-xs text-rose-400/80">
-                        Tạm thời không thể xếp xe vào khoang này.
+                        Tạm thời không thể xếp xe vào khoang này
                       </p>
                     </div>
                   ) : bay.isOccupied && bay.booking ? (
