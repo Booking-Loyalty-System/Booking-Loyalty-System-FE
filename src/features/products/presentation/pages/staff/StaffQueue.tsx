@@ -17,7 +17,6 @@ import { useWashBay } from "../../../application/useWashBay";
 import { type BookingResponseData } from "../../../domain/models/booking/booking.model";
 import { toast } from "sonner";
 import { CheckoutSummaryModal } from "../../components/staff/CheckoutSummaryModal";
-import { ActionImageModal } from "../../components/staff/ActionImageModal"; // <--- Import Component
 import { useQueryClient } from "@tanstack/react-query";
 
 type StaffAction = "checkIn" | "queue" | "start" | "finish" | "checkout";
@@ -42,35 +41,6 @@ export const StaffQueuePage: React.FC = () => {
   const [selectedBookingForCheckout, setSelectedBookingForCheckout] =
     useState<BookingResponseData | null>(null);
 
-  // STATE ĐÁNH CHẶN UPLOAD ẢNH
-  const [actionModal, setActionModal] = useState<{
-    isOpen: boolean;
-    bookingId: string;
-    type: "checkIn" | "finish";
-  } | null>(null);
-
-  // Hàm thực thi sau khi Modal báo upload thành công
-  const executePendingAction = async () => {
-    if (!actionModal) return;
-    try {
-      if (actionModal.type === "checkIn") {
-        await checkInBooking({
-          id: actionModal.bookingId,
-          staffId: staffProfile?.id || "staff-id",
-        });
-        toast.success("Check-in và lưu ảnh thành công!");
-      } else if (actionModal.type === "finish") {
-        await completedBooking(actionModal.bookingId);
-        toast.success("Rửa xe hoàn tất và lưu ảnh thành công!");
-      }
-      queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
-      setActionModal(null); // Đóng modal
-    } catch (error) {
-      console.error(error);
-      toast.error("Có lỗi xảy ra khi chuyển trạng thái!");
-    }
-  };
-
   const handleAction = async (id: string, action: StaffAction) => {
     try {
       if (action === "checkout") {
@@ -79,18 +49,10 @@ export const StaffQueuePage: React.FC = () => {
         return;
       }
 
-      // ĐÁNH CHẶN Ở ĐÂY
       if (action === "checkIn") {
-        setActionModal({ isOpen: true, bookingId: id, type: "checkIn" });
-        return;
-      }
-      if (action === "finish") {
-        setActionModal({ isOpen: true, bookingId: id, type: "finish" });
-        return;
-      }
-
-      // Thực thi luôn không cần ảnh
-      if (action === "queue") {
+        await checkInBooking({ id, staffId: staffProfile?.id || "staff-id" });
+        toast.success("Check-in thành công!");
+      } else if (action === "queue") {
         const targetBay =
           washBays.find((b) => b.status === "Available") || washBays[0];
         if (!targetBay) {
@@ -108,6 +70,9 @@ export const StaffQueuePage: React.FC = () => {
         }
         await startBooking({ id, bayId: targetBay.id });
         toast.success(`Bắt đầu rửa xe tại buồng ${targetBay.name}!`);
+      } else if (action === "finish") {
+        await completedBooking(id);
+        toast.success("Rửa xe hoàn tất!");
       }
 
       queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
@@ -361,16 +326,6 @@ export const StaffQueuePage: React.FC = () => {
           onClose={() => setSelectedBookingForCheckout(null)}
           onConfirmCash={handleCashCheckout}
           onConfirmPayOS={handlePayOSCheckout}
-        />
-      )}
-
-      {/* MODAL UPLOAD ẢNH ĐÁNH CHẶN */}
-      {actionModal && actionModal.isOpen && (
-        <ActionImageModal
-          bookingId={actionModal.bookingId}
-          actionType={actionModal.type}
-          onClose={() => setActionModal(null)}
-          onConfirm={executePendingAction}
         />
       )}
     </div>
