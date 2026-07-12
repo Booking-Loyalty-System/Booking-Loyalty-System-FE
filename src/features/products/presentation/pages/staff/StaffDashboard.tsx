@@ -15,6 +15,7 @@ import { CheckoutSummaryModal } from "@/features/products/presentation/component
 import type { BookingResponseData } from "@/features/products/domain/models/booking/booking.model.ts";
 import { QrScannerModal } from "@/features/products/presentation/components/QrScannerModal.tsx";
 import { useQueryClient } from "@tanstack/react-query";
+import { ActionImageModal } from "@/features/products/presentation/components/staff/ActionImageModal.tsx";
 
 interface DashboardActions {
   confirm: (id: string) => Promise<unknown>;
@@ -48,6 +49,13 @@ export const StaffDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+
+  // STATE ĐÁNH CHẶN UPLOAD ẢNH
+  const [actionModal, setActionModal] = useState<{
+    isOpen: boolean;
+    bookingId: string;
+    type: "checkIn" | "finish";
+  } | null>(null);
 
   const {
     confirmBooking,
@@ -106,6 +114,25 @@ export const StaffDashboard: React.FC = () => {
     }
   };
 
+  // Hàm này sẽ được gọi khi nhân viên bấm Xác nhận trên ActionImageModal
+  const executePendingAction = async () => {
+    if (!actionModal || !staffProfile?.id) return;
+    try {
+      if (actionModal.type === "checkIn") {
+        await actions.checkIn({
+          id: actionModal.bookingId,
+          staffId: staffProfile.id,
+        });
+        toast.success("Check-in và lưu ảnh thành công!");
+      }
+      queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
+      setActionModal(null); // Đóng modal
+    } catch (error) {
+      console.error(error);
+      toast.error("Có lỗi xảy ra khi chuyển trạng thái!");
+    }
+  };
+
   const handleAction = async (
     id: string,
     action: "confirm" | "checkIn" | "checkout" | "staffCancel" | "noShow",
@@ -122,8 +149,10 @@ export const StaffDashboard: React.FC = () => {
             );
             return;
           }
-          await actions.checkIn({ id, staffId: staffProfile.id });
-          break;
+          // ĐÁNH CHẶN Ở ĐÂY: Mở modal bắt chụp ảnh thay vì gọi API Check-in
+          setActionModal({ isOpen: true, bookingId: id, type: "checkIn" });
+          return;
+
         case "checkout": {
           const booking = bookings.find((b) => b.id === id);
           if (booking) setSelectedBookingForCheckout(booking);
@@ -147,6 +176,7 @@ export const StaffDashboard: React.FC = () => {
           }
           break;
       }
+
       toast.success(`Thao tác thành công!`);
       queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
     } catch (error) {
@@ -357,6 +387,16 @@ export const StaffDashboard: React.FC = () => {
         <QrScannerModal
           onClose={() => setIsQrModalOpen(false)}
           onScanSuccess={handleQrScanSuccess}
+        />
+      )}
+
+      {/* MODAL UPLOAD ẢNH ĐÁNH CHẶN */}
+      {actionModal && actionModal.isOpen && (
+        <ActionImageModal
+          bookingId={actionModal.bookingId}
+          actionType={actionModal.type}
+          onClose={() => setActionModal(null)}
+          onConfirm={executePendingAction}
         />
       )}
 
