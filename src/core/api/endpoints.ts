@@ -26,6 +26,7 @@ export const ENDPOINTS = {
     BOOKING: {
         BOOKING: '/bookings',
         MY_BOOKING: '/bookings/my-bookings',
+        IMAGES: (id: string) => `/bookings/${id}/images`,
         CANCEL: (id: string) => `/bookings/${id}/cancel`,
         CONFIRM: (id: string) => `/staff/bookings/${id}/confirm`,
         CHECK_IN: (id: string) => `/staff/bookings/${id}/check-in`,
