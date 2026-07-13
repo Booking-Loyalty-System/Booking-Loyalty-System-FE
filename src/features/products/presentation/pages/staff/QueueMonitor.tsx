@@ -289,29 +289,33 @@ export const QueueMonitor: React.FC = () => {
     }
   };
 
-  // 🌟 HÀM ĐÁNH CHẶN: MỞ POPUP ẢNH THAY VÌ GỌI API LUN
+  // Gọi completedBooking TRƯỚC để đổi trạng thái InProgress -> Completed.
+  // BE chỉ cho phép lưu ảnh "AfterWash" SAU KHI trạng thái đã là
+  // Completed/CheckedOut (xem BookingImageService.AddAsync) — nếu mở modal
+  // upload ảnh trước khi gọi completedBooking, BE sẽ trả lỗi 400
+  // "Cannot add an AfterWash image while the booking is InProgress."
   const handleFinishWash = async (bookingId: string) => {
-    setActionModal({ isOpen: true, bookingId, type: "finish" });
-  };
-
-  // 🌟 HÀM THỰC THI API SAU KHI ĐÃ CÓ ẢNH
-  const executePendingAction = async () => {
-    if (!actionModal) return;
-    setActionLoadingId(actionModal.bookingId);
+    setActionLoadingId(bookingId);
     try {
-      if (actionModal.type === "finish") {
-        await completedBooking(actionModal.bookingId);
-        toast.success("🧼 Rửa xe hoàn tất! Đã lưu ảnh minh chứng.");
-      }
+      await completedBooking(bookingId);
+      toast.success("🧼 Rửa xe hoàn tất! Vui lòng tải ảnh minh chứng.");
       queryClient.invalidateQueries();
       if (selectedBay) setSelectedBay(null);
-      setActionModal(null);
+      // Trạng thái đã đổi thành công, giờ mở modal ảnh (không bắt buộc)
+      setActionModal({ isOpen: true, bookingId, type: "finish" });
     } catch (error) {
       console.error(error);
       toast.error("Cập nhật trạng thái thất bại.");
     } finally {
       setActionLoadingId(null);
     }
+  };
+
+  // Modal ảnh giờ chỉ dùng để bổ sung ảnh minh chứng SAU KHI trạng thái đã
+  // đổi (completedBooking đã được gọi xong ở handleFinishWash). Không cần
+  // gọi lại API đổi trạng thái nữa, chỉ đơn giản đóng modal.
+  const executePendingAction = () => {
+    setActionModal(null);
   };
 
   const activeBayDetail = selectedBay
