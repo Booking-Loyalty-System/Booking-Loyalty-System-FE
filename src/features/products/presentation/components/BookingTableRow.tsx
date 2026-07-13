@@ -150,7 +150,6 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
             </>
           )}
 
-          {/* NÚT XEM ẢNH & THANH TOÁN CHỈ HIỆN KHI COMPLETED */}
           {b.status === "Completed" && (
             <>
               <button

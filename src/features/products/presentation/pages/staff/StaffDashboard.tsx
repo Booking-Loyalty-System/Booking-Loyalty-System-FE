@@ -53,9 +53,14 @@ export const StaffDashboard: React.FC = () => {
   const [selectedBookingDetail, setSelectedBookingDetail] =
     useState<DashboardBooking | null>(null);
 
-  // STATE THÊM MỚI QUẢN LÝ ẢNH & PHÓNG TO
+  // STATE QUẢN LÝ ẢNH
   const [selectedBookingForImages, setSelectedBookingForImages] =
     useState<DashboardBooking | null>(null);
+  const [vehicleImages, setVehicleImages] = useState<{
+    before: string[];
+    after: string[];
+  }>({ before: [], after: [] });
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const [selectedBookingForCheckout, setSelectedBookingForCheckout] =
@@ -64,7 +69,6 @@ export const StaffDashboard: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
-  // STATE ĐÁNH CHẶN UPLOAD ẢNH
   const [actionModal, setActionModal] = useState<{
     isOpen: boolean;
     bookingId: string;
@@ -127,6 +131,59 @@ export const StaffDashboard: React.FC = () => {
       });
     }
   };
+
+  // EFFECT GỌI API LẤY ẢNH THEO ID
+  useEffect(() => {
+    if (!selectedBookingForImages) {
+      setVehicleImages({ before: [], after: [] });
+      return;
+    }
+
+    const fetchImages = async () => {
+      setIsLoadingImages(true);
+      try {
+        const token = localStorage.getItem("accessToken") || "";
+        const baseUrl =
+          import.meta.env.VITE_API_URL ||
+          "https://nonelementary-slippily-princeton.ngrok-free.dev";
+
+        const response = await fetch(
+          `${baseUrl}/api/bookings/${selectedBookingForImages.id}/images`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const before = data
+            .filter(
+              (img: any) =>
+                img.imageType === "BeforeWash" || img.type === "BeforeWash",
+            )
+            .map((img: any) => img.imageUrl || img.url || img.imagePath);
+
+          const after = data
+            .filter(
+              (img: any) =>
+                img.imageType === "AfterWash" || img.type === "AfterWash",
+            )
+            .map((img: any) => img.imageUrl || img.url || img.imagePath);
+
+          setVehicleImages({ before, after });
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải ảnh:", error);
+        toast.error("Không thể tải hình ảnh của xe này.");
+      } finally {
+        setIsLoadingImages(false);
+      }
+    };
+
+    fetchImages();
+  }, [selectedBookingForImages]);
 
   const executePendingAction = async () => {
     if (!actionModal || !staffProfile?.id) return;
@@ -377,7 +434,7 @@ export const StaffDashboard: React.FC = () => {
                     booking={b}
                     handleAction={handleAction}
                     onViewDetail={() => setSelectedBookingDetail(b)}
-                    onViewImages={() => setSelectedBookingForImages(b)} // TRUYỀN HÀM XEM ẢNH
+                    onViewImages={() => setSelectedBookingForImages(b)}
                   />
                 ))}
               </tbody>
@@ -412,7 +469,7 @@ export const StaffDashboard: React.FC = () => {
         />
       )}
 
-      {/* Modal chi tiết lịch đặt (GIỮ NGUYÊN KHÔNG ĐỔI) */}
+      {/* Modal chi tiết lịch đặt */}
       {selectedBookingDetail && (
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
           <div className="bg-white dark:bg-[#111] rounded-[2rem] shadow-2xl border border-slate-200 dark:border-white/10 w-full max-w-md overflow-hidden flex flex-col transform scale-100 animate-in zoom-in-95 duration-300">
@@ -529,11 +586,10 @@ export const StaffDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL MỚI: XEM ẢNH THEO XE */}
+      {/* MODAL MỚI: XEM ẢNH THEO XE KÈM GỌI API */}
       {selectedBookingForImages && (
         <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center z-[110] p-4 animate-in fade-in duration-300">
           <div className="bg-white dark:bg-[#111] rounded-[2rem] shadow-2xl border border-slate-200 dark:border-white/10 w-full max-w-lg overflow-hidden flex flex-col transform scale-100 animate-in zoom-in-95 duration-300">
-            {/* Header Modal Ảnh */}
             <div className="p-6 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
@@ -559,77 +615,83 @@ export const StaffDashboard: React.FC = () => {
               </button>
             </div>
 
-            {/* Khung chứa ảnh */}
             <div className="p-6 space-y-6 overflow-y-auto max-h-[60vh] custom-scrollbar">
-              {/* Ảnh Trước Khi Rửa (Check-in) */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg w-fit">
-                  <Camera className="w-4 h-4" />
-                  Ảnh Trước Khi Rửa (Check-in)
+              {isLoadingImages ? (
+                <div className="flex flex-col items-center justify-center py-10 space-y-3">
+                  <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                    Đang tải hình ảnh từ máy chủ...
+                  </p>
                 </div>
+              ) : (
+                <>
+                  {/* Ảnh Trước Khi Rửa (Check-in) */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg w-fit">
+                      <Camera className="w-4 h-4" />
+                      Ảnh Trước Khi Rửa (Check-in)
+                    </div>
 
-                {(selectedBookingForImages as any).beforeWashImages &&
-                (selectedBookingForImages as any).beforeWashImages.length >
-                  0 ? (
-                  <div className="grid grid-cols-3 gap-2">
-                    {(selectedBookingForImages as any).beforeWashImages.map(
-                      (url: string, index: number) => (
-                        <div
-                          key={`before-${index}`}
-                          className="relative group overflow-hidden rounded-xl border border-slate-200 dark:border-white/5 aspect-square bg-slate-100 dark:bg-white/5"
-                        >
-                          <img
-                            src={url}
-                            alt="Trước khi rửa"
-                            className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
-                            onClick={() => setPreviewImage(url)}
-                          />
-                        </div>
-                      ),
+                    {vehicleImages.before.length > 0 ? (
+                      <div className="grid grid-cols-3 gap-2">
+                        {vehicleImages.before.map(
+                          (url: string, index: number) => (
+                            <div
+                              key={`before-${index}`}
+                              className="relative group overflow-hidden rounded-xl border border-slate-200 dark:border-white/5 aspect-square bg-slate-100 dark:bg-white/5"
+                            >
+                              <img
+                                src={url}
+                                alt="Trước khi rửa"
+                                className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                onClick={() => setPreviewImage(url)}
+                              />
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">
+                        Chưa có ảnh check-in cho xe này.
+                      </p>
                     )}
                   </div>
-                ) : (
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">
-                    Chưa có ảnh check-in cho xe này.
-                  </p>
-                )}
-              </div>
 
-              {/* Ảnh Sau Khi Rửa (Bàn giao) */}
-              <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-white/5">
-                <div className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 rounded-lg w-fit">
-                  <CheckCircle className="w-4 h-4" />
-                  Ảnh Sau Khi Rửa (Hoàn thành)
-                </div>
+                  {/* Ảnh Sau Khi Rửa (Bàn giao) */}
+                  <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-white/5">
+                    <div className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 rounded-lg w-fit">
+                      <CheckCircle className="w-4 h-4" />
+                      Ảnh Sau Khi Rửa (Hoàn thành)
+                    </div>
 
-                {(selectedBookingForImages as any).afterWashImages &&
-                (selectedBookingForImages as any).afterWashImages.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-2">
-                    {(selectedBookingForImages as any).afterWashImages.map(
-                      (url: string, index: number) => (
-                        <div
-                          key={`after-${index}`}
-                          className="relative group overflow-hidden rounded-xl border border-slate-200 dark:border-white/5 aspect-square bg-slate-100 dark:bg-white/5"
-                        >
-                          <img
-                            src={url}
-                            alt="Sau khi rửa"
-                            className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
-                            onClick={() => setPreviewImage(url)}
-                          />
-                        </div>
-                      ),
+                    {vehicleImages.after.length > 0 ? (
+                      <div className="grid grid-cols-3 gap-2">
+                        {vehicleImages.after.map(
+                          (url: string, index: number) => (
+                            <div
+                              key={`after-${index}`}
+                              className="relative group overflow-hidden rounded-xl border border-slate-200 dark:border-white/5 aspect-square bg-slate-100 dark:bg-white/5"
+                            >
+                              <img
+                                src={url}
+                                alt="Sau khi rửa"
+                                className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                onClick={() => setPreviewImage(url)}
+                              />
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">
+                        Chưa có ảnh bàn giao cho xe này.
+                      </p>
                     )}
                   </div>
-                ) : (
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">
-                    Chưa có ảnh bàn giao cho xe này.
-                  </p>
-                )}
-              </div>
+                </>
+              )}
             </div>
 
-            {/* Footer Modal Ảnh */}
             <div className="p-4 bg-slate-50/50 dark:bg-white/5 border-t border-slate-100 dark:border-white/5 flex justify-end">
               <button
                 onClick={() => setSelectedBookingForImages(null)}
