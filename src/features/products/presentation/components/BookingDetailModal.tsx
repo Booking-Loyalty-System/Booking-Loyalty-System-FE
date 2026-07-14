@@ -17,7 +17,7 @@ export const BookingDetailModal: React.FC<Props> = ({ booking, onClose }) => {
     if (!booking) return null;
     
     const isStaff = role === 'Staff' || role === 'Admin';
-    const token = localStorage.getItem('access_token') || '';
+
 
     const qrValue = booking.bookingCode || booking.id || "";
     const hasFeedback = !!booking.feedbackResponse;
@@ -141,10 +141,10 @@ export const BookingDetailModal: React.FC<Props> = ({ booking, onClose }) => {
                                     )}
 
                                     {isStaff && (booking.status === "CheckedIn" || booking.status === "InProgress") && (
-                                        <StaffImageUploader bookingId={booking.id} type="BeforeWash" token={token} />
+                                        <StaffImageUploader bookingId={booking.id} type="BeforeWash" />
                                     )}
                                     {isStaff && (booking.status === "Completed" || booking.status === "CheckedOut") && (
-                                        <StaffImageUploader bookingId={booking.id} type="AfterWash" token={token} />
+                                        <StaffImageUploader bookingId={booking.id} type="AfterWash" />
                                     )}
                                 </div>
 

@@ -1,47 +1,44 @@
 import { useState } from "react";
-import { uploadBookingImage, type BookingImageType } from "../../../../../services/bookingImage";
-import { Loader2, UploadCloud, CheckCircle2, Image as ImageIcon } from "lucide-react";
+import {
+  uploadBookingImage,
+  type BookingImageType,
+} from "../../../../../services/bookingImage";
+import { Loader2, CheckCircle2, Image as ImageIcon } from "lucide-react";
 
 export function StaffImageUploader({
   bookingId,
   type,
-  token,
   onSuccess,
 }: {
   bookingId: string;
   type: BookingImageType;
-  token: string;
-  onSuccess?: (url: string) => void;
+  onSuccess?: (urls: string[]) => void;
 }) {
-  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [savedUrl, setSavedUrl] = useState<string | null>(null);
+  const [savedUrls, setSavedUrls] = useState<string[]>([]);
 
-  async function handleUpload() {
-    if (!file) return;
+  async function handleAutoUpload(files: FileList) {
     setBusy(true);
     setError(null);
     try {
-      const img = await uploadBookingImage(file, bookingId, type, undefined, token);
-      setSavedUrl(img.imageUrl);
-      setFile(null);
-      if (onSuccess) onSuccess(img.imageUrl);
+      const uploadPromises = Array.from(files).map(
+        (file) => uploadBookingImage(file, bookingId, type, undefined), // ĐÃ XÓA token ở đây
+      );
+
+      const results = await Promise.all(uploadPromises);
+      const newUrls = results.map((img) => img.imageUrl);
+
+      setSavedUrls((prev) => {
+        const updatedUrls = [...prev, ...newUrls];
+        if (onSuccess) onSuccess(updatedUrls);
+        return updatedUrls;
+      });
     } catch (e: any) {
       setError(e?.response?.data?.message ?? "Upload thất bại, thử lại.");
     } finally {
       setBusy(false);
     }
-  }
-
-  if (savedUrl) {
-    return (
-      <div className="flex flex-col items-center p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-        <CheckCircle2 className="w-8 h-8 text-emerald-500 mb-2" />
-        <p className="text-sm font-semibold text-emerald-700">Đã tải ảnh {type === "BeforeWash" ? "trước khi rửa" : "sau khi rửa"} thành công</p>
-        <img src={savedUrl} alt="Đã lưu" className="mt-3 rounded-lg max-h-32 object-cover border border-emerald-200 shadow-sm" />
-      </div>
-    );
   }
 
   return (
@@ -53,43 +50,57 @@ export function StaffImageUploader({
         </h4>
       </div>
 
-      <div className="flex flex-col gap-2">
+      {savedUrls.length > 0 && (
+        <div className="flex flex-col gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl animate-in zoom-in duration-300">
+          <div className="flex items-center gap-2 mb-1">
+            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+            <p className="text-sm font-semibold text-emerald-700">
+              Đã tải {savedUrls.length} ảnh{" "}
+              {type === "BeforeWash" ? "trước khi rửa" : "sau khi rửa"} thành
+              công
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            {savedUrls.map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                alt={`Đã lưu ${index + 1}`}
+                className="rounded-lg h-20 w-full object-cover border border-emerald-200 shadow-sm"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-2 relative">
         <input
           type="file"
           accept="image/*"
-          className="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer transition-colors"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          multiple
+          className={`text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 cursor-pointer transition-colors ${
+            busy ? "opacity-50 pointer-events-none" : "hover:file:bg-blue-200"
+          }`}
+          onChange={(e) => {
+            const files = e.target.files;
+            if (files && files.length > 0) handleAutoUpload(files);
+          }}
           disabled={busy}
         />
 
-        {file && (
-          <div className="flex items-center gap-3 mt-2">
-            <img
-              src={URL.createObjectURL(file)}
-              alt="preview"
-              className="w-16 h-16 object-cover rounded-lg border border-slate-200 shadow-sm"
-            />
-            <button
-              disabled={busy}
-              onClick={handleUpload}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 shadow-md shadow-blue-100"
-            >
-              {busy ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Đang tải lên...
-                </>
-              ) : (
-                <>
-                  <UploadCloud className="w-4 h-4" />
-                  Xác nhận tải
-                </>
-              )}
-            </button>
+        {busy && (
+          <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-[1px] flex items-center justify-start pl-2 rounded-lg z-10">
+            <div className="flex items-center gap-2 text-blue-600 font-bold text-sm bg-white px-3 py-1.5 rounded-full shadow-sm border border-blue-100">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              {/* ĐÃ SỬA: Firebase -> hệ thống */}
+              Đang tải ảnh lên...
+            </div>
           </div>
         )}
 
-        {error && <p className="text-xs font-semibold text-rose-500 mt-1">{error}</p>}
+        {error && (
+          <p className="text-xs font-semibold text-rose-500 mt-1">{error}</p>
+        )}
       </div>
     </div>
   );

@@ -30,4 +30,11 @@ export class VehicleRepositoryImplement implements IVehicleRepository {
             `${ENDPOINTS.VEHICLES.VEHICLE}/${id}`
         );
     }
+    async updateVehicle(id: string, data: CreateVehicleInput): Promise<Vehicle> {
+        const response = await httpClient.put<ApiResponse<Vehicle>>(
+            `${ENDPOINTS.VEHICLES.VEHICLE}/${id}`,
+            data
+        );
+        return response.data;
+    }
 }
