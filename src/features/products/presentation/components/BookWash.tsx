@@ -109,15 +109,15 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
   const qrValue = booking.bookingCode || booking.id;
 
   return (
-    <div className="max-w-2xl mx-auto my-8 bg-white border border-slate-100 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
+    <div className="max-w-2xl mx-auto my-8 bg-white dark:bg-gradient-to-br dark:from-[#111] dark:to-[#1a1128] border border-slate-100 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
       <div className="flex flex-col items-center justify-center space-y-3 mb-6">
-        <div className="p-4 bg-emerald-50 rounded-full text-emerald-500">
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-emerald-500 dark:text-emerald-400">
           <CheckCircle2 className="w-16 h-16" />
         </div>
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
           {t("bookWash.successTitle", { defaultValue: "Đặt Lịch Thành Công!" })}
         </h1>
-        <p className="text-sm font-medium text-slate-400">
+        <p className="text-sm font-medium text-slate-400 dark:text-slate-500">
           {t("bookWash.successSubtitle", {
             defaultValue:
               "Vui lòng kiểm tra lại thông tin biên nhận cuối cùng của bạn dưới đây.",
@@ -125,16 +125,16 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
         </p>
       </div>
 
-      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-8 flex flex-col items-center justify-center">
-        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
+      <div className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl p-6 mb-8 flex flex-col items-center justify-center">
+        <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
           {t("bookWash.bookingCodeLabel", {
             defaultValue: "Mã Đặt Lịch (Booking Code)",
           })}
         </span>
-        <span className="text-3xl font-mono font-black text-blue-600 tracking-wider mb-6 block">
+        <span className="text-3xl font-mono font-black text-blue-600 dark:text-blue-400 tracking-wider mb-6 block">
           {qrValue}
         </span>
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm inline-block">
+        <div className="p-4 bg-white dark:bg-white rounded-xl border border-slate-200 dark:border-white/10 shadow-sm inline-block">
           <QRCodeSVG
             value={qrValue}
             size={160}
@@ -142,7 +142,7 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
             includeMargin={false}
           />
         </div>
-        <p className="text-xs font-medium text-slate-500 mt-4 text-center">
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-4 text-center">
           {t("bookWash.qrInstruction", {
             defaultValue:
               "Đưa mã này cho nhân viên quét khi bạn đến cửa hàng nhé!",
@@ -150,52 +150,52 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
         </p>
       </div>
 
-      <div className="text-left space-y-4 border-b border-dashed border-slate-200 pb-6 mb-6 px-4">
+      <div className="text-left space-y-4 border-b border-dashed border-slate-200 dark:border-white/10 pb-6 mb-6 px-4">
         <div className="flex items-start gap-3">
-          <Car className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <Car className="w-5 h-5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t("bookWash.vehicleInfoLabel", { defaultValue: "Thông Tin Xe" })}
             </p>
-            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+            <p className="text-sm font-extrabold text-slate-800 dark:text-white mt-0.5">
               {booking.vehiclePlate || vehicleInfo?.licensePlate}
-              <span className="text-slate-400 font-medium ml-2">
+              <span className="text-slate-400 dark:text-slate-500 font-medium ml-2">
                 ({booking.vehicleName || vehicleInfo?.vehicleName})
               </span>
             </p>
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <CreditCard className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <CreditCard className="w-5 h-5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t("bookWash.serviceSelectedLabel", {
                 defaultValue: "Gói Dịch Vụ Đã Chọn",
               })}
             </p>
-            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+            <p className="text-sm font-extrabold text-slate-800 dark:text-white mt-0.5">
               {booking.washPackageName || packageInfo?.name}
             </p>
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <Calendar className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <Calendar className="w-5 h-5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t("bookWash.appointmentDateLabel", { defaultValue: "Ngày Hẹn" })}
             </p>
-            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+            <p className="text-sm font-extrabold text-slate-800 dark:text-white mt-0.5">
               {booking.bookingDate}
             </p>
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <Clock className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+          <Clock className="w-5 h-5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               {t("bookWash.timeSlotLabel", { defaultValue: "Khung Giờ" })}
             </p>
-            <p className="text-sm font-extrabold text-slate-800 mt-0.5">
+            <p className="text-sm font-extrabold text-slate-800 dark:text-white mt-0.5">
               {booking.startTime}
             </p>
           </div>
@@ -203,19 +203,19 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
       </div>
 
       <div className="flex items-center justify-between p-2 px-4 mb-8">
-        <span className="text-base font-bold text-slate-500">
+        <span className="text-base font-bold text-slate-500 dark:text-slate-400">
           {t("bookWash.totalCostLabel", {
             defaultValue: "Tổng chi phí thanh toán:",
           })}
         </span>
-        <span className="text-2xl font-black text-slate-900">
+        <span className="text-2xl font-black text-slate-900 dark:text-white">
           {formatCurrency(booking.totalPrice)}
         </span>
       </div>
 
       <button
         onClick={onContinue}
-        className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
+        className="w-full bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
       >
         <span>
           {t("bookWash.viewHistoryBtn", {
@@ -244,7 +244,7 @@ export const BookWash: React.FC = () => {
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
   const { redeemedVouchersOnly, isLoadingRedemptions } = useReward();
-  const bookingWindow = (customerMe as any)?.bookingWindow || 7;
+  const bookingWindow = customerMe?.bookingWindow || 7;
   const dynamicDateSlots = useMemo(() => {
     return generateUpcomingDates(bookingWindow);
   }, [bookingWindow]);
@@ -276,9 +276,20 @@ export const BookWash: React.FC = () => {
     null,
   );
 
+  // Lấy chunk startDate dựa trên ngày đang chọn (mỗi chunk 7 ngày)
+  const selectedDateIndex = useMemo(() => {
+    return dynamicDateSlots.findIndex(d => d.apiDate === selectedDate);
+  }, [dynamicDateSlots, selectedDate]);
+
+  const chunkStartDate = useMemo(() => {
+    if (selectedDateIndex === -1 || dynamicDateSlots.length === 0) return dynamicDateSlots[0]?.apiDate;
+    const chunkIndex = Math.floor(selectedDateIndex / 7) * 7;
+    return dynamicDateSlots[chunkIndex]?.apiDate;
+  }, [dynamicDateSlots, selectedDateIndex]);
+
   const { weeklySummary, isLoading: isLoadingSlots } = useTimeSlot({
     branchId: selectedBranchId,
-    startDate: dynamicDateSlots[0]?.apiDate,
+    startDate: chunkStartDate,
   });
 
   // 4. Derived states

@@ -30,9 +30,9 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     isLoadingSlots
 }) => {
     const { t } = useTranslation('customer');
-    const [visibleDaysCount, setVisibleDaysCount] = useState(7);
+    const [visibleDaysCount, setVisibleDaysCount] = useState(dynamicDateSlots.length);
     useEffect(() => {
-        setVisibleDaysCount(7);
+        setVisibleDaysCount(dynamicDateSlots.length);
     }, [dynamicDateSlots]);
     const visibleSlots = dynamicDateSlots.slice(0, visibleDaysCount);
     const hasMoreDays = visibleDaysCount < dynamicDateSlots.length;
@@ -83,7 +83,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         <div className="space-y-6">
             {/* --- Phần chọn ngày (Tabs) --- */}
             <div className="space-y-4">
-                <h3 className="text-xl font-bold text-[#0f172a]">{t('bookWash.dateTime.selectDateTitle', { defaultValue: "Select Date" })}</h3>
+                <h3 className="text-xl font-bold text-[#0f172a] dark:text-white">{t('bookWash.dateTime.selectDateTitle', { defaultValue: "Select Date" })}</h3>
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
                     {visibleSlots.map((slot) => {
                         const isDateSelected = selectedDate === slot.apiDate;
@@ -96,14 +96,14 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                     onSelectTime('');
                                 }}
                                 className={`cursor-pointer border rounded-2xl p-4 text-center transition-all ${isDateSelected
-                                    ? 'border-[#1e6ffd] bg-white ring-2 ring-blue-100 font-bold'
-                                    : 'border-[#e2e8f0] bg-white hover:border-[#cbd5e1]'
+                                    ? 'border-[#1e6ffd] dark:border-blue-500 bg-white dark:bg-[#111] ring-2 ring-blue-100 dark:ring-blue-900/30 font-bold'
+                                    : 'border-[#e2e8f0] dark:border-white/10 bg-white dark:bg-[#111] hover:border-[#cbd5e1] dark:hover:border-white/30'
                                     }`}
                             >
-                                <span className={`block text-xs font-semibold uppercase ${isDateSelected ? 'text-[#1e6ffd]' : 'text-[#64748b]'}`}>
+                                <span className={`block text-xs font-semibold uppercase ${isDateSelected ? 'text-[#1e6ffd] dark:text-blue-400' : 'text-[#64748b] dark:text-slate-400'}`}>
                                     {translatedDayName}
                                 </span>
-                                <span className={`block text-2xl font-black mt-2 ${isDateSelected ? 'text-[#1e6ffd]' : 'text-[#0f172a]'}`}>
+                                <span className={`block text-2xl font-black mt-2 ${isDateSelected ? 'text-[#1e6ffd] dark:text-blue-400' : 'text-[#0f172a] dark:text-white'}`}>
                                     {slot.dayNum}
                                 </span>
                             </div>
@@ -114,7 +114,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                     <div className="flex justify-center mt-2">
                         <button
                             onClick={handleShowMore}
-                            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors"
+                            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full transition-colors"
                         >
                             <span>
                                 {t('bookWash.dateTime.showMore', { defaultValue: "Xem tiếp 7 ngày tới" })}
@@ -125,7 +125,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                 )}
 
                 {maxDateString && (
-                    <div className="flex items-center gap-2 mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl text-blue-700 text-sm">
+                    <div className="flex items-center gap-2 mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-500/20 rounded-xl text-blue-700 dark:text-blue-400 text-sm">
                         <Info className="w-5 h-5 shrink-0" />
                         <p>
                             {t('bookWash.dateTime.tierLimit', {
@@ -138,7 +138,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
             {/* --- Phần chọn giờ dịch từ Real-time API --- */}
             <div className="space-y-4 pt-2">
-                <h4 className="text-lg font-bold text-[#0f172a]">{t('bookWash.dateTime.availableTimeSlotsTitle', { defaultValue: "Available Time Slots" })}</h4>
+                <h4 className="text-lg font-bold text-[#0f172a] dark:text-white">{t('bookWash.dateTime.availableTimeSlotsTitle', { defaultValue: "Available Time Slots" })}</h4>
 
                 {isLoadingSlots ? (
                     <div className="text-sm font-medium text-blue-500 py-4 flex items-center gap-2">
@@ -164,15 +164,15 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                             let statusClasses: string;
 
                             if (isDisabled) {
-                                statusClasses = 'border-[#e2e8f0] bg-slate-50 text-slate-400 cursor-not-allowed opacity-60';
+                                statusClasses = 'border-[#e2e8f0] dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60';
                             } else if (isTimeSelected) {
-                                statusClasses = 'border-[#1e6ffd] ring-2 ring-blue-100 bg-white text-[#1e6ffd]';
+                                statusClasses = 'border-[#1e6ffd] dark:border-blue-500 ring-2 ring-blue-100 dark:ring-blue-900/30 bg-white dark:bg-[#111] text-[#1e6ffd] dark:text-blue-400';
                             } else if (slot.slotRatio.includes('1') || slot.slotRatio.includes('2')) {
                                 // Nếu còn ít khoang rảnh (1 hoặc 2), chuyển box sang cảnh báo màu cam (Limited)
-                                statusClasses = 'border-[#fbd38d] bg-[#fffaf0] text-amber-700';
+                                statusClasses = 'border-[#fbd38d] dark:border-amber-500/30 bg-[#fffaf0] dark:bg-amber-500/10 text-amber-700 dark:text-amber-400';
                             } else {
                                 // Còn nhiều khoang rảnh rỗi (Màu xanh lá nhẹ dịu)
-                                statusClasses = 'border-[#bbf7d0] bg-[#f0fdf4] text-emerald-800';
+                                statusClasses = 'border-[#bbf7d0] dark:border-emerald-500/30 bg-[#f0fdf4] dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400';
                             }
 
                             return (

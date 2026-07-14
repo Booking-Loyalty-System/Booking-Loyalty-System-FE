@@ -8,6 +8,7 @@ export const apiClient = axios.create({
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
     },
 });
 
@@ -19,7 +20,10 @@ apiClient.interceptors.request.use(
         if (token && config.headers && !isRefreshRequest) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        
+
+        if (config.headers) {
+            config.headers['ngrok-skip-browser-warning'] = 'true';
+        }
         // BÍ KÍP ĐA NGÔN NGỮ (i18n): Gắn ngôn ngữ hiện tại vào mọi request
         // Backend sẽ dùng Header này để trả về dữ liệu tương ứng (tiếng Việt hoặc Anh)
         const currentLang = localStorage.getItem('autowash-lang') || 'en';
@@ -38,7 +42,11 @@ apiClient.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // 🌟 FIX Ở ĐÂY: Kiểm tra xem URL bị lỗi có phải là API refresh token không
+        const isRefreshRequest = originalRequest.url?.includes('refresh') || originalRequest.url?.includes('Refresh');
+
+        // Thêm điều kiện !isRefreshRequest để chặn vòng lặp
+        if (error.response?.status === 401 && !originalRequest._retry && !isRefreshRequest) {
             originalRequest._retry = true;
 
             const refreshToken = localStorage.getItem('refresh_token');
@@ -48,10 +56,8 @@ apiClient.interceptors.response.use(
             }
 
             try {
-                // 🌟 BÍ KÍP Ở ĐÂY: Chỉ khởi tạo Repo khi THỰC SỰ dính lỗi 401 (Lazy Loading)
-                // Lúc này toàn bộ file hệ thống đã lốt xong xuôi, gọi thoải mái không sợ chết
+                // Khởi tạo Repo (Lazy Loading)
                 const authRepository = new AuthRepositoryImplement();
-
                 const res = await authRepository.refreshToken({ refreshToken });
 
                 const tokenData = (res as unknown as { data?: AuthResponseData })?.data || res;
@@ -62,15 +68,18 @@ apiClient.interceptors.response.use(
                     }
 
                     originalRequest.headers.Authorization = `Bearer ${tokenData.accessToken}`;
+                    originalRequest.headers['ngrok-skip-browser-warning'] = 'true';
                     return apiClient(originalRequest);
                 }
             } catch (refreshError) {
+                // Bây giờ nếu gọi /refresh-token mà ra 401, nó sẽ nhảy thẳng vào đây!
                 console.error("Token bốc mùi rồi, logout thôi:", refreshError);
                 handleForceLogout();
                 return Promise.reject(refreshError);
             }
         }
 
+        // Bắt các lỗi khác hoặc lỗi 401 của chính API refresh-token
         return Promise.reject(error);
     }
 );
@@ -79,7 +88,7 @@ const handleForceLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
-    if (window.location.pathname !== '/') {
-        window.location.href = '/';
+    if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
     }
 };

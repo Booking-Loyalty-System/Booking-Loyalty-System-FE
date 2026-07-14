@@ -1,5 +1,6 @@
 import { initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 // Lấy cấu hình từ file .env một cách an toàn
 const firebaseConfig = {
@@ -17,3 +18,4 @@ const app: FirebaseApp = initializeApp(firebaseConfig);
 
 // Xuất đối tượng Auth để sử dụng ở component login
 export const auth: Auth = getAuth(app);
+export const storage = getStorage(app);

@@ -583,5 +583,29 @@
       "upToDays": "Up to {{days}} days",
       "pointsMultiplier": "Points multiplier: {{mult}}"
     }
+  },
+  "feedback": {
+    "title": "Service Review",
+    "subtitle": "How was your experience with us? Your review helps us improve our service!",
+    "subtitleChat": "Your feedback helps us improve our service.",
+    "labels": {
+      "service": "Service",
+      "staff": "Staff",
+      "price": "Price",
+      "comment": "Comment (Optional)",
+      "commentPlaceholder": "Share your experience...",
+      "bookingCode": "Booking"
+    },
+    "buttons": {
+      "submit": "Submit Review",
+      "submitting": "Submitting...",
+      "later": "Maybe Later",
+      "endSession": "End Session",
+      "skip": "Skip"
+    },
+    "toast": {
+      "success": "Thank you for your feedback! 🌟",
+      "error": "Failed to submit feedback, please try again."
+    }
   }
 }
