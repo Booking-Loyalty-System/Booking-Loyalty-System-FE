@@ -8,33 +8,27 @@ import { Loader2, CheckCircle2, Image as ImageIcon } from "lucide-react";
 export function StaffImageUploader({
   bookingId,
   type,
-  token,
   onSuccess,
 }: {
   bookingId: string;
   type: BookingImageType;
-  token: string;
   onSuccess?: (urls: string[]) => void;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [savedUrls, setSavedUrls] = useState<string[]>([]); // Đổi thành mảng để lưu nhiều ảnh
+  const [savedUrls, setSavedUrls] = useState<string[]>([]);
 
-  // Xử lý upload nhiều file cùng lúc
   async function handleAutoUpload(files: FileList) {
     setBusy(true);
     setError(null);
     try {
-      // Tạo mảng các promises upload
-      const uploadPromises = Array.from(files).map((file) =>
-        uploadBookingImage(file, bookingId, type, undefined, token),
+      const uploadPromises = Array.from(files).map(
+        (file) => uploadBookingImage(file, bookingId, type, undefined), // ĐÃ XÓA token ở đây
       );
 
-      // Chờ tất cả ảnh upload xong
       const results = await Promise.all(uploadPromises);
       const newUrls = results.map((img) => img.imageUrl);
 
-      // Cập nhật state danh sách ảnh đã lưu
       setSavedUrls((prev) => {
         const updatedUrls = [...prev, ...newUrls];
         if (onSuccess) onSuccess(updatedUrls);
@@ -56,7 +50,6 @@ export function StaffImageUploader({
         </h4>
       </div>
 
-      {/* Box hiển thị danh sách các ảnh đã upload thành công */}
       {savedUrls.length > 0 && (
         <div className="flex flex-col gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl animate-in zoom-in duration-300">
           <div className="flex items-center gap-2 mb-1">
@@ -80,12 +73,11 @@ export function StaffImageUploader({
         </div>
       )}
 
-      {/* Form upload luôn hiển thị để có thể tiếp tục thêm ảnh mới */}
       <div className="flex flex-col gap-2 relative">
         <input
           type="file"
           accept="image/*"
-          multiple // Cho phép quét khối hoặc Ctrl+Click để chọn nhiều file 1 lúc
+          multiple
           className={`text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700 cursor-pointer transition-colors ${
             busy ? "opacity-50 pointer-events-none" : "hover:file:bg-blue-200"
           }`}
@@ -96,12 +88,12 @@ export function StaffImageUploader({
           disabled={busy}
         />
 
-        {/* Lớp overlay hiện loading đè lên input khi đang upload */}
         {busy && (
           <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-[1px] flex items-center justify-start pl-2 rounded-lg z-10">
             <div className="flex items-center gap-2 text-blue-600 font-bold text-sm bg-white px-3 py-1.5 rounded-full shadow-sm border border-blue-100">
               <Loader2 className="w-4 h-4 animate-spin" />
-              Đang tải lên Firebase...
+              {/* ĐÃ SỬA: Firebase -> hệ thống */}
+              Đang tải ảnh lên...
             </div>
           </div>
         )}

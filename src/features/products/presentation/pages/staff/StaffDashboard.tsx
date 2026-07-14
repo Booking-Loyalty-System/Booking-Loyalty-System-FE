@@ -272,9 +272,6 @@ export const StaffDashboard: React.FC = () => {
       );
       setSelectedBookingForCheckout(null);
       queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
-      // Sau khi checkout, booking đã chuyển sang Completed/CheckedOut nên
-      // BE mới cho phép lưu ảnh "AfterWash" — mở modal ảnh ngay sau bước này.
-      setActionModal({ isOpen: true, bookingId, type: "finish" });
     } catch (error) {
       console.error(error);
       toast.error("Xử lý thu tiền mặt thất bại");

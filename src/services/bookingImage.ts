@@ -7,22 +7,17 @@ export async function uploadBookingImage(
   file: File,
   bookingId: string,
   type: BookingImageType,
-  note?: string,
-  token?: string, // không còn dùng trực tiếp — apiClient tự gắn token qua interceptor
+  note?: string
 ): Promise<{ imageUrl: string }> {
-  // Thông tin lấy từ tài khoản Cloudinary của bạn
-  const CLOUD_NAME = "dtyfp1tg2";
-  const UPLOAD_PRESET = "dtyfp1tg2"; // Trùng tên với Cloud Name theo cài đặt của bạn
+  
+  const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET; 
 
   const formData = new FormData();
-  // Bắt buộc phải là "file" và "upload_preset" theo chuẩn của Cloudinary
   formData.append("file", file);
   formData.append("upload_preset", UPLOAD_PRESET);
-
-  // (Tùy chọn) Nhét ảnh vào folder riêng để dễ quản lý trên Cloudinary
   formData.append("folder", `AutoWash/Bookings/${bookingId}/${type}`);
 
-  // BƯỚC 1: Upload file thật lên Cloudinary để lấy URL public
   let imageUrl: string;
   try {
     const response = await fetch(
@@ -41,15 +36,11 @@ export async function uploadBookingImage(
       );
     }
 
-    // Cloudinary trả về link ảnh an toàn (HTTPS) ở trường 'secure_url'
     imageUrl = data.secure_url;
   } catch (error: any) {
     throw new Error(error.message || "Lỗi kết nối đến máy chủ Cloudinary");
   }
 
-  // BƯỚC 2: Lưu imageUrl vừa có vào backend, gắn với bookingId
-  // Đây là bước trước đây bị THIẾU — Cloudinary có ảnh nhưng BE không hề biết booking
-  // này đã có ảnh, nên GET /api/bookings/{id}/images luôn trả về mảng rỗng.
   try {
     await apiClient.post(ENDPOINTS.BOOKING.IMAGES(bookingId), {
       imageUrl,
