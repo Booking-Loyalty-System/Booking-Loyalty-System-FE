@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { StaffChatPanel } from "../components/staff/StaffChatPanel";
 import { NavLink, useNavigate, Outlet } from "react-router-dom";
 import {
@@ -7,8 +7,6 @@ import {
   Droplets,
   LogOut,
   Bell,
-  CheckCircle2,
-  Coffee,
   ClipboardList,
   LayoutGrid,
 } from "lucide-react";
@@ -18,7 +16,7 @@ import { useNotification } from "@/features/products/application/useNotification
 export const StaffLayout: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [isOnline, setIsOnline] = useState(true);
+
   const { unreadCount } = useNotification();
 
   const staffLinks = [
