@@ -15,9 +15,6 @@ export const ActionImageModal: React.FC<ActionImageModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-  // Retrieve the token. Adjust the key if your app uses a different one (e.g., "token")
-  const token = localStorage.getItem("access_token") || "";
-
   const isCheckIn = actionType === "checkIn";
   const imageType = isCheckIn ? "BeforeWash" : "AfterWash";
   const title = isCheckIn
@@ -46,16 +43,12 @@ export const ActionImageModal: React.FC<ActionImageModalProps> = ({
             <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
             <p className="text-sm font-medium text-emerald-800 dark:text-emerald-400">
               {isCheckIn ? "Đã nhận xe thành công." : "Đã bàn giao thành công."}{" "}
-              Vui lòng tải thêm ảnh minh chứng cho xe này (không bắt buộc).
+              Vui lòng tải thêm ảnh minh chứng cho xe này.
             </p>
           </div>
 
           {/* Integrate the Uploader */}
-          <StaffImageUploader
-            bookingId={bookingId}
-            type={imageType}
-            token={token}
-          />
+          <StaffImageUploader bookingId={bookingId} type={imageType} />
         </div>
 
         {/* Footer Actions */}
