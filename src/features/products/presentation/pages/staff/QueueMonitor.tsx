@@ -106,13 +106,14 @@ export const QueueMonitor: React.FC = () => {
         b.vehicleName?.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
-  const inProgressBookings = bookings.filter((b) => b.status === "InProgress");
+  // ĐÃ FIX: Xóa biến inProgressBookings dư thừa gây lỗi nhảy xe
 
   const baysStatus = washBays.map((bay, index) => {
+    // ĐÃ FIX: Chỉ lấy đúng xe đang rửa (InProgress) có ID khoang khớp với khoang hiện tại
     const activeBooking =
       bookings.find((b) => b.status === "InProgress" && b.bayId === bay.id) ||
-      inProgressBookings[index] ||
       null;
+
     const bayQueue = bookings.filter(
       (b) =>
         b.bayId === bay.id &&
@@ -847,7 +848,7 @@ export const QueueMonitor: React.FC = () => {
                       </span>
                       <button
                         onClick={() =>
-                          handleFinishWash(activeBayDetail.booking.id)
+                          handleFinishWash(activeBayDetail.booking!.id)
                         }
                         className="block text-[11px] font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
                       >

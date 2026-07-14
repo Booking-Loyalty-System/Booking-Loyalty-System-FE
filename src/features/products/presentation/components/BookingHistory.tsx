@@ -150,7 +150,7 @@ export const BookingHistory: React.FC = () => {
     );
 
   const completedBookings = sortedBookings.filter(
-    (b) => b.status === "Completed",
+    (b) => b.status === "Completed" || b.status === "CheckedOut",
   );
   const stats = [
     {
@@ -161,7 +161,11 @@ export const BookingHistory: React.FC = () => {
     },
     {
       title: "Points Earned",
-      value: (customerMe?.totalPoints || 0).toLocaleString("en-US"),
+      value: (
+        customerMe?.totalPoint ??
+        customerMe?.totalPoints ??
+        0
+      ).toLocaleString("en-US"),
       icon: <Star className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
       bg: "bg-emerald-50/50 dark:bg-emerald-500/10",
     },
@@ -175,9 +179,7 @@ export const BookingHistory: React.FC = () => {
     },
     {
       title: "Total Spent",
-      value: formatCurrency(
-        completedBookings.reduce((sum, b) => sum + b.totalPrice, 0),
-      ),
+      value: formatCurrency(customerMe?.totalSpent || 0),
       icon: (
         <DollarSign className="w-6 h-6 text-orange-600 dark:text-orange-400" />
       ),
