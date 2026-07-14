@@ -30,9 +30,9 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     isLoadingSlots
 }) => {
     const { t } = useTranslation('customer');
-    const [visibleDaysCount, setVisibleDaysCount] = useState(7);
+    const [visibleDaysCount, setVisibleDaysCount] = useState(dynamicDateSlots.length);
     useEffect(() => {
-        setVisibleDaysCount(7);
+        setVisibleDaysCount(dynamicDateSlots.length);
     }, [dynamicDateSlots]);
     const visibleSlots = dynamicDateSlots.slice(0, visibleDaysCount);
     const hasMoreDays = visibleDaysCount < dynamicDateSlots.length;

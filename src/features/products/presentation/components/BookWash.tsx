@@ -244,7 +244,7 @@ export const BookWash: React.FC = () => {
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
   const { redeemedVouchersOnly, isLoadingRedemptions } = useReward();
-  const bookingWindow = (customerMe as any)?.bookingWindow || 7;
+  const bookingWindow = customerMe?.bookingWindow || 7;
   const dynamicDateSlots = useMemo(() => {
     return generateUpcomingDates(bookingWindow);
   }, [bookingWindow]);
@@ -276,9 +276,20 @@ export const BookWash: React.FC = () => {
     null,
   );
 
+  // Lấy chunk startDate dựa trên ngày đang chọn (mỗi chunk 7 ngày)
+  const selectedDateIndex = useMemo(() => {
+    return dynamicDateSlots.findIndex(d => d.apiDate === selectedDate);
+  }, [dynamicDateSlots, selectedDate]);
+
+  const chunkStartDate = useMemo(() => {
+    if (selectedDateIndex === -1 || dynamicDateSlots.length === 0) return dynamicDateSlots[0]?.apiDate;
+    const chunkIndex = Math.floor(selectedDateIndex / 7) * 7;
+    return dynamicDateSlots[chunkIndex]?.apiDate;
+  }, [dynamicDateSlots, selectedDateIndex]);
+
   const { weeklySummary, isLoading: isLoadingSlots } = useTimeSlot({
     branchId: selectedBranchId,
-    startDate: dynamicDateSlots[0]?.apiDate,
+    startDate: chunkStartDate,
   });
 
   // 4. Derived states

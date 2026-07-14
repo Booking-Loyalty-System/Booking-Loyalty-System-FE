@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { StaffChatPanel } from "../components/staff/StaffChatPanel";
 import { NavLink, useNavigate, Outlet } from "react-router-dom";
 import {
@@ -6,8 +6,7 @@ import {
   Droplets,
   LogOut,
   Bell,
-  CheckCircle2,
-  Coffee,
+
   LayoutGrid,
 } from "lucide-react";
 import { useAuth } from "../../application/useAuth";
@@ -16,7 +15,7 @@ import { useNotification } from "@/features/products/application/useNotification
 export const StaffLayout: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [isOnline, setIsOnline] = useState(true);
+
   const { unreadCount } = useNotification();
 
   const staffLinks = [
@@ -37,11 +36,13 @@ export const StaffLayout: React.FC = () => {
 
   return (
     <div className="h-screen w-screen bg-[#fafafa] dark:bg-[#050505] flex overflow-hidden antialiased font-sans">
+
       {/* Background Glow */}
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten z-0"></div>
 
       {/* Sidebar - Premium Glassmorphic */}
       <aside className="w-72 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col justify-between shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)] h-full relative z-20 transition-all duration-300">
+
         {/* Logo Section */}
         <div className="p-6 pb-4">
           <div className="flex items-center gap-4">
@@ -60,7 +61,7 @@ export const StaffLayout: React.FC = () => {
         </div>
 
         {/* Staff Shift Status */}
-        <div className="px-6 mb-6">
+        {/* <div className="px-6 mb-6">
           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-800 dark:to-indigo-950 rounded-3xl p-5 text-white relative overflow-hidden shadow-lg shadow-blue-600/20 border border-blue-500/30 group">
             <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/20 rounded-full blur-2xl group-hover:bg-white/30 transition-all duration-700 pointer-events-none"></div>
 
@@ -96,7 +97,7 @@ export const StaffLayout: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Navigation Links */}
         <nav className="flex-1 px-4 space-y-6 overflow-y-auto custom-scrollbar">
