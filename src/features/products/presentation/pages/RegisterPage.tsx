@@ -128,7 +128,7 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#050505] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
+    <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#0B0C10] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
       
       {/* Background Orbs */}
       <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-emerald-400/20 dark:bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
@@ -158,7 +158,7 @@ export const RegisterPage: React.FC = () => {
         <div className="w-full max-w-[1200px] mx-auto bg-transparent flex flex-col lg:flex-row gap-8 relative z-10">
           
           {/* PANEL TRÁI: GIỚI THIỆU THÀNH VIÊN */}
-          <div className="flex-[0.9] bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-[0.9] bg-white/80 dark:bg-[#13151A]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
             <div>
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
@@ -205,7 +205,7 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           {/* PANEL PHẢI: FORM ĐĂNG KÝ */}
-          <div className="flex-[1.1] bg-white/90 dark:bg-[#111]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-start shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-[1.1] bg-white/90 dark:bg-[#13151A]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-start shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
             <div className="w-full max-w-lg mx-auto">
               <div className="mb-8">
                 <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
@@ -222,7 +222,7 @@ export const RegisterPage: React.FC = () => {
                   onClick={() => setRegisterMode('email')}
                   className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${
                     registerMode === 'email'
-                      ? 'bg-white dark:bg-[#222] shadow-sm text-blue-600 dark:text-blue-400 border border-slate-200/50 dark:border-white/10'
+                      ? 'bg-white dark:bg-white/10 shadow-sm text-blue-600 dark:text-blue-400 border border-slate-200/50 dark:border-white/20'
                       : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                 >
@@ -232,7 +232,7 @@ export const RegisterPage: React.FC = () => {
                   onClick={() => setRegisterMode('phone')}
                   className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${
                     registerMode === 'phone'
-                      ? 'bg-white dark:bg-[#222] shadow-sm text-blue-600 dark:text-blue-400 border border-slate-200/50 dark:border-white/10'
+                      ? 'bg-white dark:bg-white/10 shadow-sm text-blue-600 dark:text-blue-400 border border-slate-200/50 dark:border-white/20'
                       : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                   }`}
                 >
@@ -256,7 +256,7 @@ export const RegisterPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl font-bold hover:shadow-[0_8px_30px_rgb(37,99,235,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 mt-4 flex items-center justify-center gap-2 group"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl font-bold hover:shadow-[0_8px_30px_rgb(37,99,235,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 mt-4 flex items-center justify-center gap-2 group border border-white/10"
                   >
                     {isPending ? (
                       <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -294,7 +294,7 @@ export const RegisterPage: React.FC = () => {
                       {!isOtpSent && (
                         <button
                           onClick={handleSendOTP}
-                          className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3.5 rounded-2xl font-bold hover:bg-slate-800 dark:hover:bg-slate-100 whitespace-nowrap shadow-md transition-all hover:scale-105"
+                          className="bg-slate-900 dark:bg-white/10 text-white dark:text-white px-6 py-3.5 rounded-2xl font-bold hover:bg-slate-800 dark:hover:bg-white/20 whitespace-nowrap shadow-md transition-all hover:scale-105 dark:border dark:border-white/20"
                         >
                           {t('auth.register.sendCode', { defaultValue: "Gửi mã" })}
                         </button>
@@ -317,7 +317,7 @@ export const RegisterPage: React.FC = () => {
                       <button
                         type="submit"
                         disabled={isPendingPhone}
-                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-2xl font-bold hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 mt-6 flex items-center justify-center gap-2 group"
+                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-2xl font-bold hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 mt-6 flex items-center justify-center gap-2 group border border-white/10"
                       >
                         {isPendingPhone ? (
                           <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

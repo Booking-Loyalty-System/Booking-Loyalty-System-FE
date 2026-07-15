@@ -92,7 +92,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
 
   return (
     <div className="w-full lg:w-80 shrink-0 sticky top-6">
-      <div className="bg-white dark:bg-[#111] border border-[#e2e8f0] dark:border-white/5 rounded-2xl p-6 shadow-sm flex flex-col justify-between min-h-[350px]">
+      <div className="bg-white dark:bg-[#13151A] border border-[#e2e8f0] dark:border-white/5 rounded-2xl p-6 shadow-sm flex flex-col justify-between min-h-[350px]">
         <div className="space-y-6">
           <h3 className="text-lg font-bold text-[#0f172a] dark:text-white border-b border-[#f1f5f9] dark:border-white/5 pb-3">
             Booking Summary
@@ -181,7 +181,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                       <button
                         onClick={handleApplyPromo}
                         disabled={isApplyingPromo || !promoInput.trim()}
-                        className="bg-slate-900 dark:bg-blue-600 text-white font-bold text-xs px-3 py-2 rounded-xl disabled:opacity-50"
+                        className="bg-slate-900 dark:bg-blue-600 dark:border dark:border-white/20 text-white font-bold text-xs px-3 py-2 rounded-xl disabled:opacity-50"
                       >
                         Apply
                       </button>
@@ -237,7 +237,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
         <button
           onClick={onConfirmBooking}
           disabled={!selectedPackageId || !selectedTime || isBooking}
-          className="w-full mt-6 py-3 px-4 rounded-xl bg-[#1e6ffd] hover:bg-blue-700 text-white font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full mt-6 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_8px_30px_rgb(37,99,235,0.3)] hover:-translate-y-0.5 active:translate-y-0 border border-transparent dark:border-white/10 text-white font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isBooking ? "Processing..." : "Confirm Booking"}
         </button>

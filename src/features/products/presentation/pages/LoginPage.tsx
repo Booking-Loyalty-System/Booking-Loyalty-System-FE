@@ -87,7 +87,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#050505] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
+    <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#0B0C10] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
       
       {/* Background Orbs */}
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
@@ -117,7 +117,7 @@ export const LoginPage: React.FC = () => {
         <div className="w-full max-w-[1200px] mx-auto bg-transparent flex flex-col lg:flex-row gap-8 relative z-10">
           
           {/* PANEL TRÁI: GIỚI THIỆU TÍNH NĂNG */}
-          <div className="flex-1 bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-1 bg-white/80 dark:bg-[#13151A]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
             <div className="flex flex-col h-full justify-center">
               {/* LOGO & BRANDING */}
               <div className="flex items-center gap-4 mb-8">
@@ -165,7 +165,7 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {/* PANEL PHẢI: FORM ĐĂNG NHẬP */}
-          <div className="flex-[0.8] bg-white/90 dark:bg-[#111]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-[0.8] bg-white/90 dark:bg-[#13151A]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
             <div className="w-full max-w-md mx-auto">
               {/* TIÊU ĐỀ FORM */}
               <div className="mb-10">
@@ -251,7 +251,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-2xl hover:shadow-[0_8px_30px_rgb(37,99,235,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all text-base mt-4 flex items-center justify-center gap-2 group"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-2xl hover:shadow-[0_8px_30px_rgb(37,99,235,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all text-base mt-4 flex items-center justify-center gap-2 group border border-white/10"
                 >
                   {isLoading ? (
                     <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

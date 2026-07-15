@@ -107,7 +107,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                         <div
                             key={branch.id}
                             onClick={() => onSelectBranch(branch.id)}
-                            className={`group relative bg-white dark:bg-[#111] border rounded-2xl p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
+                            className={`group relative bg-white dark:bg-[#13151A] border rounded-2xl p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
                                 isSelected
                                     ? 'border-blue-600 dark:border-blue-500 ring-2 ring-blue-500/10 dark:ring-blue-900/30 bg-blue-50/5 dark:bg-blue-900/10 shadow-md shadow-blue-500/5'
                                     : 'border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-white/30 hover:shadow-md'

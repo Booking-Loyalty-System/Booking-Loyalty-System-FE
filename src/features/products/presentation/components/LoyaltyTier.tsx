@@ -161,9 +161,9 @@ export const LoyaltyTier: React.FC = () => {
   }, [transactions, availablePoints]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black p-4 md:p-8 font-sans antialiased text-slate-800 dark:text-white">
+    <div className="min-h-screen bg-transparent p-4 md:p-8 font-sans antialiased text-slate-800 dark:text-white">
       <div className="max-w-6xl mx-auto space-y-8">
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#050505] dark:to-[#111] border border-blue-500/50 dark:border-white/10 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl group">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#0B0C10] dark:to-[#13151A] border border-blue-500/50 dark:border-white/10 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl group">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
           <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
           <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-700"></div>
@@ -270,7 +270,7 @@ export const LoyaltyTier: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#111] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-white/5">
+        <div className="bg-white dark:bg-[#13151A] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-white/5">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-emerald-100 dark:bg-emerald-500/10 rounded-lg text-emerald-600 dark:text-emerald-400">
               <TrendingUp className="w-6 h-6" />
@@ -320,7 +320,7 @@ export const LoyaltyTier: React.FC = () => {
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`relative bg-white dark:bg-[#111] rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${tier.colorClass} ${
+                className={`relative bg-white dark:bg-[#13151A] rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${tier.colorClass} ${
                   tier.isCurrent
                     ? "ring-2 ring-blue-500 shadow-md scale-[1.02] border-blue-500 dark:border-blue-500"
                     : "shadow-sm hover:shadow-md border-slate-100 dark:border-white/10"
@@ -397,7 +397,7 @@ export const LoyaltyTier: React.FC = () => {
         <div className="space-y-6">
           {/* Hộp chỉ số Thống kê tháng */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#111] p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 flex justify-between items-center">
+            <div className="bg-white dark:bg-[#13151A] p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng hook useTranslation và hàm t() để lấy nội dung dịch thuật đa ngôn ngữ từ locale files */}
@@ -418,7 +418,7 @@ export const LoyaltyTier: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-[#111] p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 flex justify-between items-center">
+            <div className="bg-white dark:bg-[#13151A] p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng t() từ react-i18next hiển thị thống kê điểm thưởng đã đổi */}
@@ -438,7 +438,7 @@ export const LoyaltyTier: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-[#111] p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 flex justify-between items-center">
+            <div className="bg-white dark:bg-[#13151A] p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng t() từ react-i18next hiển thị thống kê tổng số lượt đặt lịch của thành viên */}
@@ -460,7 +460,7 @@ export const LoyaltyTier: React.FC = () => {
           </div>
 
           {/* Bảng Lịch sử Giao dịch */}
-          <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden">
+          <div className="bg-white dark:bg-[#13151A] rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden">
             <div className="p-6 border-b border-slate-100 dark:border-white/10 flex items-center gap-3">
               <History className="w-5 h-5 text-slate-400 dark:text-slate-500" />
               <h3 className="text-lg font-bold text-slate-800 dark:text-white">

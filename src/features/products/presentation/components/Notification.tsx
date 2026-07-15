@@ -35,7 +35,7 @@ export const NotificationCenter: React.FC = () => {
 
             <div className="space-y-4">
                 {notifications.length === 0 ? (
-                    <div className="bg-white dark:bg-[#111] rounded-[2.5rem] p-12 text-center border border-slate-200 dark:border-white/5 shadow-sm">
+                    <div className="bg-white dark:bg-[#13151A] rounded-[2.5rem] p-12 text-center border border-slate-200 dark:border-white/5 shadow-sm">
                         <div className="w-16 h-16 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 dark:border-white/10">
                             <Bell className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                         </div>
@@ -48,7 +48,7 @@ export const NotificationCenter: React.FC = () => {
                             key={notification.id}
                             className={`relative p-5 rounded-[2rem] border transition-all duration-300 flex gap-4 items-start ${
                                 notification.isRead
-                                    ? 'bg-white dark:bg-[#111] border-gray-100 dark:border-white/5 opacity-75'
+                                    ? 'bg-white dark:bg-[#13151A] border-gray-100 dark:border-white/5 opacity-75'
                                     : 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-500/20 shadow-sm'
                             }`}
                         >

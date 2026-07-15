@@ -63,7 +63,7 @@ export const TierPriorityWindow: React.FC = () => {
                             className={
                                 isCurrentTier
                                     ? "bg-[#fef3c7] dark:bg-amber-500/10 border-2 border-[#f59e0b] dark:border-amber-500/50 rounded-xl p-4 text-center shadow-sm" // Style nổi bật (Gold/Orange)
-                                    : "bg-white dark:bg-[#111] border border-[#e2e8f0] dark:border-white/10 rounded-xl p-4 text-center"                 // Style bình thường (Trắng/Xám)
+                                    : "bg-white dark:bg-[#13151A] border border-[#e2e8f0] dark:border-white/10 rounded-xl p-4 text-center"                 // Style bình thường (Trắng/Xám)
                             }
                         >
                             <span

@@ -94,7 +94,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
   });
 
   return (
-    <div className="bg-white dark:bg-[#111] rounded-2xl border border-slate-100 dark:border-white/5 p-5 shadow-sm transition-all hover:shadow-md">
+    <div className="bg-white dark:bg-[#13151A] rounded-2xl border border-slate-100 dark:border-white/5 p-5 shadow-sm transition-all hover:shadow-md">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
@@ -314,7 +314,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
       </div>
       {confirmReward && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-[#111] dark:border dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+          <div className="bg-white dark:bg-[#13151A] dark:border dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
               {t("rewards.confirmModal.title", { defaultValue: "Xác nhận đổi thưởng" })}
             </h3>

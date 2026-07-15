@@ -1,11 +1,13 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Giữ lại hệ thống font chữ và khử răng cưa chuẩn của hệ thống */
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* Hệ thống font chữ Premium */
+  --sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   font: 18px/145% var(--sans);
+  letter-spacing: -0.01em;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

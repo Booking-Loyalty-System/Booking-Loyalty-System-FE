@@ -69,7 +69,7 @@ export const Promotions: React.FC = () => {
                 <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">{t('promotions.featured.sectionTitle')}</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {featuredPromos.map((promo, idx) => (
-                        <div key={idx} className="bg-white dark:bg-[#111] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all duration-300 p-8 relative flex flex-col justify-between group overflow-hidden">
+                        <div key={idx} className="bg-white dark:bg-[#13151A] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all duration-300 p-8 relative flex flex-col justify-between group overflow-hidden">
                             <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-3 rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] group-hover:-translate-y-2 transition-transform">
                                 <Sparkles className="w-5 h-5 animate-pulse" />
                             </div>
@@ -151,7 +151,7 @@ export const Promotions: React.FC = () => {
                 <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">{t('promotions.allActive.sectionTitle')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {activePromos.map((item, idx) => (
-                        <div key={idx} className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/5 rounded-[2rem] p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+                        <div key={idx} className="bg-white dark:bg-[#13151A] border border-slate-200 dark:border-white/5 rounded-[2rem] p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
                             <div className="space-y-5">
                                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                                     <Sparkles className="w-6 h-6" />
