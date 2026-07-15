@@ -88,7 +88,9 @@ const handleForceLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
-    if (window.location.pathname !== '/login') {
+    // Không redirect nếu đang ở trang public (Landing, Login, Register)
+    const publicPaths = ['/', '/login', '/register'];
+    if (!publicPaths.includes(window.location.pathname)) {
         window.location.href = '/login';
     }
 };
