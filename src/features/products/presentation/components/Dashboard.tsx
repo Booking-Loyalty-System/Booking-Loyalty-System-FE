@@ -172,7 +172,7 @@ export const Dashboard: React.FC = () => {
         {stats.map((stat) => (
           <div
             key={stat.id}
-            className={`bg-white dark:bg-[#111] border ${stat.border} dark:border-white/5 rounded-[2rem] p-6 flex flex-col justify-between min-h-[160px] relative group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden`}
+            className={`bg-white dark:bg-[#13151A] border ${stat.border} dark:border-white/5 rounded-[2rem] p-6 flex flex-col justify-between min-h-[160px] relative group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden`}
           >
             {/* Subtle background glow on hover */}
             <div
@@ -202,7 +202,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* FREE WASH REWARD PROGRESS (Premium Redesign) */}
-      <div className="relative bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-[#061810] dark:to-[#051114] border border-emerald-200/50 dark:border-emerald-900/30 rounded-[2.5rem] p-8 lg:p-10 overflow-hidden group">
+      <div className="relative bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-[#0D1615] dark:to-[#13151A] border border-emerald-200/50 dark:border-emerald-900/30 rounded-[2.5rem] p-8 lg:p-10 overflow-hidden group">
         <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-[80px] group-hover:bg-emerald-400/20 transition-all duration-500 pointer-events-none"></div>
 
         <div className="relative z-10 space-y-8">
@@ -298,7 +298,7 @@ export const Dashboard: React.FC = () => {
       {/* TWO COLUMNS LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* CURRENT TIER CARD - Premium */}
-        <div className="lg:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#050505] dark:to-[#111] border border-blue-500/50 dark:border-white/10 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden shadow-2xl min-h-[380px] flex flex-col justify-between group">
+        <div className="lg:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#0B0C10] dark:to-[#13151A] border border-blue-500/50 dark:border-white/10 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden shadow-2xl min-h-[380px] flex flex-col justify-between group">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
 
           <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
@@ -391,7 +391,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* UPCOMING BOOKING - Premium */}
-        <div className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col min-h-[380px] group">
+        <div className="bg-white dark:bg-[#13151A] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col min-h-[380px] group">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-4 mb-6">
             <h3 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-3">
               {t("dashboard.upcomingBooking.title", "Upcoming Booking")}
@@ -431,7 +431,7 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-4 text-sm font-semibold pt-2">
-                  <div className="flex justify-between items-center bg-white dark:bg-black/20 p-3 rounded-2xl border border-slate-100 dark:border-white/5">
+                  <div className="flex justify-between items-center bg-white dark:bg-white/5 p-3 rounded-2xl border border-slate-100 dark:border-white/5">
                     <span className="text-slate-500">
                       {t("dashboard.bookingTime", "Time")}
                     </span>
@@ -477,7 +477,7 @@ export const Dashboard: React.FC = () => {
                 </button>
                 <button
                   onClick={() => navigate("/booking-history")}
-                  className="flex items-center gap-2 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                  className="flex items-center gap-2 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 dark:border dark:border-white/20 px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
                 >
                   {t("dashboard.viewAll", "View All")}
                   <ArrowRight className="w-4 h-4" />
@@ -516,7 +516,7 @@ export const Dashboard: React.FC = () => {
             <div
               key={i}
               onClick={() => navigate(action.path)}
-              className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/5 rounded-3xl p-6 flex items-center gap-5 cursor-pointer hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group"
+              className="bg-white dark:bg-[#13151A] border border-slate-200 dark:border-white/5 rounded-3xl p-6 flex items-center gap-5 cursor-pointer hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group"
             >
               <div
                 className={`w-14 h-14 bg-gradient-to-br ${action.gradient} rounded-2xl flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}

@@ -109,7 +109,7 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
   const qrValue = booking.bookingCode || booking.id;
 
   return (
-    <div className="max-w-2xl mx-auto my-8 bg-white dark:bg-gradient-to-br dark:from-[#111] dark:to-[#1a1128] border border-slate-100 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
+    <div className="max-w-2xl mx-auto my-8 bg-white dark:bg-gradient-to-br dark:from-[#13151A] dark:to-[#1a1525] border border-slate-100 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
       <div className="flex flex-col items-center justify-center space-y-3 mb-6">
         <div className="p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-emerald-500 dark:text-emerald-400">
           <CheckCircle2 className="w-16 h-16" />

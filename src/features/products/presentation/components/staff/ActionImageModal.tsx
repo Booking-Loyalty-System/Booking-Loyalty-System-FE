@@ -26,7 +26,7 @@ export const ActionImageModal: React.FC<ActionImageModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#111] rounded-[2rem] w-full max-w-md shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden flex flex-col transform animate-in zoom-in-95 duration-200">
+      <div className="bg-white dark:bg-[#13151A] rounded-[2rem] w-full max-w-md shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden flex flex-col transform animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="p-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex justify-between items-center">
           <h3 className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight">

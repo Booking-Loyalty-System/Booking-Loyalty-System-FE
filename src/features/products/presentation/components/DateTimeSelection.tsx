@@ -96,8 +96,8 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                     onSelectTime('');
                                 }}
                                 className={`cursor-pointer border rounded-2xl p-4 text-center transition-all ${isDateSelected
-                                    ? 'border-[#1e6ffd] dark:border-blue-500 bg-white dark:bg-[#111] ring-2 ring-blue-100 dark:ring-blue-900/30 font-bold'
-                                    : 'border-[#e2e8f0] dark:border-white/10 bg-white dark:bg-[#111] hover:border-[#cbd5e1] dark:hover:border-white/30'
+                                    ? 'border-[#1e6ffd] dark:border-blue-500 bg-white dark:bg-[#13151A] ring-2 ring-blue-100 dark:ring-blue-900/30 font-bold'
+                                    : 'border-[#e2e8f0] dark:border-white/10 bg-white dark:bg-[#13151A] hover:border-[#cbd5e1] dark:hover:border-white/30'
                                     }`}
                             >
                                 <span className={`block text-xs font-semibold uppercase ${isDateSelected ? 'text-[#1e6ffd] dark:text-blue-400' : 'text-[#64748b] dark:text-slate-400'}`}>
@@ -166,7 +166,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                             if (isDisabled) {
                                 statusClasses = 'border-[#e2e8f0] dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60';
                             } else if (isTimeSelected) {
-                                statusClasses = 'border-[#1e6ffd] dark:border-blue-500 ring-2 ring-blue-100 dark:ring-blue-900/30 bg-white dark:bg-[#111] text-[#1e6ffd] dark:text-blue-400';
+                                statusClasses = 'border-[#1e6ffd] dark:border-blue-500 ring-2 ring-blue-100 dark:ring-blue-900/30 bg-white dark:bg-[#13151A] text-[#1e6ffd] dark:text-blue-400';
                             } else if (slot.slotRatio.includes('1') || slot.slotRatio.includes('2')) {
                                 // Nếu còn ít khoang rảnh (1 hoặc 2), chuyển box sang cảnh báo màu cam (Limited)
                                 statusClasses = 'border-[#fbd38d] dark:border-amber-500/30 bg-[#fffaf0] dark:bg-amber-500/10 text-amber-700 dark:text-amber-400';

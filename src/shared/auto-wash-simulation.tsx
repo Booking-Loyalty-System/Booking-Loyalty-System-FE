@@ -251,7 +251,7 @@ export const AutoWashSimulation: React.FC = () => {
     // Giao diện khi khách không có xe nào đang InProgress
     if (inProgressBookings.length === 0) {
         return (
-            <div className="w-full max-w-[1200px] mx-auto bg-white rounded-3xl p-6 shadow-md flex items-center justify-center h-[600px]">
+            <div className="w-full max-w-[1200px] mx-auto bg-white dark:bg-[#13151A] rounded-3xl border border-slate-100 dark:border-white/5 p-6 shadow-sm flex items-center justify-center h-[600px]">
                 <div className="text-center">
                     <div className="text-4xl mb-3 animate-bounce">🚗</div>
                     <p className="text-slate-500 font-medium text-sm">{t('liveTracking.noActiveWash')}</p>
@@ -263,11 +263,11 @@ export const AutoWashSimulation: React.FC = () => {
     const ActiveHUDComponent = activeStep ? STEP_UI_LOOKUP[activeStep.type] : null;
 
     return (
-        <div className="w-full max-w-[1200px] mx-auto bg-white rounded-3xl p-6 shadow-md flex flex-col md:flex-row gap-6 h-[650px] relative">
+        <div className="w-full max-w-[1200px] mx-auto bg-white dark:bg-[#13151A] rounded-3xl border border-slate-100 dark:border-white/5 p-6 shadow-sm flex flex-col md:flex-row gap-6 h-[650px] relative text-slate-800 dark:text-white">
 
             {/* VÙNG 1: SIDEBAR - DANH SÁCH CÁC XE ĐANG RỬA */}
-            <div className="w-full md:w-[240px] flex flex-col border-r border-slate-100 pr-4">
-                <h3 className="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
+            <div className="w-full md:w-[240px] flex flex-col border-r border-slate-100 dark:border-white/5 pr-4">
+                <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-4 flex items-center gap-2">
                     <span className="relative flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
@@ -283,8 +283,8 @@ export const AutoWashSimulation: React.FC = () => {
                                 key={booking.id}
                                 onClick={() => setSelectedBookingId(booking.id)}
                                 className={`w-full text-left p-3.5 rounded-xl border transition-all ${isSelected
-                                    ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200'
-                                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
+                                    ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-900/20'
+                                    : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20'
                                     }`}
                             >
                                 <div className={`text-[10px] font-bold mb-1 tracking-wider ${isSelected ? 'text-blue-200' : 'text-slate-500'}`}>
@@ -303,9 +303,9 @@ export const AutoWashSimulation: React.FC = () => {
             {/* VÙNG 2: CANVAS 3D CAMERA TRẠM RỬA */}
             {activeBooking && activeStep ? (
                 <>
-                    <div className="flex-1 bg-slate-100 rounded-2xl overflow-hidden relative">
+                    <div className="flex-1 bg-slate-100 dark:bg-[#0B0C10] rounded-2xl border border-slate-100 dark:border-white/10 overflow-hidden relative shadow-inner">
                         <Canvas camera={{ fov: 45, position: activeStep.camPos }}>
-                            <color attach="background" args={['#f1f5f9']} />
+                            <color attach="background" args={['#0B0C10']} />
                             <ambientLight intensity={1.5} />
                             <spotLight position={[15, 20, 15]} angle={0.3} penumbra={1} intensity={3} castShadow />
 
@@ -357,19 +357,19 @@ export const AutoWashSimulation: React.FC = () => {
                         <div>
                             <div className="flex justify-between items-start mb-2">
                                 <div>
-                                    <h2 className="text-lg font-bold text-slate-800">{t('liveTracking.washProcess')}</h2>
+                                    <h2 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">{t('liveTracking.washProcess')}</h2>
                                 </div>
 
                                 <button
                                     onClick={() => setIsAutoPlay(!isAutoPlay)}
-                                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold border transition-all ${isAutoPlay ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-50 text-slate-500 border-slate-200'
+                                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold border transition-all ${isAutoPlay ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30' : 'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10'
                                         }`}
                                 >
                                     {isAutoPlay ? '▶ Auto' : '⏸ Manual'}
                                 </button>
                             </div>
 
-                            <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md inline-block mb-4">
+                            <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2.5 py-1 rounded-md inline-block mb-4">
                                 {t('liveTracking.packageLabel', { name: activeBooking.washPackageName || t('liveTracking.customPackage') })}
                             </span>
 
@@ -386,14 +386,14 @@ export const AutoWashSimulation: React.FC = () => {
                                                 setActiveStep(step);
                                                 setIsAutoPlay(false);
                                             }}
-                                            className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between ${isSelected ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-slate-50 border-slate-100 hover:bg-slate-100'
+                                            className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between ${isSelected ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 dark:border-blue-500 shadow-sm' : 'bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10'
                                                 }`}
                                         >
                                             <div className="flex-1 pr-2">
                                                 <span className={`text-[9px] font-bold block ${isSelected ? 'text-blue-600' : 'text-slate-400'}`}>
                                                     {t('liveTracking.washStep', { step: idx + 1 < 10 ? `0${idx + 1}` : idx + 1 })}
                                                 </span>
-                                                <h5 className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-slate-900' : 'text-slate-700'}`}>
+                                                <h5 className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-400'}`}>
                                                     {t(step.nameKey)}
                                                 </h5>
                                             </div>
@@ -426,10 +426,10 @@ export const AutoWashSimulation: React.FC = () => {
             {/* MODAL HOÀN THÀNH */}
             {showComplete && (
                 <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/40 backdrop-blur-sm transition-opacity animate-in fade-in rounded-3xl">
-                    <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-[340px] mx-4 transform animate-in zoom-in">
+                    <div className="bg-white dark:bg-[#13151A] p-8 rounded-2xl border border-slate-100 dark:border-white/10 shadow-2xl text-center max-w-[340px] mx-4 transform animate-in zoom-in">
                         <div className="text-5xl mb-4">🎉</div>
-                        <h2 className="text-2xl font-bold text-slate-800">{t('liveTracking.modalTitle')}</h2>
-                        <p className="text-slate-600 mt-2 text-sm">
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{t('liveTracking.modalTitle')}</h2>
+                        <p className="text-slate-600 dark:text-slate-300 mt-2 text-sm">
                             {t('liveTracking.modalDesc', { plate: activeBooking?.vehiclePlate })}
                         </p>
                         <button

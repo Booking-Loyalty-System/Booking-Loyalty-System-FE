@@ -276,9 +276,9 @@ export const CustomerLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-[#fafafa] dark:bg-[#050505] overflow-hidden antialiased font-sans text-slate-800 dark:text-slate-200">
+    <div className="flex h-screen w-screen bg-[#fafafa] dark:bg-[#0B0C10] overflow-hidden antialiased font-sans text-slate-800 dark:text-slate-200">
       {/* SIDEBAR - Premium Look */}
-      <aside className="w-72 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col p-5 shrink-0 h-full relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+      <aside className="w-72 bg-white/80 dark:bg-[#13151A]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col p-5 shrink-0 h-full relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex items-center gap-4 px-3 py-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
@@ -329,7 +329,7 @@ export const CustomerLayout: React.FC = () => {
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
 
         {/* HEADER - Glassmorphic */}
-        <header className="h-20 bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 flex items-center justify-between px-8 shrink-0 sticky top-0 z-10 transition-all duration-300">
+        <header className="h-20 bg-white/60 dark:bg-[#13151A]/60 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 flex items-center justify-between px-8 shrink-0 sticky top-0 z-10 transition-all duration-300">
           <div className="animate-fade-in flex items-center gap-4">
             <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               {currentTitle}
@@ -341,7 +341,7 @@ export const CustomerLayout: React.FC = () => {
               <input
                 type="text"
                 placeholder={t("header.searchPlaceholder", { defaultValue: "Search..." })}
-                className="w-full bg-slate-100/80 dark:bg-white/5 dark:text-slate-200 dark:placeholder-slate-500 border border-transparent dark:border-white/5 rounded-2xl py-2.5 pl-5 pr-12 text-sm font-medium focus:outline-none focus:bg-white dark:focus:bg-[#111] focus:border-blue-500 dark:focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm group-hover:shadow-md"
+                className="w-full bg-slate-100/80 dark:bg-white/5 dark:text-slate-200 dark:placeholder-slate-500 border border-transparent dark:border-white/5 rounded-2xl py-2.5 pl-5 pr-12 text-sm font-medium focus:outline-none focus:bg-white dark:focus:bg-[#1A1C23] focus:border-blue-500 dark:focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm group-hover:shadow-md"
               />
               <Search className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
             </div>
@@ -368,7 +368,7 @@ export const CustomerLayout: React.FC = () => {
               onClick={() => navigate("/notifications")}
               className={`relative p-2.5 rounded-full transition-all duration-300 border ${location.pathname === "/notifications"
                 ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg"
-                : "bg-white dark:bg-[#111] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:shadow-md"
+                : "bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:shadow-md"
                 }`}
             >
               <Bell className="w-5 h-5" />

@@ -44,36 +44,36 @@ export const BookingSuccessCard: React.FC<BookingSuccessCardProps> = ({ booking,
     }, [booking]);
 
     return (
-        <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl shadow-sm mb-2 animate-fade-in">
-            <h2 className="text-xl font-black text-emerald-700 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+        <div className="p-6 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-2xl shadow-sm mb-2 animate-fade-in">
+            <h2 className="text-xl font-black text-emerald-700 dark:text-emerald-400 mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 {t('bookWash.successCard.title')}
             </h2>
 
-            <div className="bg-white p-4 rounded-xl border border-emerald-100 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm font-medium text-slate-600">
+            <div className="bg-white dark:bg-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-500/10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm font-medium text-slate-600 dark:text-slate-300">
                 <div>
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t('bookWash.successCard.bookingCode')}
                     </p>
-                    <p className="font-mono font-bold text-blue-600 mt-0.5">{booking.bookingCode}</p>
+                    <p className="font-mono font-bold text-blue-600 dark:text-blue-400 mt-0.5">{booking.bookingCode}</p>
                 </div>
                 <div>
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t('bookWash.successCard.servicePackage')}
                     </p>
-                    <p className="font-bold text-slate-900 mt-0.5">{booking.washPackageName}</p>
+                    <p className="font-bold text-slate-900 dark:text-white mt-0.5">{booking.washPackageName}</p>
                 </div>
                 <div>
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t('bookWash.successCard.time')}
                     </p>
-                    <p className="text-slate-700 mt-0.5">{booking.bookingDate} ({booking.startTime})</p>
+                    <p className="text-slate-700 dark:text-slate-300 mt-0.5">{booking.bookingDate} ({booking.startTime})</p>
                 </div>
                 <div>
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t('bookWash.successCard.totalAmount')}
                     </p>
-                    <p className="font-extrabold text-slate-900 mt-0.5">{formatCurrency(booking.totalPrice)}</p>
+                    <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{formatCurrency(booking.totalPrice)}</p>
                 </div>
             </div>
         </div>
