@@ -19,7 +19,7 @@ import { useStaff } from "@/features/products/application/useStaff.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ActionImageModal } from "../../components/staff/ActionImageModal"; // <-- IMPORT BỘ CHỤP ẢNH
+import { ActionImageModal } from "../../components/staff/ActionImageModal"; // ĐÃ ĐƯỢC CẬP NHẬT Ở BƯỚC TRƯỚC
 
 interface DashboardBooking {
   id: string;
@@ -69,7 +69,7 @@ export const QueueMonitor: React.FC = () => {
     suggestedBayName: string;
   } | null>(null);
 
-  // 🌟 STATE ĐÁNH CHẶN UPLOAD ẢNH
+  // 🌟 STATE MỞ MODAL UPLOAD ẢNH
   const [actionModal, setActionModal] = useState<{
     isOpen: boolean;
     bookingId: string;
@@ -96,20 +96,16 @@ export const QueueMonitor: React.FC = () => {
   });
   const { washBays = [], isLoading: isWashBaysLoading } = useWashBay(branchId);
 
-  // 🌟 ĐÃ SỬA: CHỈ HIỂN THỊ XE CHECKED-IN TRONG UNASSIGNED QUEUE
   const waitingQueue = bookings.filter(
     (b) =>
-      b.status === "CheckedIn" && // <-- Chỉ lấy CheckedIn, bỏ Confirmed
+      b.status === "CheckedIn" &&
       !b.bayId &&
       (b.bookingCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.vehicleName?.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
-  // ĐÃ FIX: Xóa biến inProgressBookings dư thừa gây lỗi nhảy xe
-
   const baysStatus = washBays.map((bay, index) => {
-    // ĐÃ FIX: Chỉ lấy đúng xe đang rửa (InProgress) có ID khoang khớp với khoang hiện tại
     const activeBooking =
       bookings.find((b) => b.status === "InProgress" && b.bayId === bay.id) ||
       null;
@@ -144,7 +140,6 @@ export const QueueMonitor: React.FC = () => {
     };
   });
 
-  // 🌟 ĐÃ SỬA: TỔNG SỐ XE ĐANG CHỜ CŨNG BỎ CONFIRMED RA
   const totalWaitingVehicles = bookings.filter(
     (b) => b.status === "CheckedIn" || b.status === "Queued",
   ).length;
@@ -290,32 +285,30 @@ export const QueueMonitor: React.FC = () => {
     }
   };
 
-  // Gọi completedBooking TRƯỚC để đổi trạng thái InProgress -> Completed.
-  // BE chỉ cho phép lưu ảnh "AfterWash" SAU KHI trạng thái đã là
-  // Completed/CheckedOut (xem BookingImageService.AddAsync) — nếu mở modal
-  // upload ảnh trước khi gọi completedBooking, BE sẽ trả lỗi 400
-  // "Cannot add an AfterWash image while the booking is InProgress."
+  // 🌟 SỬA Ở ĐÂY: CHỈ MỞ MODAL YÊU CẦU TẢI ẢNH (CHƯA GỌI API COMPLETE)
   const handleFinishWash = async (bookingId: string) => {
-    setActionLoadingId(bookingId);
-    try {
-      await completedBooking(bookingId);
-      toast.success("🧼 Rửa xe hoàn tất! Vui lòng tải ảnh minh chứng.");
-      queryClient.invalidateQueries();
-      if (selectedBay) setSelectedBay(null);
-      // Trạng thái đã đổi thành công, giờ mở modal ảnh (không bắt buộc)
-      setActionModal({ isOpen: true, bookingId, type: "finish" });
-    } catch (error) {
-      console.error(error);
-      toast.error("Cập nhật trạng thái thất bại.");
-    } finally {
-      setActionLoadingId(null);
-    }
+    setActionModal({ isOpen: true, bookingId, type: "finish" });
   };
 
-  // Modal ảnh giờ chỉ dùng để bổ sung ảnh minh chứng SAU KHI trạng thái đã
-  // đổi (completedBooking đã được gọi xong ở handleFinishWash). Không cần
-  // gọi lại API đổi trạng thái nữa, chỉ đơn giản đóng modal.
-  const executePendingAction = () => {
+  // 🌟 SỬA Ở ĐÂY: THỰC THI GỌI API ĐỔI TRẠNG THÁI SAU KHI ĐÃ CÓ ẢNH VÀ BẤM XONG
+  const executePendingAction = async () => {
+    if (!actionModal) return;
+
+    if (actionModal.type === "finish") {
+      setActionLoadingId(actionModal.bookingId);
+      try {
+        await completedBooking(actionModal.bookingId);
+        toast.success("🧼 Rửa xe hoàn tất và đã lưu ảnh minh chứng!");
+        queryClient.invalidateQueries();
+        if (selectedBay) setSelectedBay(null);
+      } catch (error) {
+        console.error(error);
+        toast.error("Cập nhật trạng thái hoàn thành thất bại.");
+      } finally {
+        setActionLoadingId(null);
+      }
+    }
+
     setActionModal(null);
   };
 
@@ -923,7 +916,7 @@ export const QueueMonitor: React.FC = () => {
       )}
 
       {/* ======================================================= */}
-      {/* 🌟 MODAL UPLOAD ẢNH ĐÁNH CHẶN KHI HOÀN THÀNH (ĐÃ THÊM LẠI) */}
+      {/* 🌟 MODAL UPLOAD ẢNH ĐÁNH CHẶN KHI HOÀN THÀNH */}
       {/* ======================================================= */}
       {actionModal && actionModal.isOpen && (
         <ActionImageModal

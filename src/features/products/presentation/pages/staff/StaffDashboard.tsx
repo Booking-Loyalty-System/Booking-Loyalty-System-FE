@@ -55,7 +55,6 @@ export const StaffDashboard: React.FC = () => {
   const [selectedBookingDetail, setSelectedBookingDetail] =
     useState<DashboardBooking | null>(null);
 
-  // STATE QUẢN LÝ ẢNH
   const [selectedBookingForImages, setSelectedBookingForImages] =
     useState<DashboardBooking | null>(null);
   const [vehicleImages, setVehicleImages] = useState<{
@@ -134,7 +133,6 @@ export const StaffDashboard: React.FC = () => {
     }
   };
 
-  // EFFECT GỌI API LẤY ẢNH THEO ID
   useEffect(() => {
     if (!selectedBookingForImages) {
       setVehicleImages({ before: [], after: [] });
@@ -144,16 +142,10 @@ export const StaffDashboard: React.FC = () => {
     const fetchImages = async () => {
       setIsLoadingImages(true);
       try {
-        // Dùng apiClient (axios instance dùng chung) thay vì fetch thủ công.
-        // apiClient đã tự gắn đúng token ("access_token"), tự refresh khi hết hạn,
-        // và tự có header "ngrok-skip-browser-warning" — không cần tự làm lại ở đây.
-        // Response interceptor của apiClient đã return thẳng response.data.
         const raw: any = await apiClient.get(
           ENDPOINTS.BOOKING.IMAGES(selectedBookingForImages.id),
         );
 
-        // BE có thể trả thẳng một mảng, hoặc bọc trong { data: [...] } / { items: [...] }.
-        // Xử lý cả 2 trường hợp để không bị vỡ khi gọi .filter/.map.
         const list: any[] = Array.isArray(raw)
           ? raw
           : Array.isArray(raw?.data)
@@ -161,13 +153,6 @@ export const StaffDashboard: React.FC = () => {
             : Array.isArray(raw?.items)
               ? raw.items
               : [];
-
-        if (list.length === 0 && !Array.isArray(raw)) {
-          console.warn(
-            "Định dạng response ảnh không như mong đợi, xem raw để kiểm tra:",
-            raw,
-          );
-        }
 
         const before = list
           .filter(
@@ -195,10 +180,28 @@ export const StaffDashboard: React.FC = () => {
     fetchImages();
   }, [selectedBookingForImages]);
 
-  // Modal ảnh giờ chỉ dùng để BỔ SUNG ảnh minh chứng SAU KHI trạng thái đã đổi
-  // (check-in / checkout đã được gọi xong ở handleAction / handleConfirmCash).
-  // Vì vậy hàm này không gọi lại API đổi trạng thái nữa, chỉ đơn giản đóng modal.
-  const executePendingAction = () => {
+  // HÀM ĐƯỢC GỌI KHI BẤM NÚT "XONG" TRONG MODAL ẢNH
+  const executePendingAction = async () => {
+    if (!actionModal) return;
+
+    if (actionModal.type === "checkIn") {
+      try {
+        if (!staffProfile?.id) return;
+
+        // GỌI API CHUYỂN TRẠNG THÁI Ở ĐÂY SAU KHI ĐÃ UPLOAD ẢNH XONG
+        await actions.checkIn({
+          id: actionModal.bookingId,
+          staffId: staffProfile.id,
+        });
+        queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
+        toast.success("Đã xác nhận ảnh và Check-in thành công!");
+      } catch (error) {
+        console.error(error);
+        toast.error("Cập nhật trạng thái Check-in thất bại.");
+      }
+    }
+
+    // Đóng modal
     setActionModal(null);
   };
 
@@ -210,7 +213,10 @@ export const StaffDashboard: React.FC = () => {
       switch (action) {
         case "confirm":
           await actions.confirm(id);
+          toast.success(`Thao tác thành công!`);
+          queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
           break;
+
         case "checkIn": {
           if (!staffProfile?.id) {
             toast.error(
@@ -218,14 +224,7 @@ export const StaffDashboard: React.FC = () => {
             );
             return;
           }
-          // QUAN TRỌNG: gọi check-in TRƯỚC để đổi trạng thái booking sang
-          // CheckedIn/InProgress. BE chỉ cho phép lưu ảnh "BeforeWash" SAU KHI
-          // trạng thái đã đổi (xem BookingImageService.AddAsync) — nếu upload
-          // ảnh trước khi gọi check-in, BE sẽ trả lỗi 400 "Cannot add a
-          // BeforeWash image while the booking is Confirmed."
-          await actions.checkIn({ id, staffId: staffProfile.id });
-          queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
-          toast.success("Check-in thành công! Vui lòng tải ảnh minh chứng.");
+          // CHỈ MỞ MODAL YÊU CẦU ẢNH TRƯỚC - KHÔNG GỌI API CHECK-IN Ở ĐÂY
           setActionModal({ isOpen: true, bookingId: id, type: "checkIn" });
           return;
         }
@@ -239,6 +238,8 @@ export const StaffDashboard: React.FC = () => {
           const reason = window.prompt("Vui lòng nhập lý do hủy lịch:");
           if (!reason) return;
           await actions.staffCancel({ id, cancel: reason });
+          toast.success(`Thao tác thành công!`);
+          queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
           break;
         }
         case "noShow":
@@ -248,14 +249,13 @@ export const StaffDashboard: React.FC = () => {
             )
           ) {
             await actions.noShow(id);
+            toast.success(`Thao tác thành công!`);
+            queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
           } else {
             return;
           }
           break;
       }
-
-      toast.success(`Thao tác thành công!`);
-      queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
     } catch (error) {
       console.error(error);
       toast.error(`Thao tác thất bại`);

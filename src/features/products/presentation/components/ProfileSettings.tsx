@@ -508,61 +508,61 @@ export const ProfileSettings: React.FC = () => {
 
             <div className="relative z-10 space-y-5">
               <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white">
-                <User className="w-6 h-6" />
+                <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white">
+                  <User className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-blue-100 font-medium">
+                    {t("settings.memberCard.memberSince", {
+                      defaultValue: "Member Since",
+                    })}
+                  </p>
+                  <p className="text-lg font-black tracking-wide">
+                    {customerMe?.createdAt
+                      ? new Date(customerMe.createdAt).toLocaleDateString(
+                          "vi-VN",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )
+                      : "2026"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-blue-100 font-medium">
-                  {t("settings.memberCard.memberSince", {
-                    defaultValue: "Member Since",
-                  })}
-                </p>
-                <p className="text-lg font-black tracking-wide">
-                  {customerMe?.createdAt
-                    ? new Date(customerMe.createdAt).toLocaleDateString(
-                        "vi-VN",
-                        {
-                          month: "long",
-                          year: "numeric",
-                        },
-                      )
-                    : "2026"}
-                </p>
+              <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
+                <div className="flex justify-between opacity-90">
+                  <span>
+                    {t("settings.memberCard.totalBookings", {
+                      defaultValue: "Total Bookings",
+                    })}
+                  </span>
+                  <span className="font-bold">
+                    {customerMe?.totalWashes ?? 0}
+                  </span>
+                </div>
+                <div className="flex justify-between opacity-90">
+                  <span>
+                    {t("settings.memberCard.totalSpent", {
+                      defaultValue: "Total Spent",
+                    })}
+                  </span>
+                  <span className="font-bold">
+                    {(customerMe?.totalSpent ?? 0).toLocaleString("vi-VN")}đ
+                  </span>
+                </div>
+                <div className="flex justify-between items-baseline">
+                  <span>
+                    {t("settings.memberCard.pointsBalance", {
+                      defaultValue: "Points Balance",
+                    })}
+                  </span>
+                  <span className="text-base font-black text-amber-300">
+                    {customerMe?.availablePoint ?? 0} pts
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
-              <div className="flex justify-between opacity-90">
-                <span>
-                  {t("settings.memberCard.totalBookings", {
-                    defaultValue: "Total Bookings",
-                  })}
-                </span>
-                <span className="font-bold">
-                  {customerMe?.totalWashes ?? 0}
-                </span>
-              </div>
-              <div className="flex justify-between opacity-90">
-                <span>
-                  {t("settings.memberCard.totalSpent", {
-                    defaultValue: "Total Spent",
-                  })}
-                </span>
-                <span className="font-bold">
-                  {(customerMe?.totalSpent ?? 0).toLocaleString("vi-VN")}đ
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline">
-                <span>
-                  {t("settings.memberCard.pointsBalance", {
-                    defaultValue: "Points Balance",
-                  })}
-                </span>
-                <span className="text-base font-black text-amber-300">
-                  {customerMe?.totalPoints ?? 0} pts
-                </span>
-              </div>
-            </div>
-          </div>
           </div>
 
           {/* Khối Cấu Hình Notifications Tắt/Mở */}
