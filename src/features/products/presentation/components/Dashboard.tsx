@@ -239,11 +239,13 @@ export const Dashboard: React.FC = () => {
           <div className="w-full bg-emerald-200/50 dark:bg-slate-800/80 h-8 rounded-full overflow-hidden relative flex items-center p-1 border border-emerald-100 dark:border-white/5 shadow-inner">
             <div
               className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full flex items-center justify-end pr-4 transition-all duration-1000 ease-out shadow-sm"
-              style={{ width: `${Math.max(10, washProgressPercentage)}%` }}
+              style={{ width: `${washProgressPercentage}%`, minWidth: washProgressPercentage > 0 ? '2.5rem' : '0' }}
             >
-              <span className="text-xs font-black text-white drop-shadow-md">
-                {washProgressPercentage}%
-              </span>
+              {washProgressPercentage > 0 && (
+                <span className="text-xs font-black text-white drop-shadow-md">
+                  {washProgressPercentage}%
+                </span>
+              )}
             </div>
           </div>
 
