@@ -100,6 +100,8 @@ export const CustomerLayout: React.FC = () => {
                 "Your vehicle has entered the service bay! Opening Live Tracking...",
                 { icon: "🚗" },
               );
+              // Tự động chuyển hướng sang trang Live Tracking khi bắt đầu
+              navigate("/live-tracking");
             } else if (currentStatus === "Completed") {
               const booking = myBookingsRef.current.find(b => b.id === data.bookingId);
               if (booking) {
@@ -123,7 +125,12 @@ export const CustomerLayout: React.FC = () => {
                 icon: "ℹ️",
               });
             }
+            // Gọi lại tất cả các API liên quan để cập nhật giao diện mà không cần F5
             queryClient.invalidateQueries({ queryKey: ["my_bookings"] });
+            queryClient.invalidateQueries({ queryKey: ["notifications"] });
+            queryClient.invalidateQueries({ queryKey: ["unread_count"] });
+            queryClient.invalidateQueries({ queryKey: ["loyalty_history"] });
+            queryClient.invalidateQueries({ queryKey: ["customer_me"] });
           },
         );
       } catch (err) {

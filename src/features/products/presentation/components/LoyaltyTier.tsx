@@ -507,7 +507,7 @@ export const LoyaltyTier: React.FC = () => {
                         className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-colors"
                       >
                         <td className="py-4 px-6 font-medium text-slate-400 dark:text-slate-500">
-                          {tx.date}
+                          {new Date(tx.date).toLocaleDateString('vi-VN')}
                         </td>
                         <td className="py-4 px-6 font-semibold text-slate-800 dark:text-white">
                           {(() => {

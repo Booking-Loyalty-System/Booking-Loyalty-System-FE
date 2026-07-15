@@ -1,6 +1,9 @@
 import React from 'react';
-import { Bell, CheckCircle, Clock, Info } from 'lucide-react';
+import { Bell, CheckCircle, Clock, Info, Crown } from 'lucide-react';
 import { useNotification } from '../../application/useNotification';
+import { useCustomerMe } from '../../application/useCustomer';
+import { useLoyaltyHistory } from '../../application/useLoyalty';
+import { useBooking } from '../../application/useBooking';
 import { useTranslation } from 'react-i18next';
 
 interface NotificationItem {
@@ -8,13 +11,77 @@ interface NotificationItem {
     title: string;
     message: string;
     isRead: boolean;
-    type: 'Booking' | 'System' | string;
+    type: 'Booking' | 'System' | 'TierUpgrade' | 'Loyalty' | 'Points' | string;
     createdAt: string | Date;
 }
 
 export const NotificationCenter: React.FC = () => {
     const { t } = useTranslation('customer');
     const { notifications, isLoading, markAsRead } = useNotification();
+    const { customerMe } = useCustomerMe();
+    const { data: loyaltyHistory } = useLoyaltyHistory();
+    const { myBookings } = useBooking();
+
+    // Dùng dữ liệu thực (tier & điểm) từ user profile để tạo thông báo động (luôn hiện trên cùng)
+    let displayNotifications: NotificationItem[] = [...notifications as NotificationItem[]];
+
+    // Lấy lịch sử đổi điểm (Redeemed) và biến thành thông báo
+    if (loyaltyHistory?.transactions) {
+        const redeemNotifications = loyaltyHistory.transactions
+            .filter(tx => tx.type === 'Redeemed')
+            .map(tx => ({
+                id: `redeem-${tx.id}`,
+                title: 'Đổi voucher thành công 🎁',
+                message: `Bạn đã sử dụng ${Math.abs(tx.points)} điểm để đổi voucher: ${tx.description}. Số điểm còn lại là: ${customerMe?.availablePoint ?? (customerMe?.totalPoint ?? 0)} điểm.`,
+                type: 'Points',
+                isRead: true, // Vì là lịch sử nên coi như đã đọc
+                createdAt: tx.date
+            }));
+
+        const earnedNotifications = loyaltyHistory.transactions
+            .filter(tx => tx.type === 'Earned')
+            .map(tx => {
+                let bookingCode = '';
+                if (tx.description.includes('đơn hàng')) {
+                    bookingCode = tx.description.split('đơn hàng ')[1]?.trim() || '';
+                } else if (tx.description.includes('thanh toán booking')) {
+                    bookingCode = tx.description.split('booking ')[1]?.trim() || '';
+                } else if (tx.description.includes('Earned from booking')) {
+                    bookingCode = tx.description.split('Earned from booking ')[1]?.trim() || '';
+                }
+
+                const booking = myBookings?.find(b => b.bookingCode === bookingCode);
+                const paidAmount = booking
+                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(booking.totalPrice)
+                    : '(không xác định)';
+                
+                return {
+                    id: `earned-${tx.id}`,
+                    title: 'Cộng điểm thành công 🎉',
+                    message: `Giao dịch ${bookingCode} ngày ${new Date(tx.date).toLocaleDateString('vi-VN')} đã thanh toán thành công với số tiền ${paidAmount}. Số điểm được cộng là ${tx.points}. Cảm ơn quý khách đã sử dụng dịch vụ của Auto Wash Pro!`,
+                    type: 'Points',
+                    isRead: true,
+                    createdAt: tx.date
+                };
+            });
+
+        displayNotifications = [...displayNotifications, ...redeemNotifications, ...earnedNotifications];
+    }
+
+    // Sắp xếp giảm dần theo thời gian (mới nhất lên trên)
+    displayNotifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // Ghim thông báo Hạng & Điểm lên trên cùng
+    if (customerMe) {
+        displayNotifications.unshift({
+            id: 'real-tier-info',
+            title: 'Thông tin Hạng & Điểm 👑',
+            message: `Bạn hiện đang ở hạng ${customerMe.tier || 'Thành viên'}. Số điểm hiện tại của bạn là: ${customerMe.availablePoint ?? (customerMe.totalPoint ?? 0)} điểm.`,
+            type: 'TierUpgrade',
+            isRead: false,
+            createdAt: new Date().toISOString()
+        });
+    }
 
     if (isLoading) {
         return (
@@ -34,7 +101,7 @@ export const NotificationCenter: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-                {notifications.length === 0 ? (
+                {displayNotifications.length === 0 ? (
                     <div className="bg-white dark:bg-[#13151A] rounded-[2.5rem] p-12 text-center border border-slate-200 dark:border-white/5 shadow-sm">
                         <div className="w-16 h-16 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 dark:border-white/10">
                             <Bell className="w-8 h-8 text-slate-400 dark:text-slate-500" />
@@ -43,7 +110,7 @@ export const NotificationCenter: React.FC = () => {
                         <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">{t('notifications.empty.description')}</p>
                     </div>
                 ) : (
-                    notifications.map((notification: NotificationItem) => (
+                    displayNotifications.map((notification: NotificationItem) => (
                         <div
                             key={notification.id}
                             className={`relative p-5 rounded-[2rem] border transition-all duration-300 flex gap-4 items-start ${
@@ -53,8 +120,16 @@ export const NotificationCenter: React.FC = () => {
                             }`}
                         >
                             {/* Icon dựa trên trạng thái */}
-                            <div className={`p-3 rounded-xl shrink-0 ${notification.isRead ? 'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400'}`}>
-                                {notification.type === 'Booking' ? <Clock className="w-5 h-5" /> : <Info className="w-5 h-5" />}
+                            <div className={`p-3 rounded-xl shrink-0 ${
+                                notification.isRead 
+                                    ? 'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400' 
+                                    : (notification.type === 'TierUpgrade' || notification.type === 'Loyalty' || notification.type === 'Points')
+                                        ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                                        : 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                            }`}>
+                                {notification.type === 'Booking' ? <Clock className="w-5 h-5" /> : 
+                                 (notification.type === 'TierUpgrade' || notification.type === 'Loyalty' || notification.type === 'Points') ? <Crown className="w-5 h-5" /> : 
+                                 <Info className="w-5 h-5" />}
                             </div>
 
                             <div className="flex-1 pt-1">
@@ -76,7 +151,11 @@ export const NotificationCenter: React.FC = () => {
                             {/* Nút đánh dấu đã đọc */}
                             {!notification.isRead && (
                                 <button
-                                    onClick={() => markAsRead(notification.id)}
+                                    onClick={() => {
+                                        if (notification.id !== 'real-tier-info' && !notification.id.startsWith('redeem-') && !notification.id.startsWith('earned-')) {
+                                            markAsRead(notification.id);
+                                        }
+                                    }}
                                     className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full hover:bg-blue-100 dark:hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-colors mt-1"
                                     title={t('notifications.markAsRead')}
                                 >
