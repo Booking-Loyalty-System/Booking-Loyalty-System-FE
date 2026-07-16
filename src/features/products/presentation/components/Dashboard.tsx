@@ -127,23 +127,40 @@ export const Dashboard: React.FC = () => {
     },
   ];
 
-  let currentCycleWashes = washesCount % 7;
-  if (currentCycleWashes === 0 && washesCount > 0) {
-    currentCycleWashes = 7;
-  }
-  const remainingWashes = 7 - currentCycleWashes;
-  const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
+  const backendCycleWashes = customerMe?.currentCycleWashes ?? (washesCount % 7);
 
-  const earnedFreeWashes = Math.floor(washesCount / 7);
-  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
-  const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
+  const [displayWashes, setDisplayWashes] = React.useState(() => {
+    if (washesCount % 7 === 0 && washesCount > 0) {
+      const animatedKey = `animated_wash_${washesCount}`;
+      if (!sessionStorage.getItem(animatedKey)) {
+        return 7;
+      }
+    }
+    return backendCycleWashes;
+  });
 
   React.useEffect(() => {
-    if (availableFreeWashes > 0 && !sessionStorage.getItem("notifiedFreeWash")) {
-      toast.success(t("dashboard.freeWashToast", "Chúc mừng! Bạn đã đủ lượt để nhận 1 lần rửa xe miễn phí. Voucher khả dụng đã sẵn sàng trong mục Phần Thưởng!"));
-      sessionStorage.setItem("notifiedFreeWash", "true");
+    if (washesCount % 7 === 0 && washesCount > 0) {
+      const animatedKey = `animated_wash_${washesCount}`;
+      if (!sessionStorage.getItem(animatedKey)) {
+        setDisplayWashes(7);
+        toast.success(t("dashboard.freeWashAutoAddedToast", "🎉 Chúc mừng! Bạn đã đạt 7 lượt rửa xe. Voucher rửa xe miễn phí đã được tự động thêm vào tài khoản của bạn!"));
+        const timer = setTimeout(() => {
+          setDisplayWashes(backendCycleWashes);
+          sessionStorage.setItem(animatedKey, "true");
+        }, 3000); // Wait 3 seconds at 7/7 before resetting
+        return () => clearTimeout(timer);
+      } else {
+        setDisplayWashes(backendCycleWashes);
+      }
+    } else {
+      setDisplayWashes(backendCycleWashes);
     }
-  }, [availableFreeWashes, t]);
+  }, [washesCount, backendCycleWashes, t]);
+
+  const currentCycleWashes = displayWashes;
+  const remainingWashes = 7 - (currentCycleWashes === 7 ? 7 : currentCycleWashes);
+  const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
 
   const handleCancel = async (id: string) => {
     if (
