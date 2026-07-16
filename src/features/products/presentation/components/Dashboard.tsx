@@ -21,7 +21,6 @@ import { toast } from "sonner";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { useAuth } from "@/features/products/application/useAuth.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
-import { useReward } from "@/features/products/application/useReward.ts";
 
 export const Dashboard: React.FC = () => {
   const { customerMe, isLoading: isCustomerLoading } = useCustomerMe();
@@ -31,7 +30,6 @@ export const Dashboard: React.FC = () => {
     isLoading: isBookingLoading,
     cancelBooking,
   } = useBooking();
-  const { redemptions } = useReward();
   const navigate = useNavigate();
   const { t } = useTranslation("customer");
 
