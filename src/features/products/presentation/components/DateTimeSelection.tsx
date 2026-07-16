@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ChevronDown, Clock, Info } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, Info } from "lucide-react";
 import type { DailyTimeSlotsSummaryDto } from "../../domain/models/time-slot/time-slot.dto.ts";
 import { useEffect, useState } from "react";
 
@@ -30,14 +30,29 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     isLoadingSlots
 }) => {
     const { t } = useTranslation('customer');
-    const [visibleDaysCount, setVisibleDaysCount] = useState(dynamicDateSlots.length);
+    const INITIAL_DAYS = 7;
+    const [visibleDaysCount, setVisibleDaysCount] = useState(INITIAL_DAYS);
+
     useEffect(() => {
-        setVisibleDaysCount(dynamicDateSlots.length);
+        setVisibleDaysCount(INITIAL_DAYS);
     }, [dynamicDateSlots]);
+
     const visibleSlots = dynamicDateSlots.slice(0, visibleDaysCount);
     const hasMoreDays = visibleDaysCount < dynamicDateSlots.length;
+    const canCollapse = visibleDaysCount > INITIAL_DAYS;
+
     const handleShowMore = () => {
         setVisibleDaysCount(prev => Math.min(prev + 7, dynamicDateSlots.length));
+    };
+
+    const handleCollapse = () => {
+        setVisibleDaysCount(INITIAL_DAYS);
+        // Ensure selected date is still visible
+        const selectedIndex = dynamicDateSlots.findIndex(d => d.apiDate === selectedDate);
+        if (selectedIndex >= INITIAL_DAYS) {
+            onSelectDate(dynamicDateSlots[0].apiDate);
+            onSelectTime('');
+        }
     };
     // 1. Tìm danh sách ca giờ thuộc riêng ngày đang được chọn trên UI (selectedDate)
     const currentDayData = weeklySummary.find(slot => slot.date === selectedDate);
@@ -110,17 +125,30 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                         );
                     })}
                 </div>
-                {hasMoreDays && (
-                    <div className="flex justify-center mt-2">
-                        <button
-                            onClick={handleShowMore}
-                            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full transition-colors"
-                        >
-                            <span>
-                                {t('bookWash.dateTime.showMore', { defaultValue: "Xem tiếp 7 ngày tới" })}
-                            </span>
-                            <ChevronDown className="w-4 h-4" />
-                        </button>
+                {(hasMoreDays || canCollapse) && (
+                    <div className="flex justify-center gap-4 mt-2">
+                        {hasMoreDays && (
+                            <button
+                                onClick={handleShowMore}
+                                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full transition-colors"
+                            >
+                                <span>
+                                    {t('bookWash.dateTime.showMore', { defaultValue: "Xem tiếp 7 ngày tới" })}
+                                </span>
+                                <ChevronDown className="w-4 h-4" />
+                            </button>
+                        )}
+                        {canCollapse && (
+                            <button
+                                onClick={handleCollapse}
+                                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors"
+                            >
+                                <span>
+                                    {t('bookWash.dateTime.collapse', { defaultValue: "Thu gọn" })}
+                                </span>
+                                <ChevronUp className="w-4 h-4" />
+                            </button>
+                        )}
                     </div>
                 )}
 
