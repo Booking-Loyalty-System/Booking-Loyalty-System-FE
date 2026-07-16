@@ -39,8 +39,10 @@ export const RewardsSection: React.FC = () => {
   } = useReward();
 
   const availablePoints = customerMe?.availablePoint ?? 0;
-  // Số lượng phần thưởng rửa xe miễn phí khả dụng
-  const currentCycleWashes = (customerMe as any)?.currentCycleWashes ?? 0;
+  const totalWashes = customerMe?.totalWashes ?? 0;
+  const earnedFreeWashes = Math.floor(totalWashes / 7);
+  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
+  const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
   const [confirmReward, setConfirmReward] = useState<{ id: string, title: string, cost: number, isFreeWash: boolean } | null>(null);
   // Bảng cấu hình icon mẫu
@@ -101,14 +103,13 @@ export const RewardsSection: React.FC = () => {
       .filter((item) => item !== null) as RewardItem[];
   }, [availableRewards, i18n.language]);
 
-  // Tính toán số lượng phần thưởng khả dụng
   const redeemableCount = useMemo(() => {
     return rewards.filter((r) => {
       if (r.comingSoon) return false;
-      if (r.isFreeWashReward) return currentCycleWashes >= 1;
+      if (r.isFreeWashReward) return availableFreeWashes >= 1;
       return availablePoints >= r.requiredPts;
     }).length;
-  }, [rewards, availablePoints, currentCycleWashes]);
+  }, [rewards, availablePoints, availableFreeWashes]);
 
   const handleRedeemClick = (
     rewardId: string,
@@ -116,7 +117,7 @@ export const RewardsSection: React.FC = () => {
     title: string,
     isFreeWash: boolean = false,
   ) => {
-    if (isFreeWash && currentCycleWashes < 1) {
+    if (isFreeWash && availableFreeWashes < 1) {
       toast.error(
         t("rewards.toastNotEnoughWashes", {
           defaultValue: "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
@@ -218,7 +219,7 @@ export const RewardsSection: React.FC = () => {
             </div>
           ) : (
             rewards.map((item) => {
-              const isEligibleForFreeWash = currentCycleWashes >= 1;
+              const isEligibleForFreeWash = availableFreeWashes >= 1;
               const canAfford = item.isFreeWashReward
                 ? isEligibleForFreeWash
                 : availablePoints >= item.requiredPts;

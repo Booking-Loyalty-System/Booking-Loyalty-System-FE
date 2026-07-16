@@ -43,4 +43,5 @@ export interface MappedVoucher {
     discountValue: number;
     expiryDate: string;
     isRewardItem: boolean;
+    isFreeWash?: boolean;
 }
