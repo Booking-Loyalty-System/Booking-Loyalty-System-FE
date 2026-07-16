@@ -93,7 +93,7 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#fafafa] dark:bg-[#0a0a0a] font-sans text-slate-800 dark:text-slate-200 selection:bg-blue-500 selection:text-white antialiased transition-colors duration-300 overflow-x-hidden">
+    <div className="w-full min-h-screen bg-[#fafafa] dark:bg-[#0B0C10] font-sans text-slate-800 dark:text-slate-200 selection:bg-amber-500 selection:text-white antialiased transition-colors duration-300 overflow-x-hidden">
       {/* HEADER NAVBAR - Ultra Glassmorphism */}
       <header className="fixed top-0 inset-x-0 z-50 bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/10 px-6 lg:px-12 py-4 flex items-center justify-between transition-all duration-300">
         <div className="flex items-center gap-3 group cursor-pointer">
@@ -133,7 +133,7 @@ export const LandingPage: React.FC = () => {
           </Link>
           <Link
             to="/register"
-            className="relative px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full font-bold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center gap-2 group"
+            className="relative px-6 py-2.5 bg-slate-900 dark:bg-white/10 dark:border dark:border-white/20 dark:backdrop-blur-md text-white dark:text-white rounded-full font-bold text-sm transition-all duration-300 hover:scale-105 hover:bg-slate-800 dark:hover:bg-white/20 dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2 group"
           >
             <span>{t('landing.register')}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -173,13 +173,13 @@ export const LandingPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               <Link
                 to="/register"
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold shadow-[0_8px_30px_rgb(37,99,235,0.3)] transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full font-bold shadow-[0_0_30px_rgba(37,99,235,0.4)] transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 border border-white/10"
               >
                 <span>{t('landing.getStarted')}</span>
               </Link>
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-[#111] hover:bg-slate-50 dark:hover:bg-[#1a1a1a] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white rounded-full font-bold transition-all hover:-translate-y-1 flex items-center justify-center shadow-sm"
+                className="w-full sm:w-auto px-8 py-4 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-xl text-slate-900 dark:text-white rounded-full font-bold transition-all hover:-translate-y-1 flex items-center justify-center shadow-sm"
               >
                 {t('landing.bookService')}
               </Link>
@@ -243,7 +243,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* SERVICES SECTION */}
-      <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0a0a0a] z-10 rounded-t-[3rem] -mt-10 shadow-[0_-20px_50px_rgba(0,0,0,0.02)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.2)]">
+      <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0B0C10] z-10 rounded-t-[3rem] -mt-10 shadow-[0_-20px_50px_rgba(0,0,0,0.02)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.3)] border-t border-transparent dark:border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
             <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.ourPackages')}</h2>
@@ -259,18 +259,21 @@ export const LandingPage: React.FC = () => {
                 return (
                   <div
                     key={pkg.id}
-                    className={`group relative bg-slate-50 dark:bg-[#111111] rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col justify-between ${
+                    className={`group relative bg-slate-50 dark:bg-[#13151A] rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col justify-between ${
                       isPremium 
-                        ? 'border-2 border-blue-500 shadow-2xl shadow-blue-500/10 dark:shadow-blue-500/5 lg:-mt-8 lg:mb-8' 
+                        ? 'border border-amber-500/50 shadow-2xl shadow-amber-500/10 lg:-mt-8 lg:mb-8 overflow-hidden' 
                         : 'border border-slate-200 dark:border-white/5 hover:border-blue-300 dark:hover:border-white/20 hover:-translate-y-2 hover:shadow-xl'
                     }`}
                   >
                     {isPremium && (
-                      <div className="absolute -top-4 inset-x-0 flex justify-center">
-                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-black tracking-widest px-6 py-2 rounded-full shadow-lg">
-                          MOST POPULAR
-                        </span>
-                      </div>
+                      <>
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-amber-500/20 rounded-full blur-[50px] opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        <div className="absolute -top-4 inset-x-0 flex justify-center z-10">
+                          <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[10px] font-black tracking-widest px-6 py-2 rounded-full shadow-lg border border-white/20">
+                            MOST POPULAR
+                          </span>
+                        </div>
+                      </>
                     )}
                     <div>
                       <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-sm border group-hover:scale-110 transition-transform duration-300 ${
@@ -303,10 +306,10 @@ export const LandingPage: React.FC = () => {
 
                     <Link
                       to="/login"
-                      className={`block w-full py-4 text-center rounded-2xl font-bold transition-all duration-300 ${
+                      className={`block w-full py-4 text-center rounded-2xl font-bold transition-all duration-300 relative z-10 ${
                         isPremium 
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-[0_8px_20px_rgb(37,99,235,0.3)] hover:-translate-y-1' 
-                          : 'bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-slate-900 dark:text-white'
+                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-[0_8px_20px_rgba(245,158,11,0.3)] hover:-translate-y-1 border border-white/20' 
+                          : 'bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 border border-transparent dark:border-white/5 text-slate-900 dark:text-white'
                       }`}
                     >
                       {t('bookWash.dateTime.select', {defaultValue: 'Select Plan'})}
@@ -320,7 +323,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* LOYALTY TIERS SECTION */}
-      <section className="relative py-32 px-6 lg:px-12 bg-slate-50 dark:bg-[#050505] overflow-hidden border-t border-slate-200 dark:border-white/5">
+      <section className="relative py-32 px-6 lg:px-12 bg-slate-50 dark:bg-[#08090C] overflow-hidden border-t border-slate-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
             <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.membershipTiersTitle')}</h2>
@@ -333,7 +336,7 @@ export const LandingPage: React.FC = () => {
               return (
                 <div
                   key={tItem.tier}
-                  className="group relative bg-white dark:bg-[#111111] rounded-[2rem] overflow-hidden border border-slate-200 dark:border-white/5 hover:border-transparent dark:hover:border-transparent transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                  className="group relative bg-white dark:bg-[#13151A] rounded-[2rem] overflow-hidden border border-slate-200 dark:border-white/5 hover:border-white/10 dark:hover:border-white/10 transition-all duration-300 hover:-translate-y-2 shadow-sm hover:shadow-2xl"
                 >
                   {/* Glowing border effect on hover */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${tItem.bgColor} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
@@ -371,7 +374,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* LOCATIONS & MAP SECTION */}
-      <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0a0a0a] z-10 border-t border-slate-200 dark:border-white/5">
+      <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0B0C10] z-10 border-t border-slate-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
             <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.branchSystem')}</h2>
@@ -456,7 +459,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-slate-50 dark:bg-[#050505] py-12 px-6 border-t border-slate-200 dark:border-white/5">
+      <footer className="bg-slate-50 dark:bg-[#08090C] py-12 px-6 border-t border-slate-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">

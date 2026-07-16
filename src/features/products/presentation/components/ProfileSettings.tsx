@@ -181,8 +181,8 @@ export const ProfileSettings: React.FC = () => {
         {/* CỘT TRÁI + GIỮA (2/3): FORM CHÍNH */}
         <div className="lg:col-span-2 space-y-6">
           {/* Khối 1: Personal Information */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-6 shadow-sm space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-3">
+          <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-6 shadow-sm space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-50 dark:border-white/5 pb-3">
               <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white">
                 <User className="w-5 h-5 text-blue-600" />
                 <span>
@@ -209,7 +209,7 @@ export const ProfileSettings: React.FC = () => {
                   <button
                     onClick={handleCancel}
                     disabled={isUpdating}
-                    className="inline-flex items-center gap-1 border-2 border-slate-300 text-slate-600 dark:text-slate-400 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50"
+                    className="inline-flex items-center gap-1 border-2 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition disabled:opacity-50"
                   >
                     <X className="w-3.5 h-3.5" />
                     <span>
@@ -261,8 +261,8 @@ export const ProfileSettings: React.FC = () => {
                   }
                   className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${
                     isEditing
-                      ? "bg-white dark:bg-slate-900 border-blue-300 dark:border-blue-700 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
-                      : "bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-slate-850 text-slate-800 dark:text-slate-200"
+                      ? "bg-white dark:bg-black/20 border-blue-300 dark:border-blue-500 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20"
+                      : "bg-slate-50/70 dark:bg-white/5 border-slate-200/60 dark:border-white/5 text-slate-800 dark:text-slate-400"
                   }`}
                 />
               </div>
@@ -288,8 +288,8 @@ export const ProfileSettings: React.FC = () => {
                   }
                   className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${
                     isEditing
-                      ? "bg-white dark:bg-slate-900 border-blue-300 dark:border-blue-700 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
-                      : "bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-slate-850 text-slate-800 dark:text-slate-200"
+                      ? "bg-white dark:bg-black/20 border-blue-300 dark:border-blue-500 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20"
+                      : "bg-slate-50/70 dark:bg-white/5 border-slate-200/60 dark:border-white/5 text-slate-800 dark:text-slate-400"
                   }`}
                 />
               </div>
@@ -313,8 +313,8 @@ export const ProfileSettings: React.FC = () => {
                   }
                   className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${
                     isEditing
-                      ? "bg-white dark:bg-slate-900 border-blue-300 dark:border-blue-700 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
-                      : "bg-slate-50/70 dark:bg-slate-800/50 border-slate-200/60 dark:border-slate-850 text-slate-800 dark:text-slate-200 cursor-not-allowed"
+                      ? "bg-white dark:bg-black/20 border-blue-300 dark:border-blue-500 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20"
+                      : "bg-slate-50/70 dark:bg-white/5 border-slate-200/60 dark:border-white/5 text-slate-800 dark:text-slate-400 cursor-not-allowed"
                   }`}
                 />
               </div>
@@ -334,15 +334,15 @@ export const ProfileSettings: React.FC = () => {
                   type="email"
                   readOnly
                   value={customerMe?.email || user?.email || ""}
-                  className="w-full bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 focus:outline-none cursor-not-allowed"
+                  className="w-full bg-slate-50/70 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 focus:outline-none cursor-not-allowed"
                 />
               </div>
             </div>
           </div>
 
           {/* Khối 2: Password & Security */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-6 shadow-sm space-y-5">
-            <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-800 pb-3">
+          <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-6 shadow-sm space-y-5">
+            <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-3">
               <Lock className="w-5 h-5 text-blue-600" />
               <span>
                 {t("settings.passwordSecurity.sectionTitle", {
@@ -371,7 +371,7 @@ export const ProfileSettings: React.FC = () => {
                       currentPassword: e.target.value,
                     }))
                   }
-                  className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
+                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20 rounded-xl px-4 py-2.5 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
                 />
               </div>
 
@@ -396,7 +396,7 @@ export const ProfileSettings: React.FC = () => {
                         newPassword: e.target.value,
                       }))
                     }
-                    className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
+                    className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
                   />
                   <button
                     type="button"
@@ -433,7 +433,7 @@ export const ProfileSettings: React.FC = () => {
                         confirmPassword: e.target.value,
                       }))
                     }
-                    className="w-full bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
+                    className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none transition-all text-slate-800 dark:text-slate-100"
                   />
                   <button
                     type="button"
@@ -466,7 +466,7 @@ export const ProfileSettings: React.FC = () => {
                     })}
               </button>
 
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4">
+              <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-4">
                 <div>
                   <h4 className="text-sm font-bold text-slate-800 dark:text-white">
                     {t("settings.passwordSecurity.twoFactorTitle", {
@@ -508,66 +508,66 @@ export const ProfileSettings: React.FC = () => {
 
             <div className="relative z-10 space-y-5">
               <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white">
-                <User className="w-6 h-6" />
+                <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white">
+                  <User className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs text-blue-100 font-medium">
+                    {t("settings.memberCard.memberSince", {
+                      defaultValue: "Member Since",
+                    })}
+                  </p>
+                  <p className="text-lg font-black tracking-wide">
+                    {customerMe?.createdAt
+                      ? new Date(customerMe.createdAt).toLocaleDateString(
+                          "vi-VN",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )
+                      : "2026"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-blue-100 font-medium">
-                  {t("settings.memberCard.memberSince", {
-                    defaultValue: "Member Since",
-                  })}
-                </p>
-                <p className="text-lg font-black tracking-wide">
-                  {customerMe?.createdAt
-                    ? new Date(customerMe.createdAt).toLocaleDateString(
-                        "vi-VN",
-                        {
-                          month: "long",
-                          year: "numeric",
-                        },
-                      )
-                    : "2026"}
-                </p>
+              <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
+                <div className="flex justify-between opacity-90">
+                  <span>
+                    {t("settings.memberCard.totalBookings", {
+                      defaultValue: "Total Bookings",
+                    })}
+                  </span>
+                  <span className="font-bold">
+                    {customerMe?.totalWashes ?? 0}
+                  </span>
+                </div>
+                <div className="flex justify-between opacity-90">
+                  <span>
+                    {t("settings.memberCard.totalSpent", {
+                      defaultValue: "Total Spent",
+                    })}
+                  </span>
+                  <span className="font-bold">
+                    {(customerMe?.totalSpent ?? 0).toLocaleString("vi-VN")}đ
+                  </span>
+                </div>
+                <div className="flex justify-between items-baseline">
+                  <span>
+                    {t("settings.memberCard.pointsBalance", {
+                      defaultValue: "Points Balance",
+                    })}
+                  </span>
+                  <span className="text-base font-black text-amber-300">
+                    {customerMe?.availablePoint ?? 0} pts
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="pt-2 space-y-2 text-sm font-semibold border-t border-white/10">
-              <div className="flex justify-between opacity-90">
-                <span>
-                  {t("settings.memberCard.totalBookings", {
-                    defaultValue: "Total Bookings",
-                  })}
-                </span>
-                <span className="font-bold">
-                  {customerMe?.totalWashes ?? 0}
-                </span>
-              </div>
-              <div className="flex justify-between opacity-90">
-                <span>
-                  {t("settings.memberCard.totalSpent", {
-                    defaultValue: "Total Spent",
-                  })}
-                </span>
-                <span className="font-bold">
-                  {(customerMe?.totalSpent ?? 0).toLocaleString("vi-VN")}đ
-                </span>
-              </div>
-              <div className="flex justify-between items-baseline">
-                <span>
-                  {t("settings.memberCard.pointsBalance", {
-                    defaultValue: "Points Balance",
-                  })}
-                </span>
-                <span className="text-base font-black text-amber-300">
-                  {customerMe?.totalPoints ?? 0} pts
-                </span>
-              </div>
-            </div>
-          </div>
           </div>
 
           {/* Khối Cấu Hình Notifications Tắt/Mở */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-850 pb-2">
+          <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
               <Bell className="w-4 h-4 text-blue-600" />
               <span>
                 {t("settings.notificationsSection.sectionTitle", {
@@ -641,8 +641,8 @@ export const ProfileSettings: React.FC = () => {
           </div>
 
           {/* Khối Appearance (Dark/Light Mode) */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-800 pb-2">
+          <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
               <Monitor className="w-4 h-4 text-blue-600" />
               <span>
                 {t("settings.appearance.sectionTitle", {
@@ -654,7 +654,7 @@ export const ProfileSettings: React.FC = () => {
             <div
               className={`relative rounded-xl overflow-hidden h-16 transition-all duration-500 ${
                 isDark
-                  ? "bg-gradient-to-br from-slate-800 to-slate-900"
+                  ? "bg-black/20 border border-white/5"
                   : "bg-gradient-to-br from-slate-55 to-blue-50"
               }`}
             >
@@ -719,8 +719,8 @@ export const ProfileSettings: React.FC = () => {
                 id="theme-toggle"
                 onClick={toggleTheme}
                 aria-label="Toggle dark mode"
-                className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 shrink-0 ${
-                  isDark ? "bg-blue-600" : "bg-slate-200 dark:bg-slate-700"
+                className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-[#13151A] shrink-0 ${
+                  isDark ? "bg-blue-600" : "bg-slate-200 dark:bg-white/10"
                 }`}
               >
                 <span
@@ -745,8 +745,8 @@ export const ProfileSettings: React.FC = () => {
           </div>
 
           {/* Khối Language */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-slate-850 pb-2">
+          <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
               <Globe className="w-4 h-4 text-blue-600" />
               <span>
                 {t("settings.language.sectionTitle", {
@@ -767,7 +767,7 @@ export const ProfileSettings: React.FC = () => {
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border-2 transition-all duration-200 ${
                   language === "en"
                     ? "border-blue-600 bg-blue-600 text-white shadow-md"
-                    : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-blue-300"
+                    : "border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-blue-300 dark:hover:border-white/20 dark:bg-black/20"
                 }`}
               >
                 <span className="text-base leading-none">🇺🇸</span>
@@ -780,7 +780,7 @@ export const ProfileSettings: React.FC = () => {
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold border-2 transition-all duration-200 ${
                   language === "vi"
                     ? "border-blue-600 bg-blue-600 text-white shadow-md"
-                    : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-blue-300"
+                    : "border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-blue-300 dark:hover:border-white/20 dark:bg-black/20"
                 }`}
               >
                 <span className="text-base leading-none">🇻🇳</span>

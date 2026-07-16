@@ -12,6 +12,7 @@ export interface Customer {
     createdAt: string;   
     availablePoint: number;  
     totalPoint: number;
+    currentCycleWashes?: number;
     totalBookings?: number;
     bookingWindow: number;
 }

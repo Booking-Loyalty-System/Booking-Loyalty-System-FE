@@ -30,7 +30,7 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                         <div
                             key={pkg.id}
                             onClick={() => onSelectPackage(pkg.id)}
-                            className={`cursor-pointer bg-white dark:bg-[#111] border rounded-2xl p-6 transition-all duration-200 flex flex-col justify-between gap-6 relative ${
+                            className={`cursor-pointer bg-white dark:bg-[#13151A] border rounded-2xl p-6 transition-all duration-200 flex flex-col justify-between gap-6 relative ${
                                 isSelected ? 'border-[#1e6ffd] dark:border-blue-500 ring-2 ring-blue-50 dark:ring-blue-900/30 shadow-sm' : 'border-[#e2e8f0] dark:border-white/5 hover:border-[#cbd5e1] dark:hover:border-white/20'
                             }`}
                         >

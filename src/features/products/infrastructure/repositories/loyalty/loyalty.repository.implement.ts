@@ -15,7 +15,7 @@ export class LoyaltyRepositoryImplement implements ILoyaltyRepository {
             // Map backend data to frontend DTO
             const mappedTransactions = rawTransactions.map((tx: any) => ({
                 id: tx.id,
-                date: new Date(tx.createdAt).toLocaleDateString(),
+                date: tx.createdAt, // Giữ nguyên ISO string để các component khác có thể parse lại
                 description: tx.description || (tx.type === "Earn" ? "Earned from booking" : "Redeemed points"),
                 type: tx.type === "Earn" ? "Earned" : "Redeemed",
                 points: Math.abs(tx.points) // frontend component might expect absolute or relative depending on logic, but in LoyaltyTier.tsx it handles positive/negative based on "type"

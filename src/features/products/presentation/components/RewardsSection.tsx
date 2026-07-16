@@ -39,31 +39,33 @@ export const RewardsSection: React.FC = () => {
   } = useReward();
 
   const availablePoints = customerMe?.availablePoint ?? 0;
-  // Số lượng phần thưởng rửa xe miễn phí khả dụng
-  const currentCycleWashes = (customerMe as any)?.currentCycleWashes ?? 0;
+  const totalWashes = customerMe?.totalWashes ?? 0;
+  const earnedFreeWashes = Math.floor(totalWashes / 7);
+  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
+  const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
   const [confirmReward, setConfirmReward] = useState<{ id: string, title: string, cost: number, isFreeWash: boolean } | null>(null);
   // Bảng cấu hình icon mẫu
   const iconMap = {
     GIFT: {
       icon: <Gift className="w-6 h-6" />,
-      iconBg: "bg-blue-50",
-      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50 dark:bg-blue-500/10",
+      iconColor: "text-blue-600 dark:text-blue-400",
     },
     TICKET: {
       icon: <Ticket className="w-6 h-6" />,
-      iconBg: "bg-emerald-50",
-      iconColor: "text-emerald-600",
+      iconBg: "bg-emerald-50 dark:bg-emerald-500/10",
+      iconColor: "text-emerald-600 dark:text-emerald-400",
     },
     STAR: {
       icon: <Star className="w-6 h-6" />,
-      iconBg: "bg-purple-50",
-      iconColor: "text-purple-600",
+      iconBg: "bg-purple-50 dark:bg-purple-500/10",
+      iconColor: "text-purple-600 dark:text-purple-400",
     },
     SPARKLES: {
       icon: <Sparkles className="w-6 h-6" />,
-      iconBg: "bg-amber-50",
-      iconColor: "text-amber-500",
+      iconBg: "bg-amber-50 dark:bg-amber-500/10",
+      iconColor: "text-amber-500 dark:text-amber-400",
     },
   };
 
@@ -101,14 +103,13 @@ export const RewardsSection: React.FC = () => {
       .filter((item) => item !== null) as RewardItem[];
   }, [availableRewards, i18n.language]);
 
-  // Tính toán số lượng phần thưởng khả dụng
   const redeemableCount = useMemo(() => {
     return rewards.filter((r) => {
       if (r.comingSoon) return false;
-      if (r.isFreeWashReward) return currentCycleWashes >= 1;
+      if (r.isFreeWashReward) return availableFreeWashes >= 1;
       return availablePoints >= r.requiredPts;
     }).length;
-  }, [rewards, availablePoints, currentCycleWashes]);
+  }, [rewards, availablePoints, availableFreeWashes]);
 
   const handleRedeemClick = (
     rewardId: string,
@@ -116,7 +117,7 @@ export const RewardsSection: React.FC = () => {
     title: string,
     isFreeWash: boolean = false,
   ) => {
-    if (isFreeWash && currentCycleWashes < 1) {
+    if (isFreeWash && availableFreeWashes < 1) {
       toast.error(
         t("rewards.toastNotEnoughWashes", {
           defaultValue: "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
@@ -218,7 +219,7 @@ export const RewardsSection: React.FC = () => {
             </div>
           ) : (
             rewards.map((item) => {
-              const isEligibleForFreeWash = currentCycleWashes >= 1;
+              const isEligibleForFreeWash = availableFreeWashes >= 1;
               const canAfford = item.isFreeWashReward
                 ? isEligibleForFreeWash
                 : availablePoints >= item.requiredPts;
@@ -226,7 +227,7 @@ export const RewardsSection: React.FC = () => {
               return (
                 <div
                   key={item.id}
-                  className={`bg-white dark:bg-[#111] rounded-2xl p-6 border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative ${
+                  className={`bg-white dark:bg-[#13151A] rounded-2xl p-6 border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative ${
                     item.comingSoon ? "opacity-75" : ""
                   }`}
                 >
@@ -330,7 +331,7 @@ export const RewardsSection: React.FC = () => {
       </div>
 
       {/* 3. Phần lịch sử đổi thưởng gần đây */}
-      <div className="bg-white dark:bg-[#111] rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden">
+      <div className="bg-white dark:bg-[#13151A] rounded-2xl shadow-sm border border-slate-100 dark:border-white/5 overflow-hidden">
         <div className="p-6 border-b border-slate-100 dark:border-white/10 flex items-center gap-2.5">
           <History className="w-5 h-5 text-slate-400 dark:text-slate-500" />
           <h3 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">
@@ -467,7 +468,7 @@ export const RewardsSection: React.FC = () => {
       </div>
       {confirmReward && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-[#111] dark:border dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+          <div className="bg-white dark:bg-[#13151A] dark:border dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
               {t("rewards.confirmModal.title", { defaultValue: "Xác nhận đổi thưởng" })}
             </h3>

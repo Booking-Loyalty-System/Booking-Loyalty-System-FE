@@ -109,7 +109,7 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
   const qrValue = booking.bookingCode || booking.id;
 
   return (
-    <div className="max-w-2xl mx-auto my-8 bg-white dark:bg-gradient-to-br dark:from-[#111] dark:to-[#1a1128] border border-slate-100 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
+    <div className="max-w-2xl mx-auto my-8 bg-white dark:bg-gradient-to-br dark:from-[#13151A] dark:to-[#1a1525] border border-slate-100 dark:border-white/5 rounded-3xl shadow-xl overflow-hidden p-8 text-center font-sans antialiased animate-fade-in">
       <div className="flex flex-col items-center justify-center space-y-3 mb-6">
         <div className="p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-emerald-500 dark:text-emerald-400">
           <CheckCircle2 className="w-16 h-16" />
@@ -243,7 +243,13 @@ export const BookWash: React.FC = () => {
   const { validatePromotion } = usePromotion();
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
-  const { redeemedVouchersOnly, isLoadingRedemptions } = useReward();
+  const { redeemedVouchersOnly, isLoadingRedemptions, redemptions } = useReward();
+  
+  const totalWashes = customerMe?.totalWashes ?? 0;
+  const earnedFreeWashes = Math.floor(totalWashes / 7);
+  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
+  const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
+  
   const bookingWindow = customerMe?.bookingWindow || 7;
   const dynamicDateSlots = useMemo(() => {
     return generateUpcomingDates(bookingWindow);
@@ -474,7 +480,7 @@ export const BookWash: React.FC = () => {
           selectedVoucherId={selectedVoucher?.id || ""}
           onSelectVoucher={setSelectedVoucher}
           totalPoints={customerMe?.availablePoint ?? 0}
-          currentCycleWashes={(customerMe as any)?.currentCycleWashes ?? 0}
+          availableFreeWashes={availableFreeWashes}
         />
 
         <DateTimeSelection

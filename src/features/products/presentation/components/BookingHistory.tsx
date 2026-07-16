@@ -221,7 +221,7 @@ export const BookingHistory: React.FC = () => {
 
       {bookingToCancel && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white dark:bg-[#111] rounded-3xl border border-slate-100 dark:border-white/5 max-w-md w-full p-6 shadow-2xl space-y-5 animate-scale-up">
+          <div className="bg-white dark:bg-[#13151A] rounded-3xl border border-slate-100 dark:border-white/5 max-w-md w-full p-6 shadow-2xl space-y-5 animate-scale-up">
             <div className="flex items-center gap-3 text-amber-500">
               <div className="p-2 bg-amber-50 dark:bg-amber-500/10 rounded-xl">
                 <AlertTriangle className="w-6 h-6" />
@@ -311,7 +311,7 @@ export const BookingHistory: React.FC = () => {
         {stats.map((stat, i) => (
           <div
             key={i}
-            className="bg-white dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[2rem] p-5 shadow-sm flex items-center gap-4"
+            className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-[2rem] p-5 shadow-sm flex items-center gap-4"
           >
             <div className={`p-3.5 rounded-2xl ${stat.bg} shrink-0`}>
               {stat.icon}
@@ -329,7 +329,7 @@ export const BookingHistory: React.FC = () => {
       </div>
 
       {/* Bảng Dữ Liệu */}
-      <div className="bg-white dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[2rem] shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-[2rem] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

@@ -33,7 +33,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-[#111] rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${
+      className={`bg-white dark:bg-[#13151A] rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${
         car.isPrimary
           ? "border-blue-500 ring-4 ring-blue-500/10 dark:ring-blue-500/20 shadow-md"
           : "border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md"
@@ -53,7 +53,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={onEdit}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50"
+              className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
             >
               <Edit2 className="w-4 h-4" />
             </button>
@@ -67,8 +67,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
         </div>
         <div className="space-y-3">
           <div>
-            <p className="text-xs font-semibold text-slate-400">Vehicle Type</p>
-            <p className="text-base font-extrabold text-slate-900">
+            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">Vehicle Type</p>
+            <p className="text-base font-extrabold text-slate-900 dark:text-white">
               {/* Sửa ở đây để render giá trị đúng */}
               {vehicleTypeToDisplay}
             </p>
@@ -106,7 +106,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
         onClick={() =>
           onViewHistory(car.licensePlate, `${car.brand} - ${car.vehicleName}`)
         }
-        className="mt-6 w-full flex items-center justify-center gap-2 border-2 border-blue-600 text-blue-600 py-2 rounded-xl text-sm font-bold hover:bg-blue-50 transition-colors"
+        className="mt-6 w-full flex items-center justify-center gap-2 border-2 border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 py-2 rounded-xl text-sm font-bold hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
       >
         <History className="w-4 h-4" /> View History
       </button>

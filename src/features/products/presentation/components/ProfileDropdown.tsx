@@ -50,10 +50,10 @@ export const ProfileDropdown: React.FC = () => {
             <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 disabled={isLoggingOut} // Disable nút khi đang trong quá trình gọi API logout
-                className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-slate-800 transition-all focus:outline-none group disabled:opacity-70"
+                className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-white/5 transition-all focus:outline-none group disabled:opacity-70"
             >
                 <div className="text-right hidden sm:block select-none">
-                    <h4 className="text-sm font-bold text-[#0f172a] dark:text-slate-200 group-hover:text-[#1e6ffd] dark:group-hover:text-blue-400 transition-colors">{fullName}</h4>
+                    <h4 className="text-sm font-bold text-[#0f172a] dark:text-white group-hover:text-[#1e6ffd] dark:group-hover:text-blue-400 transition-colors">{fullName}</h4>
                     <p className="text-[10px] text-[#94a3b8] dark:text-slate-500 font-bold uppercase tracking-wider text-left">
                         {t('header.profile.roleCustomer', { defaultValue: "Customer" })}
                     </p>
@@ -61,15 +61,15 @@ export const ProfileDropdown: React.FC = () => {
 
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#1e6ffd] to-[#6366f1] text-white font-bold text-sm flex items-center justify-center shadow-sm relative group-hover:scale-105 transition-transform">
                     {avatarFallback}
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></span>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#13151A] rounded-full"></span>
                 </div>
 
                 <ChevronDown className={`w-4 h-4 text-[#64748b] transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-3 duration-200">
-                    <div className="px-4 py-2.5 border-b border-[#f1f5f9] dark:border-slate-700">
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#13151A] border border-[#e2e8f0] dark:border-white/10 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-3 duration-200">
+                    <div className="px-4 py-2.5 border-b border-[#f1f5f9] dark:border-white/5">
                         <p className="text-xs text-[#94a3b8] dark:text-slate-400 font-medium">
                             {t('header.profile.signedInAs', { defaultValue: "Signed in as" })}
                         </p>
@@ -80,7 +80,7 @@ export const ProfileDropdown: React.FC = () => {
                         <Link
                             to="/settings"
                             onClick={() => setIsDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-[#64748b] dark:text-slate-400 hover:bg-[#f1f5f9] dark:hover:bg-slate-700 hover:text-[#0f172a] dark:hover:text-white transition-all"
+                            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-[#64748b] dark:text-slate-400 hover:bg-[#f1f5f9] dark:hover:bg-white/5 hover:text-[#0f172a] dark:hover:text-white transition-all"
                         >
                             <User className="w-4 h-4 text-[#1e6ffd]" />
                             {t('header.profile.myProfile', { defaultValue: "My Profile" })}
@@ -88,14 +88,14 @@ export const ProfileDropdown: React.FC = () => {
                         <Link
                             to="/settings"
                             onClick={() => setIsDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-[#64748b] dark:text-slate-400 hover:bg-[#f1f5f9] dark:hover:bg-slate-700 hover:text-[#0f172a] dark:hover:text-white transition-all"
+                            className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-[#64748b] dark:text-slate-400 hover:bg-[#f1f5f9] dark:hover:bg-white/5 hover:text-[#0f172a] dark:hover:text-white transition-all"
                         >
                             <Settings className="w-4 h-4 text-[#64748b]" />
                             {t('header.profile.accountSettings', { defaultValue: "Account Settings" })}
                         </Link>
                     </div>
 
-                    <div className="p-1 border-t border-[#f1f5f9] dark:border-slate-700 mt-1">
+                    <div className="p-1 border-t border-[#f1f5f9] dark:border-white/5 mt-1">
                         <button
                             onClick={handleLogoutClick}
                             disabled={isLoggingOut}

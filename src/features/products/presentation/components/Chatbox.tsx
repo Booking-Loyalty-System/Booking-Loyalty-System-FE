@@ -26,7 +26,7 @@ const MessageBubble: React.FC<{ msg: UnifiedMessage }> = ({ msg }) => {
     if (isSystem) {
         return (
             <div className="flex justify-center my-2">
-                <span className="text-[11px] bg-slate-100 text-slate-500 font-bold px-3 py-1 rounded-full border border-slate-200">
+                <span className="text-[11px] bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-bold px-3 py-1 rounded-full border border-slate-200 dark:border-white/10">
                     {msg.content}
                 </span>
             </div>
@@ -46,10 +46,10 @@ const MessageBubble: React.FC<{ msg: UnifiedMessage }> = ({ msg }) => {
 
             <div className={`max-w-[78%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${isUser
                 ? 'bg-blue-600 text-white rounded-br-sm'
-                : 'bg-white border border-slate-100 text-slate-700 rounded-bl-sm'
+                : 'bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/10 text-slate-700 dark:text-slate-200 rounded-bl-sm'
                 }`}>
                 <span className="whitespace-pre-line">{renderMarkdown(msg.content)}</span>
-                <p className={`text-[10px] mt-1 ${isUser ? 'text-blue-200' : 'text-slate-400'}`}>
+                <p className={`text-[10px] mt-1 ${isUser ? 'text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
                     {msg.timestamp.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                 </p>
             </div>
@@ -63,9 +63,9 @@ const TypingIndicator: React.FC<{ isLiveChat: boolean }> = ({ isLiveChat }) => (
         <div className={`w-7 h-7 rounded-full flex items-center justify-center shadow-sm text-white ${isLiveChat ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-gradient-to-br from-indigo-500 to-purple-600'}`}>
             {isLiveChat ? <HeadphonesIcon className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
         </div>
-        <div className="bg-white border border-slate-100 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm flex gap-1.5 items-center">
+        <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/10 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm flex gap-1.5 items-center">
             {[0, 150, 300].map(delay => (
-                <span key={delay} className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />
+                <span key={delay} className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />
             ))}
         </div>
     </div>
@@ -192,7 +192,7 @@ export const Chatbox: React.FC = () => {
             </button>
 
             {isOpen && (
-                <div className={`fixed bottom-24 right-6 z-50 w-96 bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right ${isMinimized ? 'h-16' : 'h-[520px]'}`}>
+                <div className={`fixed bottom-24 right-6 z-50 w-96 bg-white dark:bg-[#13151A] rounded-3xl shadow-2xl border border-slate-100 dark:border-white/10 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right ${isMinimized ? 'h-16' : 'h-[520px]'}`}>
 
                     {/* TOP HEADER */}
                     <div className={`bg-gradient-to-r ${headerGradient} px-4 py-3 flex items-center justify-between shrink-0`}>
@@ -229,15 +229,15 @@ export const Chatbox: React.FC = () => {
                             )}
 
                             {isFeedbackVisible && (
-                                <div className="absolute inset-0 z-[60] bg-white flex flex-col p-6 animate-in fade-in zoom-in duration-300">
-                                    <h3 className="text-lg font-black text-slate-800 mb-1">{t('feedback.title', { defaultValue: 'Đánh giá dịch vụ' })}</h3>
-                                    <p className="text-sm text-slate-500 mb-6">{t('feedback.subtitleChat', { defaultValue: 'Ý kiến của bạn giúp chúng tôi cải thiện tốt hơn.' })}</p>
+                                <div className="absolute inset-0 z-[60] bg-white dark:bg-[#13151A] flex flex-col p-6 animate-in fade-in zoom-in duration-300">
+                                    <h3 className="text-lg font-black text-slate-800 dark:text-white mb-1">{t('feedback.title', { defaultValue: 'Đánh giá dịch vụ' })}</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{t('feedback.subtitleChat', { defaultValue: 'Ý kiến của bạn giúp chúng tôi cải thiện tốt hơn.' })}</p>
 
                                     {/* Rating Stars */}
                                     <div className="flex gap-2 mb-6 justify-center">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <button key={star} onClick={() => setRating(star)}>
-                                                <Star className={`w-8 h-8 transition-colors ${star <= rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`} />
+                                                <Star className={`w-8 h-8 transition-colors ${star <= rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200 dark:text-slate-700'}`} />
                                             </button>
                                         ))}
                                     </div>
@@ -247,7 +247,7 @@ export const Chatbox: React.FC = () => {
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
                                         placeholder={t('feedback.labels.commentPlaceholder', { defaultValue: 'Để lại nhận xét của bạn...' })}
-                                        className="w-full h-24 p-3 mb-6 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                        className="w-full h-24 p-3 mb-6 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20"
                                     />
 
                                     <div className="flex gap-3 mt-auto">
@@ -259,7 +259,7 @@ export const Chatbox: React.FC = () => {
                                                 setRating(5);
                                                 setComment('');
                                             }}
-                                            className="flex-1 py-3 rounded-xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50"
+                                            className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-white/10 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5"
                                         >
                                             {t('feedback.buttons.skip', { defaultValue: 'Bỏ qua' })}
                                         </button>
@@ -290,17 +290,17 @@ export const Chatbox: React.FC = () => {
                         <>
                             {/* VIEW: LỊCH SỬ CHAT */}
                             {viewMode === 'history_list' && (
-                                <div className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-2 min-h-0">
+                                <div className="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-[#13151A] space-y-2 min-h-0">
                                     {historySessions.length === 0 ? (
-                                        <div className="text-center text-slate-400 text-xs py-8">Không có lịch sử trò chuyện nào.</div>
+                                        <div className="text-center text-slate-400 dark:text-slate-500 text-xs py-8">Không có lịch sử trò chuyện nào.</div>
                                     ) : (
                                         historySessions.map((session) => (
-                                            <div key={session.id} onClick={() => handleSelectHistorySession(session)} className="bg-white p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-slate-400 transition-all text-left shadow-sm">
+                                            <div key={session.id} onClick={() => handleSelectHistorySession(session)} className="bg-white dark:bg-black/20 p-3 rounded-xl border border-slate-200 dark:border-white/10 cursor-pointer hover:border-slate-400 dark:hover:border-white/30 transition-all text-left shadow-sm">
                                                 <div className="flex justify-between items-center mb-1">
-                                                    <span className="text-xs font-bold text-slate-700">Hỗ trợ: {session.staffName || 'Hệ thống'}</span>
-                                                    <span className="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold text-slate-500">{session.status}</span>
+                                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Hỗ trợ: {session.staffName || 'Hệ thống'}</span>
+                                                    <span className="bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded text-[10px] font-bold text-slate-500 dark:text-slate-400">{session.status}</span>
                                                 </div>
-                                                <p className="text-[10px] text-slate-400">{new Date(session.createdAt).toLocaleString('vi-VN')}</p>
+                                                <p className="text-[10px] text-slate-400 dark:text-slate-500">{new Date(session.createdAt).toLocaleString('vi-VN')}</p>
                                             </div>
                                         ))
                                     )}
@@ -309,9 +309,9 @@ export const Chatbox: React.FC = () => {
 
                             {/* VIEW: CHI TIẾT PHIÊN CŨ */}
                             {viewMode === 'history_detail' && (
-                                <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 min-h-0">
+                                <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-transparent min-h-0">
                                     <div className="flex justify-center">
-                                        <span className="text-[10px] bg-amber-50 text-amber-600 font-bold px-3 py-1 rounded-full border border-amber-200">PHIÊN ĐÃ KẾT THÚC</span>
+                                        <span className="text-[10px] bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold px-3 py-1 rounded-full border border-amber-200 dark:border-amber-500/20">PHIÊN ĐÃ KẾT THÚC</span>
                                     </div>
                                     {selectedOldMessages.map((msg, i) => <MessageBubble key={i} msg={msg} />)}
                                     <div ref={messagesEndRef} />
@@ -321,17 +321,17 @@ export const Chatbox: React.FC = () => {
                             {/* VIEW: CHAT LIVE/AI */}
                             {viewMode === 'chat' && (
                                 <>
-                                    <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 min-h-0">
+                                    <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50 dark:bg-transparent min-h-0">
                                         {messages.map((msg, i) => <MessageBubble key={i} msg={msg} />)}
                                         {isLoading && <TypingIndicator isLiveChat={isLiveChat} />}
                                         <div ref={messagesEndRef} />
                                     </div>
 
-                                    <div className="px-4 pb-3 pt-1 bg-slate-50/50 flex flex-col gap-2 shrink-0">
+                                    <div className="px-4 pb-3 pt-1 bg-slate-50/50 dark:bg-transparent flex flex-col gap-2 shrink-0">
                                         {!isLiveChat && messages.length <= 2 && (
                                             <div className="flex gap-2 flex-wrap">
                                                 {aiSuggestions.map(s => (
-                                                    <button key={s} onClick={() => sendMessage(s)} className="text-xs bg-white hover:bg-slate-100 text-slate-700 font-bold px-3 py-1.5 rounded-full transition-colors border border-slate-200 shadow-sm">{s}</button>
+                                                    <button key={s} onClick={() => sendMessage(s)} className="text-xs bg-white dark:bg-black/20 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 font-bold px-3 py-1.5 rounded-full transition-colors border border-slate-200 dark:border-white/10 shadow-sm">{s}</button>
                                                 ))}
                                             </div>
                                         )}
@@ -347,14 +347,14 @@ export const Chatbox: React.FC = () => {
                                         )}
                                     </div>
 
-                                    <div className="p-3 border-t border-slate-100 bg-white flex items-center gap-2 shrink-0">
+                                    <div className="p-3 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#13151A] flex items-center gap-2 shrink-0">
                                         <input
                                             ref={inputRef} type="text" value={inputValue}
                                             onChange={e => setInputValue(e.target.value)}
                                             onKeyDown={handleKeyDown}
                                             placeholder={isLiveChat ? 'Nhập tin nhắn...' : 'Hỏi AI Assistant...'}
                                             disabled={isLoading}
-                                            className={`flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-sm font-medium placeholder:text-slate-400 focus:outline-none ${isLiveChat ? 'focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100' : 'focus:border-blue-400 focus:ring-2 focus:ring-blue-100'} transition-all`}
+                                            className={`flex-1 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white rounded-2xl px-4 py-2.5 text-sm font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none ${isLiveChat ? 'focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/20' : 'focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20'} transition-all`}
                                         />
                                         <button
                                             onClick={handleSend} disabled={!inputValue.trim() || isLoading}

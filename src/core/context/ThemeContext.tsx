@@ -16,7 +16,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [theme, setTheme] = useState<Theme>(() => {
         const stored = localStorage.getItem(THEME_KEY) as Theme | null;
         if (stored === 'dark' || stored === 'light') return stored;
-        return 'light'; // Mặc định là sáng
+        return 'dark'; // Mặc định là đen
     });
 
     useEffect(() => {
