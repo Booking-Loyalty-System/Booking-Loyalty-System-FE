@@ -58,7 +58,6 @@ export const useWashPackage = () => {
                 price: pkg.price,
                 durationMinutes: pkg.durationMinutes,
                 features: pkg.features,
-                vehicleType: pkg.vehicleType,
                 isActive: !pkg.isActive
             }
         });
