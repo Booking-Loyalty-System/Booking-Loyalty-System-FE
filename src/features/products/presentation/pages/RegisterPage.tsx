@@ -13,7 +13,10 @@ import {
   Sun,
   Moon,
   ArrowRight,
-  Award
+  Award,
+  X,
+  ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "@/features/products/application/useAuth.ts";
 import { auth } from "@/firebase-config.ts";
@@ -31,16 +34,25 @@ export const RegisterPage: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const { language, toggleLanguage } = useLanguage();
 
+  // === EMAIL FORM STATES ===
   const [email, setEmail] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  const { register, registerWithPhone, isPending, isPendingPhone } = useAuth();
+  // === OTP POPUP STATES ===
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [pendingUserId, setPendingUserId] = useState<string>("");
+  const [emailOtp, setEmailOtp] = useState("");
+  const [otpInputs, setOtpInputs] = useState<string[]>(["", "", "", "", "", ""]);
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const { register, verifyEmail, registerWithPhone, isPending, isPendingPhone, isPendingVerify } = useAuth();
   const [registerMode, setRegisterMode] = useState<"email" | "phone">("email");
 
-  const [phoneNumber, setPhoneNumber] = useState("");
+  // === PHONE OTP (Firebase) STATES ===
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [confirmResult, setConfirmResult] = useState<ConfirmationResult | null>(
@@ -51,6 +63,39 @@ export const RegisterPage: React.FC = () => {
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  // === OTP INPUT HANDLER (cho 6 ô nhập riêng) ===
+  const handleOtpInputChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return; // Chỉ chấp nhận số
+    const newInputs = [...otpInputs];
+    newInputs[index] = value.slice(-1); // Chỉ lấy 1 ký tự cuối
+    setOtpInputs(newInputs);
+    setEmailOtp(newInputs.join(""));
+
+    // Auto focus ô tiếp theo
+    if (value && index < 5) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !otpInputs[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const newInputs = [...otpInputs];
+    pasted.split("").forEach((char, i) => {
+      newInputs[i] = char;
+    });
+    setOtpInputs(newInputs);
+    setEmailOtp(newInputs.join(""));
+    otpRefs.current[Math.min(pasted.length, 5)]?.focus();
+  };
+
+  // === SUBMIT EMAIL REGISTER (Bước 1) ===
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -58,15 +103,20 @@ export const RegisterPage: React.FC = () => {
       return;
     }
     try {
-      await register({
+      const userId = await register({
         email,
         password,
         fullName,
-        phoneNumber,
-        dateOfBirth: new Date(dateOfBirth).toISOString(),
+        phoneNumber: phoneNumber || undefined,
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth).toISOString() : undefined,
       });
-      toast.success(t("auth.register.toastSuccess", { defaultValue: "Đăng ký tài khoản thành công!" }));
-      navigate("/dashboard");
+
+      // Lưu userId để dùng ở bước verify
+      setPendingUserId(userId);
+
+      // Hiển thị popup nhập OTP
+      setShowOtpModal(true);
+      toast.success(t("auth.register.toastSuccess", { defaultValue: "Đăng ký thành công! Vui lòng kiểm tra email để lấy mã OTP." }));
     } catch (error: any) {
       console.error("Đăng ký email thất bại:", error);
       if (error?.response?.status === 409) {
@@ -77,6 +127,29 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
+  // === SUBMIT OTP VERIFY (Bước 2) ===
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const otpCode = emailOtp;
+    if (otpCode.length !== 6) {
+      toast.error(t("auth.register.toastOtpInvalid", { defaultValue: "Vui lòng nhập đủ 6 chữ số OTP." }));
+      return;
+    }
+    try {
+      await verifyEmail({
+        id: pendingUserId,
+        otpCode,
+      });
+      toast.success(t("auth.register.toastOtpSuccess", { defaultValue: "Xác thực email thành công! Chào mừng bạn!" }));
+      setShowOtpModal(false);
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.error("Xác thực OTP thất bại:", error);
+      toast.error(t("auth.register.toastOtpInvalid", { defaultValue: "Mã OTP không chính xác hoặc đã hết hạn!" }));
+    }
+  };
+
+  // === PHONE REGISTER (Firebase) ===
   const setupRecaptcha = () => {
     if (!recaptchaVerifierRef.current && recaptchaContainerRef.current && auth) {
       recaptchaVerifierRef.current = new RecaptchaVerifier(
@@ -248,6 +321,7 @@ export const RegisterPage: React.FC = () => {
                   </div>
                   <InputField icon={<Mail />} label={t('auth.register.labelEmail')} value={email} onChange={setEmail} placeholder="john@example.com" type="email" />
                   <InputField icon={<Calendar />} label={t('auth.register.labelDOB')} value={dateOfBirth} onChange={setDateOfBirth} type="date" />
+                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <InputField icon={<Lock />} label={t('auth.register.labelPassword')} value={password} onChange={setPassword} type="password" placeholder="••••••••" />
                     <InputField icon={<Lock />} label={t('auth.register.labelConfirmPassword')} value={confirmPassword} onChange={setConfirmPassword} type="password" placeholder="••••••••" />
@@ -347,6 +421,96 @@ export const RegisterPage: React.FC = () => {
         </div>
       </div>
       <div className="flex-grow"></div>
+
+      {/* ===== OTP POPUP MODAL ===== */}
+      {showOtpModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => {}} // Không cho phép đóng khi click ra ngoài (bắt buộc phải nhập OTP)
+          />
+
+          {/* Modal Card */}
+          <div className="relative w-full max-w-md bg-white dark:bg-[#13151A] rounded-[2rem] p-8 shadow-2xl border border-slate-200/50 dark:border-white/10 animate-in fade-in zoom-in-95 duration-300">
+            
+            {/* Icon Header */}
+            <div className="flex flex-col items-center text-center mb-8">
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-emerald-500/30 mb-5">
+                <ShieldCheck className="w-10 h-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">
+                {t('auth.register.otpModalTitle', { defaultValue: "Xác thực Email" })}
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                {t('auth.register.otpModalDesc', { defaultValue: "Chúng tôi đã gửi mã 6 chữ số đến" })}
+              </p>
+              <p className="text-blue-600 dark:text-blue-400 font-bold text-sm mt-1">{email}</p>
+            </div>
+
+            {/* OTP Input Fields */}
+            <form onSubmit={handleVerifyOtp}>
+              <div className="flex justify-center gap-3 mb-8">
+                {otpInputs.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={(el) => { otpRefs.current[index] = el; }}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpInputChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    onPaste={index === 0 ? handleOtpPaste : undefined}
+                    className={`w-12 h-14 text-center text-2xl font-extrabold rounded-2xl border-2 transition-all
+                      bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                      focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20
+                      ${digit ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-white/10'}
+                    `}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isPendingVerify || emailOtp.length !== 6}
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-2xl font-bold text-base hover:shadow-[0_8px_30px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-white/10"
+              >
+                {isPendingVerify ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {t('auth.register.verifying', { defaultValue: "Đang xác thực..." })}
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-5 h-5" />
+                    {t('auth.register.btnVerify', { defaultValue: "Xác nhận OTP" })}
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Resend & Info */}
+            <div className="mt-6 text-center space-y-2">
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                {t('auth.register.otpExpiry', { defaultValue: "Mã OTP có hiệu lực trong 10 phút" })}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowOtpModal(false);
+                  setOtpInputs(["", "", "", "", "", ""]);
+                  setEmailOtp("");
+                }}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs font-medium transition-colors flex items-center gap-1 mx-auto"
+              >
+                <X className="w-3 h-3" />
+                {t('auth.register.cancelVerify', { defaultValue: "Hủy và đăng ký lại" })}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -358,6 +522,7 @@ interface InputFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   type?: string;
+  required?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -367,6 +532,7 @@ const InputField: React.FC<InputFieldProps> = ({
   onChange,
   placeholder,
   type = "text",
+  required = true,
 }) => (
   <div className="space-y-2">
     <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">{label}</label>
@@ -379,7 +545,7 @@ const InputField: React.FC<InputFieldProps> = ({
         value={value}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={placeholder}
-        required
+        required={required}
         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
       />
     </div>

@@ -47,7 +47,6 @@ export function AdminPackages() {
           price: editForm.price,
           durationMinutes: editForm.durationMinutes,
           features: editForm.features.filter((f) => f.trim() !== ""),
-          vehicleType: editForm.vehicleType,
           isActive: editForm.isActive,
         },
       });
@@ -64,7 +63,6 @@ export function AdminPackages() {
       durationMinutes: 0,
       description: "",
       features: [""],
-      vehicleType: "Small",
       isActive: true,
       createdAt: new Date().toISOString(),
     });
@@ -78,7 +76,6 @@ export function AdminPackages() {
         price: editForm.price,
         durationMinutes: editForm.durationMinutes,
         features: editForm.features.filter((f) => f.trim() !== ""),
-        vehicleType: editForm.vehicleType,
       });
       handleCancel();
     }
@@ -120,7 +117,7 @@ export function AdminPackages() {
   };
 
   return (
-      <div className="p-6 space-y-6 animate-fade-in">
+    <div className="p-6 space-y-6 animate-fade-in">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -148,11 +145,10 @@ export function AdminPackages() {
             {packages.map((pkg) => (
               <div
                 key={pkg.id}
-                className={`bg-white rounded-xl border-2 p-6 transition-all ${
-                  pkg.isActive
-                    ? "border-blue-200 shadow-sm"
-                    : "border-gray-200 opacity-60"
-                }`}
+                className={`bg-white rounded-xl border-2 p-6 transition-all ${pkg.isActive
+                  ? "border-blue-200 shadow-sm"
+                  : "border-gray-200 opacity-60"
+                  }`}
               >
                 {/* Package Header */}
                 <div className="flex items-start justify-between mb-4">
@@ -179,6 +175,8 @@ export function AdminPackages() {
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
                   {pkg.name}
                 </h3>
+
+
                 <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
 
                 {/* Price and Duration */}
@@ -210,11 +208,10 @@ export function AdminPackages() {
                 {/* Status Toggle */}
                 <button
                   onClick={() => toggleStatus(pkg)}
-                  className={`w-full py-2 rounded-lg font-semibold transition-colors ${
-                    pkg.isActive
-                      ? "bg-green-100 text-green-700 hover:bg-green-200"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                  }`}
+                  className={`w-full py-2 rounded-lg font-semibold transition-colors ${pkg.isActive
+                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                    }`}
                 >
                   {pkg.isActive ? (
                     <span className="flex items-center justify-center gap-2">
@@ -319,23 +316,6 @@ export function AdminPackages() {
                 </div>
               </div>
 
-              {/* Vehicle Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Vehicle Type
-                </label>
-                <select
-                  value={editForm.vehicleType || "Small"}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, vehicleType: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                >
-                  <option value="Small">Small</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Large">Large</option>
-                </select>
-              </div>
 
               {/* Features */}
               <div>
@@ -409,6 +389,6 @@ export function AdminPackages() {
           </div>
         </div>
       )}
-      </div>
+    </div>
   );
 }

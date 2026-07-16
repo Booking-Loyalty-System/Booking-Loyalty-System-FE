@@ -5,10 +5,11 @@ import type {
     User,
     RefreshTokenRequest,
     RegisterRequest,
+    VerifyEmailRequest,
     PhoneRegisterRequest, AuthResponseData,
     ChangePasswordRequest
 } from '../domain/models/auth/auth.model.ts';
-import {toast} from "sonner";
+import { toast } from "sonner";
 
 const authRepository = new AuthRepositoryImplement();
 
@@ -165,11 +166,27 @@ export const useAuth = () => {
         }
     });
 
-    // Mutation: Register
+    // Mutation: Register (Bước 1 - chỉ nhận userId, chưa có token)
     const registerMutation = useMutation({
         mutationFn: (userData: RegisterRequest) => authRepository.register(userData),
+        onSuccess: (userId) => {
+            // API register chỉ trả về userId (string), lưu tạm để dùng cho bước verify
+            console.log("Đăng ký thành công, userId:", userId);
+        },
+        onError: (error) => {
+            console.error("Lỗi đăng ký:", error);
+        }
+    });
+
+    // Mutation: Verify Email bằng OTP (Bước 2 - nhận token đầy đủ)
+    const verifyEmailMutation = useMutation({
+        mutationFn: (data: VerifyEmailRequest) => authRepository.verifyEmail(data),
         onSuccess: (data, variables) => {
-            // 1. Lưu token vào localStorage
+            if (!data || !data.accessToken) {
+                toast.error("Xác thực thất bại, vui lòng thử lại.");
+                return;
+            }
+            // Lưu token vào localStorage sau khi xác thực OTP thành công
             localStorage.setItem('access_token', data.accessToken);
             if (data.refreshToken) {
                 localStorage.setItem('refresh_token', data.refreshToken);
@@ -178,19 +195,19 @@ export const useAuth = () => {
             const cleanedToken = saveTokenData(data.accessToken);
             if (cleanedToken) {
                 const synthesizedUser: User = {
-                    id: cleanedToken.userId || "",
-                    email: variables.email || cleanedToken.email || "",
+                    id: cleanedToken.userId || variables.id || "",
+                    email: cleanedToken.email || "",
                     role: cleanedToken.role || "Customer",
-                    fullName: variables.fullName || "",
+                    fullName: data.user?.fullName || "",
                 } as unknown as User;
 
                 localStorage.setItem('user_info', JSON.stringify(synthesizedUser));
                 queryClient.setQueryData(['current_user'], synthesizedUser);
             }
-            console.log("Đăng ký thành công, Token đã lưu:", data);
+            console.log("Xác thực email thành công, token đã lưu.");
         },
         onError: (error) => {
-            console.error("Lỗi đăng ký:", error);
+            console.error("Lỗi xác thực OTP:", error);
         }
     });
 
@@ -215,7 +232,7 @@ export const useAuth = () => {
             }
 
             console.log("Đăng ký bằng SĐT thành công!");
-            
+
         },
         onError: (error) => {
             console.error("Lỗi đăng ký SĐT:", error);
@@ -239,6 +256,7 @@ export const useAuth = () => {
         isRefreshing: refreshTokenMutation.isPending,
         isPending: registerMutation.isPending,
         isPendingPhone: registerWithPhoneMutation.isPending,
+        isPendingVerify: verifyEmailMutation.isPending,
         isChangingPassword: changePasswordMutation.isPending,
 
         error: loginMutation.error || logoutMutation.error || refreshTokenMutation.error || changePasswordMutation.error,
@@ -246,6 +264,7 @@ export const useAuth = () => {
         login: loginMutation.mutateAsync,
         logout: logoutMutation.mutateAsync,
         register: registerMutation.mutateAsync,
+        verifyEmail: verifyEmailMutation.mutateAsync,
         refreshToken: refreshTokenMutation.mutateAsync,
         registerWithPhone: registerWithPhoneMutation.mutateAsync,
         changePassword: changePasswordMutation.mutateAsync,

@@ -1,5 +1,5 @@
 import type { IAuthRepository } from './auth.repository.interface.ts';
-import type {AuthResponseData, RefreshTokenRequest, RegisterRequest} from '../../../domain/models/auth/auth.model';
+import type {AuthResponseData, RefreshTokenRequest, RegisterRequest, VerifyEmailRequest} from '../../../domain/models/auth/auth.model';
 import type { ApiResponse } from '../../../domain/apiResponse.ts';
 import type { LoginRequest } from '@/features/products/domain/models/auth/auth.model.ts';
 import { httpClient } from '@/core/http/httpClient.ts';
@@ -32,9 +32,20 @@ export class AuthRepositoryImplement implements IAuthRepository {
         return response.data;
     }
 
-    async register(data: RegisterRequest): Promise<AuthResponseData> {
+    // Bước 1: Đăng ký - API chỉ trả về userId (string), chưa có token
+    async register(data: RegisterRequest): Promise<string> {
+        const response = await httpClient.post<ApiResponse<string>>(
+            ENDPOINTS.AUTH.REGISTER,
+            data
+        );
+        // response.data chính là userId (string)
+        return response.data;
+    }
+
+    // Bước 2: Xác thực email bằng OTP - API trả về token đầy đủ
+    async verifyEmail(data: VerifyEmailRequest): Promise<AuthResponseData> {
         const response = await httpClient.post<ApiResponse<AuthResponseData>>(
-            ENDPOINTS.AUTH.REGISTER, // Đảm bảo bạn đã khai báo endpoint này trong file ENDPOINTS
+            ENDPOINTS.AUTH.VERIFY_EMAIL,
             data
         );
         return response.data;
@@ -58,4 +69,4 @@ export class AuthRepositoryImplement implements IAuthRepository {
             data
         );
     }
-}
+}
