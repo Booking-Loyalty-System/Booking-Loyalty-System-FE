@@ -10,7 +10,7 @@ interface VoucherSelectionProps {
   selectedVoucherId: string;
   onSelectVoucher: (voucher: Voucher | null) => void;
   totalPoints: number;
-  currentCycleWashes: number; // Thêm prop này để kiểm tra lượt rửa
+  availableFreeWashes: number;
 }
 
 export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
@@ -18,7 +18,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
   selectedVoucherId,
   onSelectVoucher,
   totalPoints,
-  currentCycleWashes,
+  availableFreeWashes,
 }) => {
   const { t } = useTranslation("customer");
   const {
@@ -37,7 +37,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     isFreeWash: boolean,
   ) => {
     // Kiểm tra điều kiện riêng cho phần thưởng Rửa Xe Miễn Phí
-    if (isFreeWash && currentCycleWashes < 1) {
+    if (isFreeWash && availableFreeWashes < 1) {
       toast.error(
         t("bookWash.voucher.toastNotEnoughWashes", {
           defaultValue: "Bạn chưa có lượt rửa xe miễn phí nào để đổi!",
@@ -257,7 +257,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                   const isFreeWashReward =
                     reward.name === "Phần thưởng Rửa Xe Miễn Phí";
                   const canRedeem = isFreeWashReward
-                    ? currentCycleWashes >= 1
+                    ? availableFreeWashes >= 1
                     : totalPoints >= reward.pointsCost;
 
                   return (

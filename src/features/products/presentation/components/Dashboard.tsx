@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { useAuth } from "@/features/products/application/useAuth.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
+import { useReward } from "@/features/products/application/useReward.ts";
 
 export const Dashboard: React.FC = () => {
   const { customerMe, isLoading: isCustomerLoading } = useCustomerMe();
@@ -30,6 +31,7 @@ export const Dashboard: React.FC = () => {
     isLoading: isBookingLoading,
     cancelBooking,
   } = useBooking();
+  const { redemptions } = useReward();
   const navigate = useNavigate();
   const { t } = useTranslation("customer");
 
@@ -131,6 +133,17 @@ export const Dashboard: React.FC = () => {
   }
   const remainingWashes = 7 - currentCycleWashes;
   const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
+
+  const earnedFreeWashes = Math.floor(washesCount / 7);
+  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
+  const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
+
+  React.useEffect(() => {
+    if (availableFreeWashes > 0 && !sessionStorage.getItem("notifiedFreeWash")) {
+      toast.success(t("dashboard.freeWashToast", "Chúc mừng! Bạn đã đủ lượt để nhận 1 lần rửa xe miễn phí. Voucher khả dụng đã sẵn sàng trong mục Phần Thưởng!"));
+      sessionStorage.setItem("notifiedFreeWash", "true");
+    }
+  }, [availableFreeWashes, t]);
 
   const handleCancel = async (id: string) => {
     if (

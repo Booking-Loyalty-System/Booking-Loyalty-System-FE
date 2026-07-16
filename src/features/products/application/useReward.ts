@@ -89,7 +89,8 @@ export const useReward = () => {
                     status: item.status,
                     discountValue: discountAmount,
                     expiryDate: 'Khả dụng',
-                    isRewardItem: true
+                    isRewardItem: true,
+                    isFreeWash: item.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || item.rewardName === "Free Car Wash Reward" || item.rewardName.includes("Miễn Phí") || item.rewardName.includes("Free Wash")
                 };
             });
     }, [redemptions, i18n.language]);
