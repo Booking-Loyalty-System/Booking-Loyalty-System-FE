@@ -35,23 +35,19 @@ export const Dashboard: React.FC = () => {
 
   const displayName = customerMe?.fullName || user?.fullName || "Khách hàng";
   const totalPoint = customerMe?.totalPoint ?? 0;
-  const availablePoint = customerMe?.availablePoint ?? 0;
+  // const availablePoint = customerMe?.availablePoint ?? 0;
   const tier = customerMe?.tier ?? "Bronze";
   const washesCount = customerMe?.totalWashes ?? 0;
   const totalSpent = customerMe?.totalSpent ?? 0;
 
   // Dynamic calculations for tier thresholds
   let targetPoints = 2000;
-  let nextTierName = "Silver";
   if (totalPoint >= 2000 && totalPoint < 6000) {
     targetPoints = 6000;
-    nextTierName = "Gold";
   } else if (totalPoint >= 6000 && totalPoint < 15000) {
     targetPoints = 15000;
-    nextTierName = "Diamond";
   } else if (totalPoint >= 15000) {
     targetPoints = totalPoint;
-    nextTierName = "Max Tier";
   }
 
   const isMaxTier = totalPoint >= 15000 || tier.toLowerCase() === "diamond";
@@ -519,13 +515,12 @@ export const Dashboard: React.FC = () => {
                       {t("dashboard.bookingStatus", "Status")}
                     </span>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase ${
-                        nextBooking.status === "Confirmed"
-                          ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                          : nextBooking.status === "Pending"
-                            ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
-                            : "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase ${nextBooking.status === "Confirmed"
+                        ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                        : nextBooking.status === "Pending"
+                          ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                          : "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
+                        }`}
                     >
                       {nextBooking.status}
                     </span>
