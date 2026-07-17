@@ -34,10 +34,45 @@ export const Dashboard: React.FC = () => {
   const { t } = useTranslation("customer");
 
   const displayName = customerMe?.fullName || user?.fullName || "Khách hàng";
-  const totalPoints = customerMe?.totalPoints ?? 0;
-  const tier = customerMe?.tier ?? "Member";
+  const totalPoint = customerMe?.totalPoint ?? 0;
+  const availablePoint = customerMe?.availablePoint ?? 0;
+  const tier = customerMe?.tier ?? "Bronze";
   const washesCount = customerMe?.totalWashes ?? 0;
   const totalSpent = customerMe?.totalSpent ?? 0;
+
+  // Dynamic calculations for tier thresholds
+  let targetPoints = 2000;
+  let nextTierName = "Silver";
+  if (totalPoint >= 2000 && totalPoint < 6000) {
+    targetPoints = 6000;
+    nextTierName = "Gold";
+  } else if (totalPoint >= 6000 && totalPoint < 15000) {
+    targetPoints = 15000;
+    nextTierName = "Diamond";
+  } else if (totalPoint >= 15000) {
+    targetPoints = totalPoint;
+    nextTierName = "Max Tier";
+  }
+
+  const isMaxTier = totalPoint >= 15000 || tier.toLowerCase() === "diamond";
+  const pointsToGo = Math.max(0, targetPoints - totalPoint);
+  const progressPercentage = isMaxTier ? 100 : (totalPoint / targetPoints) * 100;
+
+  const getMultiplier = (tierName: string) => {
+    const tName = tierName.toLowerCase();
+    if (tName === "diamond") return "3x";
+    if (tName === "gold") return "2x";
+    if (tName === "silver") return "1.5x";
+    return "1x";
+  };
+
+  const getBookingDays = (tierName: string) => {
+    const tName = tierName.toLowerCase();
+    if (tName === "diamond") return 30;
+    if (tName === "gold") return 21;
+    if (tName === "silver") return 14;
+    return 7;
+  };
 
   const nextBooking = useMemo(() => {
     if (!myBookings || myBookings.length === 0) return null;
@@ -64,7 +99,7 @@ export const Dashboard: React.FC = () => {
     {
       id: 2,
       label: t("dashboard.stats.loyalty", "Loyalty"),
-      value: isCustomerLoading ? "..." : totalPoints.toString(),
+      value: isCustomerLoading ? "..." : totalPoint.toString(),
       sub: t("dashboard.stats.totalPoints", "Total Points"),
       icon: <Star className="w-6 h-6 text-amber-500 dark:text-amber-400" />,
       bg: "bg-gradient-to-br from-amber-500/10 to-amber-500/5",
@@ -347,7 +382,7 @@ export const Dashboard: React.FC = () => {
                   <h2 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
                     {isCustomerLoading
                       ? t("dashboard.loading", "Loading...")
-                      : `${tier} ${t("dashboard.member", "Member")}`}
+                      : t(`loyaltyTier.tiers.${tier.toLowerCase()}`, { defaultValue: `${tier} Member` })}
                   </h2>
                 </div>
               </div>
@@ -359,23 +394,35 @@ export const Dashboard: React.FC = () => {
                 <span>
                   {t("dashboard.progressToNextTier", "Progress to Next Tier")}
                 </span>
-                <span className="text-white">{totalPoints} / 1000 pts</span>
+                <span className="text-white">
+                  {isMaxTier
+                    ? `${totalPoint} pts`
+                    : `${totalPoint} / ${targetPoints} pts`}
+                </span>
               </div>
               <div className="w-full bg-black/50 h-3 rounded-full overflow-hidden p-0.5 border border-white/5">
                 <div
                   className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] relative"
                   style={{
-                    width: `${Math.min(100, (totalPoints / 1000) * 100)}%`,
+                    width: `${progressPercentage}%`,
                   }}
                 >
                   <div className="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
                 </div>
               </div>
               <p className="text-sm font-medium text-slate-400 pt-1">
-                <span className="text-white font-bold">
-                  {Math.max(0, 1000 - totalPoints)}
-                </span>{" "}
-                {t("dashboard.pointsToNextTier", "points to next tier")}
+                {isMaxTier ? (
+                  <span className="text-emerald-400 font-bold">
+                    {t("loyaltyTier.maxTierReached", "Đã đạt hạng cao nhất")}
+                  </span>
+                ) : (
+                  <>
+                    <span className="text-white font-bold">
+                      {pointsToGo}
+                    </span>{" "}
+                    {t("dashboard.pointsToNextTier", "points to next tier")}
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -383,7 +430,7 @@ export const Dashboard: React.FC = () => {
           <div className="grid grid-cols-3 gap-4 pt-6 mt-6 relative z-10">
             <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-5">
               <span className="block text-2xl lg:text-3xl font-black text-white">
-                {totalPoints}
+                {totalPoint}
               </span>
               <span className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 block">
                 {t("dashboard.totalPoints", "Total Points")}
@@ -391,13 +438,7 @@ export const Dashboard: React.FC = () => {
             </div>
             <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-5">
               <span className="block text-2xl lg:text-3xl font-black text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.3)]">
-                {tier === "Gold"
-                  ? "2x"
-                  : tier === "Platinum"
-                    ? "3x"
-                    : tier === "Silver"
-                      ? "1.5x"
-                      : "1x"}
+                {getMultiplier(tier)}
               </span>
               <span className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 block">
                 {t("dashboard.multiplier", "Points Multiplier")}
@@ -405,13 +446,7 @@ export const Dashboard: React.FC = () => {
             </div>
             <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-5">
               <span className="block text-2xl lg:text-3xl font-black text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.3)]">
-                {tier === "Platinum"
-                  ? 14
-                  : tier === "Gold"
-                    ? 12
-                    : tier === "Silver"
-                      ? 10
-                      : 7}
+                {customerMe?.bookingWindow || getBookingDays(tier)}
               </span>
               <span className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 block">
                 {t("dashboard.bookingDays", "Booking Days")}
