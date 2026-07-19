@@ -22,4 +22,20 @@ export class PromotionRepositoryImplement implements IPromotionRepository {
         );
         return response.data;
     }
+
+    async getEligiblePromotions(branchId: string): Promise<Promotion[]> {
+        const response = await httpClient.get<ApiResponse<Promotion[]>>(
+            ENDPOINTS.PROMOTION.ELIGIBLE,
+            { params: { branchId } }
+        );
+        return (response.data || []).map(promo => {
+            const typeStr = String(promo.discountType).toLowerCase();
+            return {
+                ...promo,
+                discountType: (typeStr === '0' || typeStr === 'percentage')
+                    ? 'Percentage'
+                    : 'FixedAmount'
+            };
+        });
+    }
 }

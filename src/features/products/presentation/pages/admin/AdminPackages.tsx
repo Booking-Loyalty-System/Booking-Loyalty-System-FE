@@ -116,6 +116,34 @@ export function AdminPackages() {
     }
   };
 
+  const getAutoFeaturesByPrice = (currentPrice: number): string[] => {
+    if (packages.length === 0) return [""];
+
+    // Lọc danh sách gói đang hoạt động và sắp xếp theo giá tăng dần
+    const activePackages = [...packages]
+      .filter((p) => p.isActive)
+      .sort((a, b) => a.price - b.price);
+
+    if (activePackages.length === 0) return [""];
+
+    // Gói xịn nhất (giá cao nhất)
+    const highestPackage = activePackages[activePackages.length - 1];
+
+    // TRƯỜNG HỢP 1: Nếu giá nhập vào cao hơn gói xịn nhất => Lấy features gói xịn nhất
+    if (currentPrice >= highestPackage.price) {
+      return highestPackage.features.length > 0 ? highestPackage.features : [""];
+    }
+
+    // TRƯỜNG HỢP 2: Nếu giá thấp hơn => Tìm gói có giá cao hơn kế tiếp (gói thấp nhất mà vẫn lớn hơn currentPrice)
+    const nextHigherPackage = activePackages.find((p) => p.price > currentPrice);
+
+    if (nextHigherPackage) {
+      return nextHigherPackage.features.length > 0 ? nextHigherPackage.features : [""];
+    }
+
+    return [""];
+  };
+
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <div className="space-y-6">
@@ -288,13 +316,17 @@ export function AdminPackages() {
                   </label>
                   <input
                     type="number"
-                    value={editForm.price}
-                    onChange={(e) =>
+                    value={editForm.price || 0}
+                    onChange={(e) => {
+                      const newPrice = parseFloat(e.target.value) || 0;
+                      const autoFeatures = getAutoFeaturesByPrice(newPrice);
+
                       setEditForm({
                         ...editForm,
-                        price: parseFloat(e.target.value),
-                      })
-                    }
+                        price: newPrice,
+                        features: autoFeatures,
+                      });
+                    }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>

@@ -37,6 +37,20 @@ export const usePromotion = () => {
     }
 };
 
+    const getEligiblePromotions = useCallback(async (branchId: string): Promise<Promotion[]> => {
+        setIsLoading(true);
+        try {
+            const data = await promotionRepository.getEligiblePromotions(branchId);
+            setError(null);
+            return data;
+        } catch (err: any) {
+            setError(err.message || 'Failed to fetch eligible promotions');
+            return [];
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
         fetchPromotions();
     }, [fetchPromotions]);
@@ -46,6 +60,7 @@ export const usePromotion = () => {
         isLoading,
         error,
         validatePromotion,
+        getEligiblePromotions,
         refreshPromotions: fetchPromotions
     };
 };

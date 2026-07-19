@@ -129,6 +129,7 @@ export const ENDPOINTS = {
     PROMOTION: {
         BASE: '/promotions',
         VALIDATE: '/promotions/validate',
+        ELIGIBLE: '/promotions/eligible',
     },
 
     REWARDS: {

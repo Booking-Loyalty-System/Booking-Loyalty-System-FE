@@ -240,16 +240,16 @@ export const BookWash: React.FC = () => {
   const { washPackages, isLoading: isLoadingPackages } = useWashPackage();
   const { createBooking, isBooking } = useBooking();
   const { customerMe } = useCustomerMe();
-  const { validatePromotion } = usePromotion();
+  const { validatePromotion, getEligiblePromotions } = usePromotion();
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
   const { redeemedVouchersOnly, isLoadingRedemptions, redemptions } = useReward();
-  
+
   const totalWashes = customerMe?.totalWashes ?? 0;
   const earnedFreeWashes = Math.floor(totalWashes / 7);
   const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
   const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
-  
+
   const bookingWindow = customerMe?.bookingWindow || 7;
   const dynamicDateSlots = useMemo(() => {
     return generateUpcomingDates(bookingWindow);
@@ -281,6 +281,20 @@ export const BookWash: React.FC = () => {
   const [appliedPromotion, setAppliedPromotion] = useState<Promotion | null>(
     null,
   );
+  const [eligiblePromotions, setEligiblePromotions] = useState<Promotion[]>([]);
+  const [isLoadingEligible, setIsLoadingEligible] = useState(false);
+  const [hasAppliedAutoPromo, setHasAppliedAutoPromo] = useState(false);
+
+  // 4. Derived states (Được đưa lên trên để tránh lỗi Block-scoped variable hoisting)
+  const selectedDateSlot = dynamicDateSlots.find(
+    (d) => d.apiDate === selectedDate,
+  );
+  const currentVehicle = vehicles.find(
+    (v: Vehicle) => v.id === selectedVehicleId,
+  );
+  const currentPackage = washPackages.find(
+    (p: WashPackage) => p.id === selectedPackageId,
+  );
 
   // Lấy chunk startDate dựa trên ngày đang chọn (mỗi chunk 7 ngày)
   const selectedDateIndex = useMemo(() => {
@@ -298,16 +312,113 @@ export const BookWash: React.FC = () => {
     startDate: chunkStartDate,
   });
 
-  // 4. Derived states
-  const selectedDateSlot = dynamicDateSlots.find(
-    (d) => d.apiDate === selectedDate,
-  );
-  const currentVehicle = vehicles.find(
-    (v: Vehicle) => v.id === selectedVehicleId,
-  );
-  const currentPackage = washPackages.find(
-    (p: WashPackage) => p.id === selectedPackageId,
-  );
+  // Fetch eligible promotions when selectedBranchId changes
+  useEffect(() => {
+    if (!selectedBranchId) {
+      setEligiblePromotions([]);
+      setAppliedPromotion(null);
+      setHasAppliedAutoPromo(false);
+      return;
+    }
+
+    const fetchEligible = async () => {
+      setIsLoadingEligible(true);
+      try {
+        const data = await getEligiblePromotions(selectedBranchId);
+        setEligiblePromotions(data);
+      } catch (err) {
+        console.error("Failed to fetch eligible promotions:", err);
+      } finally {
+        setIsLoadingEligible(false);
+      }
+    };
+
+    fetchEligible();
+  }, [selectedBranchId, getEligiblePromotions]);
+
+  // Reset auto-apply tracker when branch or package changes
+  useEffect(() => {
+    setHasAppliedAutoPromo(false);
+  }, [selectedBranchId, selectedPackageId]);
+
+  // Auto-apply best promotion
+  useEffect(() => {
+    if (
+      hasAppliedAutoPromo ||
+      isLoadingEligible ||
+      !selectedBranchId ||
+      !selectedPackageId ||
+      eligiblePromotions.length === 0
+    ) {
+      return;
+    }
+
+    const packagePrice = currentPackage?.price || 0;
+    if (packagePrice <= 0) return;
+
+    const validPromos = eligiblePromotions
+      .map((promo) => {
+        if (
+          promo.minSpend !== null &&
+          promo.minSpend !== undefined &&
+          packagePrice < promo.minSpend
+        ) {
+          return null;
+        }
+
+        let calculatedDiscount = 0;
+        if (promo.discountType === "Percentage") {
+          calculatedDiscount = Math.floor(
+            packagePrice * (promo.discountValue / 100),
+          );
+        } else if (promo.discountType === "FixedAmount") {
+          calculatedDiscount = Math.min(packagePrice, promo.discountValue);
+        }
+
+        return {
+          promo,
+          discount: calculatedDiscount,
+        };
+      })
+      .filter(
+        (item): item is { promo: Promotion; discount: number } => item !== null,
+      );
+
+    if (validPromos.length > 0) {
+      validPromos.sort((a, b) => {
+        if (b.discount !== a.discount) {
+          return b.discount - a.discount;
+        }
+        const aPriority = (a.promo as any).priorityLevel || 0;
+        const bPriority = (b.promo as any).priorityLevel || 0;
+        if (bPriority !== aPriority) {
+          return bPriority - aPriority;
+        }
+        return b.promo.discountValue - a.promo.discountValue;
+      });
+
+      const bestPromo = validPromos[0].promo;
+      setAppliedPromotion(bestPromo);
+      setHasAppliedAutoPromo(true);
+      toast.success(
+        t("bookWash.toastAutoPromoApplied", {
+          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${bestPromo.name || bestPromo.code
+            }`,
+        }),
+      );
+    } else {
+      setAppliedPromotion(null);
+      setHasAppliedAutoPromo(true);
+    }
+  }, [
+    hasAppliedAutoPromo,
+    isLoadingEligible,
+    selectedBranchId,
+    selectedPackageId,
+    eligiblePromotions,
+    currentPackage,
+    t,
+  ]);
 
   // 5. Handlers
   const handleInputChange = (
