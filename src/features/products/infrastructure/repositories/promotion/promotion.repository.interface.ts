@@ -3,4 +3,5 @@ import type { Promotion, ValidatePromotionRequest, ValidatePromotionResponse } f
 export interface IPromotionRepository {
     getPromotions(): Promise<Promotion[]>;
     validatePromotion(request: ValidatePromotionRequest): Promise<ValidatePromotionResponse>;
+    getEligiblePromotions(branchId: string): Promise<Promotion[]>;
 }

@@ -8,6 +8,7 @@ import { CarScene } from "@/shared/car-scene.tsx";
 import { toast } from "sonner";
 import { useTheme } from '@/core/context/ThemeContext.tsx';
 import { useLanguage } from '@/core/context/LanguageContext.tsx';
+import { jwtDecode } from "jwt-decode";
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation('customer');
@@ -57,10 +58,45 @@ export const LoginPage: React.FC = () => {
       );
 
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("accessToken", data.token);
-        alert(t("auth.login.toastGoogleSuccess", { defaultValue: "Đăng nhập bằng Google thành công!" }));
-        navigate("/auto-wash-simulation");
+        const responseData = await response.json();
+        const authData = responseData.data;
+
+        if (authData && authData.accessToken) {
+          localStorage.setItem("access_token", authData.accessToken);
+          if (authData.refreshToken) {
+            localStorage.setItem("refresh_token", authData.refreshToken);
+          }
+
+          // Parse and decode token to mirror standard auth logic
+          try {
+            const decoded = jwtDecode<any>(authData.accessToken);
+
+            const tokenData = {
+              userId: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null,
+              email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || null,
+              role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || null,
+              exp: decoded.exp || null,
+              iss: decoded.iss || null,
+              aud: decoded.aud || null,
+            };
+            localStorage.setItem("token_data", JSON.stringify(tokenData));
+
+            const synthesizedUser = {
+              id: tokenData.userId || "",
+              email: tokenData.email || "",
+              role: tokenData.role || "Customer",
+              fullName: decoded.fullName || "",
+            };
+            localStorage.setItem("user_info", JSON.stringify(synthesizedUser));
+          } catch (jwtErr) {
+            console.error("Lỗi decode JWT token từ Google:", jwtErr);
+          }
+
+          alert(t("auth.login.toastGoogleSuccess", { defaultValue: "Đăng nhập bằng Google thành công!" }));
+          navigate("/dashboard");
+        } else {
+          alert(t("auth.login.toastGoogleBackendFail", { defaultValue: "Không nhận được access token từ backend." }));
+        }
       } else {
         alert(t("auth.login.toastGoogleBackendFail", { defaultValue: "Backend xác thực Google code thất bại." }));
       }
@@ -88,7 +124,7 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#0B0C10] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
-      
+
       {/* Background Orbs */}
       <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-indigo-400/20 dark:bg-purple-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
@@ -115,7 +151,7 @@ export const LoginPage: React.FC = () => {
 
       <div className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-[1200px] mx-auto bg-transparent flex flex-col lg:flex-row gap-8 relative z-10">
-          
+
           {/* PANEL TRÁI: GIỚI THIỆU TÍNH NĂNG */}
           <div className="flex-1 bg-white/80 dark:bg-[#13151A]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
             <div className="flex flex-col h-full justify-center">
@@ -277,7 +313,7 @@ export const LoginPage: React.FC = () => {
                   className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-bold py-3.5 px-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-white/10 hover:shadow-md transition-all text-base flex items-center justify-center gap-3"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#EA4335" d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 5.48 1 0 6.48 0 13.2s5.48 12.2 12.24 12.2c7.055 0 11.75-4.943 11.75-11.914 0-.806-.088-1.423-.192-2.2H12.24z"/>
+                    <path fill="#EA4335" d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 5.48 1 0 6.48 0 13.2s5.48 12.2 12.24 12.2c7.055 0 11.75-4.943 11.75-11.914 0-.806-.088-1.423-.192-2.2H12.24z" />
                   </svg>
                   {t('auth.login.btnSignInWithGoogle')}
                 </button>
