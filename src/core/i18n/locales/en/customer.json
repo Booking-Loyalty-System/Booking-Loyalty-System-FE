@@ -582,6 +582,22 @@
       "bookInAdvance": "Book in advance",
       "upToDays": "Up to {{days}} days",
       "pointsMultiplier": "Points multiplier: {{mult}}"
+    },
+    "feedback": {
+      "title": "Customer Reviews",
+      "subtitle": "Real experiences from our customers at different branches",
+      "averageRating": "Average Rating",
+      "totalFeedbacks": "{{count}} Reviews",
+      "allBranches": "All Branches",
+      "selectBranch": "Select Branch",
+      "service": "Service",
+      "staff": "Staff",
+      "price": "Price",
+      "overall": "Overall",
+      "noFeedbacks": "No reviews found for this branch.",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{current}} of {{total}}"
     }
   },
   "feedback": {

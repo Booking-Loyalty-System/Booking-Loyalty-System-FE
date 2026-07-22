@@ -159,7 +159,8 @@ export const ENDPOINTS = {
         SUBMIT: '/Feedback/customer/submit',
         PUBLIC_ALL: '/Feedback/public/all',
         STATISTICS: '/Feedback/statistics',
-        FILTER: '/Feedback/filter'
+        FILTER: '/Feedback/filter',
+        PUBLIC_LIST: '/Feedback/public/feedbacks'
     },
 
     CHAT: {

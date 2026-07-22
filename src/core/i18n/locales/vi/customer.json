@@ -582,6 +582,22 @@
       "bookInAdvance": "Đặt lịch trước",
       "upToDays": "Tối đa {{days}} ngày",
       "pointsMultiplier": "Hệ số tích điểm: {{mult}}"
+    },
+    "feedback": {
+      "title": "Đánh Giá Từ Khách Hàng",
+      "subtitle": "Trải nghiệm thực tế từ khách hàng tại các chi nhánh",
+      "averageRating": "Đánh giá trung bình",
+      "totalFeedbacks": "{{count}} đánh giá",
+      "allBranches": "Tất cả chi nhánh",
+      "selectBranch": "Chọn chi nhánh",
+      "service": "Dịch vụ",
+      "staff": "Nhân viên",
+      "price": "Giá cả",
+      "overall": "Tổng quan",
+      "noFeedbacks": "Chưa có đánh giá nào cho chi nhánh này.",
+      "previous": "Trang trước",
+      "next": "Trang sau",
+      "page": "Trang {{current}} / {{total}}"
     }
   },
   "feedback": {
