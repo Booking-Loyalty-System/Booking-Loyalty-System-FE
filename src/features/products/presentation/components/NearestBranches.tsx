@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Clock, Phone, Map, Loader2, Navigation, CheckCircle2 } from 'lucide-react';
 import { MapModal } from './MapModal';
+import { translateBranchName, translateAddress } from '@/shared/utils/dynamicTranslator';
 import { useBranch } from '../../application/useBranch';
 import type { NearestBranchesProps } from "@/features/products/domain/models/branch/branch.model.ts";
 
 export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranchId, onSelectBranch }) => {
-    const { t } = useTranslation('customer');
+    const { t, i18n } = useTranslation('customer');
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [userLocation, setUserLocation] = useState<{ lat: number, lon: number } | null>(null);
     const [modalActiveBranchId, setModalActiveBranchId] = useState<string>('');
@@ -117,7 +118,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                                 <div className="flex justify-between items-start gap-3">
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-bold text-lg text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
-                                            {branch.branchName}
+                                            {translateBranchName(branch.branchName, i18n)}
                                         </h3>
                                         {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />}
                                     </div>
@@ -142,7 +143,7 @@ export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranch
                                 <div className="space-y-2.5 mt-4 border-t border-slate-50 dark:border-white/5 pt-3">
                                     <div className="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400">
                                         <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                                        <span className="line-clamp-2">{branch.address}</span>
+                                        <span className="line-clamp-2">{translateAddress(branch.address, i18n)}</span>
                                     </div>
                                     <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
                                         <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
