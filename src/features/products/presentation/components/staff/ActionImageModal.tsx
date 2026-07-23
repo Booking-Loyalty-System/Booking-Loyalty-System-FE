@@ -56,10 +56,8 @@ export const ActionImageModal: React.FC<ActionImageModalProps> = ({
             bookingId={bookingId}
             type={imageType}
             onSuccess={(urls) => {
-              // NẾU CÓ ÍT NHẤT 1 ẢNH THÀNH CÔNG THÌ MỞ KHÓA NÚT "XONG"
-              if (urls && urls.length > 0) {
-                setHasUploaded(true);
-              }
+              // SỬA: Cập nhật state dựa trên số lượng ảnh thực tếa
+              setHasUploaded(urls && urls.length > 0);
             }}
           />
         </div>

@@ -98,26 +98,32 @@ export const useAuth = () => {
     const loginMutation = useMutation({
         mutationFn: (credentials: Parameters<typeof authRepository.login>[0]) =>
             authRepository.login(credentials),
-        onSuccess: (data) => {
+        onSuccess: (response) => {
+            // 🌟 FIX Ở ĐÂY: Trích xuất đúng cục 'data' bên trong response của Backend
+            const data = (response as any)?.data || response;
+
             if (!data || !data.accessToken) {
-                toast.error("Cấu trúc response login không hợp lệ:");
+                toast.error("Cấu trúc response login không hợp lệ!");
                 return;
             }
+            
             localStorage.setItem('access_token', data.accessToken);
             if (data.refreshToken) {
                 localStorage.setItem('refresh_token', data.refreshToken);
             }
+            
             const cleanedToken = saveTokenData(data.accessToken);
             if (cleanedToken) {
                 const synthesizedUser: User = {
                     id: cleanedToken.userId || "",
                     email: cleanedToken.email || "",
                     role: cleanedToken.role || "",
-                    // Điền thêm các trường mặc định nếu Model User ở Frontend ép buộc cần có
                 } as unknown as User;
 
                 localStorage.setItem('user_info', JSON.stringify(synthesizedUser));
                 queryClient.setQueryData(['current_user'], synthesizedUser);
+                
+                toast.success("Đăng nhập thành công!");
                 return synthesizedUser;
             }
             return null;
