@@ -170,7 +170,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/dashboard",
       label: t("sidebar.dashboard", { defaultValue: "Dashboard" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_4px_15px_rgba(59,130,246,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-blue-500 group-hover:scale-110"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_4px_15px_rgba(59,130,246,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:scale-110 group-hover:bg-white/15"}`}>
           <LayoutDashboard className="w-4 h-4" />
         </div>
       ),
@@ -179,7 +179,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/book-wash",
       label: t("sidebar.bookWash", { defaultValue: "Book Wash" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-emerald-500 group-hover:scale-110"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:scale-110 group-hover:bg-white/15"}`}>
           <Car className="w-4 h-4" />
         </div>
       ),
@@ -188,7 +188,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/live-tracking",
       label: t("sidebar.liveTracking", { defaultValue: "Live Tracking" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-[0_4px_15px_rgba(239,68,68,0.4)]" : "bg-red-50 dark:bg-red-500/10 text-red-500"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-[0_4px_15px_rgba(239,68,68,0.4)]" : "bg-red-400/20 text-red-200 group-hover:bg-red-400/30"}`}>
           <Radio className="w-4 h-4 animate-pulse" />
         </div>
       ),
@@ -197,7 +197,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/loyalty-tier",
       label: t("sidebar.loyaltyTier", { defaultValue: "Loyalty & Tier" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-amber-500 group-hover:scale-110"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-amber-200 group-hover:scale-110 group-hover:bg-white/15"}`}>
           <Award className="w-4 h-4" />
         </div>
       ),
@@ -206,7 +206,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/rewards",
       label: t("sidebar.rewards", { defaultValue: "Rewards" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-[0_4px_15px_rgba(236,72,153,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-pink-500 group-hover:animate-bounce"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-[0_4px_15px_rgba(236,72,153,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-pink-200 group-hover:animate-bounce group-hover:bg-white/15"}`}>
           <Gift className="w-4 h-4" />
         </div>
       ),
@@ -215,7 +215,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/promotions",
       label: t("sidebar.promotions", { defaultValue: "Promotions" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white shadow-[0_4px_15px_rgba(168,85,247,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-purple-500 group-hover:-rotate-12"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white shadow-[0_4px_15px_rgba(168,85,247,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-purple-200 group-hover:-rotate-12 group-hover:bg-white/15"}`}>
           <Megaphone className="w-4 h-4" />
         </div>
       ),
@@ -224,7 +224,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/booking-history",
       label: t("sidebar.bookingHistory", { defaultValue: "Booking History" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_15px_rgba(6,182,212,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-cyan-500 group-hover:scale-110"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_15px_rgba(6,182,212,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-cyan-200 group-hover:scale-110 group-hover:bg-white/15"}`}>
           <History className="w-4 h-4" />
         </div>
       ),
@@ -233,7 +233,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/my-vehicles",
       label: t("sidebar.myVehicles", { defaultValue: "My Vehicles" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-teal-400 to-emerald-500 text-white shadow-[0_4px_15px_rgba(20,184,166,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-teal-500 group-hover:translate-x-0.5"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-teal-400 to-emerald-500 text-white shadow-[0_4px_15px_rgba(20,184,166,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-teal-200 group-hover:translate-x-0.5 group-hover:bg-white/15"}`}>
           <Car className="w-4 h-4" />
         </div>
       ),
@@ -242,7 +242,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/notifications",
       label: t("sidebar.notifications", { defaultValue: "Notifications" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-[0_4px_15px_rgba(51,65,85,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-[0_4px_15px_rgba(51,65,85,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:bg-white/15"}`}>
           <Bell className="w-4 h-4" />
         </div>
       ),
@@ -251,7 +251,7 @@ export const CustomerLayout: React.FC = () => {
       path: "/settings",
       label: t("sidebar.settings", { defaultValue: "Settings" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-[0_4px_15px_rgba(99,102,241,0.4)]" : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:text-indigo-500 group-hover:rotate-45"}`}>
+        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-[0_4px_15px_rgba(99,102,241,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-indigo-200 group-hover:rotate-45 group-hover:bg-white/15"}`}>
           <Settings className="w-4 h-4" />
         </div>
       ),
@@ -275,7 +275,7 @@ export const CustomerLayout: React.FC = () => {
     "/settings": t("header.profileSettings", { defaultValue: "Profile Settings" }),
   };
 
-  const currentTitle = titleMap[location.pathname] || "AutoWash Pro";
+  const currentTitle = titleMap[location.pathname] || "AutoWash Premium";
 
   const handleLogout = async () => {
     await logout();
@@ -283,19 +283,28 @@ export const CustomerLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-[#fafafa] dark:bg-[#0B0C10] overflow-hidden antialiased font-sans text-slate-800 dark:text-slate-200">
-      {/* SIDEBAR - Premium Look */}
-      <aside className="w-72 bg-white/80 dark:bg-[#13151A]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col p-5 shrink-0 h-full relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+    <div className="flex h-screen w-screen bg-[hsl(210,92%,91%)] dark:bg-[#0B0C10] overflow-hidden antialiased font-sans text-slate-800 dark:text-slate-200 relative">
+      {/* 🌊 Aqua Premium background orbs — chỉ hiện ở light mode */}
+      <div className="absolute inset-0 pointer-events-none z-0 dark:hidden">
+        {/* Orb trái trên: xanh dương nhạt */}
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-radial from-sky-400/80 via-blue-200/40 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        {/* Orb phải dưới: cyan nhạt */}
+        <div className="absolute -bottom-40 -right-20 w-[500px] h-[500px] rounded-full bg-gradient-radial from-cyan-400/70 via-sky-200/30 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '11s', animationDelay: '3s' }} />
+        {/* Orb giữa: xanh nhẹ */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-gradient-radial from-blue-300/60 to-transparent blur-[80px]" />
+      </div>
+      {/* SIDEBAR - Aqua Deep Blue Premium */}
+      <aside className="w-72 bg-gradient-to-b from-[#1e5096] via-[#173f7a] to-[#0f2f5e] dark:bg-gradient-to-b dark:from-[#13151A] dark:to-[#0d0f14] backdrop-blur-2xl border-r border-white/10 dark:border-white/5 flex flex-col p-5 shrink-0 h-full relative z-20 shadow-[4px_0_32px_rgba(14,100,200,0.25)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex items-center gap-4 px-3 py-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+            <div className="w-12 h-12 bg-gradient-to-br from-sky-400 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/40 ring-2 ring-white/20">
               <Radio className="w-6 h-6 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+              <h2 className="text-2xl font-extrabold tracking-tight text-white">
                 {t("sidebar.appName", { defaultValue: "AutoWash" })}
               </h2>
-              <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 -mt-1">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-sky-300/80 -mt-1">
                 {t("sidebar.tagline", { defaultValue: "Premium Care" })}
               </p>
             </div>
@@ -314,31 +323,32 @@ export const CustomerLayout: React.FC = () => {
           </nav>
         </div>
 
-        <div className="shrink-0 pt-4 border-t border-slate-100 dark:border-white/5 space-y-3 mt-4">
+        <div className="shrink-0 pt-4 border-t border-white/10 dark:border-white/5 space-y-3 mt-4">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all duration-300 group"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-rose-300 dark:text-rose-400 hover:bg-rose-500/15 dark:hover:bg-rose-500/10 rounded-2xl transition-all duration-300 group"
           >
-            <div className="p-2.5 rounded-xl bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
+            <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-300 group-hover:scale-110 transition-transform">
               <LogOut className="w-4 h-4" />
             </div>
             <span>{t("sidebar.logout", { defaultValue: "Logout" })}</span>
           </button>
-          <div className="text-center text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
-            {t("sidebar.copyright", { defaultValue: "© 2026 AutoWash Pro" })}
+          <div className="text-center text-[10px] font-semibold text-sky-400/50 uppercase tracking-widest">
+            {t("sidebar.copyright", { defaultValue: "© 2026 AutoWash Premium" })}
           </div>
         </div>
       </aside>
 
       {/* CONTENT AREA */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {/* Subtle background glow */}
-        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
+        {/* Subtle background glow — đậm hơn cho light mode */}
+        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-sky-400/28 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-cyan-400/32 dark:bg-cyan-600/5 rounded-full blur-[100px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten dark:hidden"></div>
 
         {/* HEADER - Glassmorphic */}
         <header className="h-20 bg-white/60 dark:bg-[#13151A]/60 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 flex items-center justify-between px-8 shrink-0 sticky top-0 z-10 transition-all duration-300">
           <div className="animate-fade-in flex items-center gap-4">
-            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
               {currentTitle}
             </h1>
           </div>
@@ -374,13 +384,13 @@ export const CustomerLayout: React.FC = () => {
             <button
               onClick={() => navigate("/notifications")}
               className={`relative p-2.5 rounded-full transition-all duration-300 border ${location.pathname === "/notifications"
-                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg"
-                : "bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:shadow-md"
+                ? "bg-gradient-to-r from-sky-500 to-blue-500 text-white border-transparent shadow-lg shadow-sky-500/30"
+                : "bg-white/80 dark:bg-white/10 border-sky-200/60 dark:border-white/10 text-sky-600 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-white/20 hover:shadow-md"
                 }`}
             >
-              <Bell className="w-5 h-5" />
+              <Bell className="w-5 h-5 drop-shadow-sm" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white border-2 border-white dark:border-[#0a0a0a] shadow-sm animate-bounce">
+                <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white border-2 border-white dark:border-[#13151A] shadow-sm animate-bounce">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}

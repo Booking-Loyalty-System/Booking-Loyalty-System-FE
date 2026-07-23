@@ -27,7 +27,7 @@ export const VehicleFormModal: React.FC<Props> = ({
 
                 <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
                     <div>
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('bookWash.vehicleModal.title', { defaultValue: "Add New Vehicle" })}</h2>
+                        <h2 className="text-xl font-bold text-blue-950 dark:text-white">{t('bookWash.vehicleModal.title', { defaultValue: "Add New Vehicle" })}</h2>
                     </div>
                     <button onClick={onClose} className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition">
                         <X className="w-5 h-5" />
@@ -38,20 +38,20 @@ export const VehicleFormModal: React.FC<Props> = ({
                     {/* License Plate */}
                     <div>
                         <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">{t('bookWash.vehicleModal.licensePlate', { defaultValue: "License Plate *" })}</label>
-                        <input type="text" name="licensePlate" value={formData.licensePlate} onChange={handleInputChange} required className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 transition" />
+                        <input type="text" name="licensePlate" value={formData.licensePlate} onChange={handleInputChange} required className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-bold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 transition" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">{t('bookWash.vehicleModal.brand', { defaultValue: "Brand *" })}</label>
-                            <input type="text" name="brand" value={formData.brand} onChange={handleInputChange} list="brand-suggestions" required className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 transition" />
+                            <input type="text" name="brand" value={formData.brand} onChange={handleInputChange} list="brand-suggestions" required className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 transition" />
                             <datalist id="brand-suggestions">
                                 {CAR_BRANDS.map((b) => <option key={b} value={b} />)}
                             </datalist>
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">{t('bookWash.vehicleModal.name', { defaultValue: "Vehicle Name *" })}</label>
-                            <input type="text" name="vehicleName" value={formData.vehicleName} onChange={handleInputChange} list="name-suggestions" required className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 transition" />
+                            <input type="text" name="vehicleName" value={formData.vehicleName} onChange={handleInputChange} list="name-suggestions" required className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 transition" />
                             <datalist id="name-suggestions">
                                 {currentVehicleNames.map((name) => <option key={name} value={name} />)}
                             </datalist>
@@ -61,17 +61,17 @@ export const VehicleFormModal: React.FC<Props> = ({
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">{t('bookWash.vehicleModal.model', { defaultValue: "Model" })}</label>
-                            <input type="text" name="model" value={formData.model} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition" />
+                            <input type="text" name="model" value={formData.model} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition" />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">{t('bookWash.vehicleModal.color', { defaultValue: "Color" })}</label>
-                            <input type="text" name="color" value={formData.color} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition" />
+                            <input type="text" name="color" value={formData.color} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-black/20 font-semibold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition" />
                         </div>
                     </div>
 
                     <div>
                         <label className="block text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">{t('bookWash.vehicleModal.type', { defaultValue: "Vehicle Type *" })}</label>
-                        <select name="type" value={formData.type} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-[#13151A] font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition">
+                        <select name="type" value={formData.type} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 dark:bg-[#13151A] font-bold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition">
                             <option value="Small">{t('bookWash.vehicleModal.optionSmall', { defaultValue: "Small (Sedan)" })}</option>
                             <option value="Medium">{t('bookWash.vehicleModal.optionMedium', { defaultValue: "Medium (SUV / CUV)" })}</option>
                             <option value="Large">{t('bookWash.vehicleModal.optionLarge', { defaultValue: "Large (Pickup)" })}</option>

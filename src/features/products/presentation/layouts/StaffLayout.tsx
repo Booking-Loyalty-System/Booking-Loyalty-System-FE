@@ -115,7 +115,7 @@ export const StaffLayout: React.FC = () => {
                     `flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all font-bold text-sm group ${
                       isActive
                         ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
-                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-blue-950 dark:hover:text-white"
                     }`
                   }
                 >
@@ -148,7 +148,7 @@ export const StaffLayout: React.FC = () => {
                     `flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all font-bold text-sm group ${
                       isActive
                         ? "bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-600 dark:to-slate-800 text-white shadow-lg shadow-slate-900/20"
-                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-blue-950 dark:hover:text-white"
                     }`
                   }
                 >

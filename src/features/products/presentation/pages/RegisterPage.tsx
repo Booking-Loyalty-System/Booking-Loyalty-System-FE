@@ -201,11 +201,17 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#0B0C10] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
+    <div className="min-h-screen w-full bg-[hsl(210,92%,91%)] dark:bg-[#0B0C10] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
       
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-emerald-400/20 dark:bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-400/20 dark:bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
+      {/* 🌊 Aqua Premium Background — light mode only */}
+      <div className="fixed inset-0 pointer-events-none z-0 dark:hidden">
+        <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-sky-400/80 via-blue-200/40 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '10s' }} />
+        <div className="absolute -bottom-32 -left-20 w-[550px] h-[550px] rounded-full bg-gradient-to-tr from-cyan-400/70 via-sky-200/30 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '13s', animationDelay: '2s' }} />
+        <div className="absolute inset-0 opacity-55" style={{ backgroundImage: 'radial-gradient(circle, rgba(14,165,233,0.12) 1px, transparent 1px)', backgroundSize: '36px 36px', maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)' }} />
+      </div>
+      {/* Dark mode orbs */}
+      <div className="hidden dark:block absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-lighten animate-pulse"></div>
+      <div className="hidden dark:block absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
 
       {/* Theme & Language Switchers */}
       <div className="absolute top-6 right-6 flex items-center gap-3 z-50">
@@ -231,7 +237,7 @@ export const RegisterPage: React.FC = () => {
         <div className="w-full max-w-[1200px] mx-auto bg-transparent flex flex-col lg:flex-row gap-8 relative z-10">
           
           {/* PANEL TRÁI: GIỚI THIỆU THÀNH VIÊN */}
-          <div className="flex-[0.9] bg-white/80 dark:bg-[#13151A]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-[0.9] bg-white/75 dark:bg-[#13151A]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-[0_8px_40px_rgba(14,165,233,0.10)] dark:shadow-black/50 border border-sky-200/50 dark:border-white/5 transition-colors duration-300">
             <div>
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
@@ -256,7 +262,7 @@ export const RegisterPage: React.FC = () => {
               </div>
               
               <div className="bg-emerald-50/50 dark:bg-emerald-900/10 rounded-3xl p-8 border border-emerald-100/50 dark:border-emerald-500/10">
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-xl mb-6 flex items-center gap-2">
+                <h3 className="font-extrabold text-blue-950 dark:text-white text-xl mb-6 flex items-center gap-2">
                   <Award className="w-6 h-6 text-emerald-500" />
                   {t('auth.register.membershipBenefitsTitle')}
                 </h3>
@@ -278,10 +284,10 @@ export const RegisterPage: React.FC = () => {
           </div>
 
           {/* PANEL PHẢI: FORM ĐĂNG KÝ */}
-          <div className="flex-[1.1] bg-white/90 dark:bg-[#13151A]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-start shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-[1.1] bg-white/85 dark:bg-[#13151A]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-start shadow-[0_8px_40px_rgba(14,165,233,0.10)] dark:shadow-black/50 border border-sky-200/50 dark:border-white/5 transition-colors duration-300">
             <div className="w-full max-w-lg mx-auto">
               <div className="mb-8">
-                <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
+                <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-2 tracking-tight">
                   {t('auth.register.formHeading')}
                 </h2>
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
@@ -362,7 +368,7 @@ export const RegisterPage: React.FC = () => {
                           placeholder="+84 901 234 567"
                           disabled={isOtpSent}
                           required
-                          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-blue-950 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium disabled:opacity-60"
                         />
                       </div>
                       {!isOtpSent && (
@@ -439,7 +445,7 @@ export const RegisterPage: React.FC = () => {
               <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-emerald-500/30 mb-5">
                 <ShieldCheck className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-2">
                 {t('auth.register.otpModalTitle', { defaultValue: "Xác thực Email" })}
               </h3>
               <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
@@ -463,7 +469,7 @@ export const RegisterPage: React.FC = () => {
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     onPaste={index === 0 ? handleOtpPaste : undefined}
                     className={`w-12 h-14 text-center text-2xl font-extrabold rounded-2xl border-2 transition-all
-                      bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                      bg-slate-50 dark:bg-white/5 text-blue-950 dark:text-white
                       focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20
                       ${digit ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-white/10'}
                     `}
@@ -546,7 +552,7 @@ const InputField: React.FC<InputFieldProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-blue-950 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
       />
     </div>
   </div>

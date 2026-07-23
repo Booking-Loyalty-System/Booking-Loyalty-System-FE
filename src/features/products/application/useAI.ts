@@ -18,7 +18,7 @@ export const useAI = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
             role: 'assistant',
-            content: 'Xin chào! Tôi là trợ lý của AutoWash Pro 🚗 Tôi có thể giúp bạn tìm hiểu về các gói dịch vụ, chi nhánh, hoặc giải đáp mọi thắc mắc liên quan. Bạn cần hỗ trợ gì ạ?',
+            content: 'Xin chào! Tôi là trợ lý của AutoWash Premium 🚗 Tôi có thể giúp bạn tìm hiểu về các gói dịch vụ, chi nhánh, hoặc giải đáp mọi thắc mắc liên quan. Bạn cần hỗ trợ gì ạ?',
             timestamp: new Date()
         }
     ]);
@@ -80,7 +80,7 @@ export const useAI = () => {
     const clearMessages = useCallback(() => {
         setMessages([{
             role: 'assistant',
-            content: 'Xin chào! Tôi là trợ lý của AutoWash Pro 🚗 Bạn cần hỗ trợ gì ạ?',
+            content: 'Xin chào! Tôi là trợ lý của AutoWash Premium 🚗 Bạn cần hỗ trợ gì ạ?',
             timestamp: new Date()
         }]);
     }, []);

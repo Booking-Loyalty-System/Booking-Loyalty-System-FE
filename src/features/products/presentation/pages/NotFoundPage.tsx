@@ -28,7 +28,7 @@ export const NotFoundPage: React.FC = () => {
                 <AlertTriangle className="w-12 h-12" />
             </div>
             <div className="space-y-2">
-                <h1 className="text-6xl font-black text-slate-900 tracking-tighter">404</h1>
+                <h1 className="text-6xl font-black text-blue-950 tracking-tighter">404</h1>
                 <h2 className="text-2xl font-bold text-slate-800">Oops! Page not found</h2>
                 <p className="text-slate-500 font-medium max-w-sm mx-auto">
                     The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.

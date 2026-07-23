@@ -61,7 +61,7 @@ export const BookingSuccessCard: React.FC<BookingSuccessCardProps> = ({ booking,
                     <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t('bookWash.successCard.servicePackage')}
                     </p>
-                    <p className="font-bold text-slate-900 dark:text-white mt-0.5">{booking.washPackageName}</p>
+                    <p className="font-bold text-blue-950 dark:text-white mt-0.5">{booking.washPackageName}</p>
                 </div>
                 <div>
                     <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
@@ -73,7 +73,7 @@ export const BookingSuccessCard: React.FC<BookingSuccessCardProps> = ({ booking,
                     <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                         {t('bookWash.successCard.totalAmount')}
                     </p>
-                    <p className="font-extrabold text-slate-900 dark:text-white mt-0.5">{formatCurrency(booking.totalPrice)}</p>
+                    <p className="font-extrabold text-blue-950 dark:text-white mt-0.5">{formatCurrency(booking.totalPrice)}</p>
                 </div>
             </div>
         </div>

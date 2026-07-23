@@ -31,7 +31,7 @@ function LogoutModal({
         </div>
         <h2 className="text-xl font-semibold text-gray-900">Sign Out?</h2>
         <p className="text-sm text-gray-500 text-center">
-          Are you sure you want to log out of AutoWash Pro?
+          Are you sure you want to log out of AutoWash Premium?
         </p>
         <div className="flex gap-3 w-full mt-2">
           <button

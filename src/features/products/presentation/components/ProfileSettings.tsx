@@ -183,7 +183,7 @@ export const ProfileSettings: React.FC = () => {
           {/* Khối 1: Personal Information */}
           <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between border-b border-slate-50 dark:border-white/5 pb-3">
-              <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white">
+              <div className="flex items-center gap-2 font-bold text-base text-blue-950 dark:text-white">
                 <User className="w-5 h-5 text-blue-600" />
                 <span>
                   {t("settings.personalInfo.sectionTitle", {
@@ -342,7 +342,7 @@ export const ProfileSettings: React.FC = () => {
 
           {/* Khối 2: Password & Security */}
           <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-6 shadow-sm space-y-5">
-            <div className="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-3">
+            <div className="flex items-center gap-2 font-bold text-base text-blue-950 dark:text-white border-b border-slate-50 dark:border-white/5 pb-3">
               <Lock className="w-5 h-5 text-blue-600" />
               <span>
                 {t("settings.passwordSecurity.sectionTitle", {
@@ -567,7 +567,7 @@ export const ProfileSettings: React.FC = () => {
 
           {/* Khối Cấu Hình Notifications Tắt/Mở */}
           <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
+            <div className="flex items-center gap-2 font-bold text-sm text-blue-950 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
               <Bell className="w-4 h-4 text-blue-600" />
               <span>
                 {t("settings.notificationsSection.sectionTitle", {
@@ -642,7 +642,7 @@ export const ProfileSettings: React.FC = () => {
 
           {/* Khối Appearance (Dark/Light Mode) */}
           <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
+            <div className="flex items-center gap-2 font-bold text-sm text-blue-950 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
               <Monitor className="w-4 h-4 text-blue-600" />
               <span>
                 {t("settings.appearance.sectionTitle", {
@@ -746,7 +746,7 @@ export const ProfileSettings: React.FC = () => {
 
           {/* Khối Language */}
           <div className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
+            <div className="flex items-center gap-2 font-bold text-sm text-blue-950 dark:text-white border-b border-slate-50 dark:border-white/5 pb-2">
               <Globe className="w-4 h-4 text-blue-600" />
               <span>
                 {t("settings.language.sectionTitle", {

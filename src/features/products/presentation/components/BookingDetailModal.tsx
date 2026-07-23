@@ -43,7 +43,7 @@ export const BookingDetailModal: React.FC<Props> = ({ booking, onClose }) => {
                             <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
                                 <CheckCircle2 size={24} />
                             </div>
-                            <h2 className="text-lg font-bold text-slate-900 leading-tight">Chi tiết đặt lịch</h2>
+                            <h2 className="text-lg font-bold text-blue-950 leading-tight">Chi tiết đặt lịch</h2>
                             <p className="font-mono text-sm font-bold text-blue-600 mt-1">{booking.bookingCode}</p>
                         </div>
 
@@ -61,19 +61,19 @@ export const BookingDetailModal: React.FC<Props> = ({ booking, onClose }) => {
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between border-b pb-2 border-slate-100">
                                 <span className="text-slate-400 flex items-center gap-1.5"><Car size={16} /> Xe</span>
-                                <span className="font-bold text-slate-900">{booking.vehicleName} ({booking.vehiclePlate})</span>
+                                <span className="font-bold text-blue-950">{booking.vehicleName} ({booking.vehiclePlate})</span>
                             </div>
                             <div className="flex justify-between border-b pb-2 border-slate-100">
                                 <span className="text-slate-400 flex items-center gap-1.5"><Calendar size={16} /> Ngày</span>
-                                <span className="font-bold text-slate-900">{booking.bookingDate}</span>
+                                <span className="font-bold text-blue-950">{booking.bookingDate}</span>
                             </div>
                             <div className="flex justify-between border-b pb-2 border-slate-100">
                                 <span className="text-slate-400 flex items-center gap-1.5"><Clock size={16} /> Giờ</span>
-                                <span className="font-bold text-slate-900">{booking.startTime}</span>
+                                <span className="font-bold text-blue-950">{booking.startTime}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-400 flex items-center gap-1.5"><ShieldCheck size={16} /> Gói</span>
-                                <span className="font-bold text-slate-900 text-right max-w-[150px] truncate" title={booking.washPackageName}>{booking.washPackageName}</span>
+                                <span className="font-bold text-blue-950 text-right max-w-[150px] truncate" title={booking.washPackageName}>{booking.washPackageName}</span>
                             </div>
                         </div>
 

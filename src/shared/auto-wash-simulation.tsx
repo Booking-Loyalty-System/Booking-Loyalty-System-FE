@@ -393,7 +393,7 @@ export const AutoWashSimulation: React.FC = () => {
                                                 <span className={`text-[9px] font-bold block ${isSelected ? 'text-blue-600' : 'text-slate-400'}`}>
                                                     {t('liveTracking.washStep', { step: idx + 1 < 10 ? `0${idx + 1}` : idx + 1 })}
                                                 </span>
-                                                <h5 className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-400'}`}>
+                                                <h5 className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-blue-950 dark:text-white' : 'text-slate-700 dark:text-slate-400'}`}>
                                                     {t(step.nameKey)}
                                                 </h5>
                                             </div>

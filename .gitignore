@@ -68,3 +68,6 @@ Note.txt
 *.diff
 *.patch
 AGENTS.mdBackend_i18n_Report.md
+AI_CHAT_HISTORY.md
+fill_excel.py
+inspect_excel.py

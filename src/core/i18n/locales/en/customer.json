@@ -467,7 +467,7 @@
   },
   "auth": {
     "login": {
-      "appName": "AutoWash Pro",
+      "appName": "AutoWash Premium",
       "appTagline": "Smart Car Wash Management",
       "feature1Title": "Easy Booking",
       "feature1Desc": "Schedule your car wash in seconds",
@@ -493,7 +493,7 @@
       "quickAccessAdmin": "Admin"
     },
     "register": {
-      "appName": "AutoWash Pro",
+      "appName": "AutoWash Premium",
       "appTagline": "Join our community",
       "membershipBenefitsTitle": "Membership Benefits",
       "benefit1": "Earn loyalty points on every wash",
@@ -501,7 +501,7 @@
       "benefit3": "Exclusive discounts and promotions",
       "benefit4": "Track your booking history",
       "formHeading": "Create Account",
-      "formSubtitle": "Get started with AutoWash Pro",
+      "formSubtitle": "Get started with AutoWash Premium",
       "tabEmail": "By Email",
       "tabPhone": "By Phone (OTP)",
       "labelFullName": "Full Name",
@@ -549,7 +549,7 @@
     "upTo": "Up to {{days}} days",
     "registerToExchange": "Register to Exchange Reward Points Now",
     "branchSystem": "Branch System",
-    "branchSystemDesc": "Find and select the nearest AutoWash Pro branch in HCMC",
+    "branchSystemDesc": "Find and select the nearest AutoWash Premium branch in HCMC",
     "loadingBranches": "Loading branches...",
     "noBranches": "No branches found.",
     "open": "Open",
@@ -557,7 +557,7 @@
     "mapTitle": "Branch System Map",
     "detailMapBtn": "Detailed Digital Map",
     "mapFooter": "Drag and zoom to explore branches, or click \"Detailed Digital Map\" for routing and directions.",
-    "allRightsReserved": "© 2026 AutoWash Pro. All rights reserved.",
+    "allRightsReserved": "© 2026 AutoWash Premium. All rights reserved.",
     "tiers": {
       "member": "Member",
       "silver": "Silver Tier",

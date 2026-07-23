@@ -33,30 +33,30 @@ export const Promotions: React.FC = () => {
     return (
         <div className="w-full space-y-10 font-sans antialiased text-slate-800 dark:text-slate-100 pb-12 animate-fade-in">
             {/* Banner Khuyến Mãi */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#050505] dark:to-[#111] border border-blue-500/50 dark:border-white/10 text-white rounded-[2.5rem] p-8 lg:p-10 shadow-2xl group">
+            <div className="relative overflow-hidden bg-gradient-to-br from-sky-100 via-blue-100 to-indigo-100 dark:from-[#050505] dark:to-[#111] border border-sky-300/90 dark:border-white/10 rounded-[2.5rem] p-8 lg:p-10 shadow-[0_8px_40px_rgba(14,165,233,0.22)] dark:shadow-2xl group">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
-                <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-orange-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-orange-500/30 transition-colors duration-700"></div>
-                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-blue-500/20 dark:bg-pink-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-500/30 dark:group-hover:bg-pink-500/30 transition-colors duration-700"></div>
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-sky-400/35 dark:bg-orange-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-sky-400/46 dark:group-hover:bg-orange-500/30 transition-colors duration-700"></div>
+                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-cyan-400/29 dark:bg-pink-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-cyan-400/40 dark:group-hover:bg-pink-500/30 transition-colors duration-700"></div>
                 
                 <div className="relative z-10 space-y-6 max-w-2xl">
-                    <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/10 px-4 py-1.5 rounded-full text-xs font-bold text-orange-400">
+                    <div className="inline-flex items-center gap-1.5 bg-white/70 dark:bg-white/10 backdrop-blur-md border border-sky-300/80 dark:border-white/10 px-4 py-1.5 rounded-full text-xs font-bold text-orange-500 dark:text-orange-400 shadow-sm">
                         <Sparkles className="w-4 h-4" />
                         <span className="tracking-wide uppercase">{t('promotions.banner.badgeLimitedTime')}</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 dark:from-white dark:to-slate-400">
                         {t('promotions.banner.heading')}
                     </h1>
-                    <p className="text-base md:text-lg text-slate-400 font-medium leading-relaxed">
+                    <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
                         {t('promotions.banner.description')}
                     </p>
                     <div className="flex flex-wrap gap-4 pt-4">
-                        <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/10">
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('promotions.banner.labelYourTier')}</p>
-                            <p className="text-xl font-black text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.3)] mt-1">Gold Member</p>
+                        <div className="bg-sky-50/90 dark:bg-white/5 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors backdrop-blur-sm px-6 py-4 rounded-2xl border border-sky-300/80 dark:border-white/10 shadow-sm">
+                            <p className="text-[10px] text-sky-600 dark:text-slate-400 font-bold uppercase tracking-widest">{t('promotions.banner.labelYourTier')}</p>
+                            <p className="text-xl font-black text-amber-500 dark:text-amber-400 mt-1">Gold Member</p>
                         </div>
-                        <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/10">
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('promotions.banner.labelActivePromotions')}</p>
-                            <p className="text-xl font-black text-white mt-1">
+                        <div className="bg-sky-50/90 dark:bg-white/5 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors backdrop-blur-sm px-6 py-4 rounded-2xl border border-sky-300/80 dark:border-white/10 shadow-sm">
+                            <p className="text-[10px] text-sky-600 dark:text-slate-400 font-bold uppercase tracking-widest">{t('promotions.banner.labelActivePromotions')}</p>
+                            <p className="text-xl font-black text-amber-500 dark:text-amber-400 mt-1">
                                 {activePromos.length + featuredPromos.length} {t('promotions.banner.labelAvailable', { defaultValue: 'Available' })}
                             </p>
                         </div>
@@ -66,7 +66,7 @@ export const Promotions: React.FC = () => {
 
             {/* Featured Promotions Section */}
             <div>
-                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">{t('promotions.featured.sectionTitle')}</h2>
+                <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6 tracking-tight">{t('promotions.featured.sectionTitle')}</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {featuredPromos.map((promo, idx) => (
                         <div key={idx} className="bg-white dark:bg-[#13151A] rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-xl hover:shadow-2xl transition-all duration-300 p-8 relative flex flex-col justify-between group overflow-hidden">
@@ -80,7 +80,7 @@ export const Promotions: React.FC = () => {
                                     </div>
                                     <div className="space-y-2 pt-1">
                                         {/* Fallback sang .title nếu mock data dùng title, còn api thật dùng name */}
-                                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                                        <h3 className="text-xl font-black text-blue-950 dark:text-white tracking-tight leading-tight">
                                             {translateDynamic(promo.name || promo.title, i18n.language)}
                                         </h3>
                                         <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">{translateDynamic(promo.description, i18n.language)}</p>
@@ -106,7 +106,7 @@ export const Promotions: React.FC = () => {
                                     </div>
                                     <button
                                         onClick={() => handleCopyCode(promo.code)}
-                                        className="inline-flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold px-5 py-3 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 active:scale-95 transition-all shadow-md"
+                                        className="inline-flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-blue-950 text-sm font-bold px-5 py-3 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-200 active:scale-95 transition-all shadow-md"
                                     >
                                         {copiedCode === promo.code ? (
                                             <>
@@ -148,7 +148,7 @@ export const Promotions: React.FC = () => {
 
             {/* All Active Promotions Grid */}
             <div>
-                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">{t('promotions.allActive.sectionTitle')}</h2>
+                <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6 tracking-tight">{t('promotions.allActive.sectionTitle')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {activePromos.map((item, idx) => (
                         <div key={idx} className="bg-white dark:bg-[#13151A] border border-slate-200 dark:border-white/5 rounded-[2rem] p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
@@ -157,7 +157,7 @@ export const Promotions: React.FC = () => {
                                     <Sparkles className="w-6 h-6" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+                                    <h3 className="text-lg font-bold text-blue-950 dark:text-white tracking-tight">
                                         {translateDynamic(item.name || item.title, i18n.language)}
                                     </h3>
                                     {item.targetTiers && item.targetTiers.length > 0 && (

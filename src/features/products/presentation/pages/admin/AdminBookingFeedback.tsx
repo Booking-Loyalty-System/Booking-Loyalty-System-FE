@@ -64,7 +64,7 @@ export function AdminBookingFeedback() {
             {/* Header Tiêu đề */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                 <div>
-                    <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Quản Lý Feedback Khách Hàng</h2>
+                    <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">Quản Lý Feedback Khách Hàng</h2>
                     <p className="text-slate-500 text-sm mt-0.5">Quản trị chất lượng dịch vụ booking và thực hiện chiến dịch đền bù, giữ chân khách hàng</p>
                 </div>
 
@@ -105,7 +105,7 @@ export function AdminBookingFeedback() {
                                             ${isNegative && !isCompensated ? 'bg-rose-50/20' : ''} 
                                             ${isCompensated ? 'bg-emerald-50/10' : ''}`}
                                 >
-                                    <td className="p-4 font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                                    <td className="p-4 font-bold text-blue-950 group-hover:text-indigo-600 transition-colors">
                                         {item.bookingCode}
                                     </td>
                                     <td className="p-4 font-medium text-slate-700">{item.customerName || "Thành viên ẩn danh"}</td>
@@ -162,7 +162,7 @@ export function AdminBookingFeedback() {
                         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <div className="flex items-center gap-2">
                                 <MessageSquare className="w-5 h-5 text-indigo-600" />
-                                <h3 className="font-extrabold text-lg text-slate-900">Chi Tiết Phản Hồi Booking</h3>
+                                <h3 className="font-extrabold text-lg text-blue-950">Chi Tiết Phản Hồi Booking</h3>
                             </div>
                             <button
                                 onClick={() => setSelectedFeedback(null)}
@@ -181,7 +181,7 @@ export function AdminBookingFeedback() {
                                         <User className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-slate-900">{selectedFeedback.customerName || "Thành viên"}</p>
+                                        <p className="text-sm font-bold text-blue-950">{selectedFeedback.customerName || "Thành viên"}</p>
                                         <button
                                             onClick={() => handleCopyId(selectedFeedback.customerId, "Đã sao chép ID Khách hàng!")}
                                             className="text-[11px] text-slate-400 hover:text-indigo-600 font-mono flex items-center gap-1 mt-0.5 hover:underline"
@@ -226,7 +226,7 @@ export function AdminBookingFeedback() {
 
                             {/* 🌟 VÙNG CHỌN VOUCHER ĐỂ ĐỀN BÙ */}
                             <div className="pt-4 border-t border-slate-100 space-y-4">
-                                <div className="flex items-center justify-between text-sm font-bold text-slate-900">
+                                <div className="flex items-center justify-between text-sm font-bold text-blue-950">
                                     <div className="flex items-center gap-2">
                                         <ShieldAlert className="w-4 h-4 text-rose-500" />
                                         <span>Gửi Tặng Voucher Đền Bù Chăm Sóc Khách Hàng</span>
