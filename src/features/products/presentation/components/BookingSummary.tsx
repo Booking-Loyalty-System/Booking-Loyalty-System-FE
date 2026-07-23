@@ -23,19 +23,16 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   // 1. Tính tiền giảm từ Voucher (nếu có)
   let voucherDiscount = 0;
   if (selectedVoucher) {
-    const vName =
-      (selectedVoucher as any).name || (selectedVoucher as any).title || "";
-    // Nhận diện voucher miễn phí qua cờ isFreeWash hoặc tên cứng
+    const vName = (selectedVoucher as any).name || (selectedVoucher as any).title || "";
+    // Voucher Free Wash (isFreeWash=true) → miễn phí toàn bộ; ngược lại dùng discountValue
     const isFreeWash =
-      selectedVoucher.isFreeWash || vName === "Phần thưởng Rửa Xe Miễn Phí";
+      (selectedVoucher as any).isFreeWash === true ||
+      vName === "Phần thưởng Rửa Xe Miễn Phí";
 
     if (isFreeWash) {
       voucherDiscount = originalPrice;
     } else {
-      voucherDiscount = Math.min(
-        originalPrice,
-        selectedVoucher.discountValue || 0,
-      );
+      voucherDiscount = Math.min(originalPrice, (selectedVoucher as any).discountValue || 0);
     }
   }
 

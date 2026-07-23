@@ -348,7 +348,7 @@ export const StaffDashboard: React.FC = () => {
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
         <div className="space-y-2">
-          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight">
             Staff Dashboard
           </h1>
           <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
@@ -364,7 +364,7 @@ export const StaffDashboard: React.FC = () => {
               </div>
               <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                 Xin chào,{" "}
-                <span className="font-extrabold text-slate-900 dark:text-white">
+                <span className="font-extrabold text-blue-950 dark:text-white">
                   {staffProfile.fullName}
                 </span>
               </span>
@@ -490,7 +490,7 @@ export const StaffDashboard: React.FC = () => {
                   <Car className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
+                  <h2 className="font-extrabold text-xl text-blue-950 dark:text-white tracking-tight">
                     Chi Tiết Lịch Đặt
                   </h2>
                   <p className="text-xs text-slate-500 font-bold mt-0.5">
@@ -515,7 +515,7 @@ export const StaffDashboard: React.FC = () => {
                   <p className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1">
                     Biển số xe
                   </p>
-                  <p className="text-2xl font-black text-slate-900 dark:text-white">
+                  <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
                     {selectedBookingDetail.licensePlate}
                   </p>
                 </div>
@@ -559,7 +559,7 @@ export const StaffDashboard: React.FC = () => {
                       </span>
                     ) : (
                       <span
-                        className={`text-sm font-bold text-right max-w-[60%] ${item.primary ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"}`}
+                        className={`text-sm font-bold text-right max-w-[60%] ${item.primary ? "text-blue-950 dark:text-white" : "text-slate-700 dark:text-slate-300"}`}
                       >
                         {item.value}
                       </span>
@@ -607,7 +607,7 @@ export const StaffDashboard: React.FC = () => {
                   <Camera className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-lg text-slate-900 dark:text-white tracking-tight">
+                  <h3 className="font-extrabold text-lg text-blue-950 dark:text-white tracking-tight">
                     Hình ảnh xe: {selectedBookingForImages.vehicleName}
                   </h3>
                   <p className="text-xs text-slate-500 font-bold">

@@ -123,11 +123,17 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#fafafa] dark:bg-[#0B0C10] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
+    <div className="min-h-screen w-full bg-[hsl(210,92%,91%)] dark:bg-[#0B0C10] flex flex-col p-4 md:p-6 antialiased font-sans overflow-y-auto relative transition-colors duration-300">
 
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-indigo-400/20 dark:bg-purple-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
+      {/* 🌊 Aqua Premium Background — light mode only */}
+      <div className="fixed inset-0 pointer-events-none z-0 dark:hidden">
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-sky-400/80 via-blue-200/40 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '9s' }} />
+        <div className="absolute -bottom-32 -right-20 w-[550px] h-[550px] rounded-full bg-gradient-to-tl from-cyan-400/70 via-sky-200/30 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '3s' }} />
+        <div className="absolute inset-0 opacity-55" style={{ backgroundImage: 'radial-gradient(circle, rgba(14,165,233,0.12) 1px, transparent 1px)', backgroundSize: '36px 36px', maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)' }} />
+      </div>
+      {/* Dark mode orbs */}
+      <div className="hidden dark:block absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-lighten animate-pulse"></div>
+      <div className="hidden dark:block absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
 
       {/* Theme & Language Switchers */}
       <div className="absolute top-6 right-6 flex items-center gap-3 z-50">
@@ -153,7 +159,7 @@ export const LoginPage: React.FC = () => {
         <div className="w-full max-w-[1200px] mx-auto bg-transparent flex flex-col lg:flex-row gap-8 relative z-10">
 
           {/* PANEL TRÁI: GIỚI THIỆU TÍNH NĂNG */}
-          <div className="flex-1 bg-white/80 dark:bg-[#13151A]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-1 bg-white/75 dark:bg-[#13151A]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col shadow-[0_8px_40px_rgba(14,165,233,0.10)] dark:shadow-black/50 border border-sky-200/50 dark:border-white/5 transition-colors duration-300">
             <div className="flex flex-col h-full justify-center">
               {/* LOGO & BRANDING */}
               <div className="flex items-center gap-4 mb-8">
@@ -187,7 +193,7 @@ export const LoginPage: React.FC = () => {
                       {idx + 1}
                     </div>
                     <div className="pt-1">
-                      <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
+                      <h3 className="font-extrabold text-blue-950 dark:text-white text-base">
                         {feat.title}
                       </h3>
                       <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
@@ -201,11 +207,11 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {/* PANEL PHẢI: FORM ĐĂNG NHẬP */}
-          <div className="flex-[0.8] bg-white/90 dark:bg-[#13151A]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-white/50 dark:border-white/5 transition-colors duration-300">
+          <div className="flex-[0.8] bg-white/85 dark:bg-[#13151A]/90 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 flex flex-col justify-center shadow-[0_8px_40px_rgba(14,165,233,0.10)] dark:shadow-black/50 border border-sky-200/50 dark:border-white/5 transition-colors duration-300">
             <div className="w-full max-w-md mx-auto">
               {/* TIÊU ĐỀ FORM */}
               <div className="mb-10">
-                <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
+                <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-2 tracking-tight">
                   {t('auth.login.formHeading')}
                 </h2>
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
@@ -230,7 +236,7 @@ export const LoginPage: React.FC = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t('auth.login.placeholderEmail')}
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                      className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-blue-950 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                     />
                   </div>
                 </div>
@@ -250,7 +256,7 @@ export const LoginPage: React.FC = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       required
-                      className="w-full pl-11 pr-12 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                      className="w-full pl-11 pr-12 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-base text-blue-950 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                     />
                     <button
                       type="button"

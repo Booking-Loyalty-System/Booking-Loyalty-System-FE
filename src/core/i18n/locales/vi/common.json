@@ -1,6 +1,6 @@
 {
   "sidebar": {
-    "appName": "AutoWash Pro",
+    "appName": "AutoWash Premium",
     "tagline": "Rửa Xe Thông Minh",
     "dashboard": "Tổng Quan",
     "bookWash": "Đặt Lịch Rửa",
@@ -13,7 +13,7 @@
     "notifications": "Thông Báo",
     "settings": "Cài Đặt",
     "logout": "Đăng Xuất",
-    "copyright": "© 2026 AutoWash Pro"
+    "copyright": "© 2026 AutoWash Premium"
   },
   "header": {
     "searchPlaceholder": "Tìm kiếm...",

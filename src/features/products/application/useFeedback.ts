@@ -79,3 +79,16 @@ export const useFeedback = (options?: { isDescending?: boolean; topCount?: numbe
         }
     };
 };
+
+export const usePublicFeedbacks = (
+    branchId?: string,
+    pageIndex: number = 1,
+    pageSize: number = 10
+) => {
+    return useQuery({
+        queryKey: ['feedback_public_list', branchId, pageIndex, pageSize],
+        queryFn: () => feedbackRepo.getPublicFeedbacks(branchId, pageIndex, pageSize),
+        staleTime: 2 * 60 * 1000 // cache 2 mins
+    });
+};
+

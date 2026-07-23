@@ -467,7 +467,7 @@
   },
   "auth": {
     "login": {
-      "appName": "AutoWash Pro",
+      "appName": "AutoWash Premium",
       "appTagline": "Hệ Thống Quản Lý Rửa Xe Thông Minh",
       "feature1Title": "Đặt Lịch Dễ Dàng",
       "feature1Desc": "Đặt lịch rửa xe chỉ trong vài giây",
@@ -493,7 +493,7 @@
       "quickAccessAdmin": "Quản Trị"
     },
     "register": {
-      "appName": "AutoWash Pro",
+      "appName": "AutoWash Premium",
       "appTagline": "Tham gia cộng đồng của chúng tôi",
       "membershipBenefitsTitle": "Quyền Lợi Thành Viên",
       "benefit1": "Tích điểm với mỗi lần rửa xe",
@@ -501,7 +501,7 @@
       "benefit3": "Giảm giá và khuyến mãi độc quyền",
       "benefit4": "Theo dõi lịch sử đặt lịch",
       "formHeading": "Tạo Tài Khoản",
-      "formSubtitle": "Bắt đầu với AutoWash Pro",
+      "formSubtitle": "Bắt đầu với AutoWash Premium",
       "tabEmail": "Bằng Email",
       "tabPhone": "Bằng SĐT (OTP)",
       "labelFullName": "Họ và Tên",
@@ -549,7 +549,7 @@
     "upTo": "Tối đa {{days}} ngày",
     "registerToExchange": "Đăng ký tích điểm đổi quà ngay",
     "branchSystem": "Hệ Thống Chi Nhánh",
-    "branchSystemDesc": "Tìm kiếm và lựa chọn chi nhánh AutoWash Pro gần nhất tại TP.HCM",
+    "branchSystemDesc": "Tìm kiếm và lựa chọn chi nhánh AutoWash Premium gần nhất tại TP.HCM",
     "loadingBranches": "Đang tải danh sách chi nhánh...",
     "noBranches": "Không tìm thấy chi nhánh nào.",
     "open": "Đang hoạt động",
@@ -557,7 +557,7 @@
     "mapTitle": "Bản Đồ Hệ Thống Chi Nhánh",
     "detailMapBtn": "Bản Đồ Số Chi Tiết",
     "mapFooter": "Kéo và thu phóng để khám phá các chi nhánh, hoặc click \"Bản Đồ Số Chi Tiết\" để xem chỉ đường.",
-    "allRightsReserved": "© 2026 AutoWash Pro. Bảo lưu mọi quyền.",
+    "allRightsReserved": "© 2026 AutoWash Premium. Bảo lưu mọi quyền.",
     "tiers": {
       "member": "Thành Viên",
       "silver": "Hạng Bạc",
@@ -582,6 +582,22 @@
       "bookInAdvance": "Đặt lịch trước",
       "upToDays": "Tối đa {{days}} ngày",
       "pointsMultiplier": "Hệ số tích điểm: {{mult}}"
+    },
+    "feedback": {
+      "title": "Đánh Giá Từ Khách Hàng",
+      "subtitle": "Trải nghiệm thực tế từ khách hàng tại các chi nhánh",
+      "averageRating": "Đánh giá trung bình",
+      "totalFeedbacks": "{{count}} đánh giá",
+      "allBranches": "Tất cả chi nhánh",
+      "selectBranch": "Chọn chi nhánh",
+      "service": "Dịch vụ",
+      "staff": "Nhân viên",
+      "price": "Giá cả",
+      "overall": "Tổng quan",
+      "noFeedbacks": "Chưa có đánh giá nào cho chi nhánh này.",
+      "previous": "Trang trước",
+      "next": "Trang sau",
+      "page": "Trang {{current}} / {{total}}"
     }
   },
   "feedback": {

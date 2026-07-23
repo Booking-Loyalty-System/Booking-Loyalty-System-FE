@@ -15,7 +15,7 @@ export default function Login() {
                                 <Droplets className="w-6 h-6 fill-current" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-[#0f172a]">AutoWash Pro</h1>
+                                <h1 className="text-2xl font-bold text-[#0f172a]">AutoWash Premium</h1>
                                 <p className="text-sm text-[#64748b]">Smart Car Wash Management</p>
                             </div>
                         </div>

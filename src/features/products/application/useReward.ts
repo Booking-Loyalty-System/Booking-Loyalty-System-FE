@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { RewardRepositoryImplement } from '../infrastructure/repositories/reward/reward.repository.implement.ts';
-import type { RewardDto, RedemptionDto, MappedVoucher } from '../domain/models/voucher/voucher.model.ts';
+import type { RewardDto, RedemptionDto, MappedVoucher, Voucher } from '../domain/models/voucher/voucher.model.ts';
 import { useTranslation } from 'react-i18next';
 import { translateDynamic } from '@/shared/utils/translateDynamic.ts';
 
@@ -35,6 +35,16 @@ export const useReward = () => {
         staleTime: 1000 * 60 * 5,
     });
 
+    // Query danh sách voucher khả dụng (chủ động gọi endpoint /loyalty/my-vouchers?activeOnly=true)
+    const myVouchersQuery = useQuery<Voucher[]>({
+        queryKey: ['my_vouchers', true],
+        queryFn: async () => {
+            const data = await rewardRepository.getMyVouchers(true);
+            return Array.isArray(data) ? data : [];
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+
     // Mutation đổi reward lấy voucher
     const redeemRewardMutation = useMutation({
         mutationFn: (rewardId: string) => rewardRepository.redeemReward(rewardId),
@@ -60,6 +70,7 @@ export const useReward = () => {
         const handlePointsChanged = () => {
             queryClient.invalidateQueries({ queryKey: ['customer_me'] });
             queryClient.invalidateQueries({ queryKey: ['my_redemptions'] });
+            queryClient.invalidateQueries({ queryKey: ['my_vouchers'] });
             queryClient.invalidateQueries({ queryKey: ['available_rewards'] });
         };
         window.addEventListener('customer_points_changed', handlePointsChanged);
@@ -102,6 +113,9 @@ export const useReward = () => {
         redemptions, // Dữ liệu thô từ API (tiện dùng cho trang Lịch Sử Đổi Thưởng nếu cần)
         redeemedVouchersOnly, // 🌟 Danh sách đã convert chuẩn chỉnh, ném thẳng vào <VoucherSelection /> ở BookWash
         isLoadingRedemptions: myRedemptionsQuery.isLoading,
+
+        myVouchers: myVouchersQuery.data ?? [],
+        isLoadingVouchers: myVouchersQuery.isLoading,
 
         redeemReward: redeemRewardMutation.mutateAsync,
         isRedeeming: redeemRewardMutation.isPending,

@@ -37,5 +37,13 @@ export class RewardRepositoryImplement implements IRewardRepository {
         return response.data;
     }
 
-
+    async getMyVouchers(activeOnly?: boolean): Promise<Voucher[]> {
+        const response = await httpClient.get<ApiResponse<Voucher[]>>(
+            ENDPOINTS.LOYALTY.MY_VOUCHERS,
+            {
+                params: typeof activeOnly !== 'undefined' ? { activeOnly } : undefined
+            }
+        );
+        return response.data;
+    }
 }

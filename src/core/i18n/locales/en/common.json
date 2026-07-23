@@ -1,6 +1,6 @@
 {
   "sidebar": {
-    "appName": "AutoWash Pro",
+    "appName": "AutoWash Premium",
     "tagline": "Smart Car Wash",
     "dashboard": "Dashboard",
     "bookWash": "Book Wash",
@@ -13,7 +13,7 @@
     "notifications": "Notifications",
     "settings": "Settings",
     "logout": "Logout",
-    "copyright": "© 2026 AutoWash Pro"
+    "copyright": "© 2026 AutoWash Premium"
   },
   "header": {
     "searchPlaceholder": "Search...",

@@ -47,3 +47,20 @@ export interface FeedbackStatisticsData {
     topChatStaffs: RatingStatDto[];
     lowestChatStaffs: RatingStatDto[];
 }
+
+export interface PublicFeedbackItem {
+    customerName: string;
+    overallRating: number;
+    staffRating: number;
+    serviceRating: number;
+    priceRating: number;
+    comment: string;
+    createdAt: string;
+}
+
+export interface PublicFeedbackResponse {
+    averageRating: number;
+    totalFeedbacks: number;
+    feedbacks: PublicFeedbackItem[];
+}
+

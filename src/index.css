@@ -36,3 +36,131 @@ body {
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
+
+/* =============================================
+   🌊 AQUA PREMIUM LIGHT THEME
+   =============================================
+   Palette: Trắng sứ pha xanh dương nhẹ
+   Cảm giác: Sóng biển, sang trọng, huyền bí
+   ============================================= */
+
+/* --- Biến màu CSS --- */
+:root {
+  --aqua-50:  #f0f8ff;
+  --aqua-100: #e0f2fe;
+  --aqua-200: #bae6fd;
+  --aqua-300: #7dd3fc;
+  --aqua-400: #38bdf8;
+  --aqua-500: #0ea5e9;
+  --aqua-600: #0284c7;
+  --aqua-700: #0369a1;
+
+  /* Nền chính: tăng thêm 15% độ xanh */
+  --bg-aqua-base: linear-gradient(160deg,
+    hsl(210, 92%, 91%) 0%,
+    hsl(200, 82%, 88%) 35%,
+    hsl(190, 72%, 90%) 65%,
+    hsl(210, 92%, 91%) 100%
+  );
+
+  /* Glassmorphism surface */
+  --glass-bg: rgba(225, 245, 255, 0.75);
+  --glass-border: rgba(56, 189, 248, 0.65);
+  --glass-shadow: 0 8px 32px rgba(14, 165, 233, 0.18);
+
+  /* Shimmer glow — +15% */
+  --glow-blue: rgba(56, 189, 248, 0.42);
+  --glow-cyan: rgba(6, 182, 212, 0.34);
+}
+
+/* --- Nền toàn trang: xanh rõ hơn --- */
+html:not(.dark) body {
+  background: var(--bg-aqua-base);
+  background-attachment: fixed;
+  position: relative;
+}
+
+/* Lớp họa tiết gợn sóng toàn cục — đậm hơn */
+html:not(.dark) body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 10% 20%, var(--glow-blue) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 70%, var(--glow-cyan) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 100%, rgba(56, 189, 248, 0.32) 0%, transparent 50%);
+  animation: aqua-breathe 12s ease-in-out infinite alternate;
+}
+
+/* Lớp họa tiết thứ 2: dots đậm hơn */
+html:not(.dark) body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, rgba(14, 165, 233, 0.20) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  animation: aqua-grid-drift 20s linear infinite;
+  opacity: 0.7;
+}
+
+/* --- Animations --- */
+@keyframes aqua-breathe {
+  0%   { opacity: 0.7; transform: scale(1)   translateY(0px); }
+  50%  { opacity: 1.0; transform: scale(1.04) translateY(-12px); }
+  100% { opacity: 0.8; transform: scale(1.01) translateY(6px); }
+}
+
+@keyframes aqua-grid-drift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 36px 36px; }
+}
+
+@keyframes aqua-wave-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-6px) rotate(0.5deg); }
+  66%       { transform: translateY(3px) rotate(-0.3deg); }
+}
+
+/* --- Glass card utility (dùng trong toàn app ở light mode) --- */
+html:not(.dark) .aqua-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow),
+              inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* --- Sidebar: để Tailwind gradient xanh tự xử lý, không override ở đây --- */
+
+html:not(.dark) header {
+  background: rgba(240, 248, 255, 0.75) !important;
+  backdrop-filter: blur(20px) saturate(200%) !important;
+  border-bottom-color: rgba(186, 230, 253, 0.50) !important;
+  box-shadow: 0 1px 24px rgba(14, 165, 233, 0.06) !important;
+}
+
+/* --- Scrollbar aqua premium --- */
+html:not(.dark) ::-webkit-scrollbar { width: 6px; }
+html:not(.dark) ::-webkit-scrollbar-track { background: transparent; }
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7dd3fc, #38bdf8);
+  border-radius: 999px;
+}
+
+/* Wave shimmer on interactive elements */
+html:not(.dark) button:not([disabled]):hover,
+html:not(.dark) a:hover {
+  filter: brightness(1.04);
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+/* Floating animation cho cards trong light mode */
+html:not(.dark) .aqua-float {
+  animation: aqua-wave-float 6s ease-in-out infinite;
+}

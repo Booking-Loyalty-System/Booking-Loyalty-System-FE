@@ -51,7 +51,7 @@ export const RegisterShared: React.FC<RegisterProps> = ({
                                 <Droplets className="w-6 h-6 fill-current" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-[#0f172a]">AutoWash Pro</h1>
+                                <h1 className="text-2xl font-bold text-[#0f172a]">AutoWash Premium</h1>
                                 <p className="text-sm text-[#64748b]">Join our community</p>
                             </div>
                         </div>
@@ -97,7 +97,7 @@ export const RegisterShared: React.FC<RegisterProps> = ({
                         {/* Tiêu đề form */}
                         <div className="mb-6">
                             <h2 className="text-3xl font-bold text-[#0f172a] mb-1">Create Account</h2>
-                            <p className="text-[#64748b] text-[15px]">Get started with AutoWash Pro</p>
+                            <p className="text-[#64748b] text-[15px]">Get started with AutoWash Premium</p>
                         </div>
 
                         {/* Form Fields */}

@@ -67,6 +67,7 @@ export const ENDPOINTS = {
     LOYALTY: {
         BALANCE: '/loyalty/balance',
         HISTORY: '/loyalty/history',
+        MY_VOUCHERS: '/loyalty/my-vouchers'
     },
 
     ADMIN: {
@@ -159,7 +160,8 @@ export const ENDPOINTS = {
         SUBMIT: '/Feedback/customer/submit',
         PUBLIC_ALL: '/Feedback/public/all',
         STATISTICS: '/Feedback/statistics',
-        FILTER: '/Feedback/filter'
+        FILTER: '/Feedback/filter',
+        PUBLIC_LIST: '/Feedback/public/feedbacks'
     },
 
     CHAT: {

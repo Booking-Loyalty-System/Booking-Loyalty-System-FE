@@ -5,7 +5,8 @@ import type {
     SubmitFeedbackInput,
     FeedbackRecord,
     AdminFeedbackFilterRecord,
-    FeedbackStatisticsData
+    FeedbackStatisticsData,
+    PublicFeedbackResponse
 } from '../../../domain/models/feedback/feedback.model';
 import type { IFeedbackRepository } from './feedback.repository.interface';
 
@@ -36,5 +37,18 @@ export class FeedbackRepositoryImplement implements IFeedbackRepository {
             `${ENDPOINTS.FEEDBACK.STATISTICS}?topCount=${topCount}`
         );
         return response.data; // trả về cục dữ liệu thống kê lớn chứa các mảng top/lowest
+    }
+
+    async getPublicFeedbacks(
+        branchId?: string,
+        pageIndex: number = 1,
+        pageSize: number = 10
+    ): Promise<PublicFeedbackResponse> {
+        let url = `${ENDPOINTS.FEEDBACK.PUBLIC_LIST}?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+        if (branchId) {
+            url += `&branchId=${branchId}`;
+        }
+        const response = await httpClient.get<ApiResponse<PublicFeedbackResponse>>(url);
+        return response.data;
     }
 }
