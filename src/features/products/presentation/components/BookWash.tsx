@@ -243,9 +243,8 @@ export const BookWash: React.FC = () => {
   const { validatePromotion, getEligiblePromotions } = usePromotion();
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
-  const { 
-    redeemedVouchersOnly, 
-    isLoadingRedemptions, 
+  const {
+    isLoadingRedemptions,
     redemptions,
     myVouchers,
     isLoadingVouchers

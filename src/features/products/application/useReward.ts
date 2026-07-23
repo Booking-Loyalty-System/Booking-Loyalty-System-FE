@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { RewardRepositoryImplement } from '../infrastructure/repositories/reward/reward.repository.implement.ts';
-import type { RewardDto, RedemptionDto, MappedVoucher } from '../domain/models/voucher/voucher.model.ts';
+import type { RewardDto, RedemptionDto, MappedVoucher, Voucher } from '../domain/models/voucher/voucher.model.ts';
 import { useTranslation } from 'react-i18next';
 import { translateDynamic } from '@/shared/utils/translateDynamic.ts';
 
