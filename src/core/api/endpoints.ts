@@ -67,6 +67,7 @@ export const ENDPOINTS = {
     LOYALTY: {
         BALANCE: '/loyalty/balance',
         HISTORY: '/loyalty/history',
+        MY_VOUCHERS: '/loyalty/my-vouchers'
     },
 
     ADMIN: {

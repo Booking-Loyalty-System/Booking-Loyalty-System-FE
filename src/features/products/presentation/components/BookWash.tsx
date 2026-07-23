@@ -243,7 +243,13 @@ export const BookWash: React.FC = () => {
   const { validatePromotion, getEligiblePromotions } = usePromotion();
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
-  const { redeemedVouchersOnly, isLoadingRedemptions, redemptions } = useReward();
+  const { 
+    redeemedVouchersOnly, 
+    isLoadingRedemptions, 
+    redemptions,
+    myVouchers,
+    isLoadingVouchers
+  } = useReward();
 
   const totalWashes = customerMe?.totalWashes ?? 0;
   const earnedFreeWashes = Math.floor(totalWashes / 7);
@@ -341,8 +347,16 @@ export const BookWash: React.FC = () => {
     setHasAppliedAutoPromo(false);
   }, [selectedBranchId, selectedPackageId]);
 
-  // Auto-apply best promotion
+  // Auto-apply best promotion — bỏ qua nếu voucher hiện tại là Free Wash
   useEffect(() => {
+    // Nếu voucher đang chọn là Free Wash → không áp dụng promotion
+    const isActiveFreeWash = !!(selectedVoucher && (selectedVoucher as any).isFreeWash === true);
+    if (isActiveFreeWash) {
+      setAppliedPromotion(null);
+      setHasAppliedAutoPromo(true);
+      return;
+    }
+
     if (
       hasAppliedAutoPromo ||
       isLoadingEligible ||
@@ -417,8 +431,21 @@ export const BookWash: React.FC = () => {
     selectedPackageId,
     eligiblePromotions,
     currentPackage,
+    selectedVoucher,
     t,
   ]);
+
+  // Reset selected voucher if the selected wash package becomes incompatible
+  useEffect(() => {
+    if (
+      selectedVoucher &&
+      selectedVoucher.washPackageId &&
+      selectedVoucher.washPackageId !== selectedPackageId
+    ) {
+      setSelectedVoucher(null);
+      toast.warning("Voucher đã bị gỡ bỏ do không tương thích với gói dịch vụ mới chọn.");
+    }
+  }, [selectedPackageId, selectedVoucher]);
 
   // 5. Handlers
   const handleInputChange = (
@@ -525,7 +552,7 @@ export const BookWash: React.FC = () => {
   }, [dynamicDateSlots, selectedDate]);
 
   // 6. Renders
-  if (isLoadingVehicles || isLoadingPackages || isLoadingRedemptions) {
+  if (isLoadingVehicles || isLoadingPackages || isLoadingRedemptions || isLoadingVouchers) {
     return (
       <div className="p-10 text-center font-medium">
         {t("bookWash.loadingInfo", {
@@ -587,9 +614,34 @@ export const BookWash: React.FC = () => {
         />
 
         <VoucherSelection
-          activeVouchers={redeemedVouchersOnly as any}
+          activeVouchers={myVouchers as any}
           selectedVoucherId={selectedVoucher?.id || ""}
-          onSelectVoucher={setSelectedVoucher}
+          onSelectVoucher={(voucher) => {
+            // Bỏ chọn voucher → reset tracker để promotion tự động apply lại
+            if (!voucher) {
+              setSelectedVoucher(null);
+              setHasAppliedAutoPromo(false);
+              return;
+            }
+            if (!selectedPackageId) {
+              toast.error(
+                t("bookWash.toastNoPackage", {
+                  defaultValue: "Vui lòng chọn gói rửa xe trước!",
+                })
+              );
+              return;
+            }
+            if ((voucher as any).washPackageId && (voucher as any).washPackageId !== selectedPackageId) {
+              toast.error("Voucher này không thể dùng cho gói đó!");
+              return;
+            }
+            // Nếu là voucher Free Wash → clear promotion ngay lập tức
+            if ((voucher as any).isFreeWash === true) {
+              setAppliedPromotion(null);
+              setHasAppliedAutoPromo(true);
+            }
+            setSelectedVoucher(voucher);
+          }}
           totalPoints={customerMe?.availablePoint ?? 0}
           availableFreeWashes={availableFreeWashes}
         />

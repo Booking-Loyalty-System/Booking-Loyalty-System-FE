@@ -4,4 +4,5 @@ export interface IRewardRepository {
     getAvailableRewards(): Promise<RewardDto[]>;
     redeemReward(rewardId: string): Promise<Voucher>;
     getMyRedemptions(): Promise<RedemptionDto[]>;
+    getMyVouchers(activeOnly?: boolean): Promise<Voucher[]>;
 }
