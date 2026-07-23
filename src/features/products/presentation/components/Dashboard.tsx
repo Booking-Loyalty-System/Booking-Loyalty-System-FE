@@ -212,9 +212,9 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-10 max-w-7xl mx-auto pb-12 animate-fade-in text-slate-800 dark:text-slate-100">
       {/* WELCOME HEADER */}
       <div className="space-y-2">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+        <h1 className="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white flex items-center gap-3">
           {t("dashboard.welcomeBack", "Welcome back,")} {displayName}!
-          <span className="animate-bounce inline-block origin-bottom-right">
+          <span className="animate-bounce inline-block origin-bottom-right drop-shadow-[0_0_12px_rgba(251,191,36,0.8)] text-amber-400">
             👋
           </span>
         </h1>
@@ -249,7 +249,7 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
             <div className="relative z-10 mt-6">
-              <span className="block text-4xl font-black tracking-tighter text-slate-900 dark:text-white">
+              <span className="block text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
                 {stat.value}
               </span>
               <span className="text-sm text-slate-500 dark:text-slate-400 font-semibold mt-1 block">
@@ -359,11 +359,11 @@ export const Dashboard: React.FC = () => {
       {/* TWO COLUMNS LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* CURRENT TIER CARD - Premium */}
-        <div className="lg:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#0B0C10] dark:to-[#13151A] border border-blue-500/50 dark:border-white/10 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden shadow-2xl min-h-[380px] flex flex-col justify-between group">
+        <div className="lg:col-span-2 bg-gradient-to-br from-sky-100 via-blue-100 to-indigo-100 dark:from-[#0B0C10] dark:to-[#13151A] border border-sky-300/90 dark:border-white/10 rounded-[2.5rem] p-8 lg:p-10 relative overflow-hidden shadow-[0_8px_40px_rgba(14,165,233,0.22)] dark:shadow-2xl min-h-[380px] flex flex-col justify-between group">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
 
-          <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
-          <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-700"></div>
+          <div className="absolute -right-20 -top-20 w-80 h-80 bg-sky-400/35 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-sky-400/46 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
+          <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-cyan-400/29 dark:bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-cyan-400/40 dark:group-hover:bg-purple-500/30 transition-colors duration-700"></div>
 
           <div className="space-y-8 relative z-10">
             <div className="flex justify-between items-start">
@@ -372,10 +372,10 @@ export const Dashboard: React.FC = () => {
                   <Award className="w-8 h-8 text-white drop-shadow-md" />
                 </div>
                 <div>
-                  <span className="block text-xs font-black text-slate-400 tracking-widest uppercase mb-1">
+                  <span className="block text-xs font-black text-sky-600 dark:text-slate-400 tracking-widest uppercase mb-1">
                     {t("dashboard.currentTier", "Current Tier")}
                   </span>
-                  <h2 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+                  <h2 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 dark:from-white dark:to-slate-400">
                     {isCustomerLoading
                       ? t("dashboard.loading", "Loading...")
                       : t(`loyaltyTier.tiers.${tier.toLowerCase()}`, { defaultValue: `${tier} Member` })}
@@ -385,18 +385,18 @@ export const Dashboard: React.FC = () => {
               <Sparkles className="w-8 h-8 text-amber-400 animate-pulse" />
             </div>
 
-            <div className="space-y-3 bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
-              <div className="flex justify-between text-sm font-bold text-slate-300">
+            <div className="space-y-3 bg-sky-50/80 dark:bg-white/5 backdrop-blur-md border border-sky-300/90 dark:border-white/10 p-6 rounded-3xl shadow-sm">
+              <div className="flex justify-between text-sm font-bold text-slate-600 dark:text-slate-300">
                 <span>
                   {t("dashboard.progressToNextTier", "Progress to Next Tier")}
                 </span>
-                <span className="text-white">
+                <span className="text-blue-950 dark:text-white">
                   {isMaxTier
                     ? `${totalPoint} pts`
                     : `${totalPoint} / ${targetPoints} pts`}
                 </span>
               </div>
-              <div className="w-full bg-black/50 h-3 rounded-full overflow-hidden p-0.5 border border-white/5">
+              <div className="w-full bg-sky-200 dark:bg-black/50 h-3 rounded-full overflow-hidden p-0.5 border border-sky-300/60 dark:border-white/5">
                 <div
                   className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] relative"
                   style={{
@@ -406,14 +406,14 @@ export const Dashboard: React.FC = () => {
                   <div className="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
                 </div>
               </div>
-              <p className="text-sm font-medium text-slate-400 pt-1">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 pt-1">
                 {isMaxTier ? (
                   <span className="text-emerald-400 font-bold">
                     {t("loyaltyTier.maxTierReached", "Đã đạt hạng cao nhất")}
                   </span>
                 ) : (
                   <>
-                    <span className="text-white font-bold">
+                    <span className="text-blue-950 dark:text-white font-bold">
                       {pointsToGo}
                     </span>{" "}
                     {t("dashboard.pointsToNextTier", "points to next tier")}
@@ -424,27 +424,27 @@ export const Dashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-4 pt-6 mt-6 relative z-10">
-            <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-5">
-              <span className="block text-2xl lg:text-3xl font-black text-white">
+            <div className="bg-sky-50/90 dark:bg-white/5 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors backdrop-blur-sm border border-sky-300/80 dark:border-white/10 rounded-2xl p-4 lg:p-5 shadow-sm">
+              <span className="block text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
                 {totalPoint}
               </span>
-              <span className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 block">
+              <span className="text-[10px] lg:text-xs font-bold text-sky-600 dark:text-slate-400 uppercase tracking-widest mt-1 block">
                 {t("dashboard.totalPoints", "Total Points")}
               </span>
             </div>
-            <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-5">
-              <span className="block text-2xl lg:text-3xl font-black text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.3)]">
+            <div className="bg-sky-50/90 dark:bg-white/5 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors backdrop-blur-sm border border-sky-300/80 dark:border-white/10 rounded-2xl p-4 lg:p-5 shadow-sm">
+              <span className="block text-2xl lg:text-3xl font-black text-amber-500 dark:text-amber-400">
                 {getMultiplier(tier)}
               </span>
-              <span className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 block">
+              <span className="text-[10px] lg:text-xs font-bold text-sky-600 dark:text-slate-400 uppercase tracking-widest mt-1 block">
                 {t("dashboard.multiplier", "Points Multiplier")}
               </span>
             </div>
-            <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/10 rounded-2xl p-4 lg:p-5">
-              <span className="block text-2xl lg:text-3xl font-black text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.3)]">
+            <div className="bg-sky-50/90 dark:bg-white/5 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors backdrop-blur-sm border border-sky-300/80 dark:border-white/10 rounded-2xl p-4 lg:p-5 shadow-sm">
+              <span className="block text-2xl lg:text-3xl font-black text-blue-600 dark:text-blue-400">
                 {customerMe?.bookingWindow || getBookingDays(tier)}
               </span>
-              <span className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 block">
+              <span className="text-[10px] lg:text-xs font-bold text-sky-600 dark:text-slate-400 uppercase tracking-widest mt-1 block">
                 {t("dashboard.bookingDays", "Booking Days")}
               </span>
             </div>
@@ -454,7 +454,7 @@ export const Dashboard: React.FC = () => {
         {/* UPCOMING BOOKING - Premium */}
         <div className="bg-white dark:bg-[#13151A] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col min-h-[380px] group">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-4 mb-6">
-            <h3 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-3">
+            <h3 className="text-xl font-extrabold text-blue-950 dark:text-white flex items-center gap-3">
               {t("dashboard.upcomingBooking.title", "Upcoming Booking")}
             </h3>
             <div className="p-2 bg-slate-50 dark:bg-white/5 rounded-full">
@@ -474,7 +474,7 @@ export const Dashboard: React.FC = () => {
                     <Calendar className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-slate-900 dark:text-white text-base lg:text-lg line-clamp-1">
+                    <h4 className="font-extrabold text-blue-950 dark:text-white text-base lg:text-lg line-clamp-1">
                       {nextBooking.washPackageName || "Dịch vụ rửa xe"}
                     </h4>
                     <p className="text-sm text-slate-500 font-bold mt-0.5">
@@ -496,7 +496,7 @@ export const Dashboard: React.FC = () => {
                     <span className="text-slate-500">
                       {t("dashboard.bookingTime", "Time")}
                     </span>
-                    <span className="text-slate-900 dark:text-white text-lg font-black">
+                    <span className="text-blue-950 dark:text-white text-lg font-black">
                       {nextBooking.startTime}
                     </span>
                   </div>
@@ -504,7 +504,7 @@ export const Dashboard: React.FC = () => {
                     <span className="text-slate-500">
                       {t("dashboard.bookingVehicle", "Vehicle")}
                     </span>
-                    <span className="text-slate-900 dark:text-white uppercase font-bold tracking-wider bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-lg">
+                    <span className="text-blue-950 dark:text-white uppercase font-bold tracking-wider bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-lg">
                       {(nextBooking as any).licensePlate ||
                         (nextBooking as any).vehiclePlate ||
                         "N/A"}
@@ -568,7 +568,7 @@ export const Dashboard: React.FC = () => {
 
       {/* QUICK ACTIONS */}
       <div className="space-y-6 pt-4">
-        <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+        <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight">
           {t("dashboard.quickActionsTitle", "Quick Actions")}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -584,7 +584,7 @@ export const Dashboard: React.FC = () => {
                 {action.icon}
               </div>
               <div>
-                <h4 className="font-extrabold text-slate-900 dark:text-white text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h4 className="font-extrabold text-blue-950 dark:text-white text-base group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {action.name}
                 </h4>
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">

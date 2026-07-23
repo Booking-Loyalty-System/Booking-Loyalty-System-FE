@@ -68,7 +68,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
         <div className="space-y-3">
           <div>
             <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">Vehicle Type</p>
-            <p className="text-base font-extrabold text-slate-900 dark:text-white">
+            <p className="text-base font-extrabold text-blue-950 dark:text-white">
               {/* Sửa ở đây để render giá trị đúng */}
               {vehicleTypeToDisplay}
             </p>
@@ -77,7 +77,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             <p className="text-xs font-semibold text-slate-400 dark:text-slate-500">
               Name / Model
             </p>
-            <p className="text-base font-extrabold text-slate-900 dark:text-white">
+            <p className="text-base font-extrabold text-blue-950 dark:text-white">
               {car.brand} - {car.vehicleName}
             </p>
           </div>

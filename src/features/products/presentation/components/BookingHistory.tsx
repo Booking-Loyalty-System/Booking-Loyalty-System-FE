@@ -226,7 +226,7 @@ export const BookingHistory: React.FC = () => {
               <div className="p-2 bg-amber-50 dark:bg-amber-500/10 rounded-xl">
                 <AlertTriangle className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+              <h3 className="text-xl font-black text-blue-950 dark:text-white tracking-tight">
                 Confirm Cancellation
               </h3>
             </div>
@@ -278,7 +278,7 @@ export const BookingHistory: React.FC = () => {
                 onChange={(e) => setCustomReason(e.target.value)}
                 placeholder="Please enter detailed reason here..."
                 rows={3}
-                className="w-full border border-slate-200 dark:border-white/10 dark:bg-black/20 rounded-2xl p-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20 transition-all"
+                className="w-full border border-slate-200 dark:border-white/10 dark:bg-black/20 rounded-2xl p-3.5 text-sm font-medium text-blue-950 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20 transition-all"
               />
             )}
 
@@ -311,16 +311,19 @@ export const BookingHistory: React.FC = () => {
         {stats.map((stat, i) => (
           <div
             key={i}
-            className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-[2rem] p-5 shadow-sm flex items-center gap-4"
+            className="bg-white dark:bg-[#13151A] border border-slate-100 dark:border-white/5 rounded-[2rem] p-5 shadow-sm flex items-center gap-4 min-w-0"
           >
             <div className={`p-3.5 rounded-2xl ${stat.bg} shrink-0`}>
               {stat.icon}
             </div>
-            <div className="space-y-0.5">
-              <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <div className="space-y-0.5 min-w-0 flex-1">
+              <p 
+                className="text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight truncate"
+                title={String(stat.value)}
+              >
                 {stat.value}
               </p>
-              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider truncate">
                 {stat.title}
               </p>
             </div>
@@ -372,7 +375,7 @@ export const BookingHistory: React.FC = () => {
                     <td className="py-4 px-6 font-mono font-bold text-blue-600 dark:text-blue-400">
                       {item.bookingCode}
                     </td>
-                    <td className="py-4 px-6 text-slate-900 dark:text-white font-bold">
+                    <td className="py-4 px-6 text-blue-950 dark:text-white font-bold">
                       {item.washPackageName}
                     </td>
                     <td className="py-4 px-6">
@@ -397,7 +400,7 @@ export const BookingHistory: React.FC = () => {
                         )}
                       </span>
                     </td>
-                    <td className="py-4 px-6 font-extrabold text-slate-900 dark:text-white">
+                    <td className="py-4 px-6 font-extrabold text-blue-950 dark:text-white">
                       {formatCurrency(item.totalPrice)}
                     </td>
                     <td className="py-4 px-6 text-right space-x-2">

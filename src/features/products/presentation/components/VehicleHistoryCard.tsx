@@ -26,7 +26,7 @@ export const VehicleHistoryCard: React.FC<VehicleHistoryCardProps> = ({
         {/* Header (Cố định ở trên) */}
         <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-xl font-bold text-blue-950 dark:text-white">
               Service History
             </h2>
             <p className="text-sm text-slate-500 font-medium mt-0.5">
@@ -64,7 +64,7 @@ export const VehicleHistoryCard: React.FC<VehicleHistoryCardProps> = ({
                         {history.washPackageName}
                       </h4>
                     </div>
-                    <span className="text-sm font-black text-slate-900 dark:text-white">
+                    <span className="text-sm font-black text-blue-950 dark:text-white">
                       {new Intl.NumberFormat("vi-VN", {
                         style: "currency",
                         currency: "VND",

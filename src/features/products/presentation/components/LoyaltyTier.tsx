@@ -163,17 +163,17 @@ export const LoyaltyTier: React.FC = () => {
   return (
     <div className="min-h-screen bg-transparent p-4 md:p-8 font-sans antialiased text-slate-800 dark:text-white">
       <div className="max-w-6xl mx-auto space-y-8">
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-[#0B0C10] dark:to-[#13151A] border border-blue-500/50 dark:border-white/10 text-white rounded-[2.5rem] p-6 md:p-10 shadow-2xl group">
+        <div className="relative overflow-hidden bg-gradient-to-br from-sky-100 via-blue-100 to-indigo-100 dark:from-[#0B0C10] dark:to-[#13151A] border border-sky-300/90 dark:border-white/10 rounded-[2.5rem] p-6 md:p-10 shadow-[0_8px_40px_rgba(14,165,233,0.22)] dark:shadow-2xl group">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none mix-blend-overlay"></div>
-          <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/30 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
-          <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-700"></div>
+          <div className="absolute -right-20 -top-20 w-80 h-80 bg-sky-400/35 dark:bg-blue-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-sky-400/46 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
+          <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-cyan-400/29 dark:bg-purple-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-cyan-400/40 dark:group-hover:bg-purple-500/30 transition-colors duration-700"></div>
 
           <div className="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
             <div>
-              <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">
+              <p className="text-sm font-medium text-sky-600 dark:text-slate-400 uppercase tracking-wider">
                 {t("loyaltyTier.currentTier")}
               </p>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-1 flex flex-wrap items-center gap-2 capitalize text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-1 flex flex-wrap items-center gap-2 capitalize text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 dark:from-white dark:to-slate-400">
                 {t(`loyaltyTier.tiers.${currentTierName.toLowerCase()}`, {
                   defaultValue: `${currentTierName} Member`,
                 })}
@@ -184,9 +184,9 @@ export const LoyaltyTier: React.FC = () => {
                 )}
               </h1>
               {/* Hiển thị số dư khả dụng ở Banner */}
-              <p className="text-xl font-semibold text-slate-300 mt-2">
+              <p className="text-xl font-semibold text-slate-700 dark:text-slate-300 mt-2">
                 {totalPoints}{" "}
-                <span className="text-sm font-medium opacity-80 text-slate-400">
+                <span className="text-sm font-medium opacity-80 text-slate-500 dark:text-slate-400">
                   {t("loyaltyTier.pointsEarned", {
                     defaultValue: "Points Earned",
                   })}
@@ -194,16 +194,16 @@ export const LoyaltyTier: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl flex items-center gap-3 border border-white/10 shrink-0">
-              <div className="p-3 bg-white/20 rounded-lg">
-                <Crown className="w-6 h-6 text-white" />
+            <div className="bg-sky-50/90 dark:bg-white/10 backdrop-blur-md p-4 rounded-xl flex items-center gap-3 border border-sky-300/70 dark:border-white/10 shrink-0 shadow-sm">
+              <div className="p-3 bg-sky-100 dark:bg-white/20 rounded-lg">
+                <Crown className="w-6 h-6 text-sky-600 dark:text-white" />
               </div>
             </div>
           </div>
 
           {/* Thanh Tiến trình (Progress Bar) - Tính dựa trên totalPoints */}
-          <div className="mt-8 relative z-10 bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-3xl">
-            <div className="flex flex-col sm:flex-row justify-between text-sm font-medium text-slate-300 mb-2 gap-1.5 flex-wrap">
+          <div className="mt-8 relative z-10 bg-sky-50/80 dark:bg-white/5 backdrop-blur-md border border-sky-300/90 dark:border-white/10 p-6 rounded-3xl shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between text-sm font-medium text-slate-600 dark:text-slate-300 mb-2 gap-1.5 flex-wrap">
               <span>
                 {t("loyaltyTier.progressToLabel", {
                   nextTier: t(
@@ -212,7 +212,7 @@ export const LoyaltyTier: React.FC = () => {
                   ),
                 })}
               </span>
-              <span className="text-white font-bold">
+              <span className="text-blue-950 dark:text-white font-bold">
                 {totalPoints >= 1000
                   ? t("loyaltyTier.maxTierReached", {
                       defaultValue: "Max Tier Reached",
@@ -223,7 +223,7 @@ export const LoyaltyTier: React.FC = () => {
                     })}
               </span>
             </div>
-            <div className="w-full bg-black/50 h-3 rounded-full overflow-hidden p-0.5 border border-white/5">
+            <div className="w-full bg-sky-200 dark:bg-black/50 h-3 rounded-full overflow-hidden p-0.5 border border-sky-300/60 dark:border-white/5">
               <div
                 className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(59,130,246,0.5)] relative"
                 style={{ width: `${progressPercentage}%` }}
@@ -231,7 +231,7 @@ export const LoyaltyTier: React.FC = () => {
                 <div className="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
               </div>
             </div>
-            <p className="text-xs text-slate-400 mt-3 italic">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 italic">
               {t("loyaltyTier.tiersAutoReviewed", {
                 defaultValue: `Tiers are auto-reviewed & upgraded/downgraded monthly based on your past 3 months' data. Progression is based on Total Points (${totalPoints}).`,
               })}
@@ -239,28 +239,28 @@ export const LoyaltyTier: React.FC = () => {
           </div>
 
           {/* Chỉ số Tóm tắt nhanh */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/10 relative z-10">
-            <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-white/10">
-              <TrendingUp className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className="text-2xl font-bold">{availablePoints}</p>
-              <p className="text-xs text-slate-400">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-sky-300/60 dark:border-white/10 relative z-10">
+            <div className="bg-white/70 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-sky-300/70 dark:border-white/10 shadow-sm">
+              <TrendingUp className="w-5 h-5 mx-auto mb-1 text-sky-500 dark:text-slate-400" />
+              <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{availablePoints}</p>
+              <p className="text-xs text-sky-600 dark:text-slate-400">
                 {t("loyaltyTier.availablePoints", {
                   defaultValue: "Available Points",
                 })}
               </p>
             </div>
-            <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-white/10">
-              <Gift className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className="text-2xl font-bold text-amber-400">
+            <div className="bg-white/70 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-sky-300/70 dark:border-white/10 shadow-sm">
+              <Gift className="w-5 h-5 mx-auto mb-1 text-sky-500 dark:text-slate-400" />
+              <p className="text-2xl font-bold text-amber-500 dark:text-amber-400">
                 {currentTierInfo.discount}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-sky-600 dark:text-slate-400">
                 {t("loyaltyTier.discountRateCard")}
               </p>
             </div>
-            <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-white/10">
-              <Award className="w-5 h-5 mx-auto mb-1 text-slate-400" />
-              <p className="text-2xl font-bold text-blue-400">
+            <div className="bg-white/70 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-sky-300/70 dark:border-white/10 shadow-sm">
+              <Award className="w-5 h-5 mx-auto mb-1 text-sky-500 dark:text-slate-400" />
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {currentTierInfo.multiplier}
               </p>
               <p className="text-xs text-slate-400">

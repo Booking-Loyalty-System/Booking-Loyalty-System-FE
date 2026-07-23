@@ -31,7 +31,7 @@ export const useCustomerChat = () => {
     const [messages, setMessages] = useState<UnifiedMessage[]>([
         {
             role: 'assistant',
-            content: 'Xin chào! Tôi là trợ lý AI của AutoWash Pro 🚗 Tôi có thể giúp bạn tìm hiểu về các gói dịch vụ, chi nhánh, hoặc hỗ trợ đặt lịch. Bạn cần hỗ trợ gì ạ?',
+            content: 'Xin chào! Tôi là trợ lý AI của AutoWash Premium 🚗 Tôi có thể giúp bạn tìm hiểu về các gói dịch vụ, chi nhánh, hoặc hỗ trợ đặt lịch. Bạn cần hỗ trợ gì ạ?',
             timestamp: new Date()
         }
     ]);
@@ -240,7 +240,7 @@ export const useCustomerChat = () => {
         setIsLiveChat(false);
         setCurrentSessionId(null);
         setIsRemoteClosed(false);
-        setMessages([{ role: 'assistant', content: 'Xin chào! Tôi là trợ lý AI của AutoWash Pro 🚗 Bạn cần hỗ trợ gì ạ?', timestamp: new Date() }]);
+        setMessages([{ role: 'assistant', content: 'Xin chào! Tôi là trợ lý AI của AutoWash Premium 🚗 Bạn cần hỗ trợ gì ạ?', timestamp: new Date() }]);
     };
 
     return {

@@ -126,7 +126,7 @@ export const NotificationCenter: React.FC = () => {
                         <div className="flex-1 space-y-3">
                             <div className="flex items-center justify-between gap-4">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-base font-bold text-slate-900">{item.title}</h3>
+                                    <h3 className="text-base font-bold text-blue-950">{item.title}</h3>
                                     {item.isUnread && <span className="w-2 h-2 bg-blue-600 rounded-full"></span>}
                                 </div>
                                 <span className="text-xs text-slate-400 font-semibold flex items-center gap-1">

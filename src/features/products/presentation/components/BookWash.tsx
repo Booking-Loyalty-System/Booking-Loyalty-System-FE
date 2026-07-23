@@ -114,7 +114,7 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
         <div className="p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-full text-emerald-500 dark:text-emerald-400">
           <CheckCircle2 className="w-16 h-16" />
         </div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight">
           {t("bookWash.successTitle", { defaultValue: "Đặt Lịch Thành Công!" })}
         </h1>
         <p className="text-sm font-medium text-slate-400 dark:text-slate-500">
@@ -208,7 +208,7 @@ const BookingSuccessScreen: React.FC<SuccessScreenProps> = ({
             defaultValue: "Tổng chi phí thanh toán:",
           })}
         </span>
-        <span className="text-2xl font-black text-slate-900 dark:text-white">
+        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
           {formatCurrency(booking.totalPrice)}
         </span>
       </div>
