@@ -124,7 +124,15 @@
       "selectTime": "Select Time",
       "noSlots": "No available time slots",
       "available": "Available",
-      "fullyBooked": "Fully Booked"
+      "fullyBooked": "Fully Booked",
+      "showMore": "Show next 7 days",
+      "collapse": "Collapse",
+      "tierLimit": "Your tier allows booking up to {{maxDate}}",
+      "availableTimeSlotsTitle": "Available Time Slots",
+      "loadingSlots": "Loading available slots...",
+      "selectBranchPrompt": "Please select a branch to view available slots...",
+      "closed": "Closed",
+      "full": "Full"
     },
     "voucher": {
       "title": "Apply Voucher (Optional)",
@@ -373,7 +381,17 @@
       "title": "No notifications",
       "description": "You're all caught up!"
     },
-    "markAsRead": "Mark as read"
+    "markAsRead": "Mark as read",
+    "points": {
+      "redeemTitle": "Voucher Redeemed Successfully 🎁",
+      "redeemMessage": "You have spent {{points}} points to redeem the voucher: {{desc}}. Your remaining balance is: {{remaining}} points.",
+      "earnedTitle": "Points Earned Successfully 🎉",
+      "earnedMessage": "Transaction {{code}} on {{date}} was paid successfully for {{amount}}. You have earned {{points}} points. Thank you for choosing Auto Wash Premium!"
+    },
+    "tier": {
+      "infoTitle": "Tier & Points Info 👑",
+      "infoMessage": "You are currently a {{tier}}. Your current balance is: {{points}} points."
+    }
   },
   "vehicles": {
     "title": "My Vehicles",
@@ -622,6 +640,52 @@
     "toast": {
       "success": "Thank you for your feedback! 🌟",
       "error": "Failed to submit feedback, please try again."
+    }
+  },
+  "dynamic": {
+    "packages": {
+      "basic": "Basic Wash",
+      "premium": "Premium Wash",
+      "deluxe": "Deluxe Wash",
+      "interior": "Interior Detailing",
+      "full": "Full Detailing",
+      "vip": "VIP Detailing"
+    },
+    "packageDesc": {
+      "basic": "Standard exterior wash with basic interior vacuuming",
+      "premium": "High-quality snow foam wash, undercarriage spray, detailed vacuuming and interior conditioning",
+      "deluxe": "Premium package with high-gloss ceramic coating for 3-month paint protection",
+      "interior": "Deep leather cleaning, carpet washing, and comprehensive ozone odor removal",
+      "full": "Comprehensive interior and exterior cleaning, glass stain removal, and light polishing",
+      "vip": "The ultimate detailing experience with full paint correction and high-end Ceramic coating"
+    },
+    "status": {
+      "pending": "Pending",
+      "queued": "Queued",
+      "checkedIn": "Checked In",
+      "checkedOut": "Checked Out",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "tiers": {
+      "member": "Member",
+      "silver": "Silver Tier",
+      "gold": "Gold Tier",
+      "platinum": "Platinum Tier",
+      "diamond": "Diamond Tier"
+    },
+    "notifications": {
+      "statusUpdateTitle": "Booking Status Updated",
+      "newBookingTitle": "New Booking Created",
+      "reminderTitle": "Booking Reminder",
+      "exclusiveGiftTitle": "Exclusive Appreciation Gift",
+      "yourBooking": "Your booking",
+      "bookingWord": "Booking",
+      "hasBeenUpdatedTo": "has been updated to",
+      "hasChangedTo": "has changed to",
+      "statusLabel": "status:",
+      "bookingCodeLabel": "code"
     }
   }
 }

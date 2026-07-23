@@ -31,7 +31,7 @@ export const Dashboard: React.FC = () => {
     cancelBooking,
   } = useBooking();
   const navigate = useNavigate();
-  const { t } = useTranslation("customer");
+  const { t, i18n } = useTranslation("customer");
 
   const displayName = customerMe?.fullName || user?.fullName || "Khách hàng";
   const totalPoint = customerMe?.totalPoint ?? 0;
@@ -479,7 +479,7 @@ export const Dashboard: React.FC = () => {
                     </h4>
                     <p className="text-sm text-slate-500 font-bold mt-0.5">
                       {new Date(nextBooking.bookingDate).toLocaleDateString(
-                        "vi-VN",
+                        i18n.language === 'en' ? 'en-US' : 'vi-VN',
                         {
                           weekday: "long",
                           year: "numeric",

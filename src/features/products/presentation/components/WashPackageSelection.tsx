@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import {Droplet, ShieldAlert, Sparkles} from "lucide-react";
 import type {WashPackageSelectionProps} from "@/features/products/domain/models/wash-package/wash-package.model.ts";
+import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 const getPackageUIVisual = (packageName: string | null) => {
     const name = packageName?.toLowerCase() || '';
@@ -20,7 +21,7 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
     const { t } = useTranslation('customer');
     return (
         <div className="space-y-4">
-            <h3 className="text-xl font-bold text-[#0f172a] dark:text-white">{t('bookWash.package.selectTitle', { defaultValue: "Select Wash Package" })}</h3>
+            <h3 className="text-xl font-bold text-[#0f172a] dark:text-white">{t('bookWash.package.title', { defaultValue: "Select Wash Package" })}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {washPackages.map((pkg) => {
                     const isSelected = selectedPackageId === pkg.id;
@@ -39,8 +40,8 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                                     {visual.icon}
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-[#0f172a] dark:text-white text-lg">{pkg.name}</h4>
-                                    <p className="text-xs text-[#64748b] dark:text-slate-400 mt-1 font-medium line-clamp-2">{pkg.description}</p>
+                                    <h4 className="font-bold text-[#0f172a] dark:text-white text-lg">{translateDynamic(pkg.name, 'package', t)}</h4>
+                                    <p className="text-xs text-[#64748b] dark:text-slate-400 mt-1 font-medium line-clamp-2">{translateDynamic(pkg.name, 'packageDesc', t, pkg.description || undefined)}</p>
                                 </div>
                                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-2">
                                     <span className="text-2xl xl:text-3xl font-extrabold text-[#0f172a] dark:text-white break-words">{pkg.price.toLocaleString('vi-VN')}đ</span>

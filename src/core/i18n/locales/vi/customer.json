@@ -124,7 +124,15 @@
       "selectTime": "Chọn Giờ",
       "noSlots": "Không có khung giờ trống",
       "available": "Còn Trống",
-      "fullyBooked": "Hết Chỗ"
+      "fullyBooked": "Hết Chỗ",
+      "showMore": "Xem tiếp 7 ngày tới",
+      "collapse": "Thu gọn",
+      "tierLimit": "Hạng của bạn chỉ được đặt trước tới ngày {{maxDate}}",
+      "availableTimeSlotsTitle": "Ca Trống",
+      "loadingSlots": "Đang tải dữ liệu ca trống...",
+      "selectBranchPrompt": "Vui lòng chọn chi nhánh để cập nhật ca trống...",
+      "closed": "Đã Đóng",
+      "full": "Đã Kín Chỗ"
     },
     "voucher": {
       "title": "Áp Dụng Voucher (Tùy Chọn)",
@@ -373,7 +381,17 @@
       "title": "Không có thông báo",
       "description": "Bạn đã xem hết tất cả các thông báo."
     },
-    "markAsRead": "Đánh dấu đã đọc"
+    "markAsRead": "Đánh dấu đã đọc",
+    "points": {
+      "redeemTitle": "Đổi voucher thành công 🎁",
+      "redeemMessage": "Bạn đã sử dụng {{points}} điểm để đổi voucher: {{desc}}. Số điểm còn lại là: {{remaining}} điểm.",
+      "earnedTitle": "Cộng điểm thành công 🎉",
+      "earnedMessage": "Giao dịch {{code}} ngày {{date}} đã thanh toán thành công với số tiền {{amount}}. Số điểm được cộng là {{points}}. Cảm ơn quý khách đã sử dụng dịch vụ của Auto Wash Premium!"
+    },
+    "tier": {
+      "infoTitle": "Thông tin Hạng & Điểm 👑",
+      "infoMessage": "Bạn hiện đang ở hạng {{tier}}. Số điểm hiện tại của bạn là: {{points}} điểm."
+    }
   },
   "vehicles": {
     "title": "Xe Của Tôi",
@@ -622,6 +640,52 @@
     "toast": {
       "success": "Cảm ơn bạn đã gửi đánh giá! 🌟",
       "error": "Gửi đánh giá thất bại, vui lòng thử lại."
+    }
+  },
+  "dynamic": {
+    "packages": {
+      "basic": "Rửa xe cơ bản",
+      "premium": "Rửa xe cao cấp",
+      "deluxe": "Rửa xe toàn diện",
+      "interior": "Vệ sinh nội thất",
+      "full": "Detailing tổng hợp",
+      "vip": "VIP Detailing"
+    },
+    "packageDesc": {
+      "basic": "Rửa vỏ xe bằng bọt tuyết, hút bụi cơ bản nội thất",
+      "premium": "Rửa xe bọt tuyết cao cấp, xịt gầm, hút bụi chi tiết và dưỡng nội thất",
+      "deluxe": "Gói Premium kèm phủ ceramic siêu bóng bảo vệ sơn xe 3 tháng",
+      "interior": "Vệ sinh sâu ghế da, giặt thảm, khử mùi ozon toàn diện nội thất",
+      "full": "Làm sạch toàn diện cả trong lẫn ngoài, tẩy ố kính, đánh bóng nhẹ",
+      "vip": "Gói chăm sóc hoàng gia, phục hồi sơn và phủ gốm Ceramic cao cấp nhất"
+    },
+    "status": {
+      "pending": "Đang chờ xử lý",
+      "queued": "Đang xếp hàng",
+      "checkedIn": "Đã Check-in",
+      "checkedOut": "Đã Check-out",
+      "inProgress": "Đang rửa xe",
+      "completed": "Đã hoàn thành",
+      "cancelled": "Đã hủy"
+    },
+    "tiers": {
+      "member": "Thành viên",
+      "silver": "Hạng Bạc",
+      "gold": "Hạng Vàng",
+      "platinum": "Hạng Bạch kim",
+      "diamond": "Hạng Kim cương"
+    },
+    "notifications": {
+      "statusUpdateTitle": "Cập nhật trạng thái lịch rửa xe",
+      "newBookingTitle": "Có đơn đặt lịch mới",
+      "reminderTitle": "Nhắc nhở lịch rửa xe",
+      "exclusiveGiftTitle": "Quà tặng tri ân độc quyền",
+      "yourBooking": "Lịch đặt rửa xe của bạn",
+      "bookingWord": "Lịch đặt",
+      "hasBeenUpdatedTo": "đã được cập nhật sang trạng thái",
+      "hasChangedTo": "của bạn đã chuyển sang",
+      "statusLabel": "trạng thái:",
+      "bookingCodeLabel": "mã đơn"
     }
   }
 }

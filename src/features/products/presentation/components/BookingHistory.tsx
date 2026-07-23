@@ -18,6 +18,7 @@ import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { ReschedulePicker } from "@/features/products/presentation/components/ReschedulePicker.tsx";
 import { FeedbackModal } from "@/features/products/presentation/components/FeedbackModal";
+import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 export const BookingHistory: React.FC = () => {
   const { t } = useTranslation("customer");
@@ -376,7 +377,7 @@ export const BookingHistory: React.FC = () => {
                       {item.bookingCode}
                     </td>
                     <td className="py-4 px-6 text-blue-950 dark:text-white font-bold">
-                      {item.washPackageName}
+                      {translateDynamic(item.washPackageName, 'package', t)}
                     </td>
                     <td className="py-4 px-6">
                       <div>{item.bookingDate}</div>
