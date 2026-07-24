@@ -334,7 +334,7 @@ export const QueueMonitor: React.FC = () => {
     <div className="space-y-6 font-sans antialiased text-slate-800">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight flex items-center gap-3">
             Queue Monitor
           </h1>
           <p className="text-slate-500 text-sm font-medium mt-1">
@@ -376,7 +376,7 @@ export const QueueMonitor: React.FC = () => {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               Tổng Xe Đang Chờ
             </span>
-            <h3 className="text-4xl font-extrabold text-slate-900">
+            <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
               {isBookingsLoading ? "..." : totalWaitingVehicles}
             </h3>
           </div>
@@ -390,7 +390,7 @@ export const QueueMonitor: React.FC = () => {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               Khoang Trống
             </span>
-            <h3 className="text-4xl font-extrabold text-slate-900">
+            <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
               {isWashBaysLoading ? (
                 "..."
               ) : (
@@ -413,7 +413,7 @@ export const QueueMonitor: React.FC = () => {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               TG Chờ TB
             </span>
-            <h3 className="text-4xl font-extrabold text-slate-900">
+            <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
               {isBookingsLoading ? "..." : avgWaitTime}{" "}
               <span className="text-xl font-bold text-slate-400">phút</span>
             </h3>
@@ -475,7 +475,7 @@ export const QueueMonitor: React.FC = () => {
                           <span className="flex items-center justify-center bg-slate-900 text-white font-bold text-[10px] w-5 h-5 rounded-md shrink-0">
                             #{idx + 1}
                           </span>
-                          <h4 className="font-extrabold text-slate-900 text-sm tracking-tight truncate">
+                          <h4 className="font-extrabold text-blue-950 text-sm tracking-tight truncate">
                             {b.licensePlate || "N/A"}
                           </h4>
                         </div>
@@ -574,7 +574,7 @@ export const QueueMonitor: React.FC = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <h3
-                            className={`font-bold text-base ${bay.isMaintenance ? "text-rose-900" : "text-slate-900"}`}
+                            className={`font-bold text-base ${bay.isMaintenance ? "text-rose-900" : "text-blue-950"}`}
                           >
                             {bay.name}
                           </h3>
@@ -643,7 +643,7 @@ export const QueueMonitor: React.FC = () => {
                           Xe Đang Rửa Trực Tiếp
                         </p>
                         <div>
-                          <h4 className="font-extrabold text-slate-900 text-base">
+                          <h4 className="font-extrabold text-blue-950 text-base">
                             {bay.booking.licensePlate}
                             <span className="ml-2 font-medium text-sm text-slate-500">
                               ({bay.booking.vehicleName})
@@ -715,11 +715,11 @@ export const QueueMonitor: React.FC = () => {
             <div className="p-6">
               <p className="text-sm text-slate-600 mb-4">
                 Hệ thống thấy xe biển số{" "}
-                <span className="font-bold text-slate-900">
+                <span className="font-bold text-blue-950">
                   {suggestionModal.targetBookingPlate}
                 </span>{" "}
                 (nhóm{" "}
-                <span className="font-bold text-slate-900 uppercase">
+                <span className="font-bold text-blue-950 uppercase">
                   {suggestionModal.targetBookingType}
                 </span>
                 ) có thể được bắt đầu rửa ngay lập tức tại:
@@ -776,7 +776,7 @@ export const QueueMonitor: React.FC = () => {
                   <LayoutGrid className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-extrabold text-xl text-slate-900">
+                  <h2 className="font-extrabold text-xl text-blue-950">
                     {activeBayDetail.name}
                   </h2>
                   <p className="text-xs text-slate-500 font-medium">
@@ -798,7 +798,7 @@ export const QueueMonitor: React.FC = () => {
                   <span className="text-[11px] font-bold text-blue-500 uppercase tracking-wider block mb-1">
                     Xe Đang Chờ Tại Khoang
                   </span>
-                  <h4 className="text-2xl font-black text-slate-900">
+                  <h4 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
                     {activeBayDetail.bayQueue.length} xe
                   </h4>
                 </div>
@@ -806,7 +806,7 @@ export const QueueMonitor: React.FC = () => {
                   <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-wider block mb-1">
                     Tổng Thời Gian Giải Quyết
                   </span>
-                  <h4 className="text-2xl font-black text-slate-900">
+                  <h4 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
                     {activeBayDetail.totalBayWaitTime}{" "}
                     <span className="text-sm font-semibold text-slate-400">
                       phút chờ
@@ -824,7 +824,7 @@ export const QueueMonitor: React.FC = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-                        <span className="text-sm font-black text-slate-900">
+                        <span className="text-sm font-black text-blue-950">
                           {activeBayDetail.booking.licensePlate}
                         </span>
                       </div>
@@ -877,7 +877,7 @@ export const QueueMonitor: React.FC = () => {
                             {index + 1}
                           </span>
                           <div className="min-w-0">
-                            <h4 className="font-extrabold text-slate-900 text-sm truncate">
+                            <h4 className="font-extrabold text-blue-950 text-sm truncate">
                               {b.licensePlate || "N/A"}
                             </h4>
                             <p className="text-xs text-slate-500 font-medium truncate">

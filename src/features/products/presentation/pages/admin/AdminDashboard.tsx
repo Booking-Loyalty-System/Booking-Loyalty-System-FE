@@ -131,7 +131,7 @@ export function AdminDashboard() {
   ] : [];
 
   return (
-    <div className="animate-fade-in space-y-8 text-slate-900 dark:text-slate-100 pb-12">
+    <div className="animate-fade-in space-y-8 text-blue-950 dark:text-slate-100 pb-12">
       
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -157,7 +157,7 @@ export function AdminDashboard() {
                 <metric.icon className={`w-7 h-7 text-${metric.color}-600 dark:text-${metric.color}-400`} />
               </div>
             </div>
-            <p className="text-3xl font-black text-slate-900 dark:text-white mb-1 tracking-tight">
+            <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-1 tracking-tight">
               {metric.value}
             </p>
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
@@ -170,7 +170,7 @@ export function AdminDashboard() {
       {/* REVENUE AUDITING & COMPARISON */}
       <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg">
         <div className="border-b border-slate-100 dark:border-white/5 pb-6 mb-8">
-          <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">Revenue Auditing & Comparison</h3>
+          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">Revenue Auditing & Comparison</h3>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">So sánh đối soát doanh thu dựa trên các khoảng thời gian tùy chọn</p>
 
           {/* Form chọn khoảng mốc ngày */}
@@ -222,7 +222,7 @@ export function AdminDashboard() {
           <div className="space-y-6">
             <div>
               <span className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Doanh thu kỳ này</span>
-              <div className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+              <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight">
                 {(revenueComparison?.currentRevenue || 0).toLocaleString("vi-VN")} đ
               </div>
             </div>
@@ -277,7 +277,7 @@ export function AdminDashboard() {
         {/* Revenue Chart */}
         <div className="lg:col-span-2 bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
               Revenue Overview
             </h3>
             <button
@@ -311,7 +311,7 @@ export function AdminDashboard() {
 
         {/* Tier Distribution */}
         <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg flex flex-col">
-          <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6">
+          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6">
             Membership Tiers
           </h3>
           <div className="flex-1 flex flex-col justify-center">
@@ -350,7 +350,7 @@ export function AdminDashboard() {
                     ></div>
                     <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{tier.name}</span>
                   </div>
-                  <span className="text-sm font-black text-slate-900 dark:text-white">
+                  <span className="text-sm font-black text-blue-950 dark:text-white">
                     {tier.value}
                   </span>
                 </div>
@@ -363,7 +363,7 @@ export function AdminDashboard() {
       {/* Recent Bookings */}
       <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg overflow-hidden">
         <div className="p-8 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-          <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
             Recent Bookings
           </h3>
         </div>
@@ -386,13 +386,13 @@ export function AdminDashboard() {
                       {booking.id.substring(0, 8)}...
                     </code>
                   </td>
-                  <td className="px-6 py-5 text-sm font-bold text-slate-900 dark:text-white">
+                  <td className="px-6 py-5 text-sm font-bold text-blue-950 dark:text-white">
                     {booking.customer}
                   </td>
                   <td className="px-6 py-5 text-sm font-medium text-slate-600 dark:text-slate-300">
                     {booking.service}
                   </td>
-                  <td className="px-6 py-5 text-sm font-black text-slate-900 dark:text-white">
+                  <td className="px-6 py-5 text-sm font-black text-blue-950 dark:text-white">
                     {booking.amount.toLocaleString("vi-VN")} đ
                   </td>
                   <td className="px-6 py-5">
@@ -417,7 +417,7 @@ export function AdminDashboard() {
               <Settings className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+              <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
                 Tier Rules & Configuration
               </h3>
               <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">Quản lý hệ số nhân điểm cho các hạng thành viên</p>
@@ -426,7 +426,7 @@ export function AdminDashboard() {
           <button
             onClick={handleSaveTierConfig}
             disabled={isUpdatingTierConfig}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-blue-950 font-bold rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50"
           >
             <Save className="w-5 h-5" />
             {isUpdatingTierConfig ? "Saving..." : "Save Changes"}
@@ -439,7 +439,7 @@ export function AdminDashboard() {
             <div className="absolute top-0 right-0 w-20 h-20 bg-slate-200/50 dark:bg-slate-700/20 rounded-bl-full -mr-4 -mt-4"></div>
             <div className="flex items-center gap-3 mb-5 relative z-10">
               <Award className="w-6 h-6 text-slate-500" />
-              <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Member</h4>
+              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">Member</h4>
             </div>
             <div className="space-y-4 relative z-10">
               <div>
@@ -457,7 +457,7 @@ export function AdminDashboard() {
                   value={tierConfigState.memberMultiplier}
                   onChange={(e) => setTierConfigState({ ...tierConfigState, memberMultiplier: parseFloat(e.target.value) || 0 })}
                   step="0.1"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                 />
               </div>
             </div>
@@ -468,7 +468,7 @@ export function AdminDashboard() {
             <div className="absolute top-0 right-0 w-20 h-20 bg-slate-300/50 dark:bg-slate-600/30 rounded-bl-full -mr-4 -mt-4"></div>
             <div className="flex items-center gap-3 mb-5 relative z-10">
               <Award className="w-6 h-6 text-slate-600 dark:text-slate-300" />
-              <h4 className="font-extrabold text-lg text-slate-900 dark:text-white">Silver</h4>
+              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">Silver</h4>
             </div>
             <div className="space-y-4 relative z-10">
               <div>
@@ -482,7 +482,7 @@ export function AdminDashboard() {
                   value={tierConfigState.silverMultiplier}
                   onChange={(e) => setTierConfigState({ ...tierConfigState, silverMultiplier: parseFloat(e.target.value) || 0 })}
                   step="0.1"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                 />
               </div>
             </div>
@@ -552,7 +552,7 @@ export function AdminDashboard() {
 
       {/* Quick Actions */}
       <div>
-        <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6">Quick Management</h3>
+        <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6">Quick Management</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { title: 'Loyalty Programs', desc: 'Manage tiers and rewards', icon: Award, color: 'purple', path: '/admin/loyalty' },
@@ -568,7 +568,7 @@ export function AdminDashboard() {
               <div className={`w-14 h-14 bg-${action.color}-100 dark:bg-${action.color}-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-${action.color}-500 transition-colors duration-300`}>
                 <action.icon className={`w-7 h-7 text-${action.color}-600 dark:text-${action.color}-400 group-hover:text-white transition-colors`} />
               </div>
-              <h4 className="text-lg font-extrabold text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <h4 className="text-lg font-extrabold text-blue-950 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {action.title}
               </h4>
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{action.desc}</p>

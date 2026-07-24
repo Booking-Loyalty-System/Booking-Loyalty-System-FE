@@ -143,15 +143,32 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#fafafa] dark:bg-[#0B0C10] font-sans text-slate-800 dark:text-slate-200 selection:bg-amber-500 selection:text-white antialiased transition-colors duration-300 overflow-x-hidden">
+    <div className="w-full min-h-screen bg-[hsl(210,92%,91%)] dark:bg-[#0B0C10] font-sans text-slate-800 dark:text-slate-200 selection:bg-sky-400 selection:text-white antialiased transition-colors duration-300 overflow-x-hidden relative">
+
+      {/* 🌊 Aqua Premium background — chỉ hiện ở light mode */}
+      <div className="fixed inset-0 pointer-events-none z-0 dark:hidden">
+        {/* Orb góc trên trái */}
+        <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full bg-gradient-to-br from-sky-400/85 via-blue-200/40 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '9s' }} />
+        {/* Orb góc dưới phải */}
+        <div className="absolute -bottom-40 -right-20 w-[600px] h-[600px] rounded-full bg-gradient-to-tl from-cyan-400/75 via-sky-200/35 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        {/* Orb giữa-trái */}
+        <div className="absolute top-1/3 -left-20 w-[400px] h-[400px] rounded-full bg-gradient-to-r from-blue-300/65 to-transparent blur-2xl animate-pulse" style={{ animationDuration: '15s', animationDelay: '2s' }} />
+        {/* Lưới gợn nước đậm hơn */}
+        <div className="absolute inset-0 opacity-60" style={{
+          backgroundImage: 'radial-gradient(circle, rgba(14,165,233,0.12) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%)'
+        }} />
+      </div>
+
       {/* HEADER NAVBAR - Ultra Glassmorphism */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/10 px-6 lg:px-12 py-4 flex items-center justify-between transition-all duration-300">
+      <header className="fixed top-0 inset-x-0 z-50 bg-white/65 dark:bg-[#0a0a0a]/70 backdrop-blur-2xl border-b border-sky-200/50 dark:border-white/10 px-6 lg:px-12 py-4 flex items-center justify-between transition-all duration-300 shadow-[0_1px_24px_rgba(14,165,233,0.07)] dark:shadow-none">
         <div className="flex items-center gap-3 group cursor-pointer">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all duration-300 group-hover:scale-105">
             <Droplets className="w-6 h-6" />
           </div>
           <div>
-            <span className="font-extrabold text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">AutoWash Pro</span>
+            <span className="font-extrabold text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">AutoWash Premium</span>
             <span className="text-[10px] block font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest -mt-1">{t('landing.subtitle')}</span>
           </div>
         </div>
@@ -193,10 +210,10 @@ export const LandingPage: React.FC = () => {
 
       {/* HERO SECTION - Premium Modern Look */}
       <section className="relative min-h-[100vh] flex items-center pt-24 pb-12 px-6 lg:px-12 overflow-hidden">
-        {/* Abstract Glowing Orbs */}
+        {/* Abstract Glowing Orbs — Aqua Premium palette */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-          <div className="absolute top-[10%] left-[-10%] w-[500px] h-[500px] bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
-          <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-indigo-400/20 dark:bg-purple-600/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-[10%] left-[-10%] w-[500px] h-[500px] bg-sky-300/25 dark:bg-blue-600/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse"></div>
+          <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-cyan-300/20 dark:bg-purple-600/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
 
         <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-16 relative z-10">
@@ -208,7 +225,7 @@ export const LandingPage: React.FC = () => {
             </div>
 
             <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tighter leading-[1.1]">
-              <span className="block text-slate-900 dark:text-white drop-shadow-sm">
+              <span className="block text-blue-950 dark:text-white drop-shadow-sm">
                 {t('landing.title').split('\n')[0] || t('landing.title')}
               </span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-400 mt-2 pb-2">
@@ -229,7 +246,7 @@ export const LandingPage: React.FC = () => {
               </Link>
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-8 py-4 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-xl text-slate-900 dark:text-white rounded-full font-bold transition-all hover:-translate-y-1 flex items-center justify-center shadow-sm"
+                className="w-full sm:w-auto px-8 py-4 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 backdrop-blur-xl text-blue-950 dark:text-white rounded-full font-bold transition-all hover:-translate-y-1 flex items-center justify-center shadow-sm"
               >
                 {t('landing.bookService')}
               </Link>
@@ -249,7 +266,7 @@ export const LandingPage: React.FC = () => {
                       <Crown className="w-7 h-7 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">{t('landing.membershipBenefits')}</p>
+                      <p className="text-sm font-bold text-blue-950 dark:text-white uppercase tracking-wider">{t('landing.membershipBenefits')}</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('landing.earnAndUpgrade')}</p>
                     </div>
                   </div>
@@ -265,7 +282,7 @@ export const LandingPage: React.FC = () => {
                       <Sparkles className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-bold text-slate-900 dark:text-white">Premium Wash</div>
+                      <div className="text-sm font-bold text-blue-950 dark:text-white">Premium Wash</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">45 mins • Interior & Exterior</div>
                     </div>
                   </div>
@@ -274,7 +291,7 @@ export const LandingPage: React.FC = () => {
                       <Star className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-bold text-slate-900 dark:text-white">Earn 2x Points</div>
+                      <div className="text-sm font-bold text-blue-950 dark:text-white">Earn 2x Points</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Applied to your next booking</div>
                     </div>
                   </div>
@@ -282,7 +299,7 @@ export const LandingPage: React.FC = () => {
 
                 <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/10 flex justify-between items-center">
                   <div className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">{t('landing.save20')}</div>
-                  <button className="px-5 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-bold shadow-md hover:scale-105 transition-transform">
+                  <button className="px-5 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-blue-950 rounded-xl text-sm font-bold shadow-md hover:scale-105 transition-transform">
                     {t('bookWash.dateTime.select', { defaultValue: 'Book Now' })}
                   </button>
                 </div>
@@ -296,7 +313,7 @@ export const LandingPage: React.FC = () => {
       <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0B0C10] z-10 rounded-t-[3rem] -mt-10 shadow-[0_-20px_50px_rgba(0,0,0,0.02)] dark:shadow-[0_-20px_50px_rgba(0,0,0,0.3)] border-t border-transparent dark:border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
-            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.ourPackages')}</h2>
+            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('landing.ourPackages')}</h2>
             <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.ourPackagesDesc')}</p>
           </div>
 
@@ -332,11 +349,11 @@ export const LandingPage: React.FC = () => {
                             <Sparkles className={`w-8 h-8 ${!isPremium && 'text-purple-500'}`} />}
                       </div>
 
-                      <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">{pkg.name}</h3>
+                      <h3 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-3">{pkg.name}</h3>
                       <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed line-clamp-2">{pkg.description}</p>
 
                       <div className="flex items-end gap-2 mb-10">
-                        <span className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{formatCurrency(pkg.price)}</span>
+                        <span className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{formatCurrency(pkg.price)}</span>
                         <span className="text-slate-400 dark:text-slate-500 font-bold text-sm mb-1">/{pkg.durationMinutes}m</span>
                       </div>
 
@@ -356,7 +373,7 @@ export const LandingPage: React.FC = () => {
                       to="/login"
                       className={`block w-full py-4 text-center rounded-2xl font-bold transition-all duration-300 relative z-10 ${isPremium
                         ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-[0_8px_20px_rgba(245,158,11,0.3)] hover:-translate-y-1 border border-white/20'
-                        : 'bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 border border-transparent dark:border-white/5 text-slate-900 dark:text-white'
+                        : 'bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 border border-transparent dark:border-white/5 text-blue-950 dark:text-white'
                         }`}
                     >
                       {t('bookWash.dateTime.select', { defaultValue: 'Select Plan' })}
@@ -373,7 +390,7 @@ export const LandingPage: React.FC = () => {
       <section className="relative py-32 px-6 lg:px-12 bg-slate-50 dark:bg-[#08090C] overflow-hidden border-t border-slate-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
-            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.membershipTiersTitle')}</h2>
+            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('landing.membershipTiersTitle')}</h2>
             <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.membershipTiersDesc')}</p>
           </div>
 
@@ -393,14 +410,14 @@ export const LandingPage: React.FC = () => {
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br ${tItem.bgColor} text-white shadow-lg`}>
                       <Icon className="w-7 h-7" />
                     </div>
-                    <h3 className="text-2xl font-extrabold mb-1 text-slate-900 dark:text-white">{tItem.tier}</h3>
+                    <h3 className="text-2xl font-extrabold mb-1 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{tItem.tier}</h3>
                     <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-8">
                       {t('landing.tiers.pointsMultiplier', { mult: tItem.multiplier })}
                     </p>
 
                     <div className="pb-6 mb-6 border-b border-slate-100 dark:border-white/5">
                       <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mb-1.5">{t('landing.tiers.bookInAdvance')}</p>
-                      <p className="font-black text-slate-900 dark:text-white text-xl">
+                      <p className="font-black text-blue-950 dark:text-white text-xl">
                         {t('landing.tiers.upToDays', { days: tItem.bookingWindow.split(' ')[0] })}
                       </p>
                     </div>
@@ -426,7 +443,7 @@ export const LandingPage: React.FC = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <div className="space-y-4 max-w-2xl">
-              <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
                 {t('landing.feedback.title')}
               </h2>
               <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">
@@ -462,7 +479,7 @@ export const LandingPage: React.FC = () => {
                 <span className="text-slate-400 dark:text-slate-550 text-sm font-bold uppercase tracking-wider block">
                   {t('landing.feedback.averageRating')}
                 </span>
-                <span className="text-6xl font-black text-slate-900 dark:text-white block">
+                <span className="text-6xl font-black text-blue-950 dark:text-white block">
                   {feedbackData?.averageRating ? feedbackData.averageRating.toFixed(1) : '0.0'}
                 </span>
                 <div className="flex justify-center mt-2">
@@ -592,7 +609,7 @@ export const LandingPage: React.FC = () => {
                                   {initials}
                                 </div>
                                 <div className="min-w-0">
-                                  <h4 className="font-bold text-slate-900 dark:text-white truncate text-sm">
+                                  <h4 className="font-bold text-blue-950 dark:text-white truncate text-sm">
                                     {fb.customerName || 'Anonymous'}
                                   </h4>
                                   <span className="text-[10px] text-slate-400 dark:text-slate-550 block">
@@ -668,7 +685,7 @@ export const LandingPage: React.FC = () => {
       <section className="relative py-32 px-6 lg:px-12 bg-white dark:bg-[#0B0C10] z-10 border-t border-slate-200 dark:border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
-            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">{t('landing.branchSystem')}</h2>
+            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('landing.branchSystem')}</h2>
             <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">{t('landing.branchSystemDesc')}</p>
           </div>
 
@@ -689,7 +706,7 @@ export const LandingPage: React.FC = () => {
                       }`}
                   >
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">{branch.branchName}</h3>
+                      <h3 className="font-extrabold text-blue-950 dark:text-white text-lg">{branch.branchName}</h3>
                       <span className="text-[10px] font-black tracking-widest px-2.5 py-1 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded-full">
                         {t('landing.open')}
                       </span>
@@ -730,7 +747,7 @@ export const LandingPage: React.FC = () => {
                 <div className="absolute top-6 right-6 z-10">
                   <button
                     onClick={() => handleOpenMap()}
-                    className="flex items-center gap-2 bg-white dark:bg-[#1a1a1a] hover:bg-slate-50 dark:hover:bg-[#222] text-slate-900 dark:text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg border border-slate-200 dark:border-white/10 transition-all"
+                    className="flex items-center gap-2 bg-white dark:bg-[#1a1a1a] hover:bg-slate-50 dark:hover:bg-[#222] text-blue-950 dark:text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg border border-slate-200 dark:border-white/10 transition-all"
                   >
                     <Map className="w-4 h-4" /> {t('landing.detailMapBtn')}
                   </button>
@@ -755,7 +772,7 @@ export const LandingPage: React.FC = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
               <Droplets className="w-5 h-5" />
             </div>
-            <span className="font-extrabold text-slate-900 dark:text-white text-xl tracking-tight">AutoWash Pro</span>
+            <span className="font-extrabold text-blue-950 dark:text-white text-xl tracking-tight">AutoWash Premium</span>
           </div>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('landing.allRightsReserved')}</p>
         </div>

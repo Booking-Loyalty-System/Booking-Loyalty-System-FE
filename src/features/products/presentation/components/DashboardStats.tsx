@@ -37,7 +37,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                     />
                 </div>
                 <div>
-                    <p className="text-4xl font-extrabold text-slate-900 tracking-tight">{bookings.length}</p>
+                    <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{bookings.length}</p>
                     <p className="text-sm text-slate-500 font-semibold mt-1">Tổng Lịch Đặt</p>
                 </div>
             </div>
@@ -49,7 +49,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                     </div>
                 </div>
                 <div>
-                    <p className="text-4xl font-extrabold text-slate-900 tracking-tight">{completedCount}</p>
+                    <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{completedCount}</p>
                     <p className="text-sm text-slate-500 font-semibold mt-1">Đã Hoàn Thành</p>
                 </div>
             </div>
@@ -61,7 +61,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                     </div>
                 </div>
                 <div>
-                    <p className="text-4xl font-extrabold text-slate-900 tracking-tight">{inProgressCount}</p>
+                    <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{inProgressCount}</p>
                     <p className="text-sm text-slate-500 font-semibold mt-1">Đang Thực Hiện</p>
                 </div>
             </div>
@@ -73,7 +73,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                     </div>
                 </div>
                 <div>
-                    <p className="text-4xl font-extrabold text-slate-900 tracking-tight">{waitingCount}</p>
+                    <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{waitingCount}</p>
                     <p className="text-sm text-slate-500 font-semibold mt-1">Đang Chờ (Queue)</p>
                 </div>
             </div>

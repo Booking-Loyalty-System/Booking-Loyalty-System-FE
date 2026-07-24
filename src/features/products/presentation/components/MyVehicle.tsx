@@ -127,7 +127,7 @@ export const MyVehicles: React.FC = () => {
   return (
     <div className="w-full space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight">
           {t("vehicles.title", { defaultValue: "My Vehicles" })}
         </h1>
         <button

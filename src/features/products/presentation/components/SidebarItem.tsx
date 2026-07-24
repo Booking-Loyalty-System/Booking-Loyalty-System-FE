@@ -12,10 +12,10 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({ path, label, isActive,
     return (
         <Link
             to={path}
-            className={`group flex items-center gap-3.5 px-3 py-2 rounded-xl font-semibold text-sm transition-all ${
+            className={`group flex items-center gap-3.5 px-3 py-2 rounded-xl font-semibold text-sm transition-all duration-200 ${
                 isActive
-                    ? 'bg-[#e6f0fa] text-[#1e6ffd]'
-                    : 'text-[#64748b] hover:bg-[#f1f5f9] hover:text-[#0f172a]'
+                    ? 'bg-white/15 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-sm'
+                    : 'text-sky-100/70 hover:bg-white/10 hover:text-white'
             }`}
         >
             {icon(isActive)}

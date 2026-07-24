@@ -59,7 +59,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-extrabold text-slate-900">Xác Nhận Thanh Toán</h3>
+                    <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">Xác Nhận Thanh Toán</h3>
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-slate-100 rounded-full transition-colors"
@@ -83,7 +83,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                                 <Car className="w-4 h-4" />
                                 <p className="text-xs font-bold uppercase tracking-wider">Thông tin xe</p>
                             </div>
-                            <p className="font-bold text-slate-900 text-sm truncate">{booking.vehicleName || 'Chưa cập nhật'}</p>
+                            <p className="font-bold text-blue-950 text-sm truncate">{booking.vehicleName || 'Chưa cập nhật'}</p>
                             <p className="text-xs font-semibold text-slate-500 mt-1">{booking.licensePlate || '---'}</p>
                         </div>
 
@@ -92,7 +92,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                                 <PenTool className="w-4 h-4" />
                                 <p className="text-xs font-bold uppercase tracking-wider">Dịch vụ</p>
                             </div>
-                            <p className="font-bold text-slate-900 text-sm truncate">{booking.serviceName || 'N/A'}</p>
+                            <p className="font-bold text-blue-950 text-sm truncate">{booking.serviceName || 'N/A'}</p>
                             <p className="text-xs font-semibold text-slate-500 mt-1">
                                 {booking.startTime} - {booking.bookingDate}
                             </p>

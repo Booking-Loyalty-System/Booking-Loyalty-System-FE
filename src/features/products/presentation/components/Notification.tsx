@@ -1,10 +1,11 @@
 import React from 'react';
-import { Bell, CheckCircle, Clock, Info, Crown } from 'lucide-react';
+import { Bell, CheckCircle, Clock, Info, Crown, CheckCheck } from 'lucide-react';
 import { useNotification } from '../../application/useNotification';
 import { useCustomerMe } from '../../application/useCustomer';
 import { useLoyaltyHistory } from '../../application/useLoyalty';
 import { useBooking } from '../../application/useBooking';
 import { useTranslation } from 'react-i18next';
+import { translateDynamic, translateNotificationTitle, translateNotificationMessage } from '@/shared/utils/dynamicTranslator';
 
 interface NotificationItem {
     id: string;
@@ -16,7 +17,7 @@ interface NotificationItem {
 }
 
 export const NotificationCenter: React.FC = () => {
-    const { t } = useTranslation('customer');
+    const { t, i18n } = useTranslation('customer');
     const { notifications, isLoading, markAsRead } = useNotification();
     const { customerMe } = useCustomerMe();
     const { data: loyaltyHistory } = useLoyaltyHistory();
@@ -31,8 +32,12 @@ export const NotificationCenter: React.FC = () => {
             .filter(tx => tx.type === 'Redeemed')
             .map(tx => ({
                 id: `redeem-${tx.id}`,
-                title: 'Đổi voucher thành công 🎁',
-                message: `Bạn đã sử dụng ${Math.abs(tx.points)} điểm để đổi voucher: ${tx.description}. Số điểm còn lại là: ${customerMe?.availablePoint ?? (customerMe?.totalPoint ?? 0)} điểm.`,
+                title: t('notifications.points.redeemTitle'),
+                message: t('notifications.points.redeemMessage', {
+                    points: Math.abs(tx.points),
+                    desc: tx.description,
+                    remaining: customerMe?.availablePoint ?? (customerMe?.totalPoint ?? 0)
+                }),
                 type: 'Points',
                 isRead: true, // Vì là lịch sử nên coi như đã đọc
                 createdAt: tx.date
@@ -52,13 +57,18 @@ export const NotificationCenter: React.FC = () => {
 
                 const booking = myBookings?.find(b => b.bookingCode === bookingCode);
                 const paidAmount = booking
-                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(booking.totalPrice)
-                    : '(không xác định)';
+                    ? new Intl.NumberFormat(i18n.language === 'en' ? 'en-US' : 'vi-VN', { style: 'currency', currency: 'VND' }).format(booking.totalPrice)
+                    : (i18n.language === 'en' ? '(unknown)' : '(không xác định)');
                 
                 return {
                     id: `earned-${tx.id}`,
-                    title: 'Cộng điểm thành công 🎉',
-                    message: `Giao dịch ${bookingCode} ngày ${new Date(tx.date).toLocaleDateString('vi-VN')} đã thanh toán thành công với số tiền ${paidAmount}. Số điểm được cộng là ${tx.points}. Cảm ơn quý khách đã sử dụng dịch vụ của Auto Wash Pro!`,
+                    title: t('notifications.points.earnedTitle'),
+                    message: t('notifications.points.earnedMessage', {
+                        code: bookingCode,
+                        date: new Date(tx.date).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'vi-VN'),
+                        amount: paidAmount,
+                        points: tx.points
+                    }),
                     type: 'Points',
                     isRead: true,
                     createdAt: tx.date
@@ -75,8 +85,11 @@ export const NotificationCenter: React.FC = () => {
     if (customerMe) {
         displayNotifications.unshift({
             id: 'real-tier-info',
-            title: 'Thông tin Hạng & Điểm 👑',
-            message: `Bạn hiện đang ở hạng ${customerMe.tier || 'Thành viên'}. Số điểm hiện tại của bạn là: ${customerMe.availablePoint ?? (customerMe.totalPoint ?? 0)} điểm.`,
+            title: t('notifications.tier.infoTitle'),
+            message: t('notifications.tier.infoMessage', {
+                tier: translateDynamic(customerMe.tier, 'tier', t) || t('dynamic.tiers.member'),
+                points: customerMe.availablePoint ?? (customerMe.totalPoint ?? 0)
+            }),
             type: 'TierUpgrade',
             isRead: false,
             createdAt: new Date().toISOString()
@@ -91,13 +104,34 @@ export const NotificationCenter: React.FC = () => {
         );
     }
 
+    const handleMarkAllAsRead = () => {
+        notifications.forEach(n => {
+            if (!n.isRead) {
+                markAsRead(n.id);
+            }
+        });
+    };
+
     return (
         <div className="max-w-3xl mx-auto w-full animate-fade-in">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('notifications.title')}</h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('notifications.markAllRead')}</p>
+                    <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('notifications.title')}</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        {notifications.filter(n => !n.isRead).length > 0 
+                            ? `${notifications.filter(n => !n.isRead).length} unread notifications` 
+                            : 'You are all caught up!'}
+                    </p>
                 </div>
+                {notifications.some(n => !n.isRead) && (
+                    <button 
+                        onClick={handleMarkAllAsRead}
+                        className="text-sm font-semibold text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 transition-colors flex items-center gap-1.5 bg-sky-50 hover:bg-sky-100 dark:bg-white/5 dark:hover:bg-white/10 px-4 py-2 rounded-xl shadow-sm border border-sky-100 dark:border-white/5"
+                    >
+                        <CheckCheck className="w-4 h-4" />
+                        {t('notifications.markAllRead')}
+                    </button>
+                )}
             </div>
 
             <div className="space-y-4">
@@ -135,16 +169,16 @@ export const NotificationCenter: React.FC = () => {
                             <div className="flex-1 pt-1">
                                 <div className="flex justify-between items-start gap-2">
                                     <h4 className={`text-base font-bold tracking-tight ${notification.isRead ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
-                                        {notification.title}
+                                        {translateNotificationTitle(notification.title, t)}
                                     </h4>
                                     <span className="text-xs font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap bg-white/50 dark:bg-black/20 px-2.5 py-1 rounded-lg border border-slate-100 dark:border-white/5">
-                                        {new Date(notification.createdAt).toLocaleString('vi-VN', {
+                                        {new Date(notification.createdAt).toLocaleString(i18n.language === 'en' ? 'en-US' : 'vi-VN', {
                                             hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'
                                         })}
                                     </span>
                                 </div>
                                 <p className={`text-sm mt-1.5 leading-relaxed ${notification.isRead ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                                    {notification.message}
+                                    {translateNotificationMessage(notification.message, t)}
                                 </p>
                             </div>
 

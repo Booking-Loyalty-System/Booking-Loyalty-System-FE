@@ -34,7 +34,7 @@ const tierIcons: Record<string, typeof Award> = {
 
 const tierStyles: Record<string, { bg: string; icon: string; border: string; text: string; badge: string }> = {
   Bronze: { bg: "bg-amber-50/60", icon: "text-amber-600", border: "border-amber-100", text: "text-amber-900", badge: "bg-amber-100 text-amber-800" },
-  Silver: { bg: "bg-slate-50", icon: "text-slate-500", border: "border-slate-200", text: "text-slate-900", badge: "bg-slate-100 text-slate-800" },
+  Silver: { bg: "bg-slate-50", icon: "text-slate-500", border: "border-slate-200", text: "text-blue-950", badge: "bg-slate-100 text-slate-800" },
   Gold: { bg: "bg-yellow-50/60", icon: "text-yellow-600", border: "border-yellow-200/80", text: "text-yellow-900", badge: "bg-yellow-100 text-yellow-800" },
   Diamond: { bg: "bg-purple-50/60", icon: "text-purple-600", border: "border-purple-200/60", text: "text-purple-900", badge: "bg-purple-100 text-purple-800" },
 };
@@ -230,7 +230,7 @@ export function AdminLoyalty() {
         <section className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-slate-100">
             <div>
-              <h3 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <h3 className="text-xl font-bold text-blue-950 tracking-tight flex items-center gap-2">
                 <Award className="w-5 h-5 text-indigo-600" /> Hạng thành viên
               </h3>
               <p className="text-slate-500 text-sm mt-1">
@@ -427,7 +427,7 @@ export function AdminLoyalty() {
         <section className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100">
             <div>
-              <h3 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <h3 className="text-xl font-bold text-blue-950 tracking-tight flex items-center gap-2">
                 <Gift className="w-5 h-5 text-emerald-600" /> Phần thưởng đổi điểm
               </h3>
               <p className="text-slate-500 text-sm mt-1">
@@ -469,7 +469,7 @@ export function AdminLoyalty() {
                           <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100/50 shadow-inner">
                             <Gift className="w-4 h-4 text-emerald-600" />
                           </div>
-                          <span className="font-semibold text-slate-900 tracking-tight">
+                          <span className="font-semibold text-blue-950 tracking-tight">
                             {reward.name}
                           </span>
                         </div>
@@ -484,7 +484,7 @@ export function AdminLoyalty() {
                       </td>
                       <td className="px-6 py-4.5 whitespace-nowrap font-medium text-slate-800">
                         {reward.discountAmount > 0 ? (
-                          <span className="text-slate-900 font-semibold bg-slate-100 px-2 py-1 rounded border border-slate-200/40">
+                          <span className="text-blue-950 font-semibold bg-slate-100 px-2 py-1 rounded border border-slate-200/40">
                             {reward.discountAmount.toLocaleString("vi-VN")}đ
                           </span>
                         ) : (
@@ -547,7 +547,7 @@ export function AdminLoyalty() {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-100">
             <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
-              <h4 className="text-lg font-bold text-slate-900 tracking-tight">
+              <h4 className="text-lg font-bold text-blue-950 tracking-tight">
                 Thêm hạng thành viên mới
               </h4>
               <button
@@ -647,7 +647,7 @@ export function AdminLoyalty() {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-slate-100">
             <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
-              <h4 className="text-lg font-bold text-slate-900 tracking-tight">
+              <h4 className="text-lg font-bold text-blue-950 tracking-tight">
                 {isAddingReward ? "Tạo phần thưởng đổi điểm mới" : "Cập nhật thông số phần thưởng"}
               </h4>
               <button

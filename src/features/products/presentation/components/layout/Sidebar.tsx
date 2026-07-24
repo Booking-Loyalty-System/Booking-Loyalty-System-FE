@@ -74,7 +74,7 @@ export function Sidebar({ role = "customer" }: SidebarProps) {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              AutoWash Pro
+              AutoWash Premium
             </h1>
             <p className="text-xs text-gray-500">Smart Car Wash</p>
           </div>
