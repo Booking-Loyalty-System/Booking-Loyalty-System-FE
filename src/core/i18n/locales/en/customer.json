@@ -5,6 +5,7 @@
     "stats": {
       "allTime": "All time",
       "totalBookings": "Total Bookings",
+      "totalWash": "Total CheckedOut Wash",
       "loyalty": "Loyalty",
       "totalPoints": "Total Points",
       "status": "Status",
@@ -224,6 +225,11 @@
       "inProgress": "In Progress",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    },
+    "stats": {
+      "totalBookings": "Total Bookings",
+      "pointsEarned": "Points Earned",
+      "totalSpent": "Total Spent"
     }
   },
   "rewards": {
@@ -334,6 +340,7 @@
       "date": "Date",
       "description": "Description",
       "type": "Type",
+      "beforeBalance": "Before Balance",
       "points": "Points",
       "balance": "Balance"
     },

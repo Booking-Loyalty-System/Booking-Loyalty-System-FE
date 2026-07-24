@@ -152,10 +152,13 @@ export const LoyaltyTier: React.FC = () => {
 
       // Lùi về số dư của thời điểm trước khi có giao dịch này
       currentBalance = currentBalance - pointDiff;
+      // Số dư trước khi thực hiện giao dịch này
+      const balanceBefore = currentBalance;
 
       return {
         ...tx,
         balanceAfter,
+        balanceBefore,
       };
     });
   }, [transactions, availablePoints]);
@@ -491,6 +494,11 @@ export const LoyaltyTier: React.FC = () => {
                         {t("loyaltyTier.table.type")}
                       </th>
                       <th className="py-4 px-6 text-right">
+                        {t("loyaltyTier.table.beforeBalance", {
+                          defaultValue: "Before Balance",
+                        })}
+                      </th>
+                      <th className="py-4 px-6 text-right">
                         {t("loyaltyTier.table.points")}
                       </th>
                       <th className="py-4 px-6 text-right">
@@ -560,6 +568,9 @@ export const LoyaltyTier: React.FC = () => {
                               defaultValue: tx.type,
                             })}
                           </span>
+                        </td>
+                        <td className="py-4 px-6 text-right font-semibold text-slate-500 dark:text-slate-400 text-base">
+                          {tx.balanceBefore}
                         </td>
                         <td
                           className={`py-4 px-6 text-right font-bold text-base ${

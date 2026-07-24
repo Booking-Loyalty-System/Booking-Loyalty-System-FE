@@ -37,7 +37,13 @@ export const Dashboard: React.FC = () => {
   const totalPoint = customerMe?.totalPoint ?? 0;
   // const availablePoint = customerMe?.availablePoint ?? 0;
   const tier = customerMe?.tier ?? "Bronze";
+  // washesCount: chỉ dùng cho vòng Free Wash Punch Card (không phải tổng booking)
   const washesCount = customerMe?.totalWashes ?? 0;
+
+  // totalWashCount: số lần rửa xe hoàn thành (trạng thái CheckedOut)
+  const totalWashCount = myBookings.filter(
+    (b) => b.status === "CheckedOut",
+  ).length;
   const totalSpent = customerMe?.totalSpent ?? 0;
 
   // Dynamic calculations for tier thresholds
@@ -86,8 +92,12 @@ export const Dashboard: React.FC = () => {
     {
       id: 1,
       label: t("dashboard.stats.allTime", "All time"),
-      value: isCustomerLoading ? "..." : washesCount.toString(),
-      sub: t("dashboard.stats.totalBookings", "Total Bookings"),
+      // totalWashCount: số lần rửa hoàn thành (CheckedOut)
+      value:
+        isCustomerLoading || isBookingLoading
+          ? "..."
+          : totalWashCount.toString(),
+      sub: t("dashboard.stats.totalWash", "Total CheckedOut Wash"),
       icon: <Droplets className="w-6 h-6 text-blue-500 dark:text-blue-400" />,
       bg: "bg-gradient-to-br from-blue-500/10 to-blue-500/5",
       border: "border-blue-500/20",

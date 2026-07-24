@@ -4,7 +4,6 @@ import {
   XCircle,
   Calendar,
   Star,
-  Clock,
   DollarSign,
   AlertTriangle,
   MessageSquarePlus,
@@ -150,18 +149,17 @@ export const BookingHistory: React.FC = () => {
       </div>
     );
 
-  const completedBookings = sortedBookings.filter(
-    (b) => b.status === "Completed" || b.status === "CheckedOut",
-  );
+
   const stats = [
     {
-      title: "Total Bookings",
-      value: sortedBookings.length.toString(),
+      title: t("bookingHistory.stats.totalBookings", "Total Bookings"),
+      // Đếm TẤT CẢ booking không phân biệt trạng thái
+      value: myBookings.length.toString(),
       icon: <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
       bg: "bg-blue-50/50 dark:bg-blue-500/10",
     },
     {
-      title: "Points Earned",
+      title: t("bookingHistory.stats.pointsEarned", "Points Earned"),
       value: (
         customerMe?.totalPoint ??
         customerMe?.totalPoints ??
@@ -171,15 +169,7 @@ export const BookingHistory: React.FC = () => {
       bg: "bg-emerald-50/50 dark:bg-emerald-500/10",
     },
     {
-      title: "Minutes Saved",
-      value: completedBookings
-        .reduce((sum, b) => sum + (b.durationMinutes || 0), 0)
-        .toLocaleString("en-US"),
-      icon: <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />,
-      bg: "bg-purple-50/50 dark:bg-purple-500/10",
-    },
-    {
-      title: "Total Spent",
+      title: t("bookingHistory.stats.totalSpent", "Total Spent"),
       value: formatCurrency(customerMe?.totalSpent || 0),
       icon: (
         <DollarSign className="w-6 h-6 text-orange-600 dark:text-orange-400" />
