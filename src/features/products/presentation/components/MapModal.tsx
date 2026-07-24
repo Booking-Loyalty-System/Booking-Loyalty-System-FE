@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { X, Navigation } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { translateBranchName, translateAddress } from '@/shared/utils/dynamicTranslator';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 import 'leaflet/dist/leaflet.css';
@@ -34,6 +36,7 @@ interface ExtendedRoutingControl extends L.Control {
 const defaultCenter: [number, number] = [10.762622, 106.660172];
 
 export const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose, branches, selectedBranchId }) => {
+    const { t, i18n } = useTranslation('customer');
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
     const mapRef = useRef<L.Map | null>(null);
     const markersGroupRef = useRef<L.LayerGroup | null>(null);
@@ -137,10 +140,16 @@ export const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose, branches, s
             const marker = L.marker(branchLatLng).addTo(markersGroup);
 
             const popupContent = `
-                <div class="p-1">
-                    <h4 class="font-bold text-sm text-[#1e3a8a]">${branch.branchName}</h4>
-                    <p class="text-xs text-slate-500 mt-0.5">${branch.address}</p>
-                    <p class="text-xs font-semibold text-[#1e6ffd] mt-1">📞 ${branch.hotline}</p>
+                <div class="p-2 min-w-[200px]">
+                    <h4 class="font-bold text-sm text-[#1e3a8a]">${translateBranchName(branch.branchName, i18n)}</h4>
+                    <p class="text-xs text-slate-500 mt-1 line-clamp-2">${translateAddress(branch.address, i18n)}</p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold ${branch.status === 'Active'
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-slate-100 text-slate-600'}">
+                            ${branch.status === 'Active' ? t('bookWash.branch.statusOpen', { defaultValue: 'Open' }) : t('bookWash.branch.statusClosed', { defaultValue: 'Closed' })}
+                        </span>
+                    </div>
                 </div>
             `;
             marker.bindPopup(popupContent);
@@ -217,17 +226,17 @@ export const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose, branches, s
                     {routeInfo && (
                         <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-blue-100 z-[1000] flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
                             <div>
-                                <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Đang hiển thị lộ trình đến</p>
-                                <h4 className="font-bold text-slate-800 text-sm sm:text-base">{routeInfo.branchName}</h4>
+                                <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{t('bookWash.map.routingTo', { defaultValue: 'Routing to' })}</p>
+                                <h4 className="font-bold text-slate-800 text-sm sm:text-base">{translateBranchName(routeInfo.branchName, i18n)}</h4>
                             </div>
                             <div className="flex items-center gap-4 border-t sm:border-t-0 sm:border-l border-slate-100 pt-2 sm:pt-0 sm:pl-4 justify-between sm:justify-start">
                                 <div className="text-center sm:text-left">
-                                    <p className="text-xs text-slate-400">Đường bộ gần nhất</p>
+                                    <p className="text-xs text-slate-400">{t('bookWash.map.nearestRoad', { defaultValue: 'Nearest road' })}</p>
                                     <p className="font-extrabold text-blue-600 text-lg">{routeInfo.distance} km</p>
                                 </div>
                                 <div className="text-center sm:text-left">
-                                    <p className="text-xs text-slate-400">Dự kiến di chuyển</p>
-                                    <p className="font-extrabold text-emerald-600 text-lg">~{routeInfo.time} phút</p>
+                                    <p className="text-xs text-slate-400">{t('bookWash.map.estimatedTime', { defaultValue: 'Est. time' })}</p>
+                                    <p className="font-extrabold text-emerald-600 text-lg">~{routeInfo.time} {t('bookWash.map.mins', { defaultValue: 'mins' })}</p>
                                 </div>
                                 <button
                                     onClick={() => {

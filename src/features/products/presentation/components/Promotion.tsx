@@ -3,6 +3,7 @@ import { Tag, Sparkles, Calendar, Copy, Check } from 'lucide-react';
 import { usePromotion } from '@/features/products/application/usePromotion.ts';
 import { useTranslation } from 'react-i18next';
 import { translateDynamic } from '@/shared/utils/translateDynamic.ts';
+import { translatePromotion } from '@/shared/utils/dynamicTranslator.ts';
 
 export const Promotions: React.FC = () => {
     const { t, i18n } = useTranslation('customer');
@@ -81,13 +82,15 @@ export const Promotions: React.FC = () => {
                                     <div className="space-y-2 pt-1">
                                         {/* Fallback sang .title nếu mock data dùng title, còn api thật dùng name */}
                                         <h3 className="text-xl font-black text-blue-950 dark:text-white tracking-tight leading-tight">
-                                            {translateDynamic(promo.name || promo.title, i18n.language)}
+                                            {translatePromotion(translateDynamic(promo.name || promo.title, i18n.language), i18n)}
                                         </h3>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">{translateDynamic(promo.description, i18n.language)}</p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                            {translatePromotion(translateDynamic(promo.description, i18n.language), i18n)}
+                                        </p>
                                         <div className="flex flex-wrap items-center gap-3 pt-2">
                                             {promo.targetTiers && promo.targetTiers.length > 0 && (
                                                 <span className="text-xs font-black tracking-wider uppercase px-3 py-1.5 rounded-xl bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400">
-                                                    {promo.targetTiers.join(', ')}
+                                                    {translatePromotion(promo.targetTiers.join(', '), i18n)}
                                                 </span>
                                             )}
                                             <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-bold bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded-xl">
@@ -130,7 +133,7 @@ export const Promotions: React.FC = () => {
                                     {promo.conditions?.map((c, i) => (
                                         <li key={i} className="flex items-start gap-2">
                                             <span className="text-blue-500 mt-0.5">•</span>
-                                            {translateDynamic(c, i18n.language)}
+                                            {translatePromotion(translateDynamic(c, i18n.language), i18n)}
                                         </li>
                                     ))}
                                     {(!promo.conditions || promo.conditions.length === 0) && (
@@ -158,14 +161,16 @@ export const Promotions: React.FC = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <h3 className="text-lg font-bold text-blue-950 dark:text-white tracking-tight">
-                                        {translateDynamic(item.name || item.title, i18n.language)}
+                                        {translatePromotion(translateDynamic(item.name || item.title, i18n.language), i18n)}
                                     </h3>
                                     {item.targetTiers && item.targetTiers.length > 0 && (
                                         <span className="inline-block bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-lg">
-                                            {item.targetTiers.join(', ')}
+                                            {translatePromotion(item.targetTiers.join(', '), i18n)}
                                         </span>
                                     )}
-                                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">{translateDynamic(item.description, i18n.language)}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                        {translatePromotion(translateDynamic(item.description, i18n.language), i18n)}
+                                    </p>
                                 </div>
                                 <div className="bg-slate-50 dark:bg-black/20 rounded-xl p-4 border border-slate-100 dark:border-white/5">
                                     <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">{t('promotions.allActive.labelCode')}</p>

@@ -18,6 +18,7 @@ import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { ReschedulePicker } from "@/features/products/presentation/components/ReschedulePicker.tsx";
 import { FeedbackModal } from "@/features/products/presentation/components/FeedbackModal";
+import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 export const BookingHistory: React.FC = () => {
   const { t } = useTranslation("customer");
@@ -149,13 +150,17 @@ export const BookingHistory: React.FC = () => {
       </div>
     );
 
-  const completedBookings = sortedBookings.filter(
+  // Chỉ hiển thị đúng số booking thật của user (ẩn seed data)
+  const realCount = customerMe?.totalWashes ?? sortedBookings.length;
+  const displayedBookings = sortedBookings.slice(0, realCount);
+
+  const completedBookings = displayedBookings.filter(
     (b) => b.status === "Completed" || b.status === "CheckedOut",
   );
   const stats = [
     {
       title: "Total Bookings",
-      value: sortedBookings.length.toString(),
+      value: displayedBookings.length.toString(),
       icon: <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
       bg: "bg-blue-50/50 dark:bg-blue-500/10",
     },
@@ -357,7 +362,7 @@ export const BookingHistory: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-sm font-medium text-slate-600 dark:text-slate-300">
-              {sortedBookings.length === 0 ? (
+              {displayedBookings.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -367,7 +372,7 @@ export const BookingHistory: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                sortedBookings.map((item) => (
+                displayedBookings.map((item) => (
                   <tr
                     key={item.id}
                     className="hover:bg-slate-50/40 dark:hover:bg-white/5 transition-colors"
@@ -376,7 +381,7 @@ export const BookingHistory: React.FC = () => {
                       {item.bookingCode}
                     </td>
                     <td className="py-4 px-6 text-blue-950 dark:text-white font-bold">
-                      {item.washPackageName}
+                      {translateDynamic(item.washPackageName, 'package', t)}
                     </td>
                     <td className="py-4 px-6">
                       <div>{item.bookingDate}</div>
@@ -412,14 +417,14 @@ export const BookingHistory: React.FC = () => {
                       </button>
                       {(item.status === "Confirmed" ||
                         item.status === "Pending") && (
-                        <button
-                          onClick={() => setBookingToCancel(item)}
-                          className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
-                        >
-                          <XCircle className="w-3.5 h-3.5" />
-                          <span>{t("bookingHistory.actions.cancel")}</span>
-                        </button>
-                      )}
+                          <button
+                            onClick={() => setBookingToCancel(item)}
+                            className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            <span>{t("bookingHistory.actions.cancel")}</span>
+                          </button>
+                        )}
                       {(item.status === "Completed" ||
                         item.status === "CheckedOut") &&
                         !item.feedbackResponse && (

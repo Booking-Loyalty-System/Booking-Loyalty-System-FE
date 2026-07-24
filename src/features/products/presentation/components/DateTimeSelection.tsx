@@ -29,7 +29,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     onSelectTime,
     isLoadingSlots
 }) => {
-    const { t } = useTranslation('customer');
+    const { t, i18n } = useTranslation('customer');
     const INITIAL_DAYS = 7;
     const [visibleDaysCount, setVisibleDaysCount] = useState(INITIAL_DAYS);
 
@@ -157,6 +157,7 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                         <Info className="w-5 h-5 shrink-0" />
                         <p>
                             {t('bookWash.dateTime.tierLimit', {
+                                maxDate: maxDateString,
                                 defaultValue: `Hạng của bạn chỉ được đặt trước tới ngày ${maxDateString}`
                             })}
                         </p>
@@ -214,7 +215,8 @@ export const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                         <span className="text-sm font-black">{displayTime}</span>
                                     </div>
                                     <span className="text-xs font-semibold pl-6">
-                                        {isDisabled ? (isPast ? t('bookWash.dateTime.closed', { defaultValue: 'Closed' }) : t('bookWash.dateTime.full', { defaultValue: 'Full' })) : slot.slotRatio}
+                                        {isDisabled ? (isPast ? t('bookWash.dateTime.closed', { defaultValue: 'Closed' }) : t('bookWash.dateTime.full', { defaultValue: 'Full' })) : 
+                                            (i18n.language === 'en' ? slot.slotRatio.replace(/Khoang trống/gi, 'Available').replace(/Khoang/gi, 'Slot').replace(/Đã đầy|Kín chỗ/gi, 'Full') : slot.slotRatio)}
                                     </span>
                                 </div>
                             );

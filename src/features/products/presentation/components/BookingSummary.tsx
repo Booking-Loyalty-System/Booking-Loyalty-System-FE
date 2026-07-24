@@ -3,6 +3,7 @@ import type { BookingSummaryProps } from "@/features/products/domain/models/book
 import { Tag, X, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { translateDynamic } from "@/shared/utils/translateDynamic.ts";
+import { translatePromotion } from "@/shared/utils/dynamicTranslator.ts";
 
 export const BookingSummary: React.FC<BookingSummaryProps> = ({
   selectedPackageId,
@@ -200,8 +201,8 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                         {appliedPromotion.code}
                       </p>
                       <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                        {translateDynamic((appliedPromotion as any).title ||
-                          "Khuyến mãi đã áp dụng", i18n.language)}
+                        {translatePromotion((appliedPromotion as any).title ||
+                          "Khuyến mãi đã áp dụng", i18n)}
                       </p>
                     </div>
                     <div className="text-right">
