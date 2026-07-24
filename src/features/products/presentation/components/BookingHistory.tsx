@@ -150,11 +150,14 @@ export const BookingHistory: React.FC = () => {
     );
 
 
+  // Ưu tiên dùng totalWashes từ server (chính xác, ẩn seed data).
+  // Fallback về số booking thực tế nếu chưa có dữ liệu từ server.
+  const totalBookingsCount = customerMe?.totalWashes ?? sortedBookings.length;
+
   const stats = [
     {
       title: t("bookingHistory.stats.totalBookings", "Total Bookings"),
-      // Đếm TẤT CẢ booking không phân biệt trạng thái
-      value: myBookings.length.toString(),
+      value: totalBookingsCount.toString(),
       icon: <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
       bg: "bg-blue-50/50 dark:bg-blue-500/10",
     },
