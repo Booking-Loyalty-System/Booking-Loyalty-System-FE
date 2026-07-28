@@ -695,5 +695,21 @@
       "statusLabel": "trạng thái:",
       "bookingCodeLabel": "mã đơn"
     }
+  },
+  "bookingSummary": {
+    "title": "Tóm tắt Đặt lịch",
+    "promptSelect": "Chọn xe và gói dịch vụ để tiếp tục",
+    "vehicle": "Phương tiện",
+    "package": "Gói Rửa xe",
+    "scheduleTime": "Thời gian Đặt lịch",
+    "chooseTime": "(Vui lòng chọn giờ)",
+    "appliedVoucher": "Voucher đã áp dụng",
+    "promoCode": "Mã Khuyến mãi",
+    "enterCode": "Nhập mã",
+    "apply": "Áp dụng",
+    "promoApplied": "Khuyến mãi đã áp dụng",
+    "totalEstimated": "Tổng ước tính:",
+    "processing": "Đang xử lý...",
+    "confirmBooking": "Xác nhận Đặt lịch"
   }
 }

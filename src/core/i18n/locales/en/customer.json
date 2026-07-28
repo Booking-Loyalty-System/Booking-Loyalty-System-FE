@@ -695,5 +695,21 @@
       "statusLabel": "status:",
       "bookingCodeLabel": "code"
     }
+  },
+  "bookingSummary": {
+    "title": "Booking Summary",
+    "promptSelect": "Select a vehicle and wash package to continue",
+    "vehicle": "Vehicle",
+    "package": "Wash Package",
+    "scheduleTime": "Schedule Time",
+    "chooseTime": "(Please choose time)",
+    "appliedVoucher": "Applied Voucher",
+    "promoCode": "Promo Code",
+    "enterCode": "Enter code",
+    "apply": "Apply",
+    "promoApplied": "Promo Applied",
+    "totalEstimated": "Total Estimated:",
+    "processing": "Processing...",
+    "confirmBooking": "Confirm Booking"
   }
 }
