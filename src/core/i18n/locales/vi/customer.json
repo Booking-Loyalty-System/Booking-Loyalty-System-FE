@@ -279,7 +279,6 @@
     "statusAvailable": "Khả dụng",
     "statusUsed": "Đã dùng",
     "statusExpired": "Hết hạn",
-    "remainingBalance": "Số dư sau khi đổi:",
     "codeLabel": "· Mã:",
     "confirmModal": {
       "title": "Xác nhận đổi thưởng",
