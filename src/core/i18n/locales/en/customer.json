@@ -279,6 +279,7 @@
     "statusAvailable": "Available",
     "statusUsed": "Used",
     "statusExpired": "Expired",
+    "remainingBalance": "Balance after:",
     "codeLabel": "· Code:",
     "confirmModal": {
       "title": "Confirm Redemption",

@@ -427,7 +427,9 @@ export const RewardsSection: React.FC = () => {
                         </span>
                       </p>
                     )}
-
+                    <p className="text-[12px] font-bold text-slate-400 dark:text-slate-500">
+                      {t("rewards.remainingBalance", { defaultValue: "Balance after:" })} {v.balanceAfter ?? 0} {t("rewards.pointsUnit", { defaultValue: "pts" })}
+                    </p>
                     {(() => {
                       const statusLower = String(v.status).toLowerCase();
                       const isAvailable =
