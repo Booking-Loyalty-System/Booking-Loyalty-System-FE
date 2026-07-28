@@ -4,7 +4,6 @@ import {
   XCircle,
   Calendar,
   Star,
-  Clock,
   DollarSign,
   AlertTriangle,
   MessageSquarePlus,
@@ -154,9 +153,7 @@ export const BookingHistory: React.FC = () => {
   const realCount = customerMe?.totalWashes ?? sortedBookings.length;
   const displayedBookings = sortedBookings.slice(0, realCount);
 
-  const completedBookings = displayedBookings.filter(
-    (b) => b.status === "Completed" || b.status === "CheckedOut",
-  );
+
   const stats = [
     {
       title: t("bookingHistory.stats.totalBookings", { defaultValue: "Total Bookings" }),
