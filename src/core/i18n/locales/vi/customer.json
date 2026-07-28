@@ -97,6 +97,7 @@
       "summary": "Tóm Tắt"
     },
     "branch": {
+      "selectTitle": "Chọn Chi Nhánh",
       "title": "Chọn Chi Nhánh",
       "findNearest": "Tìm Gần Nhất",
       "searchPlaceholder": "Tìm kiếm chi nhánh...",
@@ -104,6 +105,9 @@
       "kmAway": "km",
       "open": "Đang Mở",
       "closed": "Đã Đóng",
+      "statusOpen": "Đang Mở",
+      "statusClosed": "Đã Đóng",
+      "overviewMap": "Bản Đồ Tổng Quan",
       "select": "Chọn"
     },
     "package": {
@@ -114,6 +118,7 @@
       "selectPackage": "Chọn Gói"
     },
     "vehicle": {
+      "selectTitle": "Chọn Xe",
       "title": "Chọn Xe Của Bạn",
       "addNew": "Thêm Xe Mới",
       "noVehicles": "Chưa có xe nào được thêm",
@@ -136,6 +141,7 @@
       "full": "Đã Kín Chỗ"
     },
     "voucher": {
+      "redeemMore": "Đổi Thêm",
       "title": "Áp Dụng Voucher (Tùy Chọn)",
       "enterCode": "Nhập mã voucher",
       "apply": "Áp Dụng",
@@ -651,6 +657,21 @@
     }
   },
   "dynamic": {
+    "features": {
+      "exteriorWash": "Rửa ngoài",
+      "tireCleaning": "Vệ sinh lốp",
+      "windowCleaning": "Vệ sinh kính",
+      "interiorVacuum": "Hút bụi nội thất",
+      "dashboardPolish": "Đánh bóng taplo",
+      "tireShine": "Làm bóng lốp",
+      "airFreshener": "Xịt thơm",
+      "fullExteriorWash": "Rửa toàn bộ bên ngoài",
+      "interiorDeepClean": "Vệ sinh sâu nội thất",
+      "waxCoating": "Phủ sáp Wax",
+      "leatherConditioning": "Bảo dưỡng da",
+      "engineBayCleaning": "Vệ sinh khoang máy",
+      "ceramicSpray": "Phủ Ceramic dạng xịt"
+    },
     "packages": {
       "basic": "Rửa xe cơ bản",
       "premium": "Rửa xe cao cấp",
@@ -695,5 +716,21 @@
       "statusLabel": "trạng thái:",
       "bookingCodeLabel": "mã đơn"
     }
+  },
+  "bookingSummary": {
+    "title": "Tóm tắt Đặt lịch",
+    "promptSelect": "Chọn xe và gói dịch vụ để tiếp tục",
+    "vehicle": "Phương tiện",
+    "package": "Gói Rửa xe",
+    "scheduleTime": "Thời gian Đặt lịch",
+    "chooseTime": "(Vui lòng chọn giờ)",
+    "appliedVoucher": "Voucher đã áp dụng",
+    "promoCode": "Mã Khuyến mãi",
+    "enterCode": "Nhập mã",
+    "apply": "Áp dụng",
+    "promoApplied": "Khuyến mãi đã áp dụng",
+    "totalEstimated": "Tổng ước tính:",
+    "processing": "Đang xử lý...",
+    "confirmBooking": "Xác nhận Đặt lịch"
   }
 }
