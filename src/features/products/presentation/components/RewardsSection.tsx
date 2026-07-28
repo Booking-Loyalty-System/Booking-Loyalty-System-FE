@@ -195,14 +195,25 @@ export const RewardsSection: React.FC = () => {
               defaultValue: "Phần thưởng khả dụng",
             })}
           </h2>
-          <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">
-            <CheckCircle className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-            <span>
-              {t("rewards.redeemableCountMsg", {
-                n: redeemableCount,
-                defaultValue: `Bạn có thể đổi được ${redeemableCount} phần thưởng`,
-              })}
-            </span>
+          <div className="flex flex-col sm:items-end gap-1">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-amber-500 dark:text-amber-400">
+              <Star className="w-4 h-4" />
+              <span>
+                {t("rewards.yourPointsMsg", {
+                  points: availablePoints,
+                  defaultValue: `Số điểm hiện có: ${availablePoints} điểm`,
+                })}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">
+              <CheckCircle className="w-4 h-4" />
+              <span>
+                {t("rewards.redeemableCountMsg", {
+                  n: redeemableCount,
+                  defaultValue: `Bạn có thể đổi được ${redeemableCount} phần thưởng`,
+                })}
+              </span>
+            </div>
           </div>
         </div>
 

@@ -261,6 +261,7 @@
     "infoTitle": "Automatically applied at checkout",
     "infoDesc": "All vouchers after redemption will be automatically optimized at the payment page. No manual code entry required!",
     "availableRewardsTitle": "Available Rewards",
+    "yourPointsMsg": "Your points: {{points}} pts",
     "redeemableCountMsg": "You can redeem {{n}} reward(s)",
     "noRewardsAvailable": "No rewards available at the moment.",
     "comingSoonBadge": "Coming Soon",
