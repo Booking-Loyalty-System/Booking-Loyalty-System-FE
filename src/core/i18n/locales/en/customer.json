@@ -105,6 +105,8 @@
       "kmAway": "km away",
       "open": "Open",
       "closed": "Closed",
+      "statusOpen": "Open",
+      "statusClosed": "Closed",
       "select": "Select"
     },
     "package": {

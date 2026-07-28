@@ -105,6 +105,8 @@
       "kmAway": "km",
       "open": "Đang Mở",
       "closed": "Đã Đóng",
+      "statusOpen": "Đang Mở",
+      "statusClosed": "Đã Đóng",
       "select": "Chọn"
     },
     "package": {
