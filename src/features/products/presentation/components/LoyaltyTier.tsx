@@ -445,8 +445,8 @@ export const LoyaltyTier: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng t() từ react-i18next hiển thị thống kê tổng số lượt đặt lịch của thành viên */}
-                  {t("loyaltyTier.stats.totalBookings", {
-                    defaultValue: "Total Bookings",
+                  {t("dashboard.stats.totalWash", {
+                    defaultValue: "Total CheckedOut Wash",
                   })}
                 </p>
                 <p className="text-3xl font-bold text-slate-800 dark:text-white mt-1">
