@@ -657,6 +657,21 @@
     }
   },
   "dynamic": {
+    "features": {
+      "exteriorWash": "Exterior wash",
+      "tireCleaning": "Tire cleaning",
+      "windowCleaning": "Window cleaning",
+      "interiorVacuum": "Interior vacuum",
+      "dashboardPolish": "Dashboard polish",
+      "tireShine": "Tire shine",
+      "airFreshener": "Air freshener",
+      "fullExteriorWash": "Full exterior wash",
+      "interiorDeepClean": "Interior deep clean",
+      "waxCoating": "Wax coating",
+      "leatherConditioning": "Leather conditioning",
+      "engineBayCleaning": "Engine bay cleaning",
+      "ceramicSpray": "Ceramic spray"
+    },
     "packages": {
       "basic": "Basic Wash",
       "premium": "Premium Wash",

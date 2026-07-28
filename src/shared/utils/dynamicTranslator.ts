@@ -5,7 +5,7 @@
  * @param t Hàm translate (t) của i18n
  * @param fallbackValue Giá trị dự phòng nếu không tìm thấy (Mặc định là beValue)
  */
-export const translateDynamic = (beValue: string | undefined | null, category: 'package' | 'packageDesc' | 'status' | 'tier', t: any, fallbackValue?: string) => {
+export const translateDynamic = (beValue: string | undefined | null, category: 'package' | 'packageDesc' | 'status' | 'tier' | 'feature', t: any, fallbackValue?: string) => {
     if (!beValue) return "";
 
     // Từ điển ánh xạ (Map)
@@ -25,6 +25,21 @@ export const translateDynamic = (beValue: string | undefined | null, category: '
             "Interior Detailing": "dynamic.packageDesc.interior",
             "Full Detailing": "dynamic.packageDesc.full",
             "VIP Detailing": "dynamic.packageDesc.vip"
+        },
+        feature: {
+            "Exterior wash": "dynamic.features.exteriorWash",
+            "Tire cleaning": "dynamic.features.tireCleaning",
+            "Window cleaning": "dynamic.features.windowCleaning",
+            "Interior vacuum": "dynamic.features.interiorVacuum",
+            "Dashboard polish": "dynamic.features.dashboardPolish",
+            "Tire shine": "dynamic.features.tireShine",
+            "Air freshener": "dynamic.features.airFreshener",
+            "Full exterior wash": "dynamic.features.fullExteriorWash",
+            "Interior deep clean": "dynamic.features.interiorDeepClean",
+            "Wax coating": "dynamic.features.waxCoating",
+            "Leather conditioning": "dynamic.features.leatherConditioning",
+            "Engine bay cleaning": "dynamic.features.engineBayCleaning",
+            "Ceramic spray": "dynamic.features.ceramicSpray"
         },
         status: {
             "Pending": "dynamic.status.pending",

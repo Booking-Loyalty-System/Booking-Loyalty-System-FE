@@ -657,6 +657,21 @@
     }
   },
   "dynamic": {
+    "features": {
+      "exteriorWash": "Rửa ngoài",
+      "tireCleaning": "Vệ sinh lốp",
+      "windowCleaning": "Vệ sinh kính",
+      "interiorVacuum": "Hút bụi nội thất",
+      "dashboardPolish": "Đánh bóng taplo",
+      "tireShine": "Làm bóng lốp",
+      "airFreshener": "Xịt thơm",
+      "fullExteriorWash": "Rửa toàn bộ bên ngoài",
+      "interiorDeepClean": "Vệ sinh sâu nội thất",
+      "waxCoating": "Phủ sáp Wax",
+      "leatherConditioning": "Bảo dưỡng da",
+      "engineBayCleaning": "Vệ sinh khoang máy",
+      "ceramicSpray": "Phủ Ceramic dạng xịt"
+    },
     "packages": {
       "basic": "Rửa xe cơ bản",
       "premium": "Rửa xe cao cấp",

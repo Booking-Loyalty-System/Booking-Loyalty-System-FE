@@ -45,13 +45,13 @@ export const WashPackageSelection: React.FC<WashPackageSelectionProps> = ({
                                 </div>
                                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-2">
                                     <span className="text-2xl xl:text-3xl font-extrabold text-[#0f172a] dark:text-white break-words">{pkg.price.toLocaleString('vi-VN')}đ</span>
-                                    <span className="text-xs text-[#64748b] dark:text-slate-400 font-semibold whitespace-nowrap shrink-0">⏱ {pkg.durationMinutes} {t('bookWash.package.minutes', { defaultValue: "min" })}</span>
+                                    <span className="text-xs text-[#64748b] dark:text-slate-400 font-semibold whitespace-nowrap shrink-0">⏱ {pkg.durationMinutes} {t('bookWash.package.minutes', { defaultValue: "phút" })}</span>
                                 </div>
                                 {pkg.features && pkg.features.length > 0 && (
                                     <ul className="space-y-2 pt-2 border-t border-[#f1f5f9] dark:border-white/5">
                                         {pkg.features.map((feature: string, i: number) => (
                                             <li key={i} className="text-xs font-medium text-[#475569] dark:text-slate-300 flex items-center gap-2">
-                                                <span className="text-emerald-500 font-bold">✓</span> {feature}
+                                                <span className="text-emerald-500 font-bold">✓</span> {translateDynamic(feature, 'feature', t, feature)}
                                             </li>
                                         ))}
                                     </ul>
