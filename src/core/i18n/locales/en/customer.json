@@ -5,6 +5,7 @@
     "stats": {
       "allTime": "All time",
       "totalBookings": "Total Bookings",
+      "totalWash": "Total CheckedOut Wash",
       "loyalty": "Loyalty",
       "totalPoints": "Total Points",
       "status": "Status",
@@ -224,6 +225,11 @@
       "inProgress": "In Progress",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    },
+    "stats": {
+      "totalBookings": "Total Bookings",
+      "pointsEarned": "Points Earned",
+      "totalSpent": "Total Spent"
     }
   },
   "rewards": {
@@ -255,6 +261,7 @@
     "infoTitle": "Automatically applied at checkout",
     "infoDesc": "All vouchers after redemption will be automatically optimized at the payment page. No manual code entry required!",
     "availableRewardsTitle": "Available Rewards",
+    "yourPointsMsg": "Your points: {{points}} pts",
     "redeemableCountMsg": "You can redeem {{n}} reward(s)",
     "noRewardsAvailable": "No rewards available at the moment.",
     "comingSoonBadge": "Coming Soon",
@@ -334,6 +341,7 @@
       "date": "Date",
       "description": "Description",
       "type": "Type",
+      "beforeBalance": "Before Balance",
       "points": "Points",
       "balance": "Balance"
     },

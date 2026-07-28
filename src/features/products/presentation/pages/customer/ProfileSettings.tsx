@@ -30,7 +30,7 @@ export const ProfileSettings: React.FC = () => {
   const { user, changePassword, isChangingPassword } = useAuth();
   const { toggleTheme, isDark } = useTheme();
   const { language, changeLanguage } = useLanguage();
-  const { t } = useTranslation("customer");
+  const { t, i18n } = useTranslation("customer");
 
   const [emailNotify, setEmailNotify] = useState(true);
   const [smsNotify, setSMSNotify] = useState(true);
@@ -520,7 +520,7 @@ export const ProfileSettings: React.FC = () => {
                   <p className="text-lg font-black tracking-wide">
                     {customerMe?.createdAt
                       ? new Date(customerMe.createdAt).toLocaleDateString(
-                          "vi-VN",
+                          i18n.language === "vi" ? "vi-VN" : "en-US",
                           {
                             month: "long",
                             year: "numeric",

@@ -5,6 +5,7 @@
     "stats": {
       "allTime": "Tổng cộng",
       "totalBookings": "Lượt Đặt Lịch",
+      "totalWash": "Số lần rửa thành công",
       "loyalty": "Tích Điểm",
       "totalPoints": "Tổng Điểm",
       "status": "Trạng Thái",
@@ -224,6 +225,11 @@
       "inProgress": "Đang Xử Lý",
       "completed": "Hoàn Thành",
       "cancelled": "Đã Hủy"
+    },
+    "stats": {
+      "totalBookings": "Tổng đơn đặt lịch",
+      "pointsEarned": "Điểm được nhận",
+      "totalSpent": "Tổng chi tiêu"
     }
   },
   "rewards": {
@@ -255,6 +261,7 @@
     "infoTitle": "Tự động áp dụng khi đặt lịch",
     "infoDesc": "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!",
     "availableRewardsTitle": "Phần thưởng khả dụng",
+    "yourPointsMsg": "Số điểm hiện có: {{points}} điểm",
     "redeemableCountMsg": "Bạn có thể đổi được {{n}} phần thưởng",
     "noRewardsAvailable": "Hiện tại không có phần thưởng nào khả dụng.",
     "comingSoonBadge": "Sắp ra mắt",
@@ -334,6 +341,7 @@
       "date": "Ngày",
       "description": "Mô Tả",
       "type": "Loại Giao Dịch",
+      "beforeBalance": "Số Dư Trước",
       "points": "Điểm Số",
       "balance": "Số Dư"
     },
