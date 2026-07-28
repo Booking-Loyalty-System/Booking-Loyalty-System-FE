@@ -5,6 +5,7 @@
     "stats": {
       "allTime": "Tổng cộng",
       "totalBookings": "Lượt Đặt Lịch",
+      "totalWash": "Số lần rửa thành công",
       "loyalty": "Tích Điểm",
       "totalPoints": "Tổng Điểm",
       "status": "Trạng Thái",
@@ -224,6 +225,11 @@
       "inProgress": "Đang Xử Lý",
       "completed": "Hoàn Thành",
       "cancelled": "Đã Hủy"
+    },
+    "stats": {
+      "totalBookings": "Tổng đơn đặt lịch",
+      "pointsEarned": "Điểm được nhận",
+      "totalSpent": "Tổng chi tiêu"
     }
   },
   "rewards": {
@@ -334,6 +340,7 @@
       "date": "Ngày",
       "description": "Mô Tả",
       "type": "Loại Giao Dịch",
+      "beforeBalance": "Số Dư Trước",
       "points": "Điểm Số",
       "balance": "Số Dư"
     },
