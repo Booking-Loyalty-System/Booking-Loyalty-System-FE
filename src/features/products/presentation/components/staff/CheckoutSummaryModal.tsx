@@ -10,11 +10,11 @@ interface CheckoutSummaryModalProps {
 }
 
 export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
-                                                                              booking,
-                                                                              onClose,
-                                                                              onConfirmCash,
-                                                                              onConfirmPayOS
-                                                                          }) => {
+    booking,
+    onClose,
+    onConfirmCash,
+    onConfirmPayOS
+}) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState<'summary' | 'methods'>('summary');
 

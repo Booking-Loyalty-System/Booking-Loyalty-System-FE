@@ -4,6 +4,7 @@ import {
   XCircle,
   Calendar,
   Star,
+  Clock,
   DollarSign,
   AlertTriangle,
   MessageSquarePlus,
@@ -149,20 +150,22 @@ export const BookingHistory: React.FC = () => {
       </div>
     );
 
+  // Chỉ hiển thị đúng số booking thật của user (ẩn seed data)
+  const realCount = customerMe?.totalWashes ?? sortedBookings.length;
+  const displayedBookings = sortedBookings.slice(0, realCount);
 
-  // Ưu tiên dùng totalWashes từ server (chính xác, ẩn seed data).
-  // Fallback về số booking thực tế nếu chưa có dữ liệu từ server.
-  const totalBookingsCount = customerMe?.totalWashes ?? sortedBookings.length;
-
+  const completedBookings = displayedBookings.filter(
+    (b) => b.status === "Completed" || b.status === "CheckedOut",
+  );
   const stats = [
     {
-      title: t("bookingHistory.stats.totalBookings", "Total Bookings"),
-      value: totalBookingsCount.toString(),
+      title: "Total Bookings",
+      value: displayedBookings.length.toString(),
       icon: <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
       bg: "bg-blue-50/50 dark:bg-blue-500/10",
     },
     {
-      title: t("bookingHistory.stats.pointsEarned", "Points Earned"),
+      title: "Points Earned",
       value: (
         customerMe?.totalPoint ??
         customerMe?.totalPoints ??
@@ -172,7 +175,15 @@ export const BookingHistory: React.FC = () => {
       bg: "bg-emerald-50/50 dark:bg-emerald-500/10",
     },
     {
-      title: t("bookingHistory.stats.totalSpent", "Total Spent"),
+      title: "Minutes Saved",
+      value: completedBookings
+        .reduce((sum, b) => sum + (b.durationMinutes || 0), 0)
+        .toLocaleString("en-US"),
+      icon: <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />,
+      bg: "bg-purple-50/50 dark:bg-purple-500/10",
+    },
+    {
+      title: "Total Spent",
       value: formatCurrency(customerMe?.totalSpent || 0),
       icon: (
         <DollarSign className="w-6 h-6 text-orange-600 dark:text-orange-400" />
@@ -351,7 +362,7 @@ export const BookingHistory: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-sm font-medium text-slate-600 dark:text-slate-300">
-              {sortedBookings.length === 0 ? (
+              {displayedBookings.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -361,7 +372,7 @@ export const BookingHistory: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                sortedBookings.map((item) => (
+                displayedBookings.map((item) => (
                   <tr
                     key={item.id}
                     className="hover:bg-slate-50/40 dark:hover:bg-white/5 transition-colors"
@@ -406,14 +417,14 @@ export const BookingHistory: React.FC = () => {
                       </button>
                       {(item.status === "Confirmed" ||
                         item.status === "Pending") && (
-                        <button
-                          onClick={() => setBookingToCancel(item)}
-                          className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
-                        >
-                          <XCircle className="w-3.5 h-3.5" />
-                          <span>{t("bookingHistory.actions.cancel")}</span>
-                        </button>
-                      )}
+                          <button
+                            onClick={() => setBookingToCancel(item)}
+                            className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            <span>{t("bookingHistory.actions.cancel")}</span>
+                          </button>
+                        )}
                       {(item.status === "Completed" ||
                         item.status === "CheckedOut") &&
                         !item.feedbackResponse && (
