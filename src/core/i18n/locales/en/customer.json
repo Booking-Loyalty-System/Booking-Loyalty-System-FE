@@ -97,6 +97,7 @@
       "summary": "Summary"
     },
     "branch": {
+      "selectTitle": "Select Branch",
       "title": "Select a Branch",
       "findNearest": "Find Nearest",
       "searchPlaceholder": "Search branches...",
@@ -114,6 +115,7 @@
       "selectPackage": "Select Package"
     },
     "vehicle": {
+      "selectTitle": "Select Vehicle",
       "title": "Select Your Vehicle",
       "addNew": "Add New Vehicle",
       "noVehicles": "No vehicles added yet",
@@ -136,6 +138,7 @@
       "full": "Full"
     },
     "voucher": {
+      "redeemMore": "Redeem More",
       "title": "Apply Voucher (Optional)",
       "enterCode": "Enter voucher code",
       "apply": "Apply",

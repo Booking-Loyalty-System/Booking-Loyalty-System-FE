@@ -97,6 +97,7 @@
       "summary": "Tóm Tắt"
     },
     "branch": {
+      "selectTitle": "Chọn Chi Nhánh",
       "title": "Chọn Chi Nhánh",
       "findNearest": "Tìm Gần Nhất",
       "searchPlaceholder": "Tìm kiếm chi nhánh...",
@@ -114,6 +115,7 @@
       "selectPackage": "Chọn Gói"
     },
     "vehicle": {
+      "selectTitle": "Chọn Xe",
       "title": "Chọn Xe Của Bạn",
       "addNew": "Thêm Xe Mới",
       "noVehicles": "Chưa có xe nào được thêm",
@@ -136,6 +138,7 @@
       "full": "Đã Kín Chỗ"
     },
     "voucher": {
+      "redeemMore": "Đổi Thêm",
       "title": "Áp Dụng Voucher (Tùy Chọn)",
       "enterCode": "Nhập mã voucher",
       "apply": "Áp Dụng",
