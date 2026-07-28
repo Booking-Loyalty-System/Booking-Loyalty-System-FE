@@ -21,7 +21,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { SidebarItem } from "../components/SidebarItem";
 import { ProfileDropdown } from "../components/ProfileDropdown";
-import { TierUpgradeModal } from "../components/TierUpgradeModal";
+import { TierUpgradeModal } from "../components/customer/TierUpgradeModal.tsx";
 import { useLanguage } from "@/core/context/LanguageContext.tsx";
 import { useTheme } from "@/core/context/ThemeContext.tsx";
 import { Chatbox } from "../components/Chatbox";
@@ -74,8 +74,8 @@ export const CustomerLayout: React.FC = () => {
       .withUrl(`${import.meta.env.VITE_SOCKET_URL}/booking`, {
         accessTokenFactory: () => localStorage.getItem("access_token") || "",
         headers: {
-          "ngrok-skip-browser-warning": "true"
-        }
+          "ngrok-skip-browser-warning": "true",
+        },
       })
       .configureLogging(LogLevel.Warning)
       .withAutomaticReconnect()
@@ -103,21 +103,31 @@ export const CustomerLayout: React.FC = () => {
               // Tự động chuyển hướng sang trang Live Tracking khi bắt đầu
               navigate("/live-tracking");
             } else if (currentStatus === "Completed") {
-              const booking = myBookingsRef.current.find(b => b.id === data.bookingId);
+              const booking = myBookingsRef.current.find(
+                (b) => b.id === data.bookingId,
+              );
               if (booking) {
                 const tier = customerMeRef.current?.tier || "Member";
-                const multiplier = tier === "Platinum" ? 3 : tier === "Gold" ? 2 : tier === "Silver" ? 1.5 : 1;
-                const points = Math.floor((booking.totalPrice || 0) / 1000) * multiplier;
+                const multiplier =
+                  tier === "Platinum"
+                    ? 3
+                    : tier === "Gold"
+                      ? 2
+                      : tier === "Silver"
+                        ? 1.5
+                        : 1;
+                const points =
+                  Math.floor((booking.totalPrice || 0) / 1000) * multiplier;
 
                 toast.success(
                   `Thanh toán thành công! Bạn được cộng ${points.toLocaleString("vi-VN")} điểm thưởng.`,
-                  { icon: "🎉" }
+                  { icon: "🎉" },
                 );
                 window.dispatchEvent(new Event("customer_points_changed"));
               } else {
                 toast.success(
                   "Thanh toán thành công! Điểm thưởng đã được cộng vào tài khoản.",
-                  { icon: "🎉" }
+                  { icon: "🎉" },
                 );
               }
             } else {
@@ -159,7 +169,7 @@ export const CustomerLayout: React.FC = () => {
         connection.state === "Connected" ||
         connection.state === "Connecting"
       ) {
-        connection.stop().catch(() => { });
+        connection.stop().catch(() => {});
       }
     };
   }, [userId, queryClient]);
@@ -170,7 +180,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/dashboard",
       label: t("sidebar.dashboard", { defaultValue: "Dashboard" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_4px_15px_rgba(59,130,246,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:scale-110 group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_4px_15px_rgba(59,130,246,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:scale-110 group-hover:bg-white/15"}`}
+        >
           <LayoutDashboard className="w-4 h-4" />
         </div>
       ),
@@ -179,7 +191,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/book-wash",
       label: t("sidebar.bookWash", { defaultValue: "Book Wash" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:scale-110 group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:scale-110 group-hover:bg-white/15"}`}
+        >
           <Car className="w-4 h-4" />
         </div>
       ),
@@ -188,7 +202,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/live-tracking",
       label: t("sidebar.liveTracking", { defaultValue: "Live Tracking" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-[0_4px_15px_rgba(239,68,68,0.4)]" : "bg-red-400/20 text-red-200 group-hover:bg-red-400/30"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-[0_4px_15px_rgba(239,68,68,0.4)]" : "bg-red-400/20 text-red-200 group-hover:bg-red-400/30"}`}
+        >
           <Radio className="w-4 h-4 animate-pulse" />
         </div>
       ),
@@ -197,7 +213,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/loyalty-tier",
       label: t("sidebar.loyaltyTier", { defaultValue: "Loyalty & Tier" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-amber-200 group-hover:scale-110 group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-[0_4px_15px_rgba(245,158,11,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-amber-200 group-hover:scale-110 group-hover:bg-white/15"}`}
+        >
           <Award className="w-4 h-4" />
         </div>
       ),
@@ -206,7 +224,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/rewards",
       label: t("sidebar.rewards", { defaultValue: "Rewards" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-[0_4px_15px_rgba(236,72,153,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-pink-200 group-hover:animate-bounce group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-[0_4px_15px_rgba(236,72,153,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-pink-200 group-hover:animate-bounce group-hover:bg-white/15"}`}
+        >
           <Gift className="w-4 h-4" />
         </div>
       ),
@@ -215,7 +235,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/promotions",
       label: t("sidebar.promotions", { defaultValue: "Promotions" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white shadow-[0_4px_15px_rgba(168,85,247,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-purple-200 group-hover:-rotate-12 group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white shadow-[0_4px_15px_rgba(168,85,247,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-purple-200 group-hover:-rotate-12 group-hover:bg-white/15"}`}
+        >
           <Megaphone className="w-4 h-4" />
         </div>
       ),
@@ -224,7 +246,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/booking-history",
       label: t("sidebar.bookingHistory", { defaultValue: "Booking History" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_15px_rgba(6,182,212,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-cyan-200 group-hover:scale-110 group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_15px_rgba(6,182,212,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-cyan-200 group-hover:scale-110 group-hover:bg-white/15"}`}
+        >
           <History className="w-4 h-4" />
         </div>
       ),
@@ -233,7 +257,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/my-vehicles",
       label: t("sidebar.myVehicles", { defaultValue: "My Vehicles" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-teal-400 to-emerald-500 text-white shadow-[0_4px_15px_rgba(20,184,166,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-teal-200 group-hover:translate-x-0.5 group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-teal-400 to-emerald-500 text-white shadow-[0_4px_15px_rgba(20,184,166,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-teal-200 group-hover:translate-x-0.5 group-hover:bg-white/15"}`}
+        >
           <Car className="w-4 h-4" />
         </div>
       ),
@@ -242,7 +268,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/notifications",
       label: t("sidebar.notifications", { defaultValue: "Notifications" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-[0_4px_15px_rgba(51,65,85,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-[0_4px_15px_rgba(51,65,85,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-white group-hover:bg-white/15"}`}
+        >
           <Bell className="w-4 h-4" />
         </div>
       ),
@@ -251,7 +279,9 @@ export const CustomerLayout: React.FC = () => {
       path: "/settings",
       label: t("sidebar.settings", { defaultValue: "Settings" }),
       icon: (isActive) => (
-        <div className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-[0_4px_15px_rgba(99,102,241,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-indigo-200 group-hover:rotate-45 group-hover:bg-white/15"}`}>
+        <div
+          className={`p-2.5 rounded-xl transition-all duration-300 ${isActive ? "bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-[0_4px_15px_rgba(99,102,241,0.4)]" : "bg-white/10 text-sky-100 group-hover:text-indigo-200 group-hover:rotate-45 group-hover:bg-white/15"}`}
+        >
           <Settings className="w-4 h-4" />
         </div>
       ),
@@ -265,14 +295,24 @@ export const CustomerLayout: React.FC = () => {
   const titleMap: Record<string, string> = {
     "/dashboard": t("header.dashboard", { defaultValue: "Dashboard" }),
     "/book-wash": t("header.bookAWash", { defaultValue: "Book a Wash" }),
-    "/live-tracking": t("header.liveTracking", { defaultValue: "Live Tracking" }),
-    "/loyalty-tier": t("header.loyaltyTier", { defaultValue: "Loyalty & Tier" }),
+    "/live-tracking": t("header.liveTracking", {
+      defaultValue: "Live Tracking",
+    }),
+    "/loyalty-tier": t("header.loyaltyTier", {
+      defaultValue: "Loyalty & Tier",
+    }),
     "/rewards": t("header.rewards", { defaultValue: "Rewards" }),
     "/promotions": t("header.promotions", { defaultValue: "Promotions" }),
-    "/booking-history": t("header.bookingHistory", { defaultValue: "Booking History" }),
+    "/booking-history": t("header.bookingHistory", {
+      defaultValue: "Booking History",
+    }),
     "/my-vehicles": t("header.myVehicles", { defaultValue: "My Vehicles" }),
-    "/notifications": t("header.notificationCenter", { defaultValue: "Notification Center" }),
-    "/settings": t("header.profileSettings", { defaultValue: "Profile Settings" }),
+    "/notifications": t("header.notificationCenter", {
+      defaultValue: "Notification Center",
+    }),
+    "/settings": t("header.profileSettings", {
+      defaultValue: "Profile Settings",
+    }),
   };
 
   const currentTitle = titleMap[location.pathname] || "AutoWash Premium";
@@ -287,9 +327,15 @@ export const CustomerLayout: React.FC = () => {
       {/* 🌊 Aqua Premium background orbs — chỉ hiện ở light mode */}
       <div className="absolute inset-0 pointer-events-none z-0 dark:hidden">
         {/* Orb trái trên: xanh dương nhạt */}
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-radial from-sky-400/80 via-blue-200/40 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div
+          className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-radial from-sky-400/80 via-blue-200/40 to-transparent blur-3xl animate-pulse"
+          style={{ animationDuration: "8s" }}
+        />
         {/* Orb phải dưới: cyan nhạt */}
-        <div className="absolute -bottom-40 -right-20 w-[500px] h-[500px] rounded-full bg-gradient-radial from-cyan-400/70 via-sky-200/30 to-transparent blur-3xl animate-pulse" style={{ animationDuration: '11s', animationDelay: '3s' }} />
+        <div
+          className="absolute -bottom-40 -right-20 w-[500px] h-[500px] rounded-full bg-gradient-radial from-cyan-400/70 via-sky-200/30 to-transparent blur-3xl animate-pulse"
+          style={{ animationDuration: "11s", animationDelay: "3s" }}
+        />
         {/* Orb giữa: xanh nhẹ */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-gradient-radial from-blue-300/60 to-transparent blur-[80px]" />
       </div>
@@ -334,7 +380,9 @@ export const CustomerLayout: React.FC = () => {
             <span>{t("sidebar.logout", { defaultValue: "Logout" })}</span>
           </button>
           <div className="text-center text-[10px] font-semibold text-sky-400/50 uppercase tracking-widest">
-            {t("sidebar.copyright", { defaultValue: "© 2026 AutoWash Premium" })}
+            {t("sidebar.copyright", {
+              defaultValue: "© 2026 AutoWash Premium",
+            })}
           </div>
         </div>
       </aside>
@@ -357,7 +405,9 @@ export const CustomerLayout: React.FC = () => {
             <div className="hidden md:block w-72 relative group">
               <input
                 type="text"
-                placeholder={t("header.searchPlaceholder", { defaultValue: "Search..." })}
+                placeholder={t("header.searchPlaceholder", {
+                  defaultValue: "Search...",
+                })}
                 className="w-full bg-slate-100/80 dark:bg-white/5 dark:text-slate-200 dark:placeholder-slate-500 border border-transparent dark:border-white/5 rounded-2xl py-2.5 pl-5 pr-12 text-sm font-medium focus:outline-none focus:bg-white dark:focus:bg-[#1A1C23] focus:border-blue-500 dark:focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm group-hover:shadow-md"
               />
               <Search className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
@@ -369,24 +419,33 @@ export const CustomerLayout: React.FC = () => {
                 title={isDark ? "Light Mode" : "Dark Mode"}
                 className="p-2 rounded-full hover:bg-white dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all shadow-sm"
               >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {isDark ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
               </button>
 
               <button
                 onClick={toggleLanguage}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-white dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all text-xs font-bold shadow-sm"
               >
-                <span className="text-sm leading-none">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
-                <span className="uppercase">{language === "en" ? "EN" : "VI"}</span>
+                <span className="text-sm leading-none">
+                  {language === "en" ? "🇺🇸" : "🇻🇳"}
+                </span>
+                <span className="uppercase">
+                  {language === "en" ? "EN" : "VI"}
+                </span>
               </button>
             </div>
 
             <button
               onClick={() => navigate("/notifications")}
-              className={`relative p-2.5 rounded-full transition-all duration-300 border ${location.pathname === "/notifications"
-                ? "bg-gradient-to-r from-sky-500 to-blue-500 text-white border-transparent shadow-lg shadow-sky-500/30"
-                : "bg-white/80 dark:bg-white/10 border-sky-200/60 dark:border-white/10 text-sky-600 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-white/20 hover:shadow-md"
-                }`}
+              className={`relative p-2.5 rounded-full transition-all duration-300 border ${
+                location.pathname === "/notifications"
+                  ? "bg-gradient-to-r from-sky-500 to-blue-500 text-white border-transparent shadow-lg shadow-sky-500/30"
+                  : "bg-white/80 dark:bg-white/10 border-sky-200/60 dark:border-white/10 text-sky-600 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-white/20 hover:shadow-md"
+              }`}
             >
               <Bell className="w-5 h-5 drop-shadow-sm" />
               {unreadCount > 0 && (

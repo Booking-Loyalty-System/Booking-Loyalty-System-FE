@@ -12,12 +12,12 @@ import {
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import type { MyBookingRecord } from "@/features/products/domain/models/booking/booking.model.ts";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
-import { BookingDetailModal } from "@/features/products/presentation/components/BookingDetailModal";
-import { BookingSuccessCard } from "@/features/products/presentation/components/BookingSuccessCard.tsx";
+import { BookingDetailModal } from "@/features/products/presentation/components/customer/BookingDetailModal";
+import { BookingSuccessCard } from "@/features/products/presentation/components/customer/BookingSuccessCard";
 import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { ReschedulePicker } from "@/features/products/presentation/components/ReschedulePicker.tsx";
-import { FeedbackModal } from "@/features/products/presentation/components/FeedbackModal";
+import { FeedbackModal } from "@/features/products/presentation/components/customer/FeedbackModal";
 import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 export const BookingHistory: React.FC = () => {
@@ -322,7 +322,7 @@ export const BookingHistory: React.FC = () => {
               {stat.icon}
             </div>
             <div className="space-y-0.5 min-w-0 flex-1">
-              <p 
+              <p
                 className="text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight truncate"
                 title={String(stat.value)}
               >
@@ -381,7 +381,7 @@ export const BookingHistory: React.FC = () => {
                       {item.bookingCode}
                     </td>
                     <td className="py-4 px-6 text-blue-950 dark:text-white font-bold">
-                      {translateDynamic(item.washPackageName, 'package', t)}
+                      {translateDynamic(item.washPackageName, "package", t)}
                     </td>
                     <td className="py-4 px-6">
                       <div>{item.bookingDate}</div>
@@ -417,14 +417,14 @@ export const BookingHistory: React.FC = () => {
                       </button>
                       {(item.status === "Confirmed" ||
                         item.status === "Pending") && (
-                          <button
-                            onClick={() => setBookingToCancel(item)}
-                            className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                            <span>{t("bookingHistory.actions.cancel")}</span>
-                          </button>
-                        )}
+                        <button
+                          onClick={() => setBookingToCancel(item)}
+                          className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          <span>{t("bookingHistory.actions.cancel")}</span>
+                        </button>
+                      )}
                       {(item.status === "Completed" ||
                         item.status === "CheckedOut") &&
                         !item.feedbackResponse && (

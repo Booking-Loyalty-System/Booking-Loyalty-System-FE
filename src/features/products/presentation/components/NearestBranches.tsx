@@ -1,187 +1,273 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MapPin, Clock, Phone, Map, Loader2, Navigation, CheckCircle2 } from 'lucide-react';
-import { MapModal } from './MapModal';
-import { translateBranchName, translateAddress } from '@/shared/utils/dynamicTranslator';
-import { useBranch } from '../../application/useBranch';
+import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  MapPin,
+  Clock,
+  Phone,
+  Map,
+  Loader2,
+  Navigation,
+  CheckCircle2,
+} from "lucide-react";
+import { MapModal } from "./customer/MapModal";
+import {
+  translateBranchName,
+  translateAddress,
+} from "@/shared/utils/dynamicTranslator";
+import { useBranch } from "../../application/useBranch";
 import type { NearestBranchesProps } from "@/features/products/domain/models/branch/branch.model.ts";
 
-export const NearestBranches: React.FC<NearestBranchesProps> = ({ selectedBranchId, onSelectBranch }) => {
-    const { t, i18n } = useTranslation('customer');
-    const [isMapOpen, setIsMapOpen] = useState(false);
-    const [userLocation, setUserLocation] = useState<{ lat: number, lon: number } | null>(null);
-    const [modalActiveBranchId, setModalActiveBranchId] = useState<string>('');
-    const { branches, isLoading, error } = useBranch();
+export const NearestBranches: React.FC<NearestBranchesProps> = ({
+  selectedBranchId,
+  onSelectBranch,
+}) => {
+  const { t, i18n } = useTranslation("customer");
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
+  const [modalActiveBranchId, setModalActiveBranchId] = useState<string>("");
+  const { branches, isLoading, error } = useBranch();
 
-    const handleOpenMap = (branchId?: string) => {
-        setModalActiveBranchId(branchId || '');
-        setIsMapOpen(true);
-    };
+  const handleOpenMap = (branchId?: string) => {
+    setModalActiveBranchId(branchId || "");
+    setIsMapOpen(true);
+  };
 
-    const calculateDistance = (
-        lat1: number, lon1: number,
-        lat2: number, lon2: number
-    ): number => {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * (Math.PI / 180);
-        const dLon = (lon2 - lon1) * (Math.PI / 180);
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    };
+  const calculateDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-            },
-            (err) => console.log("Unable to retrieve user location:", err)
-        );
-    }, []);
-
-    const sortedBranches = useMemo(() => {
-        if (!userLocation) return branches;
-
-        return [...branches].sort((a, b) => {
-            const distA = calculateDistance(userLocation.lat, userLocation.lon, a.latitude, a.longitude);
-            const distB = calculateDistance(userLocation.lat, userLocation.lon, b.latitude, b.longitude);
-            return distA - distB;
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
         });
-    }, [branches, userLocation]);
-
-    if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                <Loader2 className="w-9 h-9 text-[#1e6ffd] animate-spin" />
-                <p className="text-slate-500 text-sm font-medium">{t('bookWash.branch.findingNearest', { defaultValue: "Finding the nearest branches..." })}</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="text-center p-8 bg-red-50 border border-red-100 rounded-2xl max-w-4xl mx-auto my-6 shadow-sm">
-                <p className="text-red-600 font-bold text-lg">{t('bookWash.branch.connectionFailed', { defaultValue: "Data Connection Failed" })}</p>
-                <p className="text-red-400 text-sm mt-1">{t('bookWash.branch.connectionFailedDesc', { defaultValue: "Please check your network connection or backend system." })}</p>
-            </div>
-        );
-    }
-
-    if (branches.length === 0) {
-        return (
-            <div className="text-center p-12 bg-slate-50 border border-slate-200 rounded-2xl max-w-4xl mx-auto my-6">
-                <p className="text-slate-500 font-medium text-lg">{t('bookWash.branch.noActiveBranches', { defaultValue: "No active branches found at the moment." })}</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-6 w-full max-w-4xl mx-auto">
-            {/* Header Section */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
-                <div>
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">{t('bookWash.branch.selectTitle', { defaultValue: "Select Branch" })}</h2>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('bookWash.branch.sortedByProximity', { defaultValue: "Automatically sorted based on your proximity" })}</p>
-                </div>
-                <button
-                    type="button"
-                    onClick={() => handleOpenMap()}
-                    className="flex items-center justify-center gap-2 bg-[#1e6ffd] hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold shadow-md shadow-blue-500/10 active:scale-95 transition-all text-xs self-start sm:self-center"
-                >
-                    <Map className="w-3.5 h-3.5" /> {t('bookWash.branch.overviewMap', { defaultValue: "Overview Map" })}
-                </button>
-            </div>
-
-            {/* Grid Cards Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {sortedBranches.map((branch) => {
-                    const distance = userLocation
-                        ? calculateDistance(userLocation.lat, userLocation.lon, branch.latitude, branch.longitude).toFixed(1)
-                        : null;
-
-                    const isSelected = selectedBranchId === branch.id;
-
-                    return (
-                        <div
-                            key={branch.id}
-                            onClick={() => onSelectBranch(branch.id)}
-                            className={`group relative bg-white dark:bg-[#13151A] border rounded-2xl p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
-                                isSelected
-                                    ? 'border-blue-600 dark:border-blue-500 ring-2 ring-blue-500/10 dark:ring-blue-900/30 bg-blue-50/5 dark:bg-blue-900/10 shadow-md shadow-blue-500/5'
-                                    : 'border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-white/30 hover:shadow-md'
-                            }`}
-                        >
-                            <div>
-                                <div className="flex justify-between items-start gap-3">
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-lg text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
-                                            {translateBranchName(branch.branchName, i18n)}
-                                        </h3>
-                                        {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />}
-                                    </div>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                                        branch.status === 'Active'
-                                            ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20'
-                                            : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400'
-                                    }`}>
-                                        {branch.status === 'Active' ? t('bookWash.branch.statusOpen', { defaultValue: 'Open' }) : t('bookWash.branch.statusClosed', { defaultValue: 'Closed' })}
-                                    </span>
-                                </div>
-
-                                {/* Distance Badge */}
-                                {distance && (
-                                    <div className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 rounded-md text-[11px] font-bold text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/30">
-                                        <Navigation className="w-2.5 h-2.5 fill-current" />
-                                        {t('bookWash.branch.kmAway', { n: distance, defaultValue: `${distance} km away` })}
-                                    </div>
-                                )}
-
-                                {/* Info List */}
-                                <div className="space-y-2.5 mt-4 border-t border-slate-50 dark:border-white/5 pt-3">
-                                    <div className="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400">
-                                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                                        <span className="line-clamp-2">{translateAddress(branch.address, i18n)}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
-                                        <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                        <span>{branch.operatingHours || '08:00 AM - 10:00 PM'}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
-                                        <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                        <span className="font-semibold text-slate-600 dark:text-slate-300">{branch.hotline}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Action Button */}
-                            <button
-                                type="button"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleOpenMap(branch.id);
-                                }}
-                                className={`mt-4 w-full py-2 text-xs font-bold rounded-xl border transition-all duration-200 ${
-                                    isSelected
-                                        ? 'bg-blue-600 text-white border-transparent hover:bg-blue-700'
-                                        : 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10'
-                                }`}
-                            >
-                                {t('bookWash.branch.viewOnMap', { defaultValue: "View on Map" })}
-                            </button>
-                        </div>
-                    );
-                })}
-            </div>
-
-            <MapModal
-                isOpen={isMapOpen}
-                onClose={() => setIsMapOpen(false)}
-                branches={branches}
-                selectedBranchId={modalActiveBranchId}
-            />
-        </div>
+      },
+      (err) => console.log("Unable to retrieve user location:", err),
     );
+  }, []);
+
+  const sortedBranches = useMemo(() => {
+    if (!userLocation) return branches;
+
+    return [...branches].sort((a, b) => {
+      const distA = calculateDistance(
+        userLocation.lat,
+        userLocation.lon,
+        a.latitude,
+        a.longitude,
+      );
+      const distB = calculateDistance(
+        userLocation.lat,
+        userLocation.lon,
+        b.latitude,
+        b.longitude,
+      );
+      return distA - distB;
+    });
+  }, [branches, userLocation]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <Loader2 className="w-9 h-9 text-[#1e6ffd] animate-spin" />
+        <p className="text-slate-500 text-sm font-medium">
+          {t("bookWash.branch.findingNearest", {
+            defaultValue: "Finding the nearest branches...",
+          })}
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center p-8 bg-red-50 border border-red-100 rounded-2xl max-w-4xl mx-auto my-6 shadow-sm">
+        <p className="text-red-600 font-bold text-lg">
+          {t("bookWash.branch.connectionFailed", {
+            defaultValue: "Data Connection Failed",
+          })}
+        </p>
+        <p className="text-red-400 text-sm mt-1">
+          {t("bookWash.branch.connectionFailedDesc", {
+            defaultValue:
+              "Please check your network connection or backend system.",
+          })}
+        </p>
+      </div>
+    );
+  }
+
+  if (branches.length === 0) {
+    return (
+      <div className="text-center p-12 bg-slate-50 border border-slate-200 rounded-2xl max-w-4xl mx-auto my-6">
+        <p className="text-slate-500 font-medium text-lg">
+          {t("bookWash.branch.noActiveBranches", {
+            defaultValue: "No active branches found at the moment.",
+          })}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 w-full max-w-4xl mx-auto">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
+            {t("bookWash.branch.selectTitle", {
+              defaultValue: "Select Branch",
+            })}
+          </h2>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+            {t("bookWash.branch.sortedByProximity", {
+              defaultValue: "Automatically sorted based on your proximity",
+            })}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => handleOpenMap()}
+          className="flex items-center justify-center gap-2 bg-[#1e6ffd] hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-semibold shadow-md shadow-blue-500/10 active:scale-95 transition-all text-xs self-start sm:self-center"
+        >
+          <Map className="w-3.5 h-3.5" />{" "}
+          {t("bookWash.branch.overviewMap", { defaultValue: "Overview Map" })}
+        </button>
+      </div>
+
+      {/* Grid Cards Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {sortedBranches.map((branch) => {
+          const distance = userLocation
+            ? calculateDistance(
+                userLocation.lat,
+                userLocation.lon,
+                branch.latitude,
+                branch.longitude,
+              ).toFixed(1)
+            : null;
+
+          const isSelected = selectedBranchId === branch.id;
+
+          return (
+            <div
+              key={branch.id}
+              onClick={() => onSelectBranch(branch.id)}
+              className={`group relative bg-white dark:bg-[#13151A] border rounded-2xl p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between ${
+                isSelected
+                  ? "border-blue-600 dark:border-blue-500 ring-2 ring-blue-500/10 dark:ring-blue-900/30 bg-blue-50/5 dark:bg-blue-900/10 shadow-md shadow-blue-500/5"
+                  : "border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-white/30 hover:shadow-md"
+              }`}
+            >
+              <div>
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-lg text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
+                      {translateBranchName(branch.branchName, i18n)}
+                    </h3>
+                    {isSelected && (
+                      <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                    )}
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                      branch.status === "Active"
+                        ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20"
+                        : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400"
+                    }`}
+                  >
+                    {branch.status === "Active"
+                      ? t("bookWash.branch.statusOpen", {
+                          defaultValue: "Open",
+                        })
+                      : t("bookWash.branch.statusClosed", {
+                          defaultValue: "Closed",
+                        })}
+                  </span>
+                </div>
+
+                {/* Distance Badge */}
+                {distance && (
+                  <div className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 rounded-md text-[11px] font-bold text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/30">
+                    <Navigation className="w-2.5 h-2.5 fill-current" />
+                    {t("bookWash.branch.kmAway", {
+                      n: distance,
+                      defaultValue: `${distance} km away`,
+                    })}
+                  </div>
+                )}
+
+                {/* Info List */}
+                <div className="space-y-2.5 mt-4 border-t border-slate-50 dark:border-white/5 pt-3">
+                  <div className="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                    <span className="line-clamp-2">
+                      {translateAddress(branch.address, i18n)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
+                    <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span>
+                      {branch.operatingHours || "08:00 AM - 10:00 PM"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
+                    <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="font-semibold text-slate-600 dark:text-slate-300">
+                      {branch.hotline}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenMap(branch.id);
+                }}
+                className={`mt-4 w-full py-2 text-xs font-bold rounded-xl border transition-all duration-200 ${
+                  isSelected
+                    ? "bg-blue-600 text-white border-transparent hover:bg-blue-700"
+                    : "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10"
+                }`}
+              >
+                {t("bookWash.branch.viewOnMap", {
+                  defaultValue: "View on Map",
+                })}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <MapModal
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        branches={branches}
+        selectedBranchId={modalActiveBranchId}
+      />
+    </div>
+  );
 };

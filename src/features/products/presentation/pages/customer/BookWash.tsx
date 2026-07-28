@@ -12,7 +12,7 @@ import {
 import { useVehicle } from "@/features/products/application/useVehicle.ts";
 import { useWashPackage } from "@/features/products/application/useWashPackage.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
-import { VehicleFormModal } from "@/features/products/presentation/components/VehicleFormModal.tsx";
+import { VehicleFormModal } from "@/features/products/presentation/components/customer/VehicleFormModal";
 import type {
   Vehicle,
   VehicleFormData,
@@ -24,12 +24,12 @@ import {
 } from "@/shared/constants/vehicle-data";
 
 // Import UI Components
-import { TierPriorityWindow } from "@/features/products/presentation/components/TierPriorityWindow.tsx";
-import { VehicleSelection } from "@/features/products/presentation/components/VehicleSelection.tsx";
-import { NearestBranches } from "./NearestBranches";
-import { WashPackageSelection } from "@/features/products/presentation/components/WashPackageSelection.tsx";
-import { DateTimeSelection } from "@/features/products/presentation/components/DateTimeSelection.tsx";
-import { BookingSummary } from "@/features/products/presentation/components/BookingSummary.tsx";
+import { TierPriorityWindow } from "@/features/products/presentation/components/customer/TierPriorityWindow";
+import { VehicleSelection } from "@/features/products/presentation/components/customer/VehicleSelection";
+import { NearestBranches } from "../../components/NearestBranches";
+import { WashPackageSelection } from "@/features/products/presentation/components/customer/WashPackageSelection";
+import { DateTimeSelection } from "@/features/products/presentation/components/customer/DateTimeSelection";
+import { BookingSummary } from "@/features/products/presentation/components/customer/BookingSummary";
 
 // Import Utils & Constants
 import {
@@ -42,7 +42,7 @@ import { useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { useTimeSlot } from "@/features/products/application/useTimeSlot.ts";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
-import { VoucherSelection } from "@/features/products/presentation/components/VoucherSelection.tsx";
+import { VoucherSelection } from "@/features/products/presentation/pages/customer/VoucherSelection";
 import type { Voucher } from "@/features/products/domain/models/voucher/voucher.model.ts";
 import { usePromotion } from "@/features/products/application/usePromotion.ts";
 import type { Promotion } from "@/features/products/domain/models/promotion/promotion.dto.ts";
@@ -243,17 +243,25 @@ export const BookWash: React.FC = () => {
   const { validatePromotion, getEligiblePromotions } = usePromotion();
 
   // 🌟 LẤY LỊCH SỬ ĐỔI THƯỞNG VÀ DANH SÁCH VOUCHER ĐÃ MAP SẴN
-  const {
-    isLoadingRedemptions,
-    redemptions,
-    myVouchers,
-    isLoadingVouchers
-  } = useReward();
+  const { isLoadingRedemptions, redemptions, myVouchers, isLoadingVouchers } =
+    useReward();
 
   const totalWashes = customerMe?.totalWashes ?? 0;
   const earnedFreeWashes = Math.floor(totalWashes / 7);
-  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
-  const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
+  const redeemedFreeWashes = Array.isArray(redemptions)
+    ? redemptions.filter(
+        (r) =>
+          r &&
+          (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" ||
+            r.rewardName === "Free Car Wash Reward" ||
+            r.rewardName.includes("Miễn Phí") ||
+            r.rewardName.includes("Free Wash")),
+      ).length
+    : 0;
+  const availableFreeWashes = Math.max(
+    0,
+    earnedFreeWashes - redeemedFreeWashes,
+  );
 
   const bookingWindow = customerMe?.bookingWindow || 7;
   const dynamicDateSlots = useMemo(() => {
@@ -303,11 +311,12 @@ export const BookWash: React.FC = () => {
 
   // Lấy chunk startDate dựa trên ngày đang chọn (mỗi chunk 7 ngày)
   const selectedDateIndex = useMemo(() => {
-    return dynamicDateSlots.findIndex(d => d.apiDate === selectedDate);
+    return dynamicDateSlots.findIndex((d) => d.apiDate === selectedDate);
   }, [dynamicDateSlots, selectedDate]);
 
   const chunkStartDate = useMemo(() => {
-    if (selectedDateIndex === -1 || dynamicDateSlots.length === 0) return dynamicDateSlots[0]?.apiDate;
+    if (selectedDateIndex === -1 || dynamicDateSlots.length === 0)
+      return dynamicDateSlots[0]?.apiDate;
     const chunkIndex = Math.floor(selectedDateIndex / 7) * 7;
     return dynamicDateSlots[chunkIndex]?.apiDate;
   }, [dynamicDateSlots, selectedDateIndex]);
@@ -349,7 +358,9 @@ export const BookWash: React.FC = () => {
   // Auto-apply best promotion — bỏ qua nếu voucher hiện tại là Free Wash
   useEffect(() => {
     // Nếu voucher đang chọn là Free Wash → không áp dụng promotion
-    const isActiveFreeWash = !!(selectedVoucher && (selectedVoucher as any).isFreeWash === true);
+    const isActiveFreeWash = !!(
+      selectedVoucher && (selectedVoucher as any).isFreeWash === true
+    );
     if (isActiveFreeWash) {
       setAppliedPromotion(null);
       setHasAppliedAutoPromo(true);
@@ -415,8 +426,9 @@ export const BookWash: React.FC = () => {
       setHasAppliedAutoPromo(true);
       toast.success(
         t("bookWash.toastAutoPromoApplied", {
-          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${bestPromo.name || bestPromo.code
-            }`,
+          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${
+            bestPromo.name || bestPromo.code
+          }`,
         }),
       );
     } else {
@@ -442,7 +454,9 @@ export const BookWash: React.FC = () => {
       selectedVoucher.washPackageId !== selectedPackageId
     ) {
       setSelectedVoucher(null);
-      toast.warning("Voucher đã bị gỡ bỏ do không tương thích với gói dịch vụ mới chọn.");
+      toast.warning(
+        "Voucher đã bị gỡ bỏ do không tương thích với gói dịch vụ mới chọn.",
+      );
     }
   }, [selectedPackageId, selectedVoucher]);
 
@@ -551,7 +565,12 @@ export const BookWash: React.FC = () => {
   }, [dynamicDateSlots, selectedDate]);
 
   // 6. Renders
-  if (isLoadingVehicles || isLoadingPackages || isLoadingRedemptions || isLoadingVouchers) {
+  if (
+    isLoadingVehicles ||
+    isLoadingPackages ||
+    isLoadingRedemptions ||
+    isLoadingVouchers
+  ) {
     return (
       <div className="p-10 text-center font-medium">
         {t("bookWash.loadingInfo", {
@@ -626,11 +645,14 @@ export const BookWash: React.FC = () => {
               toast.error(
                 t("bookWash.toastNoPackage", {
                   defaultValue: "Vui lòng chọn gói rửa xe trước!",
-                })
+                }),
               );
               return;
             }
-            if ((voucher as any).washPackageId && (voucher as any).washPackageId !== selectedPackageId) {
+            if (
+              (voucher as any).washPackageId &&
+              (voucher as any).washPackageId !== selectedPackageId
+            ) {
               toast.error("Voucher này không thể dùng cho gói đó!");
               return;
             }

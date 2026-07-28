@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
-import { useVehicle } from "../../application/useVehicle";
+import { useVehicle } from "../../../application/useVehicle";
 import {
   detectVehicleType,
   VEHICLE_NAMES_BY_BRAND,
@@ -9,9 +9,9 @@ import type {
   VehicleFormData,
   Vehicle,
 } from "@/features/products/domain/models/vehicle/vehicle.model.ts";
-import { VehicleFormModal } from "../components/VehicleFormModal";
-import { VehicleCard } from "../components/VehicleCard";
-import { VehicleHistoryCard } from "../components/VehicleHistoryCard";
+import { VehicleFormModal } from "../../components/customer/VehicleFormModal";
+import { VehicleCard } from "../../components/customer/VehicleCard";
+import { VehicleHistoryCard } from "../../components/customer/VehicleHistoryCard";
 import { useTranslation } from "react-i18next";
 
 export const MyVehicles: React.FC = () => {
