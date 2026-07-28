@@ -493,11 +493,7 @@ export const LoyaltyTier: React.FC = () => {
                       <th className="py-4 px-6">
                         {t("loyaltyTier.table.type")}
                       </th>
-                      <th className="py-4 px-6 text-right">
-                        {t("loyaltyTier.table.beforeBalance", {
-                          defaultValue: "Before Balance",
-                        })}
-                      </th>
+
                       <th className="py-4 px-6 text-right">
                         {t("loyaltyTier.table.points")}
                       </th>
@@ -569,9 +565,7 @@ export const LoyaltyTier: React.FC = () => {
                             })}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-right font-semibold text-slate-500 dark:text-slate-400 text-base">
-                          {tx.balanceBefore}
-                        </td>
+
                         <td
                           className={`py-4 px-6 text-right font-bold text-base ${
                             tx.points > 0 && tx.type === "Earned"
