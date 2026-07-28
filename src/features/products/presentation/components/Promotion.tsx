@@ -4,11 +4,15 @@ import { usePromotion } from '@/features/products/application/usePromotion.ts';
 import { useTranslation } from 'react-i18next';
 import { translateDynamic } from '@/shared/utils/translateDynamic.ts';
 import { translatePromotion } from '@/shared/utils/dynamicTranslator.ts';
+import { useCustomerMe } from '@/features/products/application/useCustomer.ts';
 
 export const Promotions: React.FC = () => {
     const { t, i18n } = useTranslation('customer');
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
     const { promotions, isLoading } = usePromotion();
+    const { customerMe } = useCustomerMe();
+    
+    const currentTierName = customerMe?.tier || 'Member';
 
     const handleCopyCode = (code: string) => {
         navigator.clipboard.writeText(code);
@@ -53,7 +57,9 @@ export const Promotions: React.FC = () => {
                     <div className="flex flex-wrap gap-4 pt-4">
                         <div className="bg-sky-50/90 dark:bg-white/5 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors backdrop-blur-sm px-6 py-4 rounded-2xl border border-sky-300/80 dark:border-white/10 shadow-sm">
                             <p className="text-[10px] text-sky-600 dark:text-slate-400 font-bold uppercase tracking-widest">{t('promotions.banner.labelYourTier')}</p>
-                            <p className="text-xl font-black text-amber-500 dark:text-amber-400 mt-1">Gold Member</p>
+                            <p className="text-xl font-black text-amber-500 dark:text-amber-400 mt-1">
+                                {t(`loyaltyTier.tiers.${currentTierName.toLowerCase()}`, { defaultValue: `${currentTierName} Member` })}
+                            </p>
                         </div>
                         <div className="bg-sky-50/90 dark:bg-white/5 hover:bg-sky-50 dark:hover:bg-white/10 transition-colors backdrop-blur-sm px-6 py-4 rounded-2xl border border-sky-300/80 dark:border-white/10 shadow-sm">
                             <p className="text-[10px] text-sky-600 dark:text-slate-400 font-bold uppercase tracking-widest">{t('promotions.banner.labelActivePromotions')}</p>
