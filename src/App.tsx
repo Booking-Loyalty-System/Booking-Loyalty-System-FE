@@ -32,6 +32,7 @@ import { AutoWashSimulationTest } from "@/shared/auto-wash-simulation-test.tsx";
 import { AdminLayout } from "@/features/products/presentation/layouts/AdminLayout.tsx";
 import { AdminChatFeedbacks } from "./features/products/presentation/pages/admin/AdminChatFeedback.tsx";
 import { AdminBookingFeedback } from "./features/products/presentation/pages/admin/AdminBookingFeedback.tsx";
+import StaffProfile from "@/features/products/presentation/pages/staff/StaffProfile";
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
               <Route path="/staff/queue" element={<StaffQueuePage />} />
               <Route path="/staff/monitor" element={<QueueMonitor />} />
               <Route path="/staff/bookings" element={<TotalBookings />} />
+              <Route path="/staff/profile" element={<StaffProfile />} />
               <Route
                 path="/staff/notifications"
                 element={<NotificationCenter />}
