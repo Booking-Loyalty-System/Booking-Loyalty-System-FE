@@ -445,8 +445,8 @@ export const LoyaltyTier: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {/* Sử dụng t() từ react-i18next hiển thị thống kê tổng số lượt đặt lịch của thành viên */}
-                  {t("loyaltyTier.stats.totalBookings", {
-                    defaultValue: "Total Bookings",
+                  {t("dashboard.stats.totalWash", {
+                    defaultValue: "Total CheckedOut Wash",
                   })}
                 </p>
                 <p className="text-3xl font-bold text-slate-800 dark:text-white mt-1">
@@ -493,11 +493,7 @@ export const LoyaltyTier: React.FC = () => {
                       <th className="py-4 px-6">
                         {t("loyaltyTier.table.type")}
                       </th>
-                      <th className="py-4 px-6 text-right">
-                        {t("loyaltyTier.table.beforeBalance", {
-                          defaultValue: "Before Balance",
-                        })}
-                      </th>
+
                       <th className="py-4 px-6 text-right">
                         {t("loyaltyTier.table.points")}
                       </th>
@@ -569,9 +565,7 @@ export const LoyaltyTier: React.FC = () => {
                             })}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-right font-semibold text-slate-500 dark:text-slate-400 text-base">
-                          {tx.balanceBefore}
-                        </td>
+
                         <td
                           className={`py-4 px-6 text-right font-bold text-base ${
                             tx.points > 0 && tx.type === "Earned"
