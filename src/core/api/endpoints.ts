@@ -111,6 +111,9 @@ export const ENDPOINTS = {
         USER_STATUS: (id: string) => `/admin/users/${id}/status`,
         USER_ROLE: (id: string) => `/admin/users/${id}/role`,
 
+        STAFF: '/admin/staff',
+        STAFF_DETAIL: (id: string) => `/admin/staff/${id}`,
+
         // Wash Bays
         WASH_BAYS: '/admin/wash-bays',
         WASH_BAY_DETAIL: (id: string) => `/admin/wash-bays/${id}`,

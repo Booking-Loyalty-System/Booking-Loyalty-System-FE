@@ -17,11 +17,11 @@ import {
   type DashboardBooking,
   DashboardStats,
 } from "@/features/products/presentation/components/DashboardStats.tsx";
-import { BookingTableFilters } from "@/features/products/presentation/components/BookingTableFilters.tsx";
-import { BookingTableRow } from "@/features/products/presentation/components/BookingTableRow.tsx";
+import { BookingTableFilters } from "@/features/products/presentation/components/customer/BookingTableFilters";
+import { BookingTableRow } from "@/features/products/presentation/components/customer/BookingTableRow";
 import { CheckoutSummaryModal } from "@/features/products/presentation/components/staff/CheckoutSummaryModal.tsx";
 import type { BookingResponseData } from "@/features/products/domain/models/booking/booking.model.ts";
-import { QrScannerModal } from "@/features/products/presentation/components/QrScannerModal.tsx";
+import { QrScannerModal } from "@/features/products/presentation/components/staff/QrScannerModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { ActionImageModal } from "@/features/products/presentation/components/staff/ActionImageModal.tsx";
 import { apiClient } from "@/core/api/apiClient";
