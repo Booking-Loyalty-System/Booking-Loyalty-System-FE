@@ -107,6 +107,7 @@
       "closed": "Closed",
       "statusOpen": "Open",
       "statusClosed": "Closed",
+      "overviewMap": "Overview Map",
       "select": "Select"
     },
     "package": {
