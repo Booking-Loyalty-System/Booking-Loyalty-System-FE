@@ -5,6 +5,7 @@
     "stats": {
       "allTime": "All time",
       "totalBookings": "Total Bookings",
+      "totalWash": "Total CheckedOut Wash",
       "loyalty": "Loyalty",
       "totalPoints": "Total Points",
       "status": "Status",
@@ -96,6 +97,7 @@
       "summary": "Summary"
     },
     "branch": {
+      "selectTitle": "Select Branch",
       "title": "Select a Branch",
       "findNearest": "Find Nearest",
       "searchPlaceholder": "Search branches...",
@@ -103,6 +105,9 @@
       "kmAway": "km away",
       "open": "Open",
       "closed": "Closed",
+      "statusOpen": "Open",
+      "statusClosed": "Closed",
+      "overviewMap": "Overview Map",
       "select": "Select"
     },
     "package": {
@@ -113,6 +118,7 @@
       "selectPackage": "Select Package"
     },
     "vehicle": {
+      "selectTitle": "Select Vehicle",
       "title": "Select Your Vehicle",
       "addNew": "Add New Vehicle",
       "noVehicles": "No vehicles added yet",
@@ -135,6 +141,7 @@
       "full": "Full"
     },
     "voucher": {
+      "redeemMore": "Redeem More",
       "title": "Apply Voucher (Optional)",
       "enterCode": "Enter voucher code",
       "apply": "Apply",
@@ -224,6 +231,11 @@
       "inProgress": "In Progress",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    },
+    "stats": {
+      "totalBookings": "Total Bookings",
+      "pointsEarned": "Points Earned",
+      "totalSpent": "Total Spent"
     }
   },
   "rewards": {
@@ -255,6 +267,7 @@
     "infoTitle": "Automatically applied at checkout",
     "infoDesc": "All vouchers after redemption will be automatically optimized at the payment page. No manual code entry required!",
     "availableRewardsTitle": "Available Rewards",
+    "yourPointsMsg": "Your points: {{points}} pts",
     "redeemableCountMsg": "You can redeem {{n}} reward(s)",
     "noRewardsAvailable": "No rewards available at the moment.",
     "comingSoonBadge": "Coming Soon",
@@ -334,6 +347,7 @@
       "date": "Date",
       "description": "Description",
       "type": "Type",
+      "beforeBalance": "Before Balance",
       "points": "Points",
       "balance": "Balance"
     },
@@ -643,13 +657,29 @@
     }
   },
   "dynamic": {
+    "features": {
+      "exteriorWash": "Exterior wash",
+      "tireCleaning": "Tire cleaning",
+      "windowCleaning": "Window cleaning",
+      "interiorVacuum": "Interior vacuum",
+      "dashboardPolish": "Dashboard polish",
+      "tireShine": "Tire shine",
+      "airFreshener": "Air freshener",
+      "fullExteriorWash": "Full exterior wash",
+      "interiorDeepClean": "Interior deep clean",
+      "waxCoating": "Wax coating",
+      "leatherConditioning": "Leather conditioning",
+      "engineBayCleaning": "Engine bay cleaning",
+      "ceramicSpray": "Ceramic spray"
+    },
     "packages": {
       "basic": "Basic Wash",
       "premium": "Premium Wash",
       "deluxe": "Deluxe Wash",
       "interior": "Interior Detailing",
       "full": "Full Detailing",
-      "vip": "VIP Detailing"
+      "vip": "VIP Detailing",
+      "superPremium": "Super Premium Wash"
     },
     "packageDesc": {
       "basic": "Standard exterior wash with basic interior vacuuming",
@@ -657,7 +687,8 @@
       "deluxe": "Premium package with high-gloss ceramic coating for 3-month paint protection",
       "interior": "Deep leather cleaning, carpet washing, and comprehensive ozone odor removal",
       "full": "Comprehensive interior and exterior cleaning, glass stain removal, and light polishing",
-      "vip": "The ultimate detailing experience with full paint correction and high-end Ceramic coating"
+      "vip": "The ultimate detailing experience with full paint correction and high-end Ceramic coating",
+      "superPremium": "Complete detailing with wax coating and leather care"
     },
     "status": {
       "pending": "Pending",
@@ -687,5 +718,21 @@
       "statusLabel": "status:",
       "bookingCodeLabel": "code"
     }
+  },
+  "bookingSummary": {
+    "title": "Booking Summary",
+    "promptSelect": "Select a vehicle and wash package to continue",
+    "vehicle": "Vehicle",
+    "package": "Wash Package",
+    "scheduleTime": "Schedule Time",
+    "chooseTime": "(Please choose time)",
+    "appliedVoucher": "Applied Voucher",
+    "promoCode": "Promo Code",
+    "enterCode": "Enter code",
+    "apply": "Apply",
+    "promoApplied": "Promo Applied",
+    "totalEstimated": "Total Estimated:",
+    "processing": "Processing...",
+    "confirmBooking": "Confirm Booking"
   }
 }

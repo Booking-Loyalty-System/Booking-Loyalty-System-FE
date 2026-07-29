@@ -5,6 +5,7 @@
     "stats": {
       "allTime": "Tổng cộng",
       "totalBookings": "Lượt Đặt Lịch",
+      "totalWash": "Số lần rửa thành công",
       "loyalty": "Tích Điểm",
       "totalPoints": "Tổng Điểm",
       "status": "Trạng Thái",
@@ -96,6 +97,7 @@
       "summary": "Tóm Tắt"
     },
     "branch": {
+      "selectTitle": "Chọn Chi Nhánh",
       "title": "Chọn Chi Nhánh",
       "findNearest": "Tìm Gần Nhất",
       "searchPlaceholder": "Tìm kiếm chi nhánh...",
@@ -103,6 +105,9 @@
       "kmAway": "km",
       "open": "Đang Mở",
       "closed": "Đã Đóng",
+      "statusOpen": "Đang Mở",
+      "statusClosed": "Đã Đóng",
+      "overviewMap": "Bản Đồ Tổng Quan",
       "select": "Chọn"
     },
     "package": {
@@ -113,6 +118,7 @@
       "selectPackage": "Chọn Gói"
     },
     "vehicle": {
+      "selectTitle": "Chọn Xe",
       "title": "Chọn Xe Của Bạn",
       "addNew": "Thêm Xe Mới",
       "noVehicles": "Chưa có xe nào được thêm",
@@ -135,6 +141,7 @@
       "full": "Đã Kín Chỗ"
     },
     "voucher": {
+      "redeemMore": "Đổi Thêm",
       "title": "Áp Dụng Voucher (Tùy Chọn)",
       "enterCode": "Nhập mã voucher",
       "apply": "Áp Dụng",
@@ -224,6 +231,11 @@
       "inProgress": "Đang Xử Lý",
       "completed": "Hoàn Thành",
       "cancelled": "Đã Hủy"
+    },
+    "stats": {
+      "totalBookings": "Tổng đơn đặt lịch",
+      "pointsEarned": "Điểm được nhận",
+      "totalSpent": "Tổng chi tiêu"
     }
   },
   "rewards": {
@@ -255,6 +267,7 @@
     "infoTitle": "Tự động áp dụng khi đặt lịch",
     "infoDesc": "Tất cả voucher sau khi đổi sẽ được tự động tối ưu tại trang thanh toán. Bạn không cần phải nhập mã thủ công!",
     "availableRewardsTitle": "Phần thưởng khả dụng",
+    "yourPointsMsg": "Số điểm hiện có: {{points}} điểm",
     "redeemableCountMsg": "Bạn có thể đổi được {{n}} phần thưởng",
     "noRewardsAvailable": "Hiện tại không có phần thưởng nào khả dụng.",
     "comingSoonBadge": "Sắp ra mắt",
@@ -334,6 +347,7 @@
       "date": "Ngày",
       "description": "Mô Tả",
       "type": "Loại Giao Dịch",
+      "beforeBalance": "Số Dư Trước",
       "points": "Điểm Số",
       "balance": "Số Dư"
     },
@@ -643,13 +657,29 @@
     }
   },
   "dynamic": {
+    "features": {
+      "exteriorWash": "Rửa ngoài",
+      "tireCleaning": "Vệ sinh lốp",
+      "windowCleaning": "Vệ sinh kính",
+      "interiorVacuum": "Hút bụi nội thất",
+      "dashboardPolish": "Đánh bóng taplo",
+      "tireShine": "Làm bóng lốp",
+      "airFreshener": "Xịt thơm",
+      "fullExteriorWash": "Rửa toàn bộ bên ngoài",
+      "interiorDeepClean": "Vệ sinh sâu nội thất",
+      "waxCoating": "Phủ sáp Wax",
+      "leatherConditioning": "Bảo dưỡng da",
+      "engineBayCleaning": "Vệ sinh khoang máy",
+      "ceramicSpray": "Phủ Ceramic dạng xịt"
+    },
     "packages": {
       "basic": "Rửa xe cơ bản",
       "premium": "Rửa xe cao cấp",
       "deluxe": "Rửa xe toàn diện",
       "interior": "Vệ sinh nội thất",
       "full": "Detailing tổng hợp",
-      "vip": "VIP Detailing"
+      "vip": "VIP Detailing",
+      "superPremium": "Rửa xe siêu cao cấp"
     },
     "packageDesc": {
       "basic": "Rửa vỏ xe bằng bọt tuyết, hút bụi cơ bản nội thất",
@@ -657,7 +687,8 @@
       "deluxe": "Gói Premium kèm phủ ceramic siêu bóng bảo vệ sơn xe 3 tháng",
       "interior": "Vệ sinh sâu ghế da, giặt thảm, khử mùi ozon toàn diện nội thất",
       "full": "Làm sạch toàn diện cả trong lẫn ngoài, tẩy ố kính, đánh bóng nhẹ",
-      "vip": "Gói chăm sóc hoàng gia, phục hồi sơn và phủ gốm Ceramic cao cấp nhất"
+      "vip": "Gói chăm sóc hoàng gia, phục hồi sơn và phủ gốm Ceramic cao cấp nhất",
+      "superPremium": "Chăm sóc chi tiết toàn diện với phủ sáp và bảo dưỡng da"
     },
     "status": {
       "pending": "Đang chờ xử lý",
@@ -687,5 +718,21 @@
       "statusLabel": "trạng thái:",
       "bookingCodeLabel": "mã đơn"
     }
+  },
+  "bookingSummary": {
+    "title": "Tóm tắt Đặt lịch",
+    "promptSelect": "Chọn xe và gói dịch vụ để tiếp tục",
+    "vehicle": "Phương tiện",
+    "package": "Gói Rửa xe",
+    "scheduleTime": "Thời gian Đặt lịch",
+    "chooseTime": "(Vui lòng chọn giờ)",
+    "appliedVoucher": "Voucher đã áp dụng",
+    "promoCode": "Mã Khuyến mãi",
+    "enterCode": "Nhập mã",
+    "apply": "Áp dụng",
+    "promoApplied": "Khuyến mãi đã áp dụng",
+    "totalEstimated": "Tổng ước tính:",
+    "processing": "Đang xử lý...",
+    "confirmBooking": "Xác nhận Đặt lịch"
   }
 }

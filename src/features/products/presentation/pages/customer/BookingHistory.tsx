@@ -4,7 +4,6 @@ import {
   XCircle,
   Calendar,
   Star,
-  Clock,
   DollarSign,
   AlertTriangle,
   MessageSquarePlus,
@@ -12,12 +11,12 @@ import {
 import { useBooking } from "@/features/products/application/useBooking.ts";
 import type { MyBookingRecord } from "@/features/products/domain/models/booking/booking.model.ts";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
-import { BookingDetailModal } from "@/features/products/presentation/components/BookingDetailModal";
-import { BookingSuccessCard } from "@/features/products/presentation/components/BookingSuccessCard.tsx";
+import { BookingDetailModal } from "@/features/products/presentation/components/customer/BookingDetailModal";
+import { BookingSuccessCard } from "@/features/products/presentation/components/customer/BookingSuccessCard";
 import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { ReschedulePicker } from "@/features/products/presentation/components/ReschedulePicker.tsx";
-import { FeedbackModal } from "@/features/products/presentation/components/FeedbackModal";
+import { FeedbackModal } from "@/features/products/presentation/components/customer/FeedbackModal";
 import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 export const BookingHistory: React.FC = () => {
@@ -154,18 +153,16 @@ export const BookingHistory: React.FC = () => {
   const realCount = customerMe?.totalWashes ?? sortedBookings.length;
   const displayedBookings = sortedBookings.slice(0, realCount);
 
-  const completedBookings = displayedBookings.filter(
-    (b) => b.status === "Completed" || b.status === "CheckedOut",
-  );
+
   const stats = [
     {
-      title: "Total Bookings",
-      value: displayedBookings.length.toString(),
+      title: t("bookingHistory.stats.totalBookings", { defaultValue: "Total Bookings" }),
+      value: myBookings.length.toString(),
       icon: <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
       bg: "bg-blue-50/50 dark:bg-blue-500/10",
     },
     {
-      title: "Points Earned",
+      title: t("bookingHistory.stats.pointsEarned", { defaultValue: "Points Earned" }),
       value: (
         customerMe?.totalPoint ??
         customerMe?.totalPoints ??
@@ -174,16 +171,9 @@ export const BookingHistory: React.FC = () => {
       icon: <Star className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
       bg: "bg-emerald-50/50 dark:bg-emerald-500/10",
     },
+
     {
-      title: "Minutes Saved",
-      value: completedBookings
-        .reduce((sum, b) => sum + (b.durationMinutes || 0), 0)
-        .toLocaleString("en-US"),
-      icon: <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />,
-      bg: "bg-purple-50/50 dark:bg-purple-500/10",
-    },
-    {
-      title: "Total Spent",
+      title: t("bookingHistory.stats.totalSpent", { defaultValue: "Total Spent" }),
       value: formatCurrency(customerMe?.totalSpent || 0),
       icon: (
         <DollarSign className="w-6 h-6 text-orange-600 dark:text-orange-400" />
@@ -312,7 +302,7 @@ export const BookingHistory: React.FC = () => {
       )}
 
       {/* Khối Thống Kê */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4">
         {stats.map((stat, i) => (
           <div
             key={i}
@@ -322,7 +312,7 @@ export const BookingHistory: React.FC = () => {
               {stat.icon}
             </div>
             <div className="space-y-0.5 min-w-0 flex-1">
-              <p 
+              <p
                 className="text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight truncate"
                 title={String(stat.value)}
               >
@@ -381,7 +371,7 @@ export const BookingHistory: React.FC = () => {
                       {item.bookingCode}
                     </td>
                     <td className="py-4 px-6 text-blue-950 dark:text-white font-bold">
-                      {translateDynamic(item.washPackageName, 'package', t)}
+                      {translateDynamic(item.washPackageName, "package", t)}
                     </td>
                     <td className="py-4 px-6">
                       <div>{item.bookingDate}</div>
@@ -417,14 +407,14 @@ export const BookingHistory: React.FC = () => {
                       </button>
                       {(item.status === "Confirmed" ||
                         item.status === "Pending") && (
-                          <button
-                            onClick={() => setBookingToCancel(item)}
-                            className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                            <span>{t("bookingHistory.actions.cancel")}</span>
-                          </button>
-                        )}
+                        <button
+                          onClick={() => setBookingToCancel(item)}
+                          className="text-rose-500 hover:text-rose-600 font-bold text-xs inline-flex items-center gap-0.5"
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          <span>{t("bookingHistory.actions.cancel")}</span>
+                        </button>
+                      )}
                       {(item.status === "Completed" ||
                         item.status === "CheckedOut") &&
                         !item.feedbackResponse && (

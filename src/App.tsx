@@ -5,14 +5,14 @@ import { LandingPage } from "./features/products/presentation/pages/LandingPage"
 import { AutoWashSimulation } from "@/shared/auto-wash-simulation.tsx";
 import { ProtectedRoute } from "@/core/guard/ProtectedRoute.tsx";
 import { CustomerLayout } from "./features/products/presentation/layouts/CustomerLayout.tsx";
-import { BookWash } from "@/features/products/presentation/components/BookWash.tsx";
-import { Dashboard } from "@/features/products/presentation/components/Dashboard.tsx";
-import Membership from "./features/products/presentation/components/LoyaltyTier.tsx";
-import { RewardsSection } from "@/features/products/presentation/components/RewardsSection.tsx";
-import { MyVehicles } from "@/features/products/presentation/components/MyVehicle.tsx";
-import { Promotions } from "@/features/products/presentation/components/Promotion.tsx";
-import { BookingHistory } from "@/features/products/presentation/components/BookingHistory.tsx";
-import { ProfileSettings } from "@/features/products/presentation/components/ProfileSettings.tsx";
+import { BookWash } from "@/features/products/presentation/pages/customer/BookWash.tsx";
+import { Dashboard } from "@/features/products/presentation/pages/customer/Dashboard.tsx";
+import Membership from "./features/products/presentation/pages/customer/LoyaltyTier.tsx";
+import { RewardsSection } from "@/features/products/presentation/pages/customer/RewardsSection.tsx";
+import { MyVehicles } from "@/features/products/presentation/pages/customer/MyVehicle.tsx";
+import { Promotions } from "@/features/products/presentation/pages/customer/Promotion.tsx";
+import { BookingHistory } from "@/features/products/presentation/pages/customer/BookingHistory.tsx";
+import { ProfileSettings } from "@/features/products/presentation/pages/customer/ProfileSettings.tsx";
 import { NotificationCenter } from "@/features/products/presentation/components/Notification.tsx";
 import { Toaster } from "sonner";
 import { StaffLayout } from "@/features/products/presentation/layouts/StaffLayout.tsx";
@@ -32,6 +32,7 @@ import { AutoWashSimulationTest } from "@/shared/auto-wash-simulation-test.tsx";
 import { AdminLayout } from "@/features/products/presentation/layouts/AdminLayout.tsx";
 import { AdminChatFeedbacks } from "./features/products/presentation/pages/admin/AdminChatFeedback.tsx";
 import { AdminBookingFeedback } from "./features/products/presentation/pages/admin/AdminBookingFeedback.tsx";
+import StaffProfile from "@/features/products/presentation/pages/staff/StaffProfile";
 
 function App() {
   return (
@@ -48,7 +49,6 @@ function App() {
             element={<AutoWashSimulationTest />}
           />
           <Route element={<CustomerLayout />}>
-
             <Route path="/book-wash" element={<BookWash />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/loyalty-tier" element={<Membership />} />
@@ -76,7 +76,11 @@ function App() {
               <Route path="/staff/queue" element={<StaffQueuePage />} />
               <Route path="/staff/monitor" element={<QueueMonitor />} />
               <Route path="/staff/bookings" element={<TotalBookings />} />
-              <Route path="/staff/notifications" element={< NotificationCenter />} />
+              <Route path="/staff/profile" element={<StaffProfile />} />
+              <Route
+                path="/staff/notifications"
+                element={<NotificationCenter />}
+              />
             </Route>
           </Route>
 
@@ -90,8 +94,14 @@ function App() {
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/promotions" element={<AdminPromotions />} />
               <Route path="/admin/staff" element={<AdminStaff />} />
-              <Route path="/admin/chat-feedbacks" element={<AdminChatFeedbacks />} />
-              <Route path="/admin/feedbacks" element={<AdminBookingFeedback />} />
+              <Route
+                path="/admin/chat-feedbacks"
+                element={<AdminChatFeedbacks />}
+              />
+              <Route
+                path="/admin/feedbacks"
+                element={<AdminBookingFeedback />}
+              />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/login" replace />} />

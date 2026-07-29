@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/features/products/application/useAuth.ts";
 import * as signalR from "@microsoft/signalr";
 import { useQueryClient } from "@tanstack/react-query";
-import { BookingDetailModal } from "@/features/products/presentation/components/BookingDetailModal.tsx";
+import { BookingDetailModal } from "@/features/products/presentation/components/customer/BookingDetailModal";
 // 🌟 IMPORT THÊM: Dùng useBooking để gọi các endpoint chuyên biệt của Staff
 // (confirm, checkIn, checkout, staffCancel...) thay vì endpoint generic /status
 import { useBooking } from "@/features/products/application/useBooking.ts";
@@ -35,17 +35,17 @@ interface DashboardBooking {
   bookingDate: string;
   startTime: string;
   status:
-  | "Pending"
-  | "Confirmed"
-  | "CheckedIn"
-  | "Queued"
-  | "InProgress"
-  | "Completed"
-  | "CheckedOut"
-  | "Cancelled"
-  | "NoShow"
-  | "Rejected"
-  | string;
+    | "Pending"
+    | "Confirmed"
+    | "CheckedIn"
+    | "Queued"
+    | "InProgress"
+    | "Completed"
+    | "CheckedOut"
+    | "Cancelled"
+    | "NoShow"
+    | "Rejected"
+    | string;
   totalAmount: number;
   pointsEarned: number | null;
   createdAt: string;
@@ -58,7 +58,12 @@ export const TotalBookings: React.FC = () => {
 
   // 🌟 useStaffDashboard: Chỉ dùng để LẤY DANH SÁCH booking và quản lý selectedDate
   // Không dùng actions.updateStatus từ hook này vì endpoint /status bị backend từ chối
-  const { bookings = [], isLoading, selectedDate, setSelectedDate } = useStaffDashboard() as unknown as {
+  const {
+    bookings = [],
+    isLoading,
+    selectedDate,
+    setSelectedDate,
+  } = useStaffDashboard() as unknown as {
     bookings: DashboardBooking[];
     isLoading: boolean;
     selectedDate: string;
@@ -77,7 +82,8 @@ export const TotalBookings: React.FC = () => {
   // 🌟 useStaff: Lấy thông tin staff để có staffId cho checkIn
   const { staffProfile } = useStaff();
 
-  const [detailModalBooking, setDetailModalBooking] = useState<DashboardBooking | null>(null);
+  const [detailModalBooking, setDetailModalBooking] =
+    useState<DashboardBooking | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
@@ -99,8 +105,8 @@ export const TotalBookings: React.FC = () => {
       .withUrl(`${import.meta.env.VITE_SOCKET_URL}/booking`, {
         accessTokenFactory: () => localStorage.getItem("access_token") || "",
         headers: {
-          "ngrok-skip-browser-warning": "true"
-        }
+          "ngrok-skip-browser-warning": "true",
+        },
       })
       .withAutomaticReconnect()
       .build();
@@ -158,7 +164,9 @@ export const TotalBookings: React.FC = () => {
       } else if (type === "checkin") {
         // ✅ Gọi PATCH /staff/bookings/{id}/check-in với staffId query param
         if (!staffProfile?.id) {
-          toast.error("Không tìm thấy thông tin nhân viên, vui lòng tải lại trang!");
+          toast.error(
+            "Không tìm thấy thông tin nhân viên, vui lòng tải lại trang!",
+          );
           return;
         }
         await checkInBooking({ id: bookingId, staffId: staffProfile.id });
@@ -324,17 +332,28 @@ export const TotalBookings: React.FC = () => {
 
                     <td className="py-4 px-6">
                       <span
-                        className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${b.status === "Pending" ? "bg-amber-100 text-amber-700" :
-                          b.status === "Confirmed" ? "bg-blue-100 text-blue-700" :
-                            b.status === "CheckedIn" ? "bg-indigo-100 text-indigo-700" :
-                              b.status === "Queued" ? "bg-cyan-100 text-cyan-700" :
-                                b.status === "InProgress" ? "bg-purple-100 text-purple-700" :
-                                  b.status === "Completed" ? "bg-emerald-100 text-emerald-700" :
-                                    b.status === "CheckedOut" ? "bg-teal-100 text-teal-700" :
-                                      b.status === "Cancelled" || b.status === "Rejected" ? "bg-rose-100 text-rose-700" :
-                                        b.status === "NoShow" ? "bg-slate-100 text-slate-700" :
-                                          "bg-slate-100 text-slate-700"
-                          }`}
+                        className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                          b.status === "Pending"
+                            ? "bg-amber-100 text-amber-700"
+                            : b.status === "Confirmed"
+                              ? "bg-blue-100 text-blue-700"
+                              : b.status === "CheckedIn"
+                                ? "bg-indigo-100 text-indigo-700"
+                                : b.status === "Queued"
+                                  ? "bg-cyan-100 text-cyan-700"
+                                  : b.status === "InProgress"
+                                    ? "bg-purple-100 text-purple-700"
+                                    : b.status === "Completed"
+                                      ? "bg-emerald-100 text-emerald-700"
+                                      : b.status === "CheckedOut"
+                                        ? "bg-teal-100 text-teal-700"
+                                        : b.status === "Cancelled" ||
+                                            b.status === "Rejected"
+                                          ? "bg-rose-100 text-rose-700"
+                                          : b.status === "NoShow"
+                                            ? "bg-slate-100 text-slate-700"
+                                            : "bg-slate-100 text-slate-700"
+                        }`}
                       >
                         {b.status}
                       </span>
@@ -362,7 +381,9 @@ export const TotalBookings: React.FC = () => {
                         {b.status === "Pending" && (
                           <>
                             <button
-                              onClick={() => handleStatusUpdate(b.id, "confirm")}
+                              onClick={() =>
+                                handleStatusUpdate(b.id, "confirm")
+                              }
                               disabled={actionLoadingId === b.id}
                               className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow-sm transition-all disabled:opacity-50"
                             >
@@ -493,10 +514,11 @@ export const TotalBookings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMethod("Cash")}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${selectedMethod === "Cash"
-                  ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                  }`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${
+                  selectedMethod === "Cash"
+                    ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                }`}
               >
                 <Coins
                   className={`w-6 h-6 ${selectedMethod === "Cash" ? "text-blue-600" : "text-gray-400"}`}
@@ -508,10 +530,11 @@ export const TotalBookings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelectedMethod("Transfer")}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${selectedMethod === "Transfer"
-                  ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                  }`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 ${
+                  selectedMethod === "Transfer"
+                    ? "border-blue-600 bg-blue-50/60 text-blue-700 shadow-sm"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                }`}
               >
                 <CreditCard
                   className={`w-6 h-6 ${selectedMethod === "Transfer" ? "text-blue-600" : "text-gray-400"}`}

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Ticket, Gift, Star, Check } from "lucide-react";
-import type { Voucher } from "../../domain/models/voucher/voucher.model.ts";
-import { useReward } from "../../application/useReward.ts";
+import type { Voucher } from "../../../domain/models/voucher/voucher.model.ts";
+import { useReward } from "../../../application/useReward.ts";
 import { toast } from "sonner";
 
 interface VoucherSelectionProps {
@@ -27,7 +27,12 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     availableRewards,
   } = useReward();
   const [showQuickRedeem, setShowQuickRedeem] = useState(false);
-  const [confirmReward, setConfirmReward] = useState<{ id: string, title: string, cost: number, isFreeWash: boolean } | null>(null);
+  const [confirmReward, setConfirmReward] = useState<{
+    id: string;
+    title: string;
+    cost: number;
+    isFreeWash: boolean;
+  } | null>(null);
   const quickRedeemList = availableRewards.slice(0, 4);
 
   const handleQuickRedeem = (
@@ -185,7 +190,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                       </div>
                     </div>
 
-                      <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5">
                       {isFreeWash ? (
                         <span
                           className={`text-[11px] font-black px-2 py-0.5 rounded-md ${
@@ -316,22 +321,37 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div className="bg-white dark:bg-[#13151A] dark:border dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
-              {t("rewards.confirmModal.title", { defaultValue: "Xác nhận đổi thưởng" })}
+              {t("rewards.confirmModal.title", {
+                defaultValue: "Xác nhận đổi thưởng",
+              })}
             </h3>
             <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
-              {t("rewards.confirmModal.descPre", { defaultValue: "Bạn có chắc chắn muốn dùng " })}
+              {t("rewards.confirmModal.descPre", {
+                defaultValue: "Bạn có chắc chắn muốn dùng ",
+              })}
               {confirmReward.isFreeWash ? (
                 <span className="font-bold text-slate-800 dark:text-white">
-                  {t("rewards.confirmModal.freeWashText", { defaultValue: "1 lượt rửa xe miễn phí" })}
+                  {t("rewards.confirmModal.freeWashText", {
+                    defaultValue: "1 lượt rửa xe miễn phí",
+                  })}
                 </span>
               ) : (
                 <span className="font-bold text-slate-800 dark:text-white">
-                  {t("rewards.confirmModal.pointsText", { cost: confirmReward.cost, defaultValue: `${confirmReward.cost} điểm` })}
+                  {t("rewards.confirmModal.pointsText", {
+                    cost: confirmReward.cost,
+                    defaultValue: `${confirmReward.cost} điểm`,
+                  })}
                 </span>
               )}{" "}
-              {t("rewards.confirmModal.descPost", { defaultValue: " để đổi lấy " })}
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">{confirmReward.title}</span>
-              {t("rewards.confirmModal.descWarning", { defaultValue: " không? Hành động này không thể hoàn tác." })}
+              {t("rewards.confirmModal.descPost", {
+                defaultValue: " để đổi lấy ",
+              })}
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                {confirmReward.title}
+              </span>
+              {t("rewards.confirmModal.descWarning", {
+                defaultValue: " không? Hành động này không thể hoàn tác.",
+              })}
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -344,7 +364,9 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                 onClick={executeRedeem}
                 className="px-5 py-2.5 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-sm active:scale-95"
               >
-                {t("rewards.confirmModal.confirm", { defaultValue: "Xác nhận đổi" })}
+                {t("rewards.confirmModal.confirm", {
+                  defaultValue: "Xác nhận đổi",
+                })}
               </button>
             </div>
           </div>
