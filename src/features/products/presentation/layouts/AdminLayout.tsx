@@ -16,8 +16,9 @@ import {
   MessageCircle,
   Users,
 } from "lucide-react";
-
 import { useAuth } from "../../application/useAuth.ts";
+import { useLanguage } from "@/core/context/LanguageContext.tsx";
+import { useTranslation } from "react-i18next";
 
 interface MenuItem {
   path?: string;
@@ -34,6 +35,8 @@ export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { t } = useTranslation('customer');
+  const { language, toggleLanguage } = useLanguage();
 
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(
     location.pathname.startsWith("/admin/feedbacks") ||
@@ -43,7 +46,7 @@ export const AdminLayout: React.FC = () => {
   const adminMenuItems: MenuItem[] = [
     {
       path: "/admin",
-      label: "Overview",
+      label: t('adminSidebar.overview', { defaultValue: 'Overview' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -54,7 +57,7 @@ export const AdminLayout: React.FC = () => {
     },
     {
       path: "/admin/branches",
-      label: "Branches",
+      label: t('adminSidebar.branches', { defaultValue: 'Branches' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -65,7 +68,7 @@ export const AdminLayout: React.FC = () => {
     },
     {
       path: "/admin/staff",
-      label: "Staff",
+      label: t('adminSidebar.staff', { defaultValue: 'Staff' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${
@@ -80,7 +83,7 @@ export const AdminLayout: React.FC = () => {
     },
     {
       path: "/admin/packages",
-      label: "Wash Packages",
+      label: t('adminSidebar.washPackages', { defaultValue: 'Wash Packages' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -91,7 +94,7 @@ export const AdminLayout: React.FC = () => {
     },
     {
       path: "/admin/loyalty",
-      label: "Loyalty Tiers",
+      label: t('adminSidebar.loyaltyTiers', { defaultValue: 'Loyalty Tiers' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -102,7 +105,7 @@ export const AdminLayout: React.FC = () => {
     },
     {
       path: "/admin/analytics",
-      label: "Analytics",
+      label: t('adminSidebar.analytics', { defaultValue: 'Analytics' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -113,7 +116,7 @@ export const AdminLayout: React.FC = () => {
     },
     {
       path: "/admin/reports",
-      label: "Business Reports",
+      label: t('adminSidebar.businessReports', { defaultValue: 'Business Reports' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -124,7 +127,7 @@ export const AdminLayout: React.FC = () => {
     },
     {
       path: "/admin/promotions",
-      label: "Promotions",
+      label: t('adminSidebar.promotions', { defaultValue: 'Promotions' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -134,7 +137,7 @@ export const AdminLayout: React.FC = () => {
       ),
     },
     {
-      label: "Customer Feedbacks",
+      label: t('adminSidebar.customerFeedbacks', { defaultValue: 'Customer Feedbacks' }),
       icon: (isActive) => (
         <div
           className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
@@ -145,12 +148,12 @@ export const AdminLayout: React.FC = () => {
       children: [
         {
           path: "/admin/feedbacks",
-          label: "Booking Feedbacks",
+          label: t('adminSidebar.bookingFeedbacks', { defaultValue: 'Booking Feedbacks' }),
           icon: <Star className="w-4 h-4" />,
         },
         {
           path: "/admin/chat-feedbacks",
-          label: "Chat Feedbacks",
+          label: t('adminSidebar.chatFeedbacks', { defaultValue: 'Chat Feedbacks' }),
           icon: <MessageCircle className="w-4 h-4" />,
         },
       ],
@@ -179,16 +182,12 @@ export const AdminLayout: React.FC = () => {
               <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 tracking-tight leading-none">
                 AutoWash
               </h1>
-              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-1">
-                Admin Portal
-              </p>
+              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-1">{t('adminSidebar.adminPortal', { defaultValue: 'Admin Portal' })}</p>
             </div>
           </div>
 
           <nav className="flex-1 space-y-1.5 overflow-y-auto pr-2 custom-scrollbar">
-            <div className="px-3 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-3 mt-1">
-              Management
-            </div>
+            <div className="px-3 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-3 mt-1">{t('adminSidebar.management', { defaultValue: 'Management' })}</div>
 
             {adminMenuItems.map((item, idx) => {
               if (item.children) {
@@ -255,7 +254,14 @@ export const AdminLayout: React.FC = () => {
         </div>
 
         {/* Logout Button */}
-        <div className="pt-4 border-t border-slate-100 dark:border-white/5 shrink-0 mt-2">
+        <div className="pt-4 border-t border-slate-100 dark:border-white/5 shrink-0 mt-2 space-y-2">
+          <button
+            onClick={toggleLanguage}
+            className="flex w-full items-center justify-center gap-3 px-4 py-3 text-slate-600 hover:text-blue-600 bg-slate-100 hover:bg-blue-50 dark:bg-white/5 dark:hover:bg-blue-500/10 rounded-2xl transition-all font-bold text-sm"
+          >
+            <span className="text-lg">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
+            <span>{language === "en" ? "English" : "Tiếng Việt"}</span>
+          </button>
           <button
             onClick={handleLogout}
             className="flex w-full items-center justify-center gap-3 px-4 py-3.5 text-rose-500 hover:text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-2xl transition-all font-bold text-sm group"

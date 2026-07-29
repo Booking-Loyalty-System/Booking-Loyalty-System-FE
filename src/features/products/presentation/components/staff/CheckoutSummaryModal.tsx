@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from "react-i18next";
 import { X, Sparkles, Car, PenTool, Banknote, QrCode } from 'lucide-react';
 import { type BookingResponseData } from '../../../domain/models/booking/booking.model';
 
@@ -15,6 +16,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
     onConfirmCash,
     onConfirmPayOS
 }) => {
+    const { t } = useTranslation("customer");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState<'summary' | 'methods'>('summary');
 
@@ -59,7 +61,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">Xác Nhận Thanh Toán</h3>
+                    <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">{t('staffDashboard.checkoutModal.title')}</h3>
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-slate-100 rounded-full transition-colors"
@@ -72,7 +74,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                 <div className="space-y-5 mb-6">
                     {/* Mã Code */}
                     <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100 flex justify-between items-center">
-                        <p className="text-sm font-semibold text-blue-600">Mã lịch đặt</p>
+                        <p className="text-sm font-semibold text-blue-600">{t('staffDashboard.checkoutModal.bookingCode')}</p>
                         <code className="text-xl font-black text-blue-700">{booking.bookingCode || "N/A"}</code>
                     </div>
 
@@ -81,16 +83,16 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                         <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                             <div className="flex items-center gap-1.5 text-slate-500 mb-2">
                                 <Car className="w-4 h-4" />
-                                <p className="text-xs font-bold uppercase tracking-wider">Thông tin xe</p>
+                                <p className="text-xs font-bold uppercase tracking-wider">{t('staffDashboard.checkoutModal.vehicleInfo')}</p>
                             </div>
-                            <p className="font-bold text-blue-950 text-sm truncate">{booking.vehicleName || 'Chưa cập nhật'}</p>
+                            <p className="font-bold text-blue-950 text-sm truncate">{booking.vehicleName || t('staffDashboard.checkoutModal.notUpdated')}</p>
                             <p className="text-xs font-semibold text-slate-500 mt-1">{booking.licensePlate || '---'}</p>
                         </div>
 
                         <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                             <div className="flex items-center gap-1.5 text-slate-500 mb-2">
                                 <PenTool className="w-4 h-4" />
-                                <p className="text-xs font-bold uppercase tracking-wider">Dịch vụ</p>
+                                <p className="text-xs font-bold uppercase tracking-wider">{t('staffDashboard.checkoutModal.service')}</p>
                             </div>
                             <p className="font-bold text-blue-950 text-sm truncate">{booking.serviceName || 'N/A'}</p>
                             <p className="text-xs font-semibold text-slate-500 mt-1">
@@ -102,7 +104,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                     {/* Tổng tiền */}
                     <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
                         <div className="flex justify-between items-center">
-                            <span className="font-bold text-slate-600">Tổng thanh toán</span>
+                            <span className="font-bold text-slate-600">{t('staffDashboard.checkoutModal.totalPayment')}</span>
                             <span className="text-3xl font-black text-rose-600">
                                 {formatCurrency(booking.totalAmount || 0)}
                             </span>
@@ -114,10 +116,10 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                         <div className="flex justify-between items-center">
                             <div className="flex items-center gap-2 text-emerald-700">
                                 <Sparkles className="w-5 h-5" />
-                                <p className="font-bold text-sm">Điểm tích luỹ</p>
+                                <p className="font-bold text-sm">{t('staffDashboard.checkoutModal.earnedPoints')}</p>
                             </div>
                             <span className="text-xs font-bold text-emerald-600 bg-emerald-100/50 px-2.5 py-1 rounded-full">
-                                Tính tự động sau khi thu tiền
+                                {t('staffDashboard.checkoutModal.autoCalc')}
                             </span>
                         </div>
                     </div>
@@ -130,18 +132,18 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                             onClick={onClose}
                             className="flex-1 py-3 px-4 border-2 border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 hover:text-slate-800 transition-colors"
                         >
-                            Hủy bỏ
+                            {t('staffDashboard.checkoutModal.cancel')}
                         </button>
                         <button
                             onClick={() => setStep('methods')}
                             className="flex-[2] py-3 px-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 shadow-md transition-all active:scale-95 flex justify-center items-center gap-2"
                         >
-                            Thanh toán
+                            {t('staffDashboard.checkoutModal.checkout')}
                         </button>
                     </div>
                 ) : (
                     <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
-                        <p className="text-center text-sm font-bold text-slate-500 mb-2">Chọn phương thức thanh toán</p>
+                        <p className="text-center text-sm font-bold text-slate-500 mb-2">{t('staffDashboard.checkoutModal.chooseMethod')}</p>
 
                         <div className="flex gap-3">
                             <button
@@ -150,7 +152,7 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
                                 className="flex-1 flex flex-col items-center justify-center gap-2 p-4 border-2 border-emerald-500 bg-emerald-50 text-emerald-700 rounded-xl font-bold hover:bg-emerald-100 transition-colors disabled:opacity-50"
                             >
                                 <Banknote className="w-6 h-6" />
-                                Tiền mặt
+                                {t('staffDashboard.checkoutModal.cash')}
                             </button>
 
                             <button
@@ -165,10 +167,10 @@ export const CheckoutSummaryModal: React.FC<CheckoutSummaryModalProps> = ({
 
                         <div className="text-center mt-2">
                             {isSubmitting ? (
-                                <p className="text-sm font-semibold text-slate-500 animate-pulse">Đang xử lý giao dịch...</p>
+                                <p className="text-sm font-semibold text-slate-500 animate-pulse">{t('staffDashboard.checkoutModal.processing')}</p>
                             ) : (
                                 <button onClick={() => setStep('summary')} className="text-sm font-semibold text-slate-400 hover:text-slate-600 underline">
-                                    Quay lại
+                                    {t('staffDashboard.checkoutModal.back')}
                                 </button>
                             )}
                         </div>

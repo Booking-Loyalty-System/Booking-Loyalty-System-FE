@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Megaphone,
   Plus,
@@ -48,18 +49,19 @@ function formatDiscount(promo: AdminPromotionResponseData) {
   return `${promo.discountValue.toLocaleString("vi-VN")}đ`;
 }
 
-function formatDiscountType(type: DiscountType) {
-  return type === "Percentage" ? "Phần trăm" : "Số tiền cố định";
+function formatDiscountType(type: DiscountType, t: any) {
+  return type === "Percentage" ? t("adminPromotions.percentage") : t("adminPromotions.fixedAmount");
 }
 
 function formatUsage(promo: AdminPromotionResponseData) {
   if (promo.maxUses == null) {
-    return `${promo.usedCount} / Không giới hạn`;
+    return `${promo.usedCount} / `;
   }
   return `${promo.usedCount}/${promo.maxUses}`;
 }
 
 export function AdminPromotions() {
+  const { t } = useTranslation("customer");
   const {
     promotions,
     isLoading,
@@ -156,7 +158,7 @@ export function AdminPromotions() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Bạn có chắc muốn xóa khuyến mãi này?")) {
+    if (confirm(t('adminPromotions.deleteConfirm'))) {
       await deletePromotion(id);
     }
   };
@@ -178,31 +180,31 @@ export function AdminPromotions() {
     <div className="p-6 space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Khuyến mãi</h3>
+          <h3 className="text-2xl font-bold text-gray-900">{t('adminPromotions.title')}</h3>
           <p className="text-gray-500">
-            Tạo và quản lý mã giảm giá, chiến dịch marketing
+            {t('adminPromotions.subtitle')}
           </p>
         </div>
         <button
           onClick={handleAdd}
           className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all"
         >
-          <Plus className="w-5 h-5" /> Thêm khuyến mãi
+          <Plus className="w-5 h-5" /> {t('adminPromotions.addPromotion')}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Đang hoạt động</p>
+          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.activeCount')}</p>
           <p className="text-3xl font-bold text-gray-900">{stats.activeCount}</p>
         </div>
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Tổng lượt sử dụng</p>
+          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.totalUsed')}</p>
           <p className="text-3xl font-bold text-blue-600">{stats.totalUsed}</p>
         </div>
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">Tổng khuyến mãi</p>
+          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.totalPromotions')}</p>
           <p className="text-3xl font-bold text-green-600">{stats.total}</p>
         </div>
       </div>
@@ -210,34 +212,20 @@ export function AdminPromotions() {
       {/* Promotions List */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
-          <p className="text-gray-500">Đang tải khuyến mãi...</p>
+          <p className="text-gray-500">{t('adminPromotions.loading')}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Mã / Mô tả
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Loại giảm
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Giá trị
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Trạng thái
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Lượt dùng
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Hết hạn
-                </th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
-                  Thao tác
-                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.codeDesc')}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.discountType')}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.value')}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.status')}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.uses')}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.expires')}</th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">{t('adminPromotions.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -266,7 +254,7 @@ export function AdminPromotions() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                      {formatDiscountType(promo.discountType)}
+                      {formatDiscountType(promo.discountType, t)}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm font-semibold text-gray-900">
@@ -282,14 +270,10 @@ export function AdminPromotions() {
                     >
                       {promo.isActive ? (
                         <>
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          Hoạt động
-                        </>
+                          <CheckCircle2 className="w-3.5 h-3.5" />{t('adminPromotions.active')}</>
                       ) : (
                         <>
-                          <XCircle className="w-3.5 h-3.5" />
-                          Tắt
-                        </>
+                          <XCircle className="w-3.5 h-3.5" />{t('adminPromotions.inactive')}</>
                       )}
                     </button>
                   </td>
@@ -328,7 +312,7 @@ export function AdminPromotions() {
           <div className="bg-white w-full max-w-lg h-full p-8 shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
               <h4 className="text-2xl font-bold text-gray-900">
-                {isAdding ? "Thêm khuyến mãi" : "Chỉnh sửa khuyến mãi"}
+                {isAdding ? t('adminPromotions.addPromotion') : t('adminPromotions.editPromotion')}
               </h4>
               <button
                 onClick={handleCancel}
@@ -341,9 +325,7 @@ export function AdminPromotions() {
             <div className="space-y-6">
               {isAdding && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Mã khuyến mãi
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.promoCode')}</label>
                   <input
                     type="text"
                     value={form.code}
@@ -358,9 +340,7 @@ export function AdminPromotions() {
 
               {!isAdding && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Mã khuyến mãi
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.promoCode')}</label>
                   <input
                     type="text"
                     value={form.code}
@@ -371,23 +351,19 @@ export function AdminPromotions() {
               )}
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Mô tả
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.description')}</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => updateField("description", e.target.value)}
                   rows={3}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                  placeholder="Mô tả chi tiết khuyến mãi..."
+                  placeholder={t('adminPromotions.descPlaceholder')}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Loại giảm giá
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.discountType')}</label>
                   <select
                     value={form.discountType}
                     onChange={(e) =>
@@ -395,14 +371,12 @@ export function AdminPromotions() {
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                   >
-                    <option value="Percentage">Phần trăm (%)</option>
-                    <option value="FixedAmount">Số tiền cố định (đ)</option>
+                    <option value="Percentage">{t('adminPromotions.percentageSuffix')}</option>
+                    <option value="FixedAmount">{t('adminPromotions.fixedAmountSuffix')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Giá trị giảm
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.discountValue')}</label>
                   <input
                     type="number"
                     value={form.discountValue}
@@ -420,9 +394,7 @@ export function AdminPromotions() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Ngày bắt đầu
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.startDate')}</label>
                   <div className="relative">
                     <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
                     <input
@@ -434,9 +406,7 @@ export function AdminPromotions() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Ngày kết thúc
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.endDate')}</label>
                   <div className="relative">
                     <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
                     <input
@@ -451,9 +421,7 @@ export function AdminPromotions() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Giới hạn lượt dùng
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.maxUses')}</label>
                   <input
                     type="number"
                     value={form.maxUses ?? ""}
@@ -466,13 +434,11 @@ export function AdminPromotions() {
                       )
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    placeholder="Để trống = không giới hạn"
+                    placeholder={t('adminPromotions.leaveEmptyUnlimited')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Chi tiêu tối thiểu (đ)
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t('adminPromotions.minSpend')}</label>
                   <input
                     type="number"
                     value={form.minSpend ?? ""}
@@ -485,7 +451,7 @@ export function AdminPromotions() {
                       )
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    placeholder="Để trống = không yêu cầu"
+                    placeholder={t('adminPromotions.leaveEmptyNoRequirement')}
                   />
                 </div>
               </div>
@@ -502,9 +468,7 @@ export function AdminPromotions() {
                   <label
                     htmlFor="promo-active"
                     className="text-sm font-medium text-gray-700"
-                  >
-                    Đang hoạt động
-                  </label>
+                  >{t('adminPromotions.activeCount')}</label>
                 </div>
               )}
 
@@ -515,10 +479,10 @@ export function AdminPromotions() {
                   className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
                 >
                   {isCreating || isUpdating
-                    ? "Đang lưu..."
+                    ? t('adminPromotions.saving')
                     : isAdding
-                      ? "Tạo khuyến mãi"
-                      : "Lưu thay đổi"}
+                      ? t('adminPromotions.createPromotion')
+                      : t('adminPromotions.saveChanges')}
                 </button>
               </div>
             </div>

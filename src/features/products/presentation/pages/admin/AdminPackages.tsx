@@ -15,8 +15,11 @@ import {
   useWashPackage,
   type WashPackageResponseData,
 } from "../../../application/useAdminWashPackage";
+import { useTranslation } from "react-i18next";
+import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 export function AdminPackages() {
+  const { t } = useTranslation('customer');
   const {
     packages,
     isLoading,
@@ -82,7 +85,7 @@ export function AdminPackages() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this package?")) {
+    if (confirm(t('adminWashPackages.deleteConfirm', { defaultValue: 'Are you sure you want to delete this package?' }))) {
       await deletePackage(id);
     }
   };
@@ -151,7 +154,7 @@ export function AdminPackages() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-500">
-              Create and manage wash service packages
+              {t('adminWashPackages.subtitle', { defaultValue: 'Create and manage wash service packages' })}
             </p>
           </div>
           <button
@@ -159,13 +162,13 @@ export function AdminPackages() {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Add Package
+            {t('adminWashPackages.addPackage', { defaultValue: 'Add Package' })}
           </button>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
-            <p className="text-gray-500">Loading packages...</p>
+            <p className="text-gray-500">{t('adminWashPackages.loadingPackages', { defaultValue: 'Loading packages...' })}</p>
           </div>
         ) : (
           /* Packages Grid */
@@ -201,11 +204,11 @@ export function AdminPackages() {
 
                 {/* Package Info */}
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {pkg.name}
+                  {translateDynamic(pkg.name, 'package', t)}
                 </h3>
 
 
-                <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
+                <p className="text-sm text-gray-600 mb-4">{translateDynamic(pkg.name, 'packageDesc', t, pkg.description)}</p>
 
                 {/* Price and Duration */}
                 <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
@@ -228,7 +231,7 @@ export function AdminPackages() {
                   {pkg.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
-                      <span className="text-sm text-gray-700">{feature}</span>
+                      <span className="text-sm text-gray-700">{translateDynamic(feature, 'feature', t, feature)}</span>
                     </div>
                   ))}
                 </div>
@@ -244,12 +247,12 @@ export function AdminPackages() {
                   {pkg.isActive ? (
                     <span className="flex items-center justify-center gap-2">
                       <CheckCircle2 className="w-4 h-4" />
-                      Active
+                      {t('adminWashPackages.active', { defaultValue: 'Active' })}
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <XCircle className="w-4 h-4" />
-                      Inactive
+                      {t('adminWashPackages.inactive', { defaultValue: 'Inactive' })}
                     </span>
                   )}
                 </button>
@@ -265,7 +268,7 @@ export function AdminPackages() {
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h4 className="text-xl font-bold text-gray-900">
-                {isAdding ? "Add New Package" : "Edit Package"}
+                {isAdding ? t('adminWashPackages.addNewPackage', { defaultValue: 'Add New Package' }) : t('adminWashPackages.editPackage', { defaultValue: 'Edit Package' })}
               </h4>
               <button
                 onClick={handleCancel}
@@ -279,7 +282,7 @@ export function AdminPackages() {
               {/* Package Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Package Name
+                  {t('adminWashPackages.packageName', { defaultValue: 'Package Name' })}
                 </label>
                 <input
                   type="text"
@@ -288,14 +291,14 @@ export function AdminPackages() {
                     setEditForm({ ...editForm, name: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="e.g. Premium Wash"
+                  placeholder={t('adminWashPackages.packageNamePlaceholder', { defaultValue: 'e.g. Premium Wash' })}
                 />
               </div>
 
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  {t('adminWashPackages.description', { defaultValue: 'Description' })}
                 </label>
                 <input
                   type="text"
@@ -304,7 +307,7 @@ export function AdminPackages() {
                     setEditForm({ ...editForm, description: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="Brief description"
+                  placeholder={t('adminWashPackages.descriptionPlaceholder', { defaultValue: 'Brief description' })}
                 />
               </div>
 
@@ -312,7 +315,7 @@ export function AdminPackages() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Price (VND)
+                    {t('adminWashPackages.price', { defaultValue: 'Price (VND)' })}
                   </label>
                   <input
                     type="number"
@@ -332,7 +335,7 @@ export function AdminPackages() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Duration (min)
+                    {t('adminWashPackages.duration', { defaultValue: 'Duration (min)' })}
                   </label>
                   <input
                     type="number"
@@ -352,7 +355,7 @@ export function AdminPackages() {
               {/* Features */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Features
+                  {t('adminWashPackages.features', { defaultValue: 'Features' })}
                 </label>
                 <div className="space-y-2">
                   {editForm.features.map((feature, idx) => (
@@ -362,7 +365,7 @@ export function AdminPackages() {
                         value={feature}
                         onChange={(e) => updateFeature(idx, e.target.value)}
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="Feature description"
+                        placeholder={t('adminWashPackages.featurePlaceholder', { defaultValue: 'Feature description' })}
                       />
                       <button
                         onClick={() => removeFeature(idx)}
@@ -377,7 +380,7 @@ export function AdminPackages() {
                     className="flex items-center gap-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    Add Feature
+                    {t('adminWashPackages.addFeature', { defaultValue: 'Add Feature' })}
                   </button>
                 </div>
               </div>
@@ -397,7 +400,7 @@ export function AdminPackages() {
                   htmlFor="isActive"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Active (available for booking)
+                  {t('adminWashPackages.activeLabel', { defaultValue: 'Active (available for booking)' })}
                 </label>
               </div>
 
@@ -408,13 +411,13 @@ export function AdminPackages() {
                   className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
                   <Save className="w-4 h-4" />
-                  {isAdding ? "Create Package" : "Save Changes"}
+                  {isAdding ? t('adminWashPackages.createPackage', { defaultValue: 'Create Package' }) : t('adminWashPackages.saveChanges', { defaultValue: 'Save Changes' })}
                 </button>
                 <button
                   onClick={handleCancel}
                   className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
                 >
-                  Cancel
+                  {t('adminWashPackages.cancel', { defaultValue: 'Cancel' })}
                 </button>
               </div>
             </div>

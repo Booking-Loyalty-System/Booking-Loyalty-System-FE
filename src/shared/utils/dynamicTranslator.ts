@@ -52,6 +52,7 @@ export const translateDynamic = (beValue: string | undefined | null, category: '
         },
         tier: {
             "Member": "dynamic.tiers.member",
+            "Bronze": "dynamic.tiers.bronze",
             "Silver": "dynamic.tiers.silver",
             "Gold": "dynamic.tiers.gold",
             "Platinum": "dynamic.tiers.platinum",
@@ -72,7 +73,7 @@ export const translateNotificationTitle = (title: string, t: any) => {
     if (lowerTitle.includes("cập nhật trạng thái lịch rửa xe")) {
         return t("dynamic.notifications.statusUpdateTitle", { defaultValue: title });
     }
-    if (lowerTitle.includes("có đơn đặt lịch mới")) {
+    if (lowerTitle.includes("có đơn đặt lịch mới") || lowerTitle.includes("lịch hẹn mới")) {
         return t("dynamic.notifications.newBookingTitle", { defaultValue: title });
     }
     if (lowerTitle.includes("nhắc nhở lịch rửa xe")) {
@@ -108,6 +109,9 @@ export const translateNotificationMessage = (message: string, t: any) => {
     };
 
     // Dịch các cụm từ phổ biến trong thông báo BE (thay thế dài nhất trước để tránh lỗi)
+    translated = translated.replace("Khách hàng mới đã đặt lịch:", t("dynamic.notifications.newCustomerBooked", { defaultValue: "New customer booked:" }));
+    translated = translated.replace("Gói:", t("dynamic.notifications.packageLabel", { defaultValue: "Package:" }));
+    translated = translated.replace(" lúc ", t("dynamic.notifications.atTimeLabel", { defaultValue: " at " }));
     translated = translated.replace("Lịch đặt rửa xe của bạn", t("dynamic.notifications.yourBooking", { defaultValue: "Your booking" }));
     translated = translated.replace("Lịch đặt", t("dynamic.notifications.bookingWord", { defaultValue: "Booking" }));
     
