@@ -678,7 +678,8 @@
       "deluxe": "Deluxe Wash",
       "interior": "Interior Detailing",
       "full": "Full Detailing",
-      "vip": "VIP Detailing"
+      "vip": "VIP Detailing",
+      "superPremium": "Super Premium Wash"
     },
     "packageDesc": {
       "basic": "Standard exterior wash with basic interior vacuuming",
@@ -686,7 +687,8 @@
       "deluxe": "Premium package with high-gloss ceramic coating for 3-month paint protection",
       "interior": "Deep leather cleaning, carpet washing, and comprehensive ozone odor removal",
       "full": "Comprehensive interior and exterior cleaning, glass stain removal, and light polishing",
-      "vip": "The ultimate detailing experience with full paint correction and high-end Ceramic coating"
+      "vip": "The ultimate detailing experience with full paint correction and high-end Ceramic coating",
+      "superPremium": "Complete detailing with wax coating and leather care"
     },
     "status": {
       "pending": "Pending",

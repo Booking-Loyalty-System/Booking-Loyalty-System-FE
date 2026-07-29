@@ -16,7 +16,8 @@ export const translateDynamic = (beValue: string | undefined | null, category: '
             "Deluxe Wash": "dynamic.packages.deluxe",
             "Interior Detailing": "dynamic.packages.interior",
             "Full Detailing": "dynamic.packages.full",
-            "VIP Detailing": "dynamic.packages.vip"
+            "VIP Detailing": "dynamic.packages.vip",
+            "Super Premium Wash": "dynamic.packages.superPremium"
         },
         packageDesc: {
             "Basic Wash": "dynamic.packageDesc.basic",
@@ -24,7 +25,8 @@ export const translateDynamic = (beValue: string | undefined | null, category: '
             "Deluxe Wash": "dynamic.packageDesc.deluxe",
             "Interior Detailing": "dynamic.packageDesc.interior",
             "Full Detailing": "dynamic.packageDesc.full",
-            "VIP Detailing": "dynamic.packageDesc.vip"
+            "VIP Detailing": "dynamic.packageDesc.vip",
+            "Super Premium Wash": "dynamic.packageDesc.superPremium"
         },
         feature: {
             "Exterior wash": "dynamic.features.exteriorWash",
