@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Building2,
   Eye,
@@ -31,6 +32,7 @@ interface StaffProfileData {
 }
 
 export const StaffProfile: React.FC = () => {
+  const { t } = useTranslation("customer");
   const [profile, setProfile] = useState<StaffProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -65,7 +67,7 @@ export const StaffProfile: React.FC = () => {
         setProfile(response.data);
       } catch (error) {
         console.error("Failed to fetch staff profile:", error);
-        setProfileError("Không thể tải thông tin nhân viên.");
+        setProfileError(t('staffProfile.fetchProfileError'));
       } finally {
         setLoading(false);
       }
@@ -83,17 +85,17 @@ export const StaffProfile: React.FC = () => {
     setPasswordSuccess("");
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setPasswordError("Vui lòng nhập đầy đủ thông tin.");
+      setPasswordError(t('staffProfile.password.enterAll'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordError("Mật khẩu xác nhận không khớp.");
+      setPasswordError(t('staffProfile.password.notMatch'));
       return;
     }
 
     if (currentPassword === newPassword) {
-      setPasswordError("Mật khẩu mới phải khác mật khẩu hiện tại.");
+      setPasswordError(t('staffProfile.password.sameAsCurrent'));
       return;
     }
 
@@ -105,7 +107,7 @@ export const StaffProfile: React.FC = () => {
         newPassword,
       });
 
-      setPasswordSuccess("Đổi mật khẩu thành công.");
+      setPasswordSuccess(t('staffProfile.password.success'));
 
       setCurrentPassword("");
       setNewPassword("");
@@ -114,7 +116,7 @@ export const StaffProfile: React.FC = () => {
       console.error("Failed to change password:", error);
 
       setPasswordError(
-        "Không thể đổi mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại.",
+        t('staffProfile.password.fail'),
       );
     } finally {
       setChangingPassword(false);
@@ -124,9 +126,7 @@ export const StaffProfile: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-[500px] flex items-center justify-center">
-        <div className="text-slate-500 font-semibold">
-          Đang tải thông tin...
-        </div>
+        <div className="text-slate-500 font-semibold">{t('staffProfile.loading')}</div>
       </div>
     );
   }
@@ -134,7 +134,7 @@ export const StaffProfile: React.FC = () => {
   if (profileError || !profile) {
     return (
       <div className="rounded-3xl bg-red-50 border border-red-100 p-6 text-red-600">
-        {profileError || "Không tìm thấy thông tin nhân viên."}
+        {profileError || t('staffProfile.notFound')}
       </div>
     );
   }
@@ -143,13 +143,9 @@ export const StaffProfile: React.FC = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          My Profile
-        </h1>
+        <h1 className="text-3xl font-black text-slate-900 dark:text-white">{t('staffProfile.title')}</h1>
 
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Xem thông tin tài khoản và quản lý mật khẩu của bạn.
-        </p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t('staffProfile.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -174,7 +170,7 @@ export const StaffProfile: React.FC = () => {
                         : "bg-slate-100 text-slate-500"
                     }`}
                   >
-                    {profile.isAvailable ? "Available" : "Unavailable"}
+                    {profile.isAvailable ? t('staffProfile.status.available') : t('staffProfile.status.unavailable')}
                   </span>
                 </div>
 
@@ -184,45 +180,43 @@ export const StaffProfile: React.FC = () => {
           </div>
 
           <div className="p-7">
-            <h3 className="text-base font-black text-slate-900 dark:text-white mb-6">
-              Personal Information
-            </h3>
+            <h3 className="text-base font-black text-slate-900 dark:text-white mb-6">{t('staffProfile.personalInfo.title')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <ProfileItem
                 icon={<UserRound className="w-5 h-5" />}
-                label="Full Name"
+                label={t('')}
                 value={profile.fullName}
               />
 
               <ProfileItem
                 icon={<Mail className="w-5 h-5" />}
-                label="Email"
+                label={t('')}
                 value={profile.email}
               />
 
               <ProfileItem
                 icon={<Phone className="w-5 h-5" />}
-                label="Phone Number"
-                value={profile.phoneNumber || "Chưa cập nhật"}
+                label={t('')}
+                value={profile.phoneNumber || t('staffProfile.personalInfo.notUpdated')}
               />
 
               <ProfileItem
                 icon={<ShieldCheck className="w-5 h-5" />}
-                label="Role"
+                label={t('')}
                 value={profile.role}
               />
 
               <ProfileItem
                 icon={<Building2 className="w-5 h-5" />}
-                label="Branch"
-                value={profile.branch?.branchName || "Chưa phân chi nhánh"}
+                label={t('')}
+                value={profile.branch?.branchName || t('staffProfile.personalInfo.noBranch')}
               />
 
               <ProfileItem
                 icon={<Building2 className="w-5 h-5" />}
-                label="Branch Address"
-                value={profile.branch?.address || "Chưa có địa chỉ"}
+                label={t('')}
+                value={profile.branch?.address || t('staffProfile.personalInfo.noAddress')}
               />
             </div>
           </div>
@@ -237,20 +231,16 @@ export const StaffProfile: React.FC = () => {
               </div>
 
               <div>
-                <h2 className="font-black text-slate-900 dark:text-white">
-                  Change Password
-                </h2>
+                <h2 className="font-black text-slate-900 dark:text-white">{t('staffProfile.password.title')}</h2>
 
-                <p className="text-xs text-slate-400 mt-1">
-                  Cập nhật mật khẩu tài khoản
-                </p>
+                <p className="text-xs text-slate-400 mt-1">{t('staffProfile.password.subtitle')}</p>
               </div>
             </div>
           </div>
 
           <form onSubmit={handleChangePassword} className="p-7 space-y-5">
             <PasswordInput
-              label="Current Password"
+              label={t('')}
               value={currentPassword}
               onChange={setCurrentPassword}
               show={showCurrentPassword}
@@ -258,7 +248,7 @@ export const StaffProfile: React.FC = () => {
             />
 
             <PasswordInput
-              label="New Password"
+              label={t('')}
               value={newPassword}
               onChange={setNewPassword}
               show={showNewPassword}
@@ -266,7 +256,7 @@ export const StaffProfile: React.FC = () => {
             />
 
             <PasswordInput
-              label="Confirm New Password"
+              label={t('')}
               value={confirmPassword}
               onChange={setConfirmPassword}
               show={showConfirmPassword}
@@ -290,7 +280,7 @@ export const StaffProfile: React.FC = () => {
               disabled={changingPassword}
               className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 font-bold text-sm shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {changingPassword ? "Đang cập nhật..." : "Change Password"}
+              {changingPassword ? t('staffProfile.password.updating') : t('staffProfile.password.button')}
             </button>
           </form>
         </div>

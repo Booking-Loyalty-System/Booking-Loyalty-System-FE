@@ -28,9 +28,12 @@ import {
 } from "recharts";
 import { useAdminDashboard } from "@/features/products/application/useAdminDashboard";
 import type { TierDistributionData, RecentBooking } from "@/features/products/domain/models/admin-dashboard/admin-dashboard.model";
+import { useTranslation } from "react-i18next";
+import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const { t } = useTranslation('customer');
 
   const [dateFilter, setDateFilter] = useState({
     fromDate: "2026-06-01",
@@ -124,9 +127,9 @@ export function AdminDashboard() {
 
   const comparisonChartData = revenueComparison ? [
     {
-      name: 'Đối soát Doanh thu',
-      'Kỳ trước': revenueComparison.previousRevenue,
-      'Kỳ này': revenueComparison.currentRevenue,
+      name: t('adminDashboard.revenueComparison.revenueAudit', { defaultValue: 'Đối soát Doanh thu' }),
+      [t('adminDashboard.revenueComparison.previousTerm', { defaultValue: 'Kỳ trước' })]: revenueComparison.previousRevenue,
+      [t('adminDashboard.revenueComparison.currentTerm', { defaultValue: 'Kỳ này' })]: revenueComparison.currentRevenue,
     }
   ] : [];
 
@@ -136,9 +139,9 @@ export function AdminDashboard() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight">Admin Overview</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight">{t('adminDashboard.title', { defaultValue: 'Admin Overview' })}</h1>
           <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">
-            Theo dõi tổng quan doanh thu và hiệu suất kinh doanh.
+            {t('adminDashboard.subtitle', { defaultValue: 'Theo dõi tổng quan doanh thu và hiệu suất kinh doanh.' })}
           </p>
         </div>
       </div>
@@ -146,10 +149,10 @@ export function AdminDashboard() {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Revenue', value: `${(summary?.metrics?.totalRevenue || 0).toLocaleString("vi-VN")} đ`, icon: DollarSign, color: 'emerald' },
-          { label: 'Total Bookings', value: summary?.metrics?.totalBookings || 0, icon: Calendar, color: 'blue' },
-          { label: 'Active Customers', value: summary?.metrics?.activeCustomers || 0, icon: Users, color: 'purple' },
-          { label: 'Average Order Value', value: `${Math.round(summary?.metrics?.averageOrderValue || 0).toLocaleString("vi-VN")} đ`, icon: TrendingUp, color: 'amber' }
+          { label: t('adminDashboard.metrics.totalRevenue', { defaultValue: 'Total Revenue' }), value: `${(summary?.metrics?.totalRevenue || 0).toLocaleString("vi-VN")} đ`, icon: DollarSign, color: 'emerald' },
+          { label: t('adminDashboard.metrics.totalBookings', { defaultValue: 'Total Bookings' }), value: summary?.metrics?.totalBookings || 0, icon: Calendar, color: 'blue' },
+          { label: t('adminDashboard.metrics.activeCustomers', { defaultValue: 'Active Customers' }), value: summary?.metrics?.activeCustomers || 0, icon: Users, color: 'purple' },
+          { label: t('adminDashboard.metrics.averageOrderValue', { defaultValue: 'Average Order Value' }), value: `${Math.round(summary?.metrics?.averageOrderValue || 0).toLocaleString("vi-VN")} đ`, icon: TrendingUp, color: 'amber' }
         ].map((metric, idx) => (
           <div key={idx} className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2rem] p-6 border border-slate-200/60 dark:border-white/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-center justify-between mb-4">
@@ -170,14 +173,14 @@ export function AdminDashboard() {
       {/* REVENUE AUDITING & COMPARISON */}
       <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg">
         <div className="border-b border-slate-100 dark:border-white/5 pb-6 mb-8">
-          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">Revenue Auditing & Comparison</h3>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">So sánh đối soát doanh thu dựa trên các khoảng thời gian tùy chọn</p>
+          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('adminDashboard.revenueComparison.title', { defaultValue: 'Revenue Auditing & Comparison' })}</h3>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">{t('adminDashboard.revenueComparison.subtitle', { defaultValue: 'So sánh đối soát doanh thu dựa trên các khoảng thời gian tùy chọn' })}</p>
 
           {/* Form chọn khoảng mốc ngày */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 p-6 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
             {/* Cụm Kỳ Này */}
             <div className="space-y-3">
-              <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest block">Kỳ muốn coi (Kỳ này)</span>
+              <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest block">{t('adminDashboard.revenueComparison.currentPeriod', { defaultValue: 'Kỳ muốn coi (Kỳ này)' })}</span>
               <div className="flex items-center gap-3">
                 <input
                   type="date"
@@ -185,7 +188,7 @@ export function AdminDashboard() {
                   onChange={(e) => handleDateChange('fromDate', e.target.value)}
                   className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
                 />
-                <span className="text-slate-400 text-xs font-black uppercase">đến</span>
+                <span className="text-slate-400 text-xs font-black uppercase">{t('adminDashboard.revenueComparison.to', { defaultValue: 'đến' })}</span>
                 <input
                   type="date"
                   value={dateFilter.toDate}
@@ -197,7 +200,7 @@ export function AdminDashboard() {
 
             {/* Cụm Kỳ Trước */}
             <div className="space-y-3">
-              <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block">Kỳ đối chứng (Kỳ trước)</span>
+              <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block">{t('adminDashboard.revenueComparison.previousPeriod', { defaultValue: 'Kỳ đối chứng (Kỳ trước)' })}</span>
               <div className="flex items-center gap-3">
                 <input
                   type="date"
@@ -205,7 +208,7 @@ export function AdminDashboard() {
                   onChange={(e) => handleDateChange('compareFromDate', e.target.value)}
                   className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 focus:ring-4 focus:ring-slate-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
                 />
-                <span className="text-slate-400 text-xs font-black uppercase">đến</span>
+                <span className="text-slate-400 text-xs font-black uppercase">{t('adminDashboard.revenueComparison.to', { defaultValue: 'đến' })}</span>
                 <input
                   type="date"
                   value={dateFilter.compareToDate}
@@ -233,13 +236,13 @@ export function AdminDashboard() {
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 shadow-sm">
                   <ArrowUpRight className="w-5 h-5" />
                   <span>+{revenueComparison?.growthRate}%</span>
-                  <span className="text-emerald-500 dark:text-emerald-500/70 ml-1">tăng trưởng</span>
+                  <span className="text-emerald-500 dark:text-emerald-500/70 ml-1">{t('adminDashboard.revenueComparison.growth', { defaultValue: 'tăng trưởng' })}</span>
                 </div>
               ) : (
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 shadow-sm">
                   <ArrowDownRight className="w-5 h-5" />
                   <span>{revenueComparison?.growthRate}%</span>
-                  <span className="text-rose-500 dark:text-rose-500/70 ml-1">sụt giảm</span>
+                  <span className="text-rose-500 dark:text-rose-500/70 ml-1">{t('adminDashboard.revenueComparison.decline', { defaultValue: 'sụt giảm' })}</span>
                 </div>
               )}
             </div>
@@ -264,8 +267,8 @@ export function AdminDashboard() {
                   contentStyle={{ borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', fontWeight: 'bold' }}
                 />
                 <Legend verticalAlign="top" height={40} iconType="circle" iconSize={10} wrapperStyle={{ fontWeight: 'bold' }} />
-                <Bar dataKey="Kỳ trước" fill="#94a3b8" radius={[8, 8, 0, 0]} maxBarSize={70} />
-                <Bar dataKey="Kỳ này" fill="#3b82f6" radius={[8, 8, 0, 0]} maxBarSize={70} />
+                <Bar dataKey={t('adminDashboard.revenueComparison.previousTerm', { defaultValue: 'Kỳ trước' })} fill="#94a3b8" radius={[8, 8, 0, 0]} maxBarSize={70} />
+                <Bar dataKey={t('adminDashboard.revenueComparison.currentTerm', { defaultValue: 'Kỳ này' })} fill="#3b82f6" radius={[8, 8, 0, 0]} maxBarSize={70} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -277,15 +280,13 @@ export function AdminDashboard() {
         {/* Revenue Chart */}
         <div className="lg:col-span-2 bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
-              Revenue Overview
-            </h3>
+            <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('adminDashboard.revenueComparison.revenueOverview', { defaultValue: 'Revenue Overview' })}</h3>
             <button
               onClick={handleExportRBL}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all"
             >
               <Download className="w-4 h-4" />
-              Export Dataset
+              {t('adminDashboard.revenueComparison.exportDataset', { defaultValue: 'Export Dataset' })}
             </button>
           </div>
           <ResponsiveContainer width="100%" height={320}>
@@ -311,9 +312,7 @@ export function AdminDashboard() {
 
         {/* Tier Distribution */}
         <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] p-8 border border-slate-200/60 dark:border-white/5 shadow-lg flex flex-col">
-          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6">
-            Membership Tiers
-          </h3>
+          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6">{t('adminDashboard.membershipTiers.title', { defaultValue: 'Membership Tiers' })}</h3>
           <div className="flex-1 flex flex-col justify-center">
             <ResponsiveContainer width="100%" height={220}>
               <PieChart id="tier-pie-chart">
@@ -348,7 +347,7 @@ export function AdminDashboard() {
                       className="w-3.5 h-3.5 rounded-full shadow-sm"
                       style={{ backgroundColor: tier.color || "#3b82f6" }}
                     ></div>
-                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{tier.name}</span>
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{translateDynamic(tier.name, 'tier', t)}</span>
                   </div>
                   <span className="text-sm font-black text-blue-950 dark:text-white">
                     {tier.value}
@@ -363,19 +362,17 @@ export function AdminDashboard() {
       {/* Recent Bookings */}
       <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg overflow-hidden">
         <div className="p-8 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
-            Recent Bookings
-          </h3>
+          <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('adminDashboard.recentBookings.title', { defaultValue: 'Recent Bookings' })}</h3>
         </div>
         <div className="overflow-x-auto custom-scrollbar p-2">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-slate-100 dark:border-white/5">
-                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Booking ID</th>
-                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Customer</th>
-                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Service</th>
-                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Amount</th>
-                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">{t('adminDashboard.recentBookings.bookingId', { defaultValue: 'Booking ID' })}</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">{t('adminDashboard.recentBookings.customer', { defaultValue: 'Customer' })}</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">{t('adminDashboard.recentBookings.service', { defaultValue: 'Service' })}</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">{t('adminDashboard.recentBookings.amount', { defaultValue: 'Amount' })}</th>
+                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">{t('adminDashboard.recentBookings.status', { defaultValue: 'Status' })}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-white/5">
@@ -387,10 +384,10 @@ export function AdminDashboard() {
                     </code>
                   </td>
                   <td className="px-6 py-5 text-sm font-bold text-blue-950 dark:text-white">
-                    {booking.customer}
+                    {booking.customer.replace('Customer ', t('adminDashboard.recentBookings.customerWord', { defaultValue: 'Customer' }) + ' ').replace(' Tier', '').replace('Bronze', translateDynamic('Bronze', 'tier', t)).replace('Silver', translateDynamic('Silver', 'tier', t)).replace('Gold', translateDynamic('Gold', 'tier', t)).replace('Platinum', translateDynamic('Platinum', 'tier', t))}
                   </td>
                   <td className="px-6 py-5 text-sm font-medium text-slate-600 dark:text-slate-300">
-                    {booking.service}
+                    {translateDynamic(booking.service, 'package', t)}
                   </td>
                   <td className="px-6 py-5 text-sm font-black text-blue-950 dark:text-white">
                     {booking.amount.toLocaleString("vi-VN")} đ
@@ -399,7 +396,7 @@ export function AdminDashboard() {
                     <span
                       className={`inline-flex px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border ${getStatusBadgeClass(booking.status)}`}
                     >
-                      {booking.status}
+                      {translateDynamic(booking.status, 'status', t)}
                     </span>
                   </td>
                 </tr>
@@ -417,10 +414,8 @@ export function AdminDashboard() {
               <Settings className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
-                Tier Rules & Configuration
-              </h3>
-              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">Quản lý hệ số nhân điểm cho các hạng thành viên</p>
+              <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('adminDashboard.tierConfig.title', { defaultValue: 'Tier Rules & Configuration' })}</h3>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">{t('adminDashboard.tierConfig.subtitle', { defaultValue: 'Quản lý hệ số nhân điểm cho các hạng thành viên' })}</p>
             </div>
           </div>
           <button
@@ -429,7 +424,7 @@ export function AdminDashboard() {
             className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-blue-950 font-bold rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50"
           >
             <Save className="w-5 h-5" />
-            {isUpdatingTierConfig ? "Saving..." : "Save Changes"}
+            {isUpdatingTierConfig ? t('adminDashboard.tierConfig.saving', { defaultValue: 'Saving...' }) : t('adminDashboard.tierConfig.saveChanges', { defaultValue: 'Save Changes' })}
           </button>
         </div>
 
@@ -439,19 +434,15 @@ export function AdminDashboard() {
             <div className="absolute top-0 right-0 w-20 h-20 bg-slate-200/50 dark:bg-slate-700/20 rounded-bl-full -mr-4 -mt-4"></div>
             <div className="flex items-center gap-3 mb-5 relative z-10">
               <Award className="w-6 h-6 text-slate-500" />
-              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">Member</h4>
+              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">{translateDynamic('Member', 'tier', t)}</h4>
             </div>
             <div className="space-y-4 relative z-10">
               <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">
-                  Points Range
-                </label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
                 <input type="text" value="0 - 299" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-500 opacity-70" />
               </div>
               <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">
-                  Points Multiplier
-                </label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
                 <input
                   type="number"
                   value={tierConfigState.memberMultiplier}
@@ -468,15 +459,15 @@ export function AdminDashboard() {
             <div className="absolute top-0 right-0 w-20 h-20 bg-slate-300/50 dark:bg-slate-600/30 rounded-bl-full -mr-4 -mt-4"></div>
             <div className="flex items-center gap-3 mb-5 relative z-10">
               <Award className="w-6 h-6 text-slate-600 dark:text-slate-300" />
-              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">Silver</h4>
+              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">{translateDynamic('Silver', 'tier', t)}</h4>
             </div>
             <div className="space-y-4 relative z-10">
               <div>
-                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">Points Range</label>
+                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
                 <input type="text" value="300 - 599" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-500 opacity-70" />
               </div>
               <div>
-                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">Points Multiplier</label>
+                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
                 <input
                   type="number"
                   value={tierConfigState.silverMultiplier}
@@ -493,15 +484,15 @@ export function AdminDashboard() {
             <div className="absolute top-0 right-0 w-20 h-20 bg-amber-200/50 dark:bg-amber-500/20 rounded-bl-full -mr-4 -mt-4"></div>
             <div className="flex items-center gap-3 mb-5 relative z-10">
               <Award className="w-6 h-6 text-amber-500" />
-              <h4 className="font-extrabold text-lg text-amber-700 dark:text-amber-400">Gold</h4>
+              <h4 className="font-extrabold text-lg text-amber-700 dark:text-amber-400">{translateDynamic('Gold', 'tier', t)}</h4>
             </div>
             <div className="space-y-4 relative z-10">
               <div>
-                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">Points Range</label>
+                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
                 <input type="text" value="600 - 999" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-amber-200 dark:border-amber-500/20 rounded-xl text-sm font-bold text-amber-600/70 dark:text-amber-400/70 opacity-70" />
               </div>
               <div>
-                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">Points Multiplier</label>
+                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
                 <input
                   type="number"
                   value={tierConfigState.goldMultiplier}
@@ -518,15 +509,15 @@ export function AdminDashboard() {
             <div className="absolute top-0 right-0 w-20 h-20 bg-fuchsia-200/50 dark:bg-fuchsia-500/20 rounded-bl-full -mr-4 -mt-4"></div>
             <div className="flex items-center gap-3 mb-5 relative z-10">
               <Award className="w-6 h-6 text-fuchsia-500" />
-              <h4 className="font-extrabold text-lg text-fuchsia-700 dark:text-fuchsia-400">Platinum</h4>
+              <h4 className="font-extrabold text-lg text-fuchsia-700 dark:text-fuchsia-400">{translateDynamic('Platinum', 'tier', t)}</h4>
             </div>
             <div className="space-y-4 relative z-10">
               <div>
-                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">Points Range</label>
+                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
                 <input type="text" value="1000+" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-fuchsia-200 dark:border-fuchsia-500/20 rounded-xl text-sm font-bold text-fuchsia-600/70 dark:text-fuchsia-400/70 opacity-70" />
               </div>
               <div>
-                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">Points Multiplier</label>
+                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
                 <input
                   type="number"
                   value={tierConfigState.platinumMultiplier}
@@ -544,21 +535,21 @@ export function AdminDashboard() {
             <Settings className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           </div>
           <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">
-            <span className="font-extrabold uppercase tracking-widest text-[10px]">Công thức:</span><br/>
-            Điểm nhận được = (Tổng tiền thanh toán / 1000) × Hệ số hạng (Tier Multiplier). Việc thay đổi hệ số chỉ áp dụng cho các giao dịch trong tương lai.
+            <span className="font-extrabold uppercase tracking-widest text-[10px]">{t('adminDashboard.tierConfig.formulaTitle', { defaultValue: 'Công thức:' })}</span><br/>
+            {t('adminDashboard.tierConfig.formulaDesc', { defaultValue: 'Điểm nhận được = (Tổng tiền thanh toán / 1000) × Hệ số hạng (Tier Multiplier). Việc thay đổi hệ số chỉ áp dụng cho các giao dịch trong tương lai.' })}
           </p>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div>
-        <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6">Quick Management</h3>
+        <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white mb-6">{t('adminDashboard.quickManagement.title', { defaultValue: 'Quick Management' })}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { title: 'Loyalty Programs', desc: 'Manage tiers and rewards', icon: Award, color: 'purple', path: '/admin/loyalty' },
-            { title: 'Promotions', desc: 'Create and manage campaigns', icon: Megaphone, color: 'orange', path: '/admin/promotions' },
-            { title: 'Customer Analytics', desc: 'View detailed reports', icon: TrendingUp, color: 'blue', path: '/admin/analytics' },
-            { title: 'Staff Management', desc: 'Manage team and roles', icon: Users, color: 'emerald', path: '/admin/staff' }
+            { title: t('adminDashboard.quickManagement.loyaltyPrograms', { defaultValue: 'Loyalty Programs' }), desc: t('adminDashboard.quickManagement.loyaltyProgramsDesc', { defaultValue: 'Manage tiers and rewards' }), icon: Award, color: 'purple', path: '/admin/loyalty' },
+            { title: t('adminDashboard.quickManagement.promotions', { defaultValue: 'Promotions' }), desc: t('adminDashboard.quickManagement.promotionsDesc', { defaultValue: 'Create and manage campaigns' }), icon: Megaphone, color: 'orange', path: '/admin/promotions' },
+            { title: t('adminDashboard.quickManagement.customerAnalytics', { defaultValue: 'Customer Analytics' }), desc: t('adminDashboard.quickManagement.customerAnalyticsDesc', { defaultValue: 'View detailed reports' }), icon: TrendingUp, color: 'blue', path: '/admin/analytics' },
+            { title: t('adminDashboard.quickManagement.staffManagement', { defaultValue: 'Staff Management' }), desc: t('adminDashboard.quickManagement.staffManagementDesc', { defaultValue: 'Manage team and roles' }), icon: Users, color: 'emerald', path: '/admin/staff' }
           ].map((action, idx) => (
             <div
               key={idx}

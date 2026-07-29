@@ -11,23 +11,27 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../application/useAuth";
 import { useNotification } from "@/features/products/application/useNotification.ts";
+import { useLanguage } from "@/core/context/LanguageContext.tsx";
+import { useTranslation } from "react-i18next";
 
 export const StaffLayout: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
   const { unreadCount } = useNotification();
+  const { t } = useTranslation("customer");
+  const { language, toggleLanguage } = useLanguage();
 
   const staffLinks = [
-    { to: "/staff/dashboard", icon: LayoutDashboard, label: "Overview" },
-    { to: "/staff/monitor", icon: LayoutGrid, label: "Queue Monitor" },
+    { to: "/staff/dashboard", icon: LayoutDashboard, label: t('staffSidebar.overview') },
+    { to: "/staff/monitor", icon: LayoutGrid, label: t('staffSidebar.queueMonitor') },
     // { to: "/staff/queue", icon: Car, label: "Live Queue" },
     // { to: "/staff/bookings", icon: ClipboardList, label: "Bookings" },
   ];
 
   const systemLinks = [
-    { to: "/staff/notifications", icon: Bell, label: "Notifications" },
-    { to: "/staff/profile", icon: UserRound, label: "Profile" },
+    { to: "/staff/notifications", icon: Bell, label: t('staffSidebar.notifications') },
+    { to: "/staff/profile", icon: UserRound, label: t('staffSidebar.profile') },
   ];
 
   const handleLogout = () => {
@@ -52,9 +56,7 @@ export const StaffLayout: React.FC = () => {
               <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 tracking-tight leading-none">
                 AutoWash
               </h1>
-              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-1">
-                Staff Portal
-              </p>
+              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-1">{t('staffSidebar.staffPortal')}</p>
             </div>
           </div>
         </div>
@@ -102,9 +104,7 @@ export const StaffLayout: React.FC = () => {
         <nav className="flex-1 px-4 space-y-6 overflow-y-auto custom-scrollbar">
           {/* Operations Group */}
           <div>
-            <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
-              Operations
-            </p>
+            <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">{t('staffSidebar.operations')}</p>
             <div className="space-y-1.5">
               {staffLinks.map((link) => (
                 <NavLink
@@ -135,9 +135,7 @@ export const StaffLayout: React.FC = () => {
 
           {/* System Group */}
           <div>
-            <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
-              System
-            </p>
+            <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">{t('staffSidebar.system')}</p>
             <div className="space-y-1.5">
               {systemLinks.map((link) => (
                 <NavLink
@@ -175,13 +173,18 @@ export const StaffLayout: React.FC = () => {
 
         {/* Logout Button */}
         <div className="pt-4 mt-auto border-t border-slate-100 dark:border-white/5 shrink-0">
-          <button
+                    <button
+            onClick={toggleLanguage}
+            className="flex w-full items-center justify-center gap-3 px-4 py-3 text-slate-600 hover:text-blue-600 bg-slate-100 hover:bg-blue-50 dark:bg-white/5 dark:hover:bg-blue-500/10 rounded-2xl transition-all font-bold text-sm mb-2"
+          >
+            <span className="text-lg">{language === 'en' ? '🇺🇸' : '🇻🇳'}</span>
+            <span>{language === 'en' ? 'English' : 'Tiếng Việt'}</span>
+          </button>
+<button
             onClick={handleLogout}
             className="flex w-full items-center justify-center gap-3 px-4 py-3.5 text-rose-500 hover:text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-2xl transition-all font-bold text-sm group"
           >
-            <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
-            Logout
-          </button>
+            <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />{t('staffSidebar.logout')}</button>
           <div className="text-center text-[10px] text-slate-400 font-black tracking-widest uppercase mt-4">
             © 2026 AUTOWASH HQ
           </div>

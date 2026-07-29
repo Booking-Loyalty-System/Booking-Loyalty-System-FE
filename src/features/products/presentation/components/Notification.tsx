@@ -150,8 +150,8 @@ export const NotificationCenter: React.FC = () => {
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             {notifications.filter((n) => !n.isRead).length > 0
-              ? `${notifications.filter((n) => !n.isRead).length} unread notifications`
-              : "You are all caught up!"}
+              ? t('notifications.unreadCount', { count: notifications.filter((n) => !n.isRead).length })
+              : t('notifications.allCaughtUp')}
           </p>
         </div>
         {notifications.some((n) => !n.isRead) && (

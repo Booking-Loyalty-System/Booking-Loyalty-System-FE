@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useStaffDashboard } from "@/features/products/application/useStaffDashboard.ts";
 import { useStaff } from "@/features/products/application/useStaff.ts";
 import { useBooking } from "@/features/products/application/useBooking.ts";
@@ -36,6 +37,7 @@ interface DashboardActions {
 }
 
 export const StaffDashboard: React.FC = () => {
+  const { t } = useTranslation("customer");
   const queryClient = useQueryClient();
 
   const {
@@ -110,24 +112,24 @@ export const StaffDashboard: React.FC = () => {
 
   const handleQrScanSuccess = async (decodedText: string) => {
     setIsQrModalOpen(false);
-    const loadToastId = toast.loading("Đang xác thực mã QR...");
+    const loadToastId = toast.loading(t('staffDashboard.toast.validatingQr'));
     try {
       const bookingData = await scanQr(decodedText);
       if (bookingData && bookingData.bookingCode) {
         setSearchTerm(bookingData.bookingCode);
         setStatusFilter("All");
-        toast.success(`Đã tìm thấy lịch đặt: ${bookingData.bookingCode}`, {
+        toast.success(`\${t('staffDashboard.toast.foundBooking', { code: bookingData.bookingCode })}`, {
           id: loadToastId,
           icon: "✨",
         });
       } else {
-        toast.error("Không thể trích xuất mã lịch đặt từ mã QR.", {
+        toast.error(t('staffDashboard.toast.extractError'), {
           id: loadToastId,
         });
       }
     } catch (error) {
       console.error(error);
-      toast.error("Mã QR không hợp lệ hoặc không có trong hệ thống!", {
+      toast.error(t('staffDashboard.toast.invalidQr'), {
         id: loadToastId,
       });
     }
@@ -171,7 +173,7 @@ export const StaffDashboard: React.FC = () => {
         setVehicleImages({ before, after });
       } catch (error) {
         console.error("Lỗi khi tải ảnh:", error);
-        toast.error("Không thể tải hình ảnh của xe này.");
+        toast.error(t('staffDashboard.toast.fetchImagesError'));
       } finally {
         setIsLoadingImages(false);
       }
@@ -194,10 +196,10 @@ export const StaffDashboard: React.FC = () => {
           staffId: staffProfile.id,
         });
         queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
-        toast.success("Đã xác nhận ảnh và Check-in thành công!");
+        toast.success(t('staffDashboard.toast.checkinSuccess'));
       } catch (error) {
         console.error(error);
-        toast.error("Cập nhật trạng thái Check-in thất bại.");
+        toast.error(t('staffDashboard.toast.checkinFail'));
       }
     }
 
@@ -213,14 +215,14 @@ export const StaffDashboard: React.FC = () => {
       switch (action) {
         case "confirm":
           await actions.confirm(id);
-          toast.success(`Thao tác thành công!`);
+          toast.success(t('staffDashboard.toast.actionSuccess'));
           queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
           break;
 
         case "checkIn": {
           if (!staffProfile?.id) {
             toast.error(
-              "Không tìm thấy thông tin nhân viên, vui lòng tải lại trang!",
+              t('staffDashboard.toast.noStaffInfo'),
             );
             return;
           }
@@ -235,21 +237,21 @@ export const StaffDashboard: React.FC = () => {
           return;
         }
         case "staffCancel": {
-          const reason = window.prompt("Vui lòng nhập lý do hủy lịch:");
+          const reason = window.prompt(t('staffDashboard.toast.promptCancelReason'));
           if (!reason) return;
           await actions.staffCancel({ id, cancel: reason });
-          toast.success(`Thao tác thành công!`);
+          toast.success(t('staffDashboard.toast.actionSuccess'));
           queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
           break;
         }
         case "noShow":
           if (
             window.confirm(
-              "Bạn có chắc chắn muốn đánh dấu khách này là Không Đến (No-Show)?",
+              t('staffDashboard.toast.confirmNoShow'),
             )
           ) {
             await actions.noShow(id);
-            toast.success(`Thao tác thành công!`);
+            toast.success(t('staffDashboard.toast.actionSuccess'));
             queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
           } else {
             return;
@@ -258,7 +260,7 @@ export const StaffDashboard: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(`Thao tác thất bại`);
+      toast.error(t('staffDashboard.toast.actionFail'));
     }
   };
 
@@ -268,29 +270,29 @@ export const StaffDashboard: React.FC = () => {
     try {
       await actions.checkout(bookingId);
       toast.success(
-        "Thanh toán tiền mặt thành công! Vui lòng tải ảnh bàn giao xe.",
+        t('staffDashboard.toast.cashSuccess'),
       );
       setSelectedBookingForCheckout(null);
       queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
     } catch (error) {
       console.error(error);
-      toast.error("Xử lý thu tiền mặt thất bại");
+      toast.error(t('staffDashboard.toast.cashFail'));
     }
   };
 
   const handleConfirmPayOS = async (): Promise<string> => {
     if (!selectedBookingForCheckout) return "";
-    const toastId = toast.loading("Đang khởi tạo cổng thanh toán PayOS...");
+    const toastId = toast.loading(t('staffDashboard.toast.initPayOs'));
     try {
       const response = await createPayOsUrl(selectedBookingForCheckout.id);
       toast.dismiss(toastId);
-      if (!response) throw new Error("Không nhận được phản hồi từ máy chủ");
+      if (!response) throw new Error(t('staffDashboard.toast.noServerResponse'));
       if (typeof response === "object" && "checkoutUrl" in response)
         return (response as any).checkoutUrl;
       return response as unknown as string;
     } catch (error) {
       console.error(error);
-      toast.error("Không thể kết nối đến cổng thanh toán PayOS", {
+      toast.error(t('staffDashboard.toast.payOsConnectFail'), {
         id: toastId,
       });
       throw error;
@@ -305,10 +307,10 @@ export const StaffDashboard: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["staff-bookings"] });
       const isSuccess = paymentStatus === "success";
       const audioFile = isSuccess ? "/sound/payment.mp3" : "/sound/payment.mp3";
-      const message = isSuccess ? "Thanh toán thành công!" : "Hủy thanh toán!";
+      const message = isSuccess ? t('staffDashboard.toast.paymentSuccess') : t('staffDashboard.toast.paymentCancel');
       const desc = isSuccess
-        ? "Giao dịch đã được xác nhận."
-        : "Giao dịch link thanh toán đã bị hủy bỏ hoặc hết hạn.";
+        ? t('staffDashboard.toast.paymentConfirmed')
+        : t('staffDashboard.toast.paymentExpired');
       if (isSuccess)
         toast.success(message, { description: desc, duration: 5000 });
       else toast.error(message, { description: desc, duration: 10000 });
@@ -351,9 +353,7 @@ export const StaffDashboard: React.FC = () => {
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight">
             Staff Dashboard
           </h1>
-          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-            Quản lý trạm rửa xe và theo dõi tiến độ công việc hôm nay.
-          </p>
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{t('staffDashboard.subtitle')}</p>
         </div>
 
         {staffProfile && (
@@ -363,7 +363,7 @@ export const StaffDashboard: React.FC = () => {
                 <User className="w-4 h-4" />
               </div>
               <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Xin chào,{" "}
+                {t('staffDashboard.hello')}
                 <span className="font-extrabold text-blue-950 dark:text-white">
                   {staffProfile.fullName}
                 </span>
@@ -372,7 +372,7 @@ export const StaffDashboard: React.FC = () => {
             <div className="w-px h-5 bg-slate-200 dark:bg-white/10"></div>
             <div className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
               <MapPin className="w-4 h-4 text-rose-500" />
-              {staffProfile.branch?.branchName || "Chi nhánh"}
+              {staffProfile.branch?.branchName ? (staffProfile.branch.branchName.includes("Quận 9") ? t("staffDashboard.district9") : staffProfile.branch.branchName) : t("staffDashboard.branch")}
             </div>
           </div>
         )}
@@ -400,42 +400,26 @@ export const StaffDashboard: React.FC = () => {
         {isBookingsLoading ? (
           <div className="p-32 flex flex-col items-center justify-center bg-transparent">
             <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
-            <p className="text-sm font-bold text-slate-500 dark:text-slate-400 animate-pulse">
-              Đang đồng bộ dữ liệu...
-            </p>
+            <p className="text-sm font-bold text-slate-500 dark:text-slate-400 animate-pulse">{t('staffDashboard.syncingData')}</p>
           </div>
         ) : filteredBookings.length === 0 ? (
           <div className="p-32 flex flex-col items-center justify-center text-slate-500 bg-transparent text-center space-y-3">
             <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-2">
               <Car className="w-10 h-10 text-slate-300 dark:text-slate-600" />
             </div>
-            <p className="text-xl font-extrabold text-slate-700 dark:text-slate-300">
-              Không tìm thấy lịch đặt nào
-            </p>
-            <p className="text-sm font-medium dark:text-slate-500">
-              Thử thay đổi bộ lọc hoặc chọn ngày khác xem sao nhé.
-            </p>
+            <p className="text-xl font-extrabold text-slate-700 dark:text-slate-300">{t('staffDashboard.noBookingsFound')}</p>
+            <p className="text-sm font-medium dark:text-slate-500">{t('staffDashboard.tryChangingFilters')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
               <thead className="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/5">
                 <tr>
-                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                    Mã Code
-                  </th>
-                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                    Khách & Xe
-                  </th>
-                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                    Dịch vụ
-                  </th>
-                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                    Trạng thái
-                  </th>
-                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap text-right">
-                    Thao tác
-                  </th>
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('staffDashboard.table.code')}</th>
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('staffDashboard.table.customerVehicle')}</th>
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('staffDashboard.table.service')}</th>
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">{t('staffDashboard.table.status')}</th>
+                  <th className="py-5 px-6 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap text-right">{t('staffDashboard.table.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/5 bg-transparent">
@@ -490,11 +474,9 @@ export const StaffDashboard: React.FC = () => {
                   <Car className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="font-extrabold text-xl text-blue-950 dark:text-white tracking-tight">
-                    Chi Tiết Lịch Đặt
-                  </h2>
+                  <h2 className="font-extrabold text-xl text-blue-950 dark:text-white tracking-tight">{t('staffDashboard.bookingDetails.title')}</h2>
                   <p className="text-xs text-slate-500 font-bold mt-0.5">
-                    Mã:{" "}
+                    {t('staffDashboard.bookingDetails.code')}
                     <span className="text-blue-600 dark:text-blue-400">
                       {selectedBookingDetail.bookingCode}
                     </span>
@@ -512,17 +494,13 @@ export const StaffDashboard: React.FC = () => {
             <div className="p-6 space-y-6">
               <div className="flex items-center justify-between p-5 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-500/10 dark:to-indigo-500/10 rounded-2xl border border-blue-100 dark:border-blue-500/20">
                 <div>
-                  <p className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1">
-                    Biển số xe
-                  </p>
+                  <p className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1">{t('staffDashboard.bookingDetails.licensePlate')}</p>
                   <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
                     {selectedBookingDetail.licensePlate}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1">
-                    Dòng xe
-                  </p>
+                  <p className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1">{t('staffDashboard.bookingDetails.vehicleType')}</p>
                   <p className="text-lg font-bold text-slate-700 dark:text-slate-300">
                     {selectedBookingDetail.vehicleName}
                   </p>
@@ -532,16 +510,16 @@ export const StaffDashboard: React.FC = () => {
               <div className="space-y-4">
                 {[
                   {
-                    label: "Dịch vụ:",
+                    label: t('staffDashboard.bookingDetails.service'),
                     value: selectedBookingDetail.serviceName,
                     primary: true,
                   },
                   {
-                    label: "Khung giờ:",
+                    label: t('staffDashboard.bookingDetails.timeSlot'),
                     value: `${selectedBookingDetail.startTime} - ${selectedBookingDetail.bookingDate}`,
                   },
                   {
-                    label: "Trạng thái:",
+                    label: t('staffDashboard.bookingDetails.status'),
                     value: selectedBookingDetail.status,
                     isStatus: true,
                   },
@@ -572,7 +550,7 @@ export const StaffDashboard: React.FC = () => {
                     selectedBookingDetail.cancellationReason) && (
                     <div className="mt-4 p-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-xl">
                       <div className="text-[10px] font-black text-rose-400 dark:text-rose-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-                        <X size={12} className="text-rose-500" /> Lý do hủy
+                        <X size={12} className="text-rose-500" /> {t('staffDashboard.bookingDetails.cancelReason')}
                       </div>
                       <div className="text-sm font-bold text-rose-700 dark:text-rose-400 italic leading-snug">
                         "
@@ -589,9 +567,7 @@ export const StaffDashboard: React.FC = () => {
               <button
                 onClick={() => setSelectedBookingDetail(null)}
                 className="flex-1 py-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111] text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-white/5 transition-all shadow-sm"
-              >
-                Đóng
-              </button>
+              >{t('staffDashboard.bookingDetails.close')}</button>
             </div>
           </div>
         </div>
@@ -608,10 +584,10 @@ export const StaffDashboard: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-lg text-blue-950 dark:text-white tracking-tight">
-                    Hình ảnh xe: {selectedBookingForImages.vehicleName}
+                    {t('staffDashboard.images.title')} {selectedBookingForImages.vehicleName}
                   </h3>
                   <p className="text-xs text-slate-500 font-bold">
-                    Biển số:{" "}
+                    {t('staffDashboard.images.licensePlate')}
                     <span className="text-blue-600 dark:text-blue-400">
                       {selectedBookingForImages.licensePlate}
                     </span>
@@ -630,18 +606,14 @@ export const StaffDashboard: React.FC = () => {
               {isLoadingImages ? (
                 <div className="flex flex-col items-center justify-center py-10 space-y-3">
                   <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                    Đang tải hình ảnh từ máy chủ...
-                  </p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('staffDashboard.images.loading')}</p>
                 </div>
               ) : (
                 <>
                   {/* Ảnh Trước Khi Rửa (Check-in) */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg w-fit">
-                      <Camera className="w-4 h-4" />
-                      Ảnh Trước Khi Rửa (Check-in)
-                    </div>
+                      <Camera className="w-4 h-4" />{t('staffDashboard.images.beforeWash')}</div>
 
                     {vehicleImages.before.length > 0 ? (
                       <div className="grid grid-cols-3 gap-2">
@@ -653,7 +625,7 @@ export const StaffDashboard: React.FC = () => {
                             >
                               <img
                                 src={url}
-                                alt="Trước khi rửa"
+                                alt={t('staffDashboard.images.beforeWash')}
                                 className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                                 onClick={() => setPreviewImage(url)}
                               />
@@ -662,18 +634,14 @@ export const StaffDashboard: React.FC = () => {
                         )}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">
-                        Chưa có ảnh check-in cho xe này.
-                      </p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">{t('staffDashboard.images.noBeforeImages')}</p>
                     )}
                   </div>
 
                   {/* Ảnh Sau Khi Rửa (Bàn giao) */}
                   <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-white/5">
                     <div className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 rounded-lg w-fit">
-                      <CheckCircle className="w-4 h-4" />
-                      Ảnh Sau Khi Rửa (Hoàn thành)
-                    </div>
+                      <CheckCircle className="w-4 h-4" />{t('staffDashboard.images.afterWash')}</div>
 
                     {vehicleImages.after.length > 0 ? (
                       <div className="grid grid-cols-3 gap-2">
@@ -685,7 +653,7 @@ export const StaffDashboard: React.FC = () => {
                             >
                               <img
                                 src={url}
-                                alt="Sau khi rửa"
+                                alt={t('staffDashboard.images.afterWash')}
                                 className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                                 onClick={() => setPreviewImage(url)}
                               />
@@ -694,9 +662,7 @@ export const StaffDashboard: React.FC = () => {
                         )}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">
-                        Chưa có ảnh bàn giao cho xe này.
-                      </p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium italic pl-1">{t('staffDashboard.images.noAfterImages')}</p>
                     )}
                   </div>
                 </>
@@ -707,9 +673,7 @@ export const StaffDashboard: React.FC = () => {
               <button
                 onClick={() => setSelectedBookingForImages(null)}
                 className="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm transition-all"
-              >
-                Đóng
-              </button>
+              >{t('staffDashboard.bookingDetails.close')}</button>
             </div>
           </div>
         </div>
@@ -726,7 +690,7 @@ export const StaffDashboard: React.FC = () => {
           </button>
           <img
             src={previewImage}
-            alt="Preview Phóng to"
+            alt={t('staffDashboard.images.previewZoom')}
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
           />
         </div>

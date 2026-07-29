@@ -16,6 +16,7 @@ import {
 import { AdminBranchRepositoryImplement } from "../../../infrastructure/repositories/admin-branch/admin-branch.repository.implement";
 import type { BranchResponseData } from "../../../domain/models/admin-branch/admin-branch.model";
 
+import { useTranslation } from "react-i18next";
 import { useStaff } from "@/features/products/application/useStaff";
 import { useAdminPromotion } from "@/features/products/application/useAdminPromotion";
 
@@ -69,6 +70,12 @@ interface BranchPayload {
 }
 
 export function AdminBranches() {
+  const { t, i18n } = useTranslation('customer');
+
+  const removeVietnameseTones = (str: string) => {
+    if (!str) return "";
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  };
   const [branches, setBranches] = useState<BranchResponseData[]>([]);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -381,16 +388,14 @@ export function AdminBranches() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-2xl font-bold text-gray-900">Branches</h3>
-            <p className="text-gray-500">Manage all car wash branches locations</p>
+            <h3 className="text-2xl font-bold text-gray-900">{t('adminBranches.title', { defaultValue: 'Branches' })}</h3>
+            <p className="text-gray-500">{t('adminBranches.subtitle', { defaultValue: 'Manage all car wash branches locations' })}</p>
           </div>
           <button
             onClick={handleAdd}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <Plus className="w-4 h-4" />
-            Add Branch
-          </button>
+            <Plus className="w-4 h-4" />{t('adminBranches.addBranch', { defaultValue: 'Add Branch' })}</button>
         </div>
 
         {isLoading ? (
@@ -431,16 +436,12 @@ export function AdminBranches() {
                 </div>
 
                 {/* Info Card */}
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  {branch.branchName}
-                </h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('adminBranches.branchNameFormat', { name: i18n.language.startsWith('en') ? removeVietnameseTones(branch.branchName.replace(/ Branch/i, '').replace(/Chi nhánh /i, '').replace(/Quận/g, t('adminBranches.districtWord', { defaultValue: 'District' }))) : branch.branchName.replace(/ Branch/i, '').replace(/Chi nhánh /i, '').replace(/Quận/g, t('adminBranches.districtWord', { defaultValue: 'District' })), defaultValue: branch.branchName })}</h3>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-start gap-2">
                     <MapPin className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-600 line-clamp-2">
-                      {branch.address}
-                    </span>
+                    <span className="text-sm text-gray-600 line-clamp-2">{i18n.language.startsWith('en') ? removeVietnameseTones(branch.address.replace('Vietnam', t('adminBranches.vietnam', { defaultValue: 'Vietnam' }))) : branch.address.replace('Vietnam', t('adminBranches.vietnam', { defaultValue: 'Việt Nam' }))}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -451,7 +452,7 @@ export function AdminBranches() {
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      Hours: {branch.operatingHours}
+                      {t('adminBranches.hours', { defaultValue: 'Hours:' })} {branch.operatingHours}
                     </span>
                   </div>
                 </div>
@@ -466,14 +467,10 @@ export function AdminBranches() {
                 >
                   {branch.status === "Active" ? (
                     <span className="flex items-center justify-center gap-2">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Active
-                    </span>
+                      <CheckCircle2 className="w-4 h-4" />{t('adminBranches.active', { defaultValue: 'Active' })}</span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
-                      <XCircle className="w-4 h-4" />
-                      Inactive
-                    </span>
+                      <XCircle className="w-4 h-4" />{t('adminBranches.inactive', { defaultValue: 'Inactive' })}</span>
                   )}
                 </button>
               </div>
@@ -488,7 +485,7 @@ export function AdminBranches() {
           <div className="bg-white rounded-xl p-6 w-full max-w-5xl shadow-2xl max-h-[90vh] overflow-y-auto relative">
             <div className="flex items-center justify-between mb-6">
               <h4 className="text-xl font-bold text-gray-900">
-                {isAdding ? "Add New Branch" : "Edit Branch"}
+                {isAdding ? t('adminBranches.addNewBranch', { defaultValue: 'Add New Branch' }) : t('adminBranches.editBranch', { defaultValue: 'Edit Branch' })}
               </h4>
               <button
                 onClick={handleCancel}
@@ -502,9 +499,7 @@ export function AdminBranches() {
               {/* CỘT TRÁI: FORM ĐIỀN THÔNG TIN */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Branch Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminBranches.branchName', { defaultValue: 'Branch Name' })}</label>
                   <input
                     type="text"
                     value={editForm.branchName}
@@ -517,9 +512,7 @@ export function AdminBranches() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminBranches.address', { defaultValue: 'Address' })}</label>
                   <div className="flex gap-2">
                     <textarea
                       value={editForm.address}
@@ -539,7 +532,7 @@ export function AdminBranches() {
                     >
                       <Search className="w-5 h-5 mb-1" />
                       <span className="text-xs font-medium">
-                        {isGeocoding ? "Đang tìm..." : "Tìm Map"}
+                  {t('adminBranches.mapHint', { defaultValue: 'Click on the map to pin the location or use the "Search Map" button next to the address' })}
                       </span>
                     </button>
                   </div>
@@ -547,9 +540,7 @@ export function AdminBranches() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Hotline
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminBranches.hotline', { defaultValue: 'Hotline' })}</label>
                     <input
                       type="text"
                       value={editForm.hotline}
@@ -561,9 +552,7 @@ export function AdminBranches() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Operating Hours
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminBranches.operatingHoursLabel', { defaultValue: 'Operating Hours' })}</label>
                     <input
                       type="text"
                       value={editForm.operatingHours}
@@ -612,7 +601,7 @@ export function AdminBranches() {
               <div className="flex flex-col h-[400px] lg:h-auto border border-gray-300 rounded-lg overflow-hidden">
                 <div className="p-3 bg-gray-50 border-b border-gray-300 text-sm text-gray-600 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Click vào bản đồ để ghim vị trí hoặc dùng nút "Tìm Map" bên cạnh địa chỉ
+                  {t('adminBranches.mapHint', { defaultValue: 'Click on the map to pin the location or use the "Search Map" button next to the address' })}
                 </div>
                 <div className="flex-1 w-full h-full relative z-0">
                   <MapContainer
@@ -657,15 +646,13 @@ export function AdminBranches() {
               <button
                 onClick={handleCancel}
                 className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
+              >{t('adminBranches.cancel', { defaultValue: 'Cancel' })}</button>
               <button
                 onClick={isAdding ? handleCreate : handleSave}
                 className="flex items-center justify-center gap-2 px-8 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 <Save className="w-4 h-4" />
-                {isAdding ? "Create Branch" : "Save Changes"}
+                {isAdding ? t('adminBranches.createBranch', { defaultValue: 'Create Branch' }) : t('adminBranches.saveChanges', { defaultValue: 'Save Changes' })}
               </button>
             </div>
           </div>

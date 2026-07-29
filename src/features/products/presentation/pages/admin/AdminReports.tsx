@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FileText,
   FileSpreadsheet,
@@ -10,6 +11,7 @@ import { RevenueComparisonCard } from "../../components/RevenueComparisonCard";
 type FilterMode = "custom" | "month" | "quarter" | "year";
 
 export function AdminReports() {
+  const { t } = useTranslation("customer");
   const [dateFilter, setDateFilter] = useState({
     fromDate: "2026-06-01",
     toDate: "2026-07-30",
@@ -110,17 +112,17 @@ export function AdminReports() {
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Báo Cáo Doanh Nghiệp</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('adminReports.title')}</h1>
             <p className="text-gray-500">
               Comprehensive business insights and financial comparisons
             </p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
-              <FileText className="w-4 h-4" /> Export PDF
+              <FileText className="w-4 h-4" /> {t('adminReports.exportPDF')}
             </button>
             <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
-              <FileSpreadsheet className="w-4 h-4" /> Export Excel
+              <FileSpreadsheet className="w-4 h-4" /> {t('adminReports.exportExcel')}
             </button>
           </div>
         </div>
@@ -129,14 +131,14 @@ export function AdminReports() {
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4">
             <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-blue-600" /> Thiết lập khoảng thời gian so sánh dữ liệu
+              <Calendar className="w-4 h-4 text-blue-600" /> {t('adminReports.setupComparisonTitle')}
             </h3>
 
             <div className="flex bg-gray-100 p-1 rounded-lg border border-gray-200">
-              <button onClick={() => handleQuickFilter("custom")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "custom" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>Tùy chỉnh</button>
-              <button onClick={() => handleQuickFilter("month")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "month" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>Theo Tháng</button>
-              <button onClick={() => handleQuickFilter("quarter")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "quarter" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>Theo Quý</button>
-              <button onClick={() => handleQuickFilter("year")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "year" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>Theo Năm</button>
+              <button onClick={() => handleQuickFilter("custom")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "custom" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>{t('adminReports.custom')}</button>
+              <button onClick={() => handleQuickFilter("month")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "month" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>{t('adminReports.byMonth')}</button>
+              <button onClick={() => handleQuickFilter("quarter")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "quarter" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>{t('adminReports.byQuarter')}</button>
+              <button onClick={() => handleQuickFilter("year")} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeTab === "year" ? "bg-white text-blue-600 shadow-xs" : "text-gray-500 hover:text-gray-900"}`}>{t('adminReports.byYear')}</button>
             </div>
           </div>
 
@@ -144,10 +146,10 @@ export function AdminReports() {
             {/* CHẾ ĐỘ CUSTOM: HIỂN THỊ 4 Ô NGÀY */}
             {activeTab === "custom" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">Kỳ Hiện Tại (Từ ngày)</label><input type="date" value={dateFilter.fromDate} onChange={(e) => setDateFilter({ ...dateFilter, fromDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
-                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">Kỳ Hiện Tại (Đến ngày)</label><input type="date" value={dateFilter.toDate} onChange={(e) => setDateFilter({ ...dateFilter, toDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
-                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">Kỳ Đối Chứng (Từ ngày)</label><input type="date" value={dateFilter.compareFromDate} onChange={(e) => setDateFilter({ ...dateFilter, compareFromDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
-                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">Kỳ Đối Chứng (Đến ngày)</label><input type="date" value={dateFilter.compareToDate} onChange={(e) => setDateFilter({ ...dateFilter, compareToDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
+                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">{t('adminReports.currentPeriodFrom')}</label><input type="date" value={dateFilter.fromDate} onChange={(e) => setDateFilter({ ...dateFilter, fromDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
+                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">{t('adminReports.currentPeriodTo')}</label><input type="date" value={dateFilter.toDate} onChange={(e) => setDateFilter({ ...dateFilter, toDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
+                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">{t('adminReports.comparePeriodFrom')}</label><input type="date" value={dateFilter.compareFromDate} onChange={(e) => setDateFilter({ ...dateFilter, compareFromDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
+                <div className="space-y-1.5"><label className="text-xs font-semibold text-gray-500">{t('adminReports.comparePeriodTo')}</label><input type="date" value={dateFilter.compareToDate} onChange={(e) => setDateFilter({ ...dateFilter, compareToDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-hidden" /></div>
               </div>
             )}
 
@@ -155,7 +157,7 @@ export function AdminReports() {
             {activeTab === "month" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Tháng Hiện Tại</label>
+                  <label className="text-sm font-semibold text-gray-700">{t('adminReports.currentMonth')}</label>
                   <input type="month" value={dateFilter.fromDate.substring(0, 7)}
                     onChange={(e) => {
                       const [y, m] = e.target.value.split("-");
@@ -166,7 +168,7 @@ export function AdminReports() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Tháng Đối Chứng</label>
+                  <label className="text-sm font-semibold text-gray-700">{t('adminReports.compareMonth')}</label>
                   <input type="month" value={dateFilter.compareFromDate.substring(0, 7)}
                     onChange={(e) => {
                       const [y, m] = e.target.value.split("-");
@@ -183,21 +185,21 @@ export function AdminReports() {
             {activeTab === "quarter" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Quý Hiện Tại</label>
+                  <label className="text-sm font-semibold text-gray-700">{t('adminReports.currentQuarter')}</label>
                   <div className="flex gap-2">
                     <select value={getQuarter(dateFilter.fromDate)} onChange={(e) => handleQuarterChange("current", "q", e.target.value)} className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg outline-hidden">
-                      <option value={1}>Quý 1</option><option value={2}>Quý 2</option><option value={3}>Quý 3</option><option value={4}>Quý 4</option>
+                      <option value={1}>{t('adminReports.quarterPlaceholder', { q: 1 })}</option><option value={2}>{t('adminReports.quarterPlaceholder', { q: 2 })}</option><option value={3}>{t('adminReports.quarterPlaceholder', { q: 3 })}</option><option value={4}>{t('adminReports.quarterPlaceholder', { q: 4 })}</option>
                     </select>
-                    <input type="number" value={getYear(dateFilter.fromDate)} onChange={(e) => handleQuarterChange("current", "year", e.target.value)} className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg outline-hidden" placeholder="Năm" />
+                    <input type="number" value={getYear(dateFilter.fromDate)} onChange={(e) => handleQuarterChange("current", "year", e.target.value)} className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg outline-hidden" placeholder={t('adminReports.yearPlaceholder')} />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Quý Đối Chứng</label>
+                  <label className="text-sm font-semibold text-gray-700">{t('adminReports.compareQuarter')}</label>
                   <div className="flex gap-2">
                     <select value={getQuarter(dateFilter.compareFromDate)} onChange={(e) => handleQuarterChange("compare", "q", e.target.value)} className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg outline-hidden">
-                      <option value={1}>Quý 1</option><option value={2}>Quý 2</option><option value={3}>Quý 3</option><option value={4}>Quý 4</option>
+                      <option value={1}>{t('adminReports.quarterPlaceholder', { q: 1 })}</option><option value={2}>{t('adminReports.quarterPlaceholder', { q: 2 })}</option><option value={3}>{t('adminReports.quarterPlaceholder', { q: 3 })}</option><option value={4}>{t('adminReports.quarterPlaceholder', { q: 4 })}</option>
                     </select>
-                    <input type="number" value={getYear(dateFilter.compareFromDate)} onChange={(e) => handleQuarterChange("compare", "year", e.target.value)} className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg outline-hidden" placeholder="Năm" />
+                    <input type="number" value={getYear(dateFilter.compareFromDate)} onChange={(e) => handleQuarterChange("compare", "year", e.target.value)} className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg outline-hidden" placeholder={t('adminReports.yearPlaceholder')} />
                   </div>
                 </div>
               </div>
@@ -207,11 +209,11 @@ export function AdminReports() {
             {activeTab === "year" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Năm Hiện Tại</label>
+                  <label className="text-sm font-semibold text-gray-700">{t('adminReports.currentYear')}</label>
                   <input type="number" value={getYear(dateFilter.fromDate)} onChange={(e) => handleYearChange("current", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-hidden" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Năm Đối Chứng</label>
+                  <label className="text-sm font-semibold text-gray-700">{t('adminReports.compareYear')}</label>
                   <input type="number" value={getYear(dateFilter.compareFromDate)} onChange={(e) => handleYearChange("compare", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-hidden" />
                 </div>
               </div>

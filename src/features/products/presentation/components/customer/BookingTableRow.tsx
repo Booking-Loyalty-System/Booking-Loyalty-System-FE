@@ -1,4 +1,5 @@
 import type { DashboardBooking } from "@/features/products/presentation/components/DashboardStats.tsx";
+import { useTranslation } from "react-i18next";
 import {
   Ban,
   Car,
@@ -25,6 +26,8 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
   onViewDetail,
   onViewImages,
 }) => {
+  const { t } = useTranslation("customer");
+
   return (
     <tr
       onClick={onViewDetail}
@@ -46,7 +49,7 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
               {b.vehicleName}
             </div>
             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
-              BSX:{" "}
+              {t('staffDashboard.rowActions.licensePlateLabel')}
               <span className="text-slate-700 dark:text-slate-300">
                 {b.licensePlate}
               </span>
@@ -103,8 +106,7 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
                   handleAction(b.id, "confirm");
                 }}
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20 rounded-lg text-xs font-bold transition-colors"
-              >
-                Xác nhận <ThumbsUp className="w-3 h-3" />
+              >{t('staffDashboard.rowActions.confirm')} <ThumbsUp className="w-3 h-3" />
               </button>
               <button
                 onClick={(e) => {
@@ -112,8 +114,7 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
                   handleAction(b.id, "staffCancel");
                 }}
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 rounded-lg text-xs font-bold transition-colors"
-              >
-                Hủy <XCircle className="w-3 h-3" />
+              >{t('staffDashboard.rowActions.cancel')} <XCircle className="w-3 h-3" />
               </button>
             </>
           )}
@@ -126,8 +127,7 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
                   handleAction(b.id, "checkIn");
                 }}
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20 rounded-lg text-xs font-bold transition-colors"
-              >
-                Check-in <ChevronRight className="w-3 h-3" />
+              >{t('staffDashboard.rowActions.checkIn')} <ChevronRight className="w-3 h-3" />
               </button>
               <button
                 onClick={(e) => {
@@ -135,8 +135,7 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
                   handleAction(b.id, "noShow");
                 }}
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:bg-white/10 dark:text-stone-300 dark:hover:bg-white/20 rounded-lg text-xs font-bold transition-colors"
-              >
-                Vắng <Ban className="w-3 h-3" />
+              >{t('staffDashboard.rowActions.noShow')} <Ban className="w-3 h-3" />
               </button>
               <button
                 onClick={(e) => {
@@ -144,8 +143,7 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
                   handleAction(b.id, "staffCancel");
                 }}
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 rounded-lg text-xs font-bold transition-colors"
-              >
-                Hủy <XCircle className="w-3 h-3" />
+              >{t('staffDashboard.rowActions.cancel')} <XCircle className="w-3 h-3" />
               </button>
             </>
           )}
@@ -159,17 +157,14 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
                 }}
                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/20 rounded-lg text-xs font-bold transition-colors"
               >
-                <Camera className="w-3 h-3" /> Ảnh
-              </button>
+                <Camera className="w-3 h-3" />{t('staffDashboard.rowActions.images')}</button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAction(b.id, "checkout");
                 }}
                 className="inline-flex items-center gap-1 px-4 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-blue-950 hover:bg-slate-800 dark:hover:bg-slate-200 shadow-sm rounded-lg text-xs font-bold transition-all hover:-translate-y-0.5"
-              >
-                Thanh toán
-              </button>
+              >{t('staffDashboard.rowActions.checkout')}</button>
             </>
           )}
         </div>

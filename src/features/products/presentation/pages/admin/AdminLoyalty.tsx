@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import {
   Award,
@@ -70,6 +71,7 @@ function getTierIcon(level: string) {
 }
 
 export function AdminLoyalty() {
+  const { t } = useTranslation('customer');
   const {
     tiers,
     isLoading,
@@ -128,7 +130,7 @@ export function AdminLoyalty() {
   };
 
   const handleDeleteTier = async (id: string) => {
-    if (confirm("Bạn có chắc muốn xóa hạng thành viên này?")) {
+    if (confirm(t('adminLoyalty.deleteTierConfirm'))) {
       await deleteTier(id);
     }
   };
@@ -184,7 +186,7 @@ export function AdminLoyalty() {
   };
 
   const handleDeleteReward = async (id: string) => {
-    if (confirm("Bạn có chắc muốn xóa phần thưởng này?")) {
+    if (confirm(t('adminLoyalty.deleteRewardConfirm'))) {
       await deleteReward(id);
     }
   };
@@ -231,10 +233,10 @@ export function AdminLoyalty() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-slate-100">
             <div>
               <h3 className="text-xl font-bold text-blue-950 tracking-tight flex items-center gap-2">
-                <Award className="w-5 h-5 text-indigo-600" /> Hạng thành viên
+                <Award className="w-5 h-5 text-indigo-600" />{t('adminLoyalty.tiersTitle')}
               </h3>
               <p className="text-slate-500 text-sm mt-1">
-                Quản lý quy tắc tích điểm, đặt trước và điều kiện duy trì thứ hạng khách hàng
+                {t('adminLoyalty.tiersSubtitle')}
               </p>
             </div>
             <button
@@ -242,14 +244,14 @@ export function AdminLoyalty() {
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-xl shadow-sm shadow-indigo-100 hover:shadow-md transition-all duration-200 group self-start sm:self-center"
             >
               <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
-              Thêm hạng mới
+              {t('adminLoyalty.addTier')}
             </button>
           </div>
 
           {isLoading ? (
             <div className="flex flex-col justify-center items-center py-16 space-y-3">
               <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-slate-400 text-sm">Đang tải cấu hình hạng thành viên...</p>
+              <p className="text-slate-400 text-sm">{t('adminLoyalty.loadingTiers')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -277,14 +279,14 @@ export function AdminLoyalty() {
                               <button
                                 onClick={() => handleEditTier(tier)}
                                 className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-md hover:bg-white transition-all"
-                                title="Chỉnh sửa"
+                                title={t('adminLoyalty.edit')}
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteTier(tier.id)}
                                 className="p-1.5 text-slate-400 hover:text-rose-600 rounded-md hover:bg-white transition-all"
-                                title="Xóa hạng"
+                                title={t('adminLoyalty.delete')}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -312,7 +314,7 @@ export function AdminLoyalty() {
                       {isEditing && editForm ? (
                         <div className="space-y-3.5 mt-2">
                           <div>
-                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tên hạng</label>
+                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('adminLoyalty.tierName')}</label>
                             <input
                               type="text"
                               value={editForm.tierName}
@@ -321,7 +323,7 @@ export function AdminLoyalty() {
                             />
                           </div>
                           <div>
-                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Level định danh</label>
+                            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('adminLoyalty.level')}</label>
                             <input
                               type="text"
                               value={editForm.level}
@@ -331,7 +333,7 @@ export function AdminLoyalty() {
                           </div>
                           <div className="grid grid-cols-2 gap-2">
                             <div>
-                              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Hệ số điểm</label>
+                              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('adminLoyalty.pointRate')}</label>
                               <input
                                 type="number"
                                 value={editForm.pointRate}
@@ -341,7 +343,7 @@ export function AdminLoyalty() {
                               />
                             </div>
                             <div>
-                              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Đặt trước (ngày)</label>
+                              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{t('adminLoyalty.bookingWindow')}</label>
                               <input
                                 type="number"
                                 value={editForm.bookingWindow}
@@ -355,34 +357,34 @@ export function AdminLoyalty() {
                         <div className="relative z-10">
                           <div className="flex items-baseline gap-2 mb-1">
                             <h4 className="text-xl font-bold text-slate-800 tracking-tight">
-                              {tier.tierName}
+                              {t(`dynamic.tiers.${tier.level.toLowerCase()}`, { defaultValue: tier.tierName })}
                             </h4>
                             <span className={`text-[10px] px-2 py-0.5 font-bold rounded-full uppercase tracking-wider ${style.badge}`}>
-                              {tier.level}
+                              {t(`dynamic.tiers.${tier.level.toLowerCase()}`, { defaultValue: tier.level })}
                             </span>
                           </div>
-                          <p className="text-xs text-slate-400 mb-5">ID định danh hệ thống</p>
+                          <p className="text-xs text-slate-400 mb-5">{t('adminLoyalty.systemId')}</p>
                           
                           <div className="space-y-3.5 text-sm border-t border-slate-100 pt-4">
                             <div className="flex items-center justify-between text-slate-600">
                               <span className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                                <TrendingUp className="w-4 h-4 text-indigo-500" /> Hệ số điểm
+                                <TrendingUp className="w-4 h-4 text-indigo-500" /> {t('adminLoyalty.pointRate')}
                               </span>
                               <span className="font-semibold text-slate-800 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 text-xs">
-                                {tier.pointRate}x / 1kđ
+                                {tier.pointRate}x / 1k {t('adminLoyalty.pts')}
                               </span>
                             </div>
                             <div className="flex items-center justify-between text-slate-600">
                               <span className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                                <Calendar className="w-4 h-4 text-emerald-500" /> Hạn đặt trước
+                                <Calendar className="w-4 h-4 text-emerald-500" /> {t('adminLoyalty.bookingWindow')}
                               </span>
                               <span className="font-semibold text-slate-800 text-xs">
-                                {tier.bookingWindow} ngày
+                                {tier.bookingWindow} {t('bookWash.priority.days')}
                               </span>
                             </div>
                             <div className="flex items-center justify-between text-slate-600">
                               <span className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                                <Award className="w-4 h-4 text-amber-500" /> Điểm tối thiểu
+                                <Award className="w-4 h-4 text-amber-500" /> {t('adminLoyalty.minPoints')}
                               </span>
                               <span className="font-bold text-indigo-600 text-xs">
                                 {tier.minPointsRequired.toLocaleString()} pts
@@ -390,7 +392,7 @@ export function AdminLoyalty() {
                             </div>
                             <div className="flex items-center justify-between text-slate-600">
                               <span className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                                <Shield className="w-4 h-4 text-purple-500" /> Điểm duy trì
+                                <Shield className="w-4 h-4 text-purple-500" /> {t('adminLoyalty.maintenancePoints')}
                               </span>
                               <span className="font-semibold text-slate-700 text-xs">
                                 {tier.maintenancePoints.toLocaleString()} pts / 90n
@@ -403,7 +405,7 @@ export function AdminLoyalty() {
 
                     {!isEditing && tier.benefits?.length > 0 && (
                       <div className="mt-5 pt-4 border-t border-slate-100">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Đặc quyền kèm theo</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('adminLoyalty.benefits')}</p>
                         <ul className="space-y-1.5">
                           {tier.benefits.map((benefit, idx) => (
                             <li key={idx} className="text-xs text-slate-600 flex items-start gap-2">
@@ -428,10 +430,10 @@ export function AdminLoyalty() {
           <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100">
             <div>
               <h3 className="text-xl font-bold text-blue-950 tracking-tight flex items-center gap-2">
-                <Gift className="w-5 h-5 text-emerald-600" /> Phần thưởng đổi điểm
+                <Gift className="w-5 h-5 text-emerald-600" />{t('adminLoyalty.rewardsTitle')}
               </h3>
               <p className="text-slate-500 text-sm mt-1">
-                Thiết lập hệ thống quà tặng và giá trị quy đổi voucher khi thành viên đạt đủ số điểm tích lũy
+                {t('adminLoyalty.rewardsSubtitle')}
               </p>
             </div>
             <button
@@ -439,26 +441,26 @@ export function AdminLoyalty() {
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-xl shadow-sm shadow-emerald-100 hover:shadow-md transition-all duration-200 group self-start sm:self-center"
             >
               <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
-              Thêm phần thưởng
+              {t('adminLoyalty.addReward')}
             </button>
           </div>
 
           {isLoadingRewards ? (
             <div className="flex flex-col justify-center items-center py-16 space-y-3">
               <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-slate-400 text-sm">Đang tải danh sách phần thưởng công khai...</p>
+              <p className="text-slate-400 text-sm">{t('adminLoyalty.loadingRewards')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-50/70 border-b border-slate-200/80 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    <th className="px-6 py-4 font-semibold">Tên phần thưởng</th>
-                    <th className="px-6 py-4 font-semibold">Mô tả hiển thị</th>
-                    <th className="px-6 py-4 font-semibold text-center">Chi phí quy đổi</th>
-                    <th className="px-6 py-4 font-semibold">Giá trị giảm giá</th>
-                    <th className="px-6 py-4 font-semibold text-center">Trạng thái áp dụng</th>
-                    <th className="px-6 py-4 font-semibold text-right">Hành động</th>
+                    <th className="px-6 py-4 font-semibold">{t('adminLoyalty.rewardName')}</th>
+                    <th className="px-6 py-4 font-semibold">{t('adminLoyalty.rewardDesc')}</th>
+                    <th className="px-6 py-4 font-semibold text-center">{t('adminLoyalty.pointsCost')}</th>
+                    <th className="px-6 py-4 font-semibold">{t('adminLoyalty.discountAmount')}</th>
+                    <th className="px-6 py-4 font-semibold text-center">{t('adminLoyalty.status')}</th>
+                    <th className="px-6 py-4 font-semibold text-right">{t('adminLoyalty.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
@@ -475,7 +477,7 @@ export function AdminLoyalty() {
                         </div>
                       </td>
                       <td className="px-6 py-4.5 text-slate-500 max-w-xs truncate">
-                        {reward.description || <span className="text-slate-300 italic">Chưa có mô tả</span>}
+                        {reward.description || <span className="text-slate-300 italic">{t('adminLoyalty.noDesc')}</span>}
                       </td>
                       <td className="px-6 py-4.5 text-center whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-bold border border-amber-200/50 shadow-sm">
@@ -503,12 +505,12 @@ export function AdminLoyalty() {
                           {reward.isActive ? (
                             <>
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                              Hoạt động
+                              {t('adminLoyalty.active')}
                             </>
                           ) : (
                             <>
                               <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                              Tạm dừng
+                              {t('adminLoyalty.inactive')}
                             </>
                           )}
                         </button>
@@ -518,14 +520,14 @@ export function AdminLoyalty() {
                           <button
                             onClick={() => handleEditReward(reward)}
                             className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50/50 rounded-lg transition-colors"
-                            title="Chỉnh sửa thông tin"
+                            title={t('adminLoyalty.editReward')}
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteReward(reward.id)}
                             className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50/50 rounded-lg transition-colors"
-                            title="Xóa phần thưởng"
+                            title={t('adminLoyalty.deleteReward')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -548,7 +550,7 @@ export function AdminLoyalty() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-100">
             <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
               <h4 className="text-lg font-bold text-blue-950 tracking-tight">
-                Thêm hạng thành viên mới
+                {t('adminLoyalty.addTierTitle')}
               </h4>
               <button
                 onClick={handleCancelTier}
@@ -559,28 +561,28 @@ export function AdminLoyalty() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tên hiển thị hạng</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.tierName')}</label>
                 <input
                   type="text"
                   value={editForm.tierName}
                   onChange={(e) => updateEditField("tierName", e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder-slate-400"
-                  placeholder="VD: Khách hàng Bạch Kim"
+                  placeholder={t('adminLoyalty.tierNamePlaceholder')}
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mã định danh Level (Enum/String)</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.level')}</label>
                 <input
                   type="text"
                   value={editForm.level}
                   onChange={(e) => updateEditField("level", e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder-slate-400"
-                  placeholder="VD: Platinum"
+                  placeholder={t('adminLoyalty.levelPlaceholder')}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Hệ số tích điểm</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.pointRate')}</label>
                   <input
                     type="number"
                     value={editForm.pointRate}
@@ -590,7 +592,7 @@ export function AdminLoyalty() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Đặt trước (ngày)</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.bookingWindow')}</label>
                   <input
                     type="number"
                     value={editForm.bookingWindow}
@@ -601,7 +603,7 @@ export function AdminLoyalty() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Điểm tối thiểu</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.minPoints')}</label>
                   <input
                     type="number"
                     value={editForm.minPointsRequired}
@@ -610,7 +612,7 @@ export function AdminLoyalty() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Điểm giữ hạng / 90n</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.maintenancePoints')}</label>
                   <input
                     type="number"
                     value={editForm.maintenancePoints}
@@ -625,14 +627,14 @@ export function AdminLoyalty() {
                   onClick={handleCancelTier}
                   className="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-semibold transition-colors"
                 >
-                  Hủy bỏ
+                  {t('adminLoyalty.cancel')}
                 </button>
                 <button
                   onClick={handleCreateTier}
                   disabled={isCreating}
                   className="w-2/3 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
                 >
-                  {isCreating ? "Đang xử lý..." : "Khởi tạo hạng"}
+                  {isCreating ? t('adminLoyalty.creating') : t('adminLoyalty.createTier')}
                 </button>
               </div>
             </div>
@@ -648,7 +650,7 @@ export function AdminLoyalty() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-slate-100">
             <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
               <h4 className="text-lg font-bold text-blue-950 tracking-tight">
-                {isAddingReward ? "Tạo phần thưởng đổi điểm mới" : "Cập nhật thông số phần thưởng"}
+                {isAddingReward ? t('adminLoyalty.addRewardTitle') : t('adminLoyalty.editRewardTitle')}
               </h4>
               <button
                 onClick={handleCancelReward}
@@ -659,28 +661,28 @@ export function AdminLoyalty() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tên quà tặng/voucher</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.rewardName')}</label>
                 <input
                   type="text"
                   value={rewardForm.name}
                   onChange={(e) => updateRewardField("name", e.target.value)}
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all placeholder-slate-400"
-                  placeholder="VD: Voucher giảm giá dịch vụ 100k"
+                  placeholder={t('adminLoyalty.rewardNamePlaceholder')}
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mô tả ngắn</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.rewardDesc')}</label>
                 <textarea
                   value={rewardForm.description}
                   onChange={(e) => updateRewardField("description", e.target.value)}
                   rows={2}
                   className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none resize-none transition-all placeholder-slate-400"
-                  placeholder="VD: Áp dụng cho mọi hóa đơn thanh toán trực tuyến..."
+                  placeholder={t('adminLoyalty.rewardDescPlaceholder')}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Giá quy đổi (Points)</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.pointsCost')}</label>
                   <input
                     type="number"
                     value={rewardForm.pointsCost}
@@ -689,7 +691,7 @@ export function AdminLoyalty() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mệnh giá giảm (VNĐ)</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.discountAmount')}</label>
                   <input
                     type="number"
                     value={rewardForm.discountAmount}
@@ -711,7 +713,7 @@ export function AdminLoyalty() {
                     htmlFor="reward-active-modal"
                     className="text-sm font-semibold text-slate-700 select-none cursor-pointer"
                   >
-                    Cho phép người dùng nhìn thấy công khai và đổi quà
+                    {t('adminLoyalty.allowPublic')}
                   </label>
                 </div>
               )}
@@ -721,7 +723,7 @@ export function AdminLoyalty() {
                   onClick={handleCancelReward}
                   className="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-semibold transition-colors"
                 >
-                  Hủy
+                  {t('adminLoyalty.cancel')}
                 </button>
                 <button
                   onClick={isAddingReward ? handleCreateReward : handleSaveReward}
@@ -729,10 +731,10 @@ export function AdminLoyalty() {
                   className="w-2/3 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
                 >
                   {isCreatingReward || isUpdatingReward
-                    ? "Đang ghi nhận..."
+                    ? t('adminLoyalty.creating')
                     : isAddingReward
-                      ? "Phát hành ngay"
-                      : "Lưu thay đổi"}
+                      ? t('adminLoyalty.createReward')
+                      : t('adminLoyalty.saveChanges')}
                 </button>
               </div>
             </div>

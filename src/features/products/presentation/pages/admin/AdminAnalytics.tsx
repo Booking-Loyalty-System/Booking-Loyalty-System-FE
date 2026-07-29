@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAdminDashboard } from '../../../application/useAdminDashboard';
 import { DollarSign, BarChart3, Loader2 } from 'lucide-react';
 import {
@@ -15,6 +16,7 @@ import {
 } from 'recharts';
 
 export function AdminAnalytics() {
+  const { t } = useTranslation('customer');
   const { chartData, analyticsData, filters, setFilters, isLoading, isError } = useAdminDashboard();
 
   // Tạo danh sách các Chi nhánh độc nhất để map màu sắc linh hoạt cho Bar Chart
@@ -81,7 +83,7 @@ export function AdminAnalytics() {
   if (isError) {
     return (
       <div className="p-6 text-center text-red-500 font-semibold">
-        Đã có lỗi xảy ra khi tải dữ liệu thống kê. Vui lòng thử lại sau!
+        {t('adminAnalytics.errorLoading')}
       </div>
     );
   }
@@ -91,8 +93,8 @@ export function AdminAnalytics() {
       {/* Header & Filter Controls */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Phân Tích Doanh Thu</h3>
-          <p className="text-gray-500">Theo dõi dòng tiền và hiệu suất hoạt động kinh doanh</p>
+          <h3 className="text-2xl font-bold text-gray-900">{t('adminAnalytics.title')}</h3>
+          <p className="text-gray-500">{t('adminAnalytics.subtitle')}</p>
         </div>
 
         {/* Bộ lọc Dynamic */}
@@ -110,9 +112,9 @@ export function AdminAnalytics() {
             }}
             className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="MONTH">Xem theo Tháng</option>
-            <option value="QUARTER">Xem theo Quý</option>
-            <option value="YEAR">Xem theo Năm</option>
+            <option value="MONTH">{t('adminAnalytics.viewByMonth')}</option>
+            <option value="QUARTER">{t('adminAnalytics.viewByQuarter')}</option>
+            <option value="YEAR">{t('adminAnalytics.viewByYear')}</option>
           </select>
 
           {/* Chọn Giá trị cụ thể đi kèm (Tháng hoặc Quý) */}
@@ -123,7 +125,7 @@ export function AdminAnalytics() {
               className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>Tháng {i + 1}</option>
+                <option key={i + 1} value={i + 1}>{t('adminAnalytics.month', { n: i + 1 })}</option>
               ))}
             </select>
           )}
@@ -134,10 +136,10 @@ export function AdminAnalytics() {
               onChange={(e) => setFilters({ ...filters, value: Number(e.target.value) })}
               className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value={1}>Quý 1</option>
-              <option value={2}>Quý 2</option>
-              <option value={3}>Quý 3</option>
-              <option value={4}>Quý 4</option>
+              <option value={1}>{t('adminAnalytics.quarter', { n: 1 })}</option>
+              <option value={2}>{t('adminAnalytics.quarter', { n: 2 })}</option>
+              <option value={3}>{t('adminAnalytics.quarter', { n: 3 })}</option>
+              <option value={4}>{t('adminAnalytics.quarter', { n: 4 })}</option>
             </select>
           )}
 
@@ -148,7 +150,7 @@ export function AdminAnalytics() {
             className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {[2024, 2025, 2026, 2027].map((y) => (
-              <option key={y} value={y}>Năm {y}</option>
+              <option key={y} value={y}>{t('adminAnalytics.year', { n: y })}</option>
             ))}
           </select>
         </div>
@@ -161,7 +163,7 @@ export function AdminAnalytics() {
             <DollarSign className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Tổng doanh thu kỳ hiện tại</p>
+            <p className="text-sm font-medium text-gray-500">{t('adminAnalytics.currentPeriodRevenue')}</p>
             <p className="text-2xl font-bold text-gray-900">
               {analyticsData?.totalRevenue?.toLocaleString('vi-VN')} VND
             </p>
@@ -173,8 +175,8 @@ export function AdminAnalytics() {
             <BarChart3 className="w-6 h-6 text-purple-600" />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Số lượng phân đoạn ghi nhận</p>
-            <p className="text-2xl font-bold text-gray-900">{chartData?.length || 0} Điểm mốc</p>
+            <p className="text-sm font-medium text-gray-500">{t('adminAnalytics.recordedSegments')}</p>
+            <p className="text-2xl font-bold text-gray-900">{chartData?.length || 0} {t('adminAnalytics.dataPoints')}</p>
           </div>
         </div>
       </div>
@@ -184,7 +186,7 @@ export function AdminAnalytics() {
 
         {/* Biểu đồ Xu hướng Doanh thu (So với chu kỳ trước) */}
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h4 className="text-xl font-bold text-gray-900 mb-6">Xu Hướng Tăng Trưởng Doanh Thu</h4>
+          <h4 className="text-xl font-bold text-gray-900 mb-6">{t('adminAnalytics.revenueGrowthTrendTitle')}</h4>
           {/* Tăng chiều cao lên h-[500px] để kéo dãn trục đứng */}
           <div className="h-[500px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -200,8 +202,8 @@ export function AdminAnalytics() {
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 13 }} tickFormatter={(val) => `${(val / 1000000).toFixed(1)}M`} />
                 <Tooltip formatter={(value: any) => [`${Number(value).toLocaleString('vi-VN')} VND`]} />
                 <Legend verticalAlign="top" height={40} iconSize={16} wrapperStyle={{ fontSize: 14, fontWeight: 500 }} />
-                <Area type="monotone" name="Kỳ này" dataKey="currentPeriodRevenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#currentRevColor)" />
-                <Area type="monotone" name="Cùng kỳ năm ngoái" dataKey="previousPeriodRevenue" stroke="#9ca3af" strokeWidth={2} strokeDasharray="5 5" fill="none" />
+                <Area type="monotone" name={t('adminAnalytics.currentPeriod')} dataKey="currentPeriodRevenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#currentRevColor)" />
+                <Area type="monotone" name={t('adminAnalytics.previousPeriod')} dataKey="previousPeriodRevenue" stroke="#9ca3af" strokeWidth={2} strokeDasharray="5 5" fill="none" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -210,7 +212,7 @@ export function AdminAnalytics() {
         {/* Biểu đồ Cột Chồng Phân Rã Theo Chi Nhánh */}
         {/* Biểu đồ Cột Nhóm Phân Rã Theo Chi Nhánh (Đứng kế nhau) */}
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h4 className="text-xl font-bold text-gray-900 mb-6">Doanh Thu Chi Tiết Theo Chi Nhánh</h4>
+          <h4 className="text-xl font-bold text-gray-900 mb-6">{t('adminAnalytics.revenueByBranchTitle')}</h4>
 
           {/* Bọc thêm một lớp div hỗ trợ cuộn ngang tự động nếu dữ liệu quá dày (ví dụ 31 ngày) */}
           <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
