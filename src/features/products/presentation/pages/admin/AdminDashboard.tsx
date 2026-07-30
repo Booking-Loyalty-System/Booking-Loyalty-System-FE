@@ -42,6 +42,9 @@ export function AdminDashboard() {
     compareToDate: "2026-05-31",
   });
 
+  const [tempDateFilter, setTempDateFilter] = useState({ ...dateFilter });
+  const [dateError, setDateError] = useState<string | null>(null);
+
   const {
     summary,
     recentBookings,
@@ -100,7 +103,27 @@ export function AdminDashboard() {
   };
 
   const handleDateChange = (field: keyof typeof dateFilter, value: string) => {
-    setDateFilter((prev) => ({ ...prev, [field]: value }));
+    setTempDateFilter((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleApplyFilter = () => {
+    const from = new Date(tempDateFilter.fromDate);
+    const to = new Date(tempDateFilter.toDate);
+    const compareFrom = new Date(tempDateFilter.compareFromDate);
+    const compareTo = new Date(tempDateFilter.compareToDate);
+
+    if (isNaN(from.getTime()) || isNaN(to.getTime()) || isNaN(compareFrom.getTime()) || isNaN(compareTo.getTime())) {
+      setDateError(t('adminDashboard.revenueComparison.invalidDateError', { defaultValue: 'Vui lòng nhập đầy đủ ngày hợp lệ.' }));
+      return;
+    }
+
+    if (from > to || compareFrom > compareTo) {
+      setDateError(t('adminDashboard.revenueComparison.dateOrderError', { defaultValue: 'Bạn đã nhập sai thứ tự, hãy nhập đúng thứ tự!' }));
+      return;
+    }
+
+    setDateError(null);
+    setDateFilter(tempDateFilter);
   };
 
   if (isLoading) {
@@ -177,45 +200,64 @@ export function AdminDashboard() {
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">{t('adminDashboard.revenueComparison.subtitle', { defaultValue: 'So sánh đối soát doanh thu dựa trên các khoảng thời gian tùy chọn' })}</p>
 
           {/* Form chọn khoảng mốc ngày */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 p-6 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
-            {/* Cụm Kỳ Này */}
-            <div className="space-y-3">
-              <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest block">{t('adminDashboard.revenueComparison.currentPeriod', { defaultValue: 'Kỳ muốn coi (Kỳ này)' })}</span>
-              <div className="flex items-center gap-3">
-                <input
-                  type="date"
-                  value={dateFilter.fromDate}
-                  onChange={(e) => handleDateChange('fromDate', e.target.value)}
-                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
-                />
-                <span className="text-slate-400 text-xs font-black uppercase">{t('adminDashboard.revenueComparison.to', { defaultValue: 'đến' })}</span>
-                <input
-                  type="date"
-                  value={dateFilter.toDate}
-                  onChange={(e) => handleDateChange('toDate', e.target.value)}
-                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
-                />
+          <div className="flex flex-col gap-4 mt-6 p-6 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Cụm Kỳ Này */}
+              <div className="space-y-3">
+                <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest block">{t('adminDashboard.revenueComparison.currentPeriod', { defaultValue: 'Kỳ muốn coi (Kỳ này)' })}</span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="date"
+                    value={tempDateFilter.fromDate}
+                    onChange={(e) => handleDateChange('fromDate', e.target.value)}
+                    className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                  />
+                  <span className="text-slate-400 text-xs font-black uppercase">{t('adminDashboard.revenueComparison.to', { defaultValue: 'đến' })}</span>
+                  <input
+                    type="date"
+                    value={tempDateFilter.toDate}
+                    onChange={(e) => handleDateChange('toDate', e.target.value)}
+                    className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Cụm Kỳ Trước */}
+              <div className="space-y-3">
+                <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block">{t('adminDashboard.revenueComparison.previousPeriod', { defaultValue: 'Kỳ đối chứng (Kỳ trước)' })}</span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="date"
+                    value={tempDateFilter.compareFromDate}
+                    onChange={(e) => handleDateChange('compareFromDate', e.target.value)}
+                    className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 focus:ring-4 focus:ring-slate-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                  />
+                  <span className="text-slate-400 text-xs font-black uppercase">{t('adminDashboard.revenueComparison.to', { defaultValue: 'đến' })}</span>
+                  <input
+                    type="date"
+                    value={tempDateFilter.compareToDate}
+                    onChange={(e) => handleDateChange('compareToDate', e.target.value)}
+                    className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 focus:ring-4 focus:ring-slate-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Cụm Kỳ Trước */}
-            <div className="space-y-3">
-              <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block">{t('adminDashboard.revenueComparison.previousPeriod', { defaultValue: 'Kỳ đối chứng (Kỳ trước)' })}</span>
-              <div className="flex items-center gap-3">
-                <input
-                  type="date"
-                  value={dateFilter.compareFromDate}
-                  onChange={(e) => handleDateChange('compareFromDate', e.target.value)}
-                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 focus:ring-4 focus:ring-slate-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
-                />
-                <span className="text-slate-400 text-xs font-black uppercase">{t('adminDashboard.revenueComparison.to', { defaultValue: 'đến' })}</span>
-                <input
-                  type="date"
-                  value={dateFilter.compareToDate}
-                  onChange={(e) => handleDateChange('compareToDate', e.target.value)}
-                  className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 focus:ring-4 focus:ring-slate-500/10 font-bold text-slate-700 dark:text-slate-200 transition-all shadow-sm"
-                />
+            {/* Thông báo lỗi & nút Áp dụng */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-slate-100 dark:border-white/5">
+              <div className="flex-1">
+                {dateError && (
+                  <p className="text-sm font-bold text-rose-500 dark:text-rose-400 animate-pulse">
+                    {dateError}
+                  </p>
+                )}
               </div>
+              <button
+                onClick={handleApplyFilter}
+                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 self-end sm:self-auto"
+              >
+                {t('adminDashboard.revenueComparison.applyBtn', { defaultValue: 'Áp dụng đối soát' })}
+              </button>
             </div>
           </div>
         </div>
