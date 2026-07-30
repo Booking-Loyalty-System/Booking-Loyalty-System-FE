@@ -17,6 +17,8 @@ import {
   X,
   ShieldCheck,
   Loader2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useAuth } from "@/features/products/application/useAuth.ts";
 import { auth } from "@/firebase-config.ts";
@@ -947,48 +949,68 @@ const InputField: React.FC<InputFieldProps> = ({
   error,
   maxLength,
   inputMode,
-}) => (
-  <div className="space-y-2">
-    <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">
-      {label}
-    </label>
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === "password";
+  const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
-    <div className="relative group">
-      <span
-        className={`absolute inset-y-0 left-0 flex items-center pl-4 transition-colors ${
-          error
-            ? "text-rose-500"
-            : "text-slate-400 group-focus-within:text-blue-500"
-        }`}
-      >
-        {React.cloneElement(icon, {
-          className: "w-5 h-5",
-        } as React.SVGProps<SVGSVGElement>)}
-      </span>
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">
+        {label}
+      </label>
 
-      <input
-        type={type}
-        value={value}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange(e.target.value)
-        }
-        placeholder={placeholder}
-        required={required}
-        maxLength={maxLength}
-        inputMode={inputMode}
-        aria-invalid={Boolean(error)}
-        className={`w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border rounded-2xl text-base text-blue-950 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all font-medium ${
-          error
-            ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/10"
-            : "border-slate-200 dark:border-white/10 focus:border-blue-500 focus:ring-blue-500/10"
-        }`}
-      />
+      <div className="relative group">
+        <span
+          className={`absolute inset-y-0 left-0 flex items-center pl-4 transition-colors ${
+            error
+              ? "text-rose-500"
+              : "text-slate-400 group-focus-within:text-blue-500"
+          }`}
+        >
+          {React.cloneElement(icon, {
+            className: "w-5 h-5",
+          } as React.SVGProps<SVGSVGElement>)}
+        </span>
+
+        <input
+          type={inputType}
+          value={value}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange(e.target.value)
+          }
+          placeholder={placeholder}
+          required={required}
+          maxLength={maxLength}
+          inputMode={inputMode}
+          aria-invalid={Boolean(error)}
+          className={`w-full pl-11 ${isPassword ? 'pr-12' : 'pr-4'} py-3.5 bg-slate-50 dark:bg-white/5 border rounded-2xl text-base text-blue-950 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all font-medium ${
+            error
+              ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500/10"
+              : "border-slate-200 dark:border-white/10 focus:border-blue-500 focus:ring-blue-500/10"
+          }`}
+        />
+
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-blue-500 transition-colors focus:outline-none"
+          >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <p className="text-sm font-semibold text-rose-500 dark:text-rose-400">
+          {error}
+        </p>
+      )}
     </div>
-
-    {error && (
-      <p className="text-sm font-semibold text-rose-500 dark:text-rose-400">
-        {error}
-      </p>
-    )}
-  </div>
-);
+  );
+};
