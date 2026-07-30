@@ -216,7 +216,7 @@ export const LoyaltyTier: React.FC = () => {
                 })}
               </span>
               <span className="text-blue-950 dark:text-white font-bold">
-                {totalPoints >= 1000
+                {totalPoints >= 15000
                   ? t("loyaltyTier.maxTierReached", {
                       defaultValue: "Max Tier Reached",
                     })
@@ -245,7 +245,9 @@ export const LoyaltyTier: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-sky-300/60 dark:border-white/10 relative z-10">
             <div className="bg-white/70 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-sky-300/70 dark:border-white/10 shadow-sm">
               <TrendingUp className="w-5 h-5 mx-auto mb-1 text-sky-500 dark:text-slate-400" />
-              <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{availablePoints}</p>
+              <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">
+                {availablePoints}
+              </p>
               <p className="text-xs text-sky-600 dark:text-slate-400">
                 {t("loyaltyTier.availablePoints", {
                   defaultValue: "Available Points",
@@ -511,7 +513,7 @@ export const LoyaltyTier: React.FC = () => {
                         className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-colors"
                       >
                         <td className="py-4 px-6 font-medium text-slate-400 dark:text-slate-500">
-                          {new Date(tx.date).toLocaleDateString('vi-VN')}
+                          {new Date(tx.date).toLocaleDateString("vi-VN")}
                         </td>
                         <td className="py-4 px-6 font-semibold text-slate-800 dark:text-white">
                           {(() => {

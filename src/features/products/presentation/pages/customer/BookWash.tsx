@@ -461,6 +461,62 @@ export const BookWash: React.FC = () => {
   }, [selectedPackageId, selectedVoucher]);
 
   // 5. Handlers
+  const validateNewVehicle = () => {
+    const normalizedPlate = vehicleFormData.licensePlate.trim().toUpperCase();
+
+    if (!normalizedPlate) {
+      toast.error(
+        t("bookWash.vehicle.licensePlateRequired", {
+          defaultValue: "Biển số xe không được để trống.",
+        }),
+      );
+      return null;
+    }
+
+    if (normalizedPlate.length > 20) {
+      toast.error(
+        t("bookWash.vehicle.licensePlateTooLong", {
+          defaultValue: "Biển số xe không được vượt quá 20 ký tự.",
+        }),
+      );
+      return null;
+    }
+
+    if (!["Small", "Medium", "Large"].includes(vehicleFormData.type)) {
+      toast.error(
+        t("bookWash.vehicle.invalidType", {
+          defaultValue: "Loại xe phải là Small, Medium hoặc Large.",
+        }),
+      );
+      return null;
+    }
+
+    if (vehicles.length >= 5) {
+      toast.error(
+        t("bookWash.vehicle.maxVehicles", {
+          defaultValue: "Mỗi khách hàng chỉ được lưu tối đa 5 xe.",
+        }),
+      );
+      return null;
+    }
+
+    const duplicatedPlate = vehicles.some(
+      (vehicle: Vehicle) =>
+        vehicle.licensePlate?.trim().toUpperCase() === normalizedPlate,
+    );
+
+    if (duplicatedPlate) {
+      toast.error(
+        t("bookWash.vehicle.duplicatePlate", {
+          defaultValue: "Biển số xe này đã tồn tại.",
+        }),
+      );
+      return null;
+    }
+
+    return normalizedPlate;
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -484,10 +540,19 @@ export const BookWash: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const normalizedPlate = validateNewVehicle();
+    if (!normalizedPlate) return;
+
     setIsCreating(true);
     try {
       await createVehicle({
         ...vehicleFormData,
+        licensePlate: normalizedPlate,
+        brand: vehicleFormData.brand.trim(),
+        vehicleName: vehicleFormData.vehicleName.trim(),
+        model: vehicleFormData.model.trim(),
+        color: vehicleFormData.color.trim(),
         vehicleType: vehicleFormData.type,
       });
       setVehicleFormData({
@@ -505,6 +570,80 @@ export const BookWash: React.FC = () => {
     } finally {
       setIsCreating(false);
     }
+  };
+
+  // Lấy message lỗi từ API và nhận diện trường hợp cùng một xe đã đặt cùng ngày/khung giờ.
+  // Backend vẫn phải là nơi validate chính để tránh 2 request đồng thời tạo booking trùng nhau.
+  const getBookingErrorMessage = (error: unknown): string => {
+    if (!error || typeof error !== "object") {
+      return t("bookWash.toastBookingError", {
+        defaultValue: "Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại.",
+      });
+    }
+
+    const apiError = error as {
+      message?: string;
+      response?: {
+        status?: number;
+        data?:
+          | string
+          | {
+              message?: string;
+              error?: string;
+              title?: string;
+            };
+      };
+    };
+
+    const responseData = apiError.response?.data;
+
+    const serverMessage =
+      typeof responseData === "string"
+        ? responseData
+        : responseData?.message ||
+          responseData?.error ||
+          responseData?.title ||
+          apiError.message ||
+          "";
+
+    const normalizedMessage = serverMessage.toLowerCase();
+    const status = apiError.response?.status;
+
+    const mentionsVehicle =
+      normalizedMessage.includes("vehicle") ||
+      normalizedMessage.includes("car") ||
+      normalizedMessage.includes("xe");
+
+    const mentionsTime =
+      normalizedMessage.includes("slot") ||
+      normalizedMessage.includes("time") ||
+      normalizedMessage.includes("khung giờ") ||
+      normalizedMessage.includes("giờ");
+
+    const mentionsDuplicate =
+      normalizedMessage.includes("already") ||
+      normalizedMessage.includes("duplicate") ||
+      normalizedMessage.includes("conflict") ||
+      normalizedMessage.includes("exist") ||
+      normalizedMessage.includes("đã đặt") ||
+      normalizedMessage.includes("trùng");
+
+    if (
+      (status === 409 && mentionsVehicle && mentionsTime) ||
+      (mentionsVehicle && mentionsTime && mentionsDuplicate)
+    ) {
+      return t("bookWash.toastVehicleSlotConflict", {
+        defaultValue:
+          "Xe này đã có lịch đặt trong cùng ngày và khung giờ. Vui lòng chọn khung giờ khác.",
+      });
+    }
+
+    return (
+      serverMessage ||
+      t("bookWash.toastBookingError", {
+        defaultValue: "Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại.",
+      })
+    );
   };
 
   const handleConfirmBooking = async () => {
@@ -526,15 +665,78 @@ export const BookWash: React.FC = () => {
           defaultValue: "Vui lòng chọn gói rửa xe!",
         }),
       );
+    if (!selectedDate)
+      return toast.error(
+        t("bookWash.toastNoDate", {
+          defaultValue: "Vui lòng chọn ngày đặt lịch!",
+        }),
+      );
     if (!selectedTime)
       return toast.error(
         t("bookWash.toastNoTime", { defaultValue: "Vui lòng chọn khung giờ!" }),
       );
 
+    if (!currentVehicle) {
+      return toast.error(
+        t("bookWash.toastInvalidVehicle", {
+          defaultValue: "Xe đã chọn không còn hợp lệ. Vui lòng chọn lại.",
+        }),
+      );
+    }
+
+    if (!currentPackage) {
+      return toast.error(
+        t("bookWash.toastInvalidPackage", {
+          defaultValue: "Gói rửa đã chọn không còn hợp lệ. Vui lòng chọn lại.",
+        }),
+      );
+    }
+
+    if (!selectedDateSlot) {
+      return toast.error(
+        t("bookWash.toastInvalidDate", {
+          defaultValue:
+            "Ngày đã chọn không hợp lệ hoặc vượt quá thời gian đặt trước của hạng thành viên.",
+        }),
+      );
+    }
+
+    const today = new Date();
+    const bookingDay = new Date(`${selectedDate}T00:00:00`);
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+
+    if (Number.isNaN(bookingDay.getTime()) || bookingDay < startOfToday) {
+      return toast.error(
+        t("bookWash.toastPastDate", {
+          defaultValue: "Ngày đặt lịch không được nằm trong quá khứ.",
+        }),
+      );
+    }
+
+    const apiStartTime = convertTo24HourFormat(selectedTime);
+    const startTimeWithSeconds =
+      apiStartTime.split(":").length === 2
+        ? `${apiStartTime}:00`
+        : apiStartTime;
+    const bookingStart = new Date(`${selectedDate}T${startTimeWithSeconds}`);
+
+    if (
+      !Number.isNaN(bookingStart.getTime()) &&
+      bookingStart.getTime() <= Date.now()
+    ) {
+      return toast.error(
+        t("bookWash.toastPastTime", {
+          defaultValue: "Giờ đặt lịch phải ở tương lai.",
+        }),
+      );
+    }
+
     setIsCreating(true);
     try {
-      const apiStartTime = convertTo24HourFormat(selectedTime);
-
       const newBookingData = await createBooking({
         vehicleId: selectedVehicleId,
         branchId: selectedBranchId,
@@ -548,11 +750,7 @@ export const BookWash: React.FC = () => {
       setCreatedBooking(newBookingData as unknown as CreatedBookingData);
     } catch (err) {
       console.error("Booking failed:", err);
-      toast.error(
-        t("bookWash.toastBookingError", {
-          defaultValue: "Đã xảy ra lỗi khi tạo lịch đặt, vui lòng thử lại.",
-        }),
-      );
+      toast.error(getBookingErrorMessage(err));
     } finally {
       setIsCreating(false);
     }
