@@ -69,24 +69,62 @@ export const ProfileSettings: React.FC = () => {
   }, [customerMe, user, isEditing]);
 
   const handleSave = async () => {
-    if (!formData.fullName.trim() || !formData.phoneNumber.trim()) {
+    const normalizedFullName = formData.fullName.trim();
+    const normalizedPhone = formData.phoneNumber.trim();
+
+    if (!normalizedFullName || !normalizedPhone) {
       toast.error(
         t("settings.toast.fillRequired", {
-          defaultValue: "Please fill in all required fields",
+          defaultValue: "Vui lòng nhập đầy đủ họ tên và số điện thoại.",
         }),
       );
       return;
     }
 
+    if (normalizedFullName.length > 100) {
+      toast.error(
+        t("settings.toast.fullNameTooLong", {
+          defaultValue: "Họ và tên không được vượt quá 100 ký tự.",
+        }),
+      );
+      return;
+    }
+
+    // Theo yêu cầu FE: số điện thoại dạng nội địa Việt Nam, đúng 10 chữ số.
+    if (!/^0\d{9}$/.test(normalizedPhone)) {
+      toast.error(
+        t("settings.toast.invalidPhone", {
+          defaultValue:
+            "Số điện thoại phải gồm đúng 10 chữ số và bắt đầu bằng 0.",
+        }),
+      );
+      return;
+    }
+
+    if (formData.dateOfBirth) {
+      const selectedDate = new Date(`${formData.dateOfBirth}T00:00:00`);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (Number.isNaN(selectedDate.getTime()) || selectedDate > today) {
+        toast.error(
+          t("settings.toast.invalidDob", {
+            defaultValue: "Ngày sinh không hợp lệ hoặc nằm trong tương lai.",
+          }),
+        );
+        return;
+      }
+    }
+
     try {
-      // Ép chuẩn định dạng ngày tháng sang ISO 8601 (có đuôi T00:00:00.000Z) để Backend C# dễ dàng parse thành DateTime
+      // Ép chuẩn định dạng ngày tháng sang ISO 8601 để Backend C# parse thành DateTime.
       const formattedDate = formData.dateOfBirth
         ? `${formData.dateOfBirth}T00:00:00.000Z`
         : null;
 
       await updateCustomer({
-        fullName: formData.fullName,
-        phoneNumber: formData.phoneNumber,
+        fullName: normalizedFullName,
+        phoneNumber: normalizedPhone,
         dateOfBirth: formattedDate,
       });
 
@@ -128,19 +166,28 @@ export const ProfileSettings: React.FC = () => {
       return;
     }
 
-    if (newPassword !== confirmPassword) {
+    if (newPassword.length < 6) {
       toast.error(
-        t("settings.toast.passwordMismatch", {
-          defaultValue: "New passwords do not match",
+        t("settings.toast.passwordLength", {
+          defaultValue: "Mật khẩu mới phải có ít nhất 6 ký tự.",
         }),
       );
       return;
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword === currentPassword) {
       toast.error(
-        t("settings.toast.passwordLength", {
-          defaultValue: "Password must be at least 6 characters long",
+        t("settings.toast.passwordSameAsCurrent", {
+          defaultValue: "Mật khẩu mới phải khác mật khẩu hiện tại.",
+        }),
+      );
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error(
+        t("settings.toast.passwordMismatch", {
+          defaultValue: "Mật khẩu xác nhận không khớp.",
         }),
       );
       return;
@@ -259,6 +306,7 @@ export const ProfileSettings: React.FC = () => {
                       fullName: e.target.value,
                     }))
                   }
+                  maxLength={100}
                   className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${
                     isEditing
                       ? "bg-white dark:bg-black/20 border-blue-300 dark:border-blue-500 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20"
@@ -283,9 +331,13 @@ export const ProfileSettings: React.FC = () => {
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      phoneNumber: e.target.value,
+                      phoneNumber: e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 10),
                     }))
                   }
+                  inputMode="numeric"
+                  maxLength={10}
                   className={`w-full border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none transition-colors ${
                     isEditing
                       ? "bg-white dark:bg-black/20 border-blue-300 dark:border-blue-500 text-slate-800 dark:text-slate-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20"
@@ -305,6 +357,7 @@ export const ProfileSettings: React.FC = () => {
                   type="date"
                   readOnly={!isEditing}
                   value={formData.dateOfBirth}
+                  max={new Date().toISOString().split("T")[0]}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
