@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   DollarSign,
@@ -8,8 +8,6 @@ import {
   Award,
   Megaphone,
   Download,
-  Settings,
-  Save,
   ArrowDownRight,
   ArrowUpRight,
 } from "lucide-react";
@@ -47,42 +45,17 @@ export function AdminDashboard() {
 
   const {
     summary,
-    tierConfig: serverTierConfig,
     revenueComparison,
     isLoading,
     isError,
-    updateTierConfig,
-    isUpdatingTierConfig,
     exportRbl
   } = useAdminDashboard(dateFilter);
-
-  const [tierConfigState, setTierConfigState] = useState({
-    memberMultiplier: 1,
-    silverMultiplier: 1.5,
-    goldMultiplier: 2,
-    platinumMultiplier: 3,
-  });
-
-  useEffect(() => {
-    if (serverTierConfig) {
-      setTierConfigState({
-        memberMultiplier: serverTierConfig.memberMultiplier,
-        silverMultiplier: serverTierConfig.silverMultiplier,
-        goldMultiplier: serverTierConfig.goldMultiplier,
-        platinumMultiplier: serverTierConfig.platinumMultiplier,
-      });
-    }
-  }, [serverTierConfig]);
-
 
 
   const handleExportRBL = async () => {
     await exportRbl();
   };
 
-  const handleSaveTierConfig = async () => {
-    await updateTierConfig(tierConfigState);
-  };
 
   const handleDateChange = (field: keyof typeof dateFilter, value: string) => {
     setTempDateFilter((prev) => ({ ...prev, [field]: value }));
@@ -140,7 +113,7 @@ export function AdminDashboard() {
 
   return (
     <div className="animate-fade-in space-y-8 text-blue-950 dark:text-slate-100 pb-12">
-      
+
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -354,7 +327,7 @@ export function AdminDashboard() {
                     <Cell key={`cell-${index}`} fill={entry.color || "#3b82f6"} />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
                   formatter={(value) => [`${value} customers`, "Count"]}
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', fontWeight: 'bold' }}
                 />
@@ -430,140 +403,7 @@ export function AdminDashboard() {
         </div>
       </div> */}
 
-      {/* Tier Configuration Panel */}
-      <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg p-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-              <Settings className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('adminDashboard.tierConfig.title', { defaultValue: 'Tier Rules & Configuration' })}</h3>
-              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-1">{t('adminDashboard.tierConfig.subtitle', { defaultValue: 'Quản lý hệ số nhân điểm cho các hạng thành viên' })}</p>
-            </div>
-          </div>
-          <button
-            onClick={handleSaveTierConfig}
-            disabled={isUpdatingTierConfig}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-blue-950 font-bold rounded-xl hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50"
-          >
-            <Save className="w-5 h-5" />
-            {isUpdatingTierConfig ? t('adminDashboard.tierConfig.saving', { defaultValue: 'Saving...' }) : t('adminDashboard.tierConfig.saveChanges', { defaultValue: 'Save Changes' })}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Member Tier Config */}
-          <div className="bg-slate-50 dark:bg-white/5 rounded-2xl p-6 border border-slate-100 dark:border-white/5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-slate-200/50 dark:bg-slate-700/20 rounded-bl-full -mr-4 -mt-4"></div>
-            <div className="flex items-center gap-3 mb-5 relative z-10">
-              <Award className="w-6 h-6 text-slate-500" />
-              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">{translateDynamic('Member', 'tier', t)}</h4>
-            </div>
-            <div className="space-y-4 relative z-10">
-              <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
-                <input type="text" value="0 - 299" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-500 opacity-70" />
-              </div>
-              <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
-                <input
-                  type="number"
-                  value={tierConfigState.memberMultiplier}
-                  onChange={(e) => setTierConfigState({ ...tierConfigState, memberMultiplier: parseFloat(e.target.value) || 0 })}
-                  step="0.1"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Silver Tier Config */}
-          <div className="bg-slate-100/80 dark:bg-slate-800/40 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-slate-300/50 dark:bg-slate-600/30 rounded-bl-full -mr-4 -mt-4"></div>
-            <div className="flex items-center gap-3 mb-5 relative z-10">
-              <Award className="w-6 h-6 text-slate-600 dark:text-slate-300" />
-              <h4 className="font-extrabold text-lg text-blue-950 dark:text-white">{translateDynamic('Silver', 'tier', t)}</h4>
-            </div>
-            <div className="space-y-4 relative z-10">
-              <div>
-                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
-                <input type="text" value="300 - 599" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-500 opacity-70" />
-              </div>
-              <div>
-                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
-                <input
-                  type="number"
-                  value={tierConfigState.silverMultiplier}
-                  onChange={(e) => setTierConfigState({ ...tierConfigState, silverMultiplier: parseFloat(e.target.value) || 0 })}
-                  step="0.1"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-blue-950 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Gold Tier Config */}
-          <div className="bg-amber-50 dark:bg-amber-500/10 rounded-2xl p-6 border border-amber-200 dark:border-amber-500/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-amber-200/50 dark:bg-amber-500/20 rounded-bl-full -mr-4 -mt-4"></div>
-            <div className="flex items-center gap-3 mb-5 relative z-10">
-              <Award className="w-6 h-6 text-amber-500" />
-              <h4 className="font-extrabold text-lg text-amber-700 dark:text-amber-400">{translateDynamic('Gold', 'tier', t)}</h4>
-            </div>
-            <div className="space-y-4 relative z-10">
-              <div>
-                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
-                <input type="text" value="600 - 999" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-amber-200 dark:border-amber-500/20 rounded-xl text-sm font-bold text-amber-600/70 dark:text-amber-400/70 opacity-70" />
-              </div>
-              <div>
-                <label className="text-[10px] font-black text-amber-600/70 dark:text-amber-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
-                <input
-                  type="number"
-                  value={tierConfigState.goldMultiplier}
-                  onChange={(e) => setTierConfigState({ ...tierConfigState, goldMultiplier: parseFloat(e.target.value) || 0 })}
-                  step="0.1"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-amber-200 dark:border-amber-500/20 rounded-xl text-sm font-bold text-amber-700 dark:text-amber-400 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Platinum Tier Config */}
-          <div className="bg-fuchsia-50 dark:bg-fuchsia-500/10 rounded-2xl p-6 border border-fuchsia-200 dark:border-fuchsia-500/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-fuchsia-200/50 dark:bg-fuchsia-500/20 rounded-bl-full -mr-4 -mt-4"></div>
-            <div className="flex items-center gap-3 mb-5 relative z-10">
-              <Award className="w-6 h-6 text-fuchsia-500" />
-              <h4 className="font-extrabold text-lg text-fuchsia-700 dark:text-fuchsia-400">{translateDynamic('Platinum', 'tier', t)}</h4>
-            </div>
-            <div className="space-y-4 relative z-10">
-              <div>
-                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsRange', { defaultValue: 'Points Range' })}</label>
-                <input type="text" value="1000+" disabled className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-fuchsia-200 dark:border-fuchsia-500/20 rounded-xl text-sm font-bold text-fuchsia-600/70 dark:text-fuchsia-400/70 opacity-70" />
-              </div>
-              <div>
-                <label className="text-[10px] font-black text-fuchsia-600/70 dark:text-fuchsia-400/70 uppercase tracking-widest mb-1.5 block">{t('adminDashboard.tierConfig.pointsMultiplier', { defaultValue: 'Points Multiplier' })}</label>
-                <input
-                  type="number"
-                  value={tierConfigState.platinumMultiplier}
-                  onChange={(e) => setTierConfigState({ ...tierConfigState, platinumMultiplier: parseFloat(e.target.value) || 0 })}
-                  step="0.1"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-black/20 border border-fuchsia-200 dark:border-fuchsia-500/20 rounded-xl text-sm font-bold text-fuchsia-700 dark:text-fuchsia-400 focus:outline-none focus:border-fuchsia-500 focus:ring-4 focus:ring-fuchsia-500/20 transition-all"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 p-5 bg-blue-50/50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-xl flex items-start gap-3">
-          <div className="bg-blue-100 dark:bg-blue-500/30 p-1.5 rounded-lg shrink-0 mt-0.5">
-            <Settings className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          </div>
-          <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">
-            <span className="font-extrabold uppercase tracking-widest text-[10px]">{t('adminDashboard.tierConfig.formulaTitle', { defaultValue: 'Công thức:' })}</span><br/>
-            {t('adminDashboard.tierConfig.formulaDesc', { defaultValue: 'Điểm nhận được = (Tổng tiền thanh toán / 1000) × Hệ số hạng (Tier Multiplier). Việc thay đổi hệ số chỉ áp dụng cho các giao dịch trong tương lai.' })}
-          </p>
-        </div>
-      </div>
+      {/* Tier Configuration Panel - hidden */}
 
       {/* Quick Actions */}
       <div>
