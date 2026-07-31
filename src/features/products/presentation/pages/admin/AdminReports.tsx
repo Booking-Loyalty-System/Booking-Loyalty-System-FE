@@ -4,14 +4,17 @@ import {
   FileText,
   FileSpreadsheet,
   Calendar,
+  Loader2,
 } from "lucide-react";
 import { RevenueComparisonCard } from "../../components/RevenueComparisonCard";
+import { useAdminReport } from "../../../application/useAdminReport";
 
 // Định nghĩa các kiểu filter nhanh
 type FilterMode = "custom" | "month" | "quarter" | "year";
 
 export function AdminReports() {
   const { t } = useTranslation("customer");
+  const { isExportingExcel, exportRevenueExcel } = useAdminReport();
   const [dateFilter, setDateFilter] = useState({
     fromDate: "2026-06-01",
     toDate: "2026-07-30",
@@ -104,7 +107,7 @@ export function AdminReports() {
   const getYear = (dateString: string) => dateString.split("-")[0];
 
   const handleExportPDF = () => alert("Exporting report as PDF...");
-  const handleExportExcel = () => alert("Exporting report as Excel...");
+  const handleExportExcel = () => exportRevenueExcel(dateFilter);
 
   return (
     <div className="p-6 space-y-8 animate-fade-in">
@@ -121,8 +124,17 @@ export function AdminReports() {
             <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
               <FileText className="w-4 h-4" /> {t('adminReports.exportPDF')}
             </button>
-            <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
-              <FileSpreadsheet className="w-4 h-4" /> {t('adminReports.exportExcel')}
+            <button
+              onClick={handleExportExcel}
+              disabled={isExportingExcel}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isExportingExcel ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileSpreadsheet className="w-4 h-4" />
+              )}
+              {isExportingExcel ? "Đang xuất..." : t('adminReports.exportExcel')}
             </button>
           </div>
         </div>

@@ -401,8 +401,8 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* Recent Bookings */}
-      <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg overflow-hidden">
+      {/* Recent Bookings - hidden */}
+      {/* <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg overflow-hidden">
         <div className="p-8 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
           <h3 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white">{t('adminDashboard.recentBookings.title', { defaultValue: 'Recent Bookings' })}</h3>
         </div>
@@ -446,7 +446,7 @@ export function AdminDashboard() {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> */}
 
       {/* Tier Configuration Panel */}
       <div className="bg-white/80 dark:bg-[#111]/80 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-lg p-8">
