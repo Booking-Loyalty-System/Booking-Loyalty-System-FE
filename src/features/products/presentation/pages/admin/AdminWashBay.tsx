@@ -1,0 +1,311 @@
+import { useState, useEffect, useCallback } from "react";
+import { Plus, Edit2, Trash2, Save, X, Layers, Search, AlertCircle, Filter } from "lucide-react";
+import { useWashBay } from "@/features/products/application/useWashBay";
+import { AdminBranchRepositoryImplement } from "../../../infrastructure/repositories/admin-branch/admin-branch.repository.implement";
+import type { BranchResponseData } from "../../../domain/models/admin-branch/admin-branch.model";
+
+const branchRepo = new AdminBranchRepositoryImplement();
+
+interface WashBay {
+    id: string;
+    name: string;
+    branchId: string;
+    status?: string;
+}
+
+export function AdminWashBay() {
+    const [branches, setBranches] = useState<BranchResponseData[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    // Thêm state để lưu trữ giá trị bộ lọc Chi nhánh hiện tại
+    const [filterBranchId, setFilterBranchId] = useState<string>("");
+
+    // Truyền filterBranchId vào hook. Nếu rỗng ("") thì hook sẽ lấy tất cả
+    const {
+        washBays = [],
+        createWashBay,
+        isCreatingWashBay,
+        updateWashBay,
+        deleteWashBay,
+        isLoading: isWashBayLoading
+    } = useWashBay(filterBranchId || undefined) as any;
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState<{ id?: string; name: string; branchId: string }>({
+        name: "",
+        branchId: "",
+    });
+
+    const [isLoadingBranches, setIsLoadingBranches] = useState(true);
+
+    const fetchBranches = useCallback(async () => {
+        try {
+            const data = await branchRepo.getAll();
+            setBranches(data);
+        } catch (error) {
+            console.error("Failed to fetch branches:", error);
+        } finally {
+            setIsLoadingBranches(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchBranches();
+    }, [fetchBranches]);
+
+    const handleAdd = () => {
+        setIsEditing(false);
+        setEditForm({ name: "", branchId: branches.length > 0 ? branches[0].id : "" });
+        setIsModalOpen(true);
+    };
+
+    const handleEdit = (washBay: WashBay) => {
+        setIsEditing(true);
+        setEditForm({ id: washBay.id, name: washBay.name, branchId: washBay.branchId });
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditForm({ name: "", branchId: "" });
+    };
+
+    const handleSave = async () => {
+        if (!editForm.name.trim() || !editForm.branchId) {
+            alert("Vui lòng nhập tên khoang rửa và chọn chi nhánh!");
+            return;
+        }
+
+        try {
+            if (isEditing && editForm.id) {
+                if (updateWashBay) {
+                    await updateWashBay(editForm.id, { name: editForm.name, branchId: editForm.branchId });
+                }
+            } else {
+                await createWashBay({ name: editForm.name, branchId: editForm.branchId });
+            }
+            handleCloseModal();
+        } catch (error) {
+            console.error("Lỗi khi lưu khoang rửa:", error);
+            alert("Có lỗi xảy ra khi lưu thông tin khoang rửa!");
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa khoang rửa này không?")) {
+            try {
+                if (deleteWashBay) {
+                    await deleteWashBay(id);
+                }
+            } catch (error) {
+                console.error("Lỗi khi xóa khoang rửa:", error);
+                alert("Có lỗi xảy ra khi xóa khoang rửa!");
+            }
+        }
+    };
+
+    // Chỉ cần lọc theo search query vì việc lọc theo branchId đã được React Query (API) xử lý
+    const filteredWashBays = washBays.filter((wb: WashBay) =>
+        wb.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        branches.find(b => b.id === wb.branchId)?.branchName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return (
+        <div className="p-6 space-y-6 animate-fade-in">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h3 className="text-2xl font-bold text-gray-900">Quản lý Khoang Rửa (Wash Bays)</h3>
+                    <p className="text-gray-500">Thêm, sửa, xóa các khoang rửa thuộc từng chi nhánh</p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                    {/* BỘ LỌC CHI NHÁNH */}
+                    <div className="relative flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
+                        <div className="pl-3 pr-2 text-gray-400">
+                            <Filter className="w-4 h-4" />
+                        </div>
+                        <select
+                            value={filterBranchId}
+                            onChange={(e) => setFilterBranchId(e.target.value)}
+                            className="py-2 pr-4 bg-transparent outline-none text-sm text-gray-700 cursor-pointer"
+                        >
+                            <option value="">Tất cả chi nhánh</option>
+                            {branches.map((branch) => (
+                                <option key={branch.id} value={branch.id}>
+                                    {branch.branchName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Ô TÌM KIẾM */}
+                    <div className="relative">
+                        <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Tìm kiếm khoang rửa..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-64 text-sm"
+                        />
+                    </div>
+
+                    <button
+                        onClick={handleAdd}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0 text-sm font-medium"
+                    >
+                        <Plus className="w-4 h-4" /> Thêm Khoang Rửa
+                    </button>
+                </div>
+            </div>
+
+            {/* BẢNG DỮ LIỆU */}
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm text-gray-600">
+                        <thead className="bg-gray-50 border-b border-gray-200 text-gray-700">
+                            <tr>
+                                <th className="px-6 py-4 font-semibold">Tên Khoang Rửa</th>
+                                <th className="px-6 py-4 font-semibold">Trực thuộc Chi Nhánh</th>
+                                <th className="px-6 py-4 font-semibold">Trạng thái</th>
+                                <th className="px-6 py-4 font-semibold text-right">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {isWashBayLoading || isLoadingBranches ? (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                                        <div className="flex justify-center items-center gap-2">
+                                            <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                            Đang tải dữ liệu...
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : filteredWashBays.length === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            <AlertCircle className="w-8 h-8 text-gray-400" />
+                                            <p>Không tìm thấy khoang rửa nào.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredWashBays.map((wb: WashBay) => {
+                                    const branchName = branches.find(b => b.id === wb.branchId)?.branchName || "Chi nhánh không xác định";
+                                    return (
+                                        <tr key={wb.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 font-medium text-gray-900 flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                                    <Layers className="w-4 h-4" />
+                                                </div>
+                                                {wb.name}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                                    {branchName}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="flex items-center gap-1.5 text-green-600 text-xs font-medium">
+                                                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                                    Hoạt động
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={() => handleEdit(wb)}
+                                                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                        title="Chỉnh sửa"
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(wb.id)}
+                                                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Xóa"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Modal Add/Edit */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-scale-up">
+                        <div className="flex items-center justify-between mb-6">
+                            <h4 className="text-xl font-bold text-gray-900">
+                                {isEditing ? "Chỉnh sửa Khoang Rửa" : "Thêm Khoang Rửa Mới"}
+                            </h4>
+                            <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Trực thuộc Chi Nhánh <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    value={editForm.branchId}
+                                    onChange={(e) => setEditForm({ ...editForm, branchId: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                    disabled={isLoadingBranches}
+                                >
+                                    <option value="" disabled>-- Chọn chi nhánh --</option>
+                                    {branches.map(branch => (
+                                        <option key={branch.id} value={branch.id}>
+                                            {branch.branchName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Tên Khoang Rửa <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editForm.name}
+                                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                    placeholder="VD: Khoang rửa 1, Khu A, VIP Bay..."
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-gray-100">
+                            <button
+                                onClick={handleCloseModal}
+                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                            >
+                                Hủy bỏ
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                disabled={isCreatingWashBay}
+                                className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                            >
+                                <Save className="w-4 h-4" />
+                                {isCreatingWashBay ? "Đang lưu..." : "Lưu lại"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
