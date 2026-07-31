@@ -27,6 +27,10 @@ export const BookingHistory: React.FC = () => {
   const [feedbackBooking, setFeedbackBooking] =
     useState<MyBookingRecord | null>(null);
 
+  // Pagination
+  const BOOKINGS_PER_PAGE = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [bookingToCancel, setBookingToCancel] =
     useState<MyBookingRecord | null>(null);
   const [cancelReason, setCancelReason] = useState<string>(
@@ -94,6 +98,12 @@ export const BookingHistory: React.FC = () => {
   const handleConfirmCancel = async () => {
     if (!bookingToCancel) return;
 
+    if (!["Pending", "Confirmed"].includes(bookingToCancel.status)) {
+      return toast.error(
+        "Only pending or confirmed bookings can be cancelled by customer.",
+      );
+    }
+
     // 1. Validation cho option Đổi Ngày Giờ
     if (cancelReason === "Want to change to another time slot or date") {
       if (!rescheduleData) {
@@ -111,7 +121,7 @@ export const BookingHistory: React.FC = () => {
     // 3. Chuẩn hóa Lý do cuối cùng để gửi lên API
     let finalReason = cancelReason;
     if (cancelReason === "Other reason") {
-      finalReason = customReason;
+      finalReason = customReason.trim();
     } else if (
       cancelReason === "Want to change to another time slot or date" &&
       rescheduleData
@@ -149,20 +159,29 @@ export const BookingHistory: React.FC = () => {
       </div>
     );
 
-  // Chỉ hiển thị đúng số booking thật của user (ẩn seed data)
-  const realCount = customerMe?.totalWashes ?? sortedBookings.length;
-  const displayedBookings = sortedBookings.slice(0, realCount);
-
+  // Hiển thị toàn bộ booking API trả về.
+  // Không dùng totalWashes để cắt danh sách vì totalWashes có thể chỉ tính
+  // các lượt đã hoàn thành/CheckedOut, nên sẽ làm mất các booking Pending/Cancelled...
+  const totalBookings = sortedBookings.length;
+  const totalPages = Math.max(1, Math.ceil(totalBookings / BOOKINGS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * BOOKINGS_PER_PAGE;
+  const endIndex = startIndex + BOOKINGS_PER_PAGE;
+  const displayedBookings = sortedBookings.slice(startIndex, endIndex);
 
   const stats = [
     {
-      title: t("bookingHistory.stats.totalBookings", { defaultValue: "Total Bookings" }),
+      title: t("bookingHistory.stats.totalBookings", {
+        defaultValue: "Total Bookings",
+      }),
       value: myBookings.length.toString(),
       icon: <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
       bg: "bg-blue-50/50 dark:bg-blue-500/10",
     },
     {
-      title: t("bookingHistory.stats.pointsEarned", { defaultValue: "Points Earned" }),
+      title: t("bookingHistory.stats.pointsEarned", {
+        defaultValue: "Points Earned",
+      }),
       value: (
         customerMe?.totalPoint ??
         customerMe?.totalPoints ??
@@ -173,7 +192,9 @@ export const BookingHistory: React.FC = () => {
     },
 
     {
-      title: t("bookingHistory.stats.totalSpent", { defaultValue: "Total Spent" }),
+      title: t("bookingHistory.stats.totalSpent", {
+        defaultValue: "Total Spent",
+      }),
       value: formatCurrency(customerMe?.totalSpent || 0),
       icon: (
         <DollarSign className="w-6 h-6 text-orange-600 dark:text-orange-400" />
@@ -454,6 +475,66 @@ export const BookingHistory: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {totalBookings > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/5">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t("bookingHistory.pagination.showing", {
+                defaultValue: `Showing ${startIndex + 1}-${Math.min(
+                  endIndex,
+                  totalBookings,
+                )} of ${totalBookings} bookings`,
+              })}
+            </p>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={safeCurrentPage === 1}
+                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {t("bookingHistory.pagination.previous", {
+                  defaultValue: "Previous",
+                })}
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, index) => {
+                  const pageNumber = index + 1;
+
+                  return (
+                    <button
+                      type="button"
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                        safeCurrentPage === pageNumber
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentPage((page) => Math.min(totalPages, page + 1))
+                }
+                disabled={safeCurrentPage === totalPages}
+                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {t("bookingHistory.pagination.next", {
+                  defaultValue: "Next",
+                })}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

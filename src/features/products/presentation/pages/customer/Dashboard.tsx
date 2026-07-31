@@ -58,7 +58,9 @@ export const Dashboard: React.FC = () => {
 
   const isMaxTier = totalPoint >= 15000 || tier.toLowerCase() === "diamond";
   const pointsToGo = Math.max(0, targetPoints - totalPoint);
-  const progressPercentage = isMaxTier ? 100 : (totalPoint / targetPoints) * 100;
+  const progressPercentage = isMaxTier
+    ? 100
+    : (totalPoint / targetPoints) * 100;
 
   const getMultiplier = (tierName: string) => {
     const tName = tierName.toLowerCase();
@@ -166,7 +168,7 @@ export const Dashboard: React.FC = () => {
     },
   ];
 
-  const backendCycleWashes = customerMe?.currentCycleWashes ?? (washesCount % 7);
+  const backendCycleWashes = customerMe?.currentCycleWashes ?? washesCount % 7;
 
   const [displayWashes, setDisplayWashes] = React.useState(() => {
     if (washesCount % 7 === 0 && washesCount > 0) {
@@ -183,7 +185,12 @@ export const Dashboard: React.FC = () => {
       const animatedKey = `animated_wash_${washesCount}`;
       if (!sessionStorage.getItem(animatedKey)) {
         setDisplayWashes(7);
-        toast.success(t("dashboard.freeWashAutoAddedToast", "🎉 Chúc mừng! Bạn đã đạt 7 lượt rửa xe. Voucher rửa xe miễn phí đã được tự động thêm vào tài khoản của bạn!"));
+        toast.success(
+          t(
+            "dashboard.freeWashAutoAddedToast",
+            "🎉 Chúc mừng! Bạn đã đạt 7 lượt rửa xe. Voucher rửa xe miễn phí đã được tự động thêm vào tài khoản của bạn!",
+          ),
+        );
         const timer = setTimeout(() => {
           setDisplayWashes(backendCycleWashes);
           sessionStorage.setItem(animatedKey, "true");
@@ -198,10 +205,28 @@ export const Dashboard: React.FC = () => {
   }, [washesCount, backendCycleWashes, t]);
 
   const currentCycleWashes = displayWashes;
-  const remainingWashes = 7 - (currentCycleWashes === 7 ? 7 : currentCycleWashes);
+  const remainingWashes =
+    7 - (currentCycleWashes === 7 ? 7 : currentCycleWashes);
   const washProgressPercentage = Math.round((currentCycleWashes / 7) * 100);
 
   const handleCancel = async (id: string) => {
+    const booking = myBookings.find((item) => item.id === id);
+
+    if (!booking) {
+      toast.error(t("dashboard.bookingNotFound", "Không tìm thấy lịch hẹn."));
+      return;
+    }
+
+    if (!["Pending", "Confirmed"].includes(booking.status)) {
+      toast.error(
+        t(
+          "dashboard.cancelInvalidStatus",
+          "Chỉ có thể hủy lịch đang chờ xác nhận hoặc đã xác nhận.",
+        ),
+      );
+      return;
+    }
+
     if (
       window.confirm(
         t("dashboard.cancelConfirm", "Bạn có chắc chắn muốn hủy lịch hẹn này?"),
@@ -308,7 +333,10 @@ export const Dashboard: React.FC = () => {
           <div className="w-full bg-emerald-200/50 dark:bg-slate-800/80 h-8 rounded-full overflow-hidden relative flex items-center p-1 border border-emerald-100 dark:border-white/5 shadow-inner">
             <div
               className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full flex items-center justify-end pr-4 transition-all duration-1000 ease-out shadow-sm"
-              style={{ width: `${washProgressPercentage}%`, minWidth: washProgressPercentage > 0 ? '2.5rem' : '0' }}
+              style={{
+                width: `${washProgressPercentage}%`,
+                minWidth: washProgressPercentage > 0 ? "2.5rem" : "0",
+              }}
             >
               {washProgressPercentage > 0 && (
                 <span className="text-xs font-black text-white drop-shadow-md">
@@ -388,7 +416,9 @@ export const Dashboard: React.FC = () => {
                   <h2 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-sky-500 dark:from-white dark:to-slate-400">
                     {isCustomerLoading
                       ? t("dashboard.loading", "Loading...")
-                      : t(`loyaltyTier.tiers.${tier.toLowerCase()}`, { defaultValue: `${tier} Member` })}
+                      : t(`loyaltyTier.tiers.${tier.toLowerCase()}`, {
+                          defaultValue: `${tier} Member`,
+                        })}
                   </h2>
                 </div>
               </div>
@@ -489,7 +519,7 @@ export const Dashboard: React.FC = () => {
                     </h4>
                     <p className="text-sm text-slate-500 font-bold mt-0.5">
                       {new Date(nextBooking.bookingDate).toLocaleDateString(
-                        i18n.language === 'en' ? 'en-US' : 'vi-VN',
+                        i18n.language === "en" ? "en-US" : "vi-VN",
                         {
                           weekday: "long",
                           year: "numeric",
@@ -525,12 +555,13 @@ export const Dashboard: React.FC = () => {
                       {t("dashboard.bookingStatus", "Status")}
                     </span>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase ${nextBooking.status === "Confirmed"
-                        ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
-                        : nextBooking.status === "Pending"
-                          ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
-                          : "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
-                        }`}
+                      className={`px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase ${
+                        nextBooking.status === "Confirmed"
+                          ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                          : nextBooking.status === "Pending"
+                            ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
+                            : "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
+                      }`}
                     >
                       {nextBooking.status}
                     </span>
@@ -538,13 +569,17 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center justify-between pt-6 mt-auto">
-                <button
-                  onClick={() => handleCancel(nextBooking.id)}
-                  className="flex items-center gap-2 text-rose-500 hover:text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-                >
-                  <XCircle className="w-4 h-4" />
-                  {t("dashboard.cancel", "Cancel")}
-                </button>
+                {["Pending", "Confirmed"].includes(nextBooking.status) ? (
+                  <button
+                    onClick={() => handleCancel(nextBooking.id)}
+                    className="flex items-center gap-2 text-rose-500 hover:text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    {t("dashboard.cancel", "Cancel")}
+                  </button>
+                ) : (
+                  <span />
+                )}
                 <button
                   onClick={() => navigate("/booking-history")}
                   className="flex items-center gap-2 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 dark:border dark:border-white/20 px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"

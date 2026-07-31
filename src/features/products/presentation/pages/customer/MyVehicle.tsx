@@ -13,6 +13,7 @@ import { VehicleFormModal } from "../../components/customer/VehicleFormModal";
 import { VehicleCard } from "../../components/customer/VehicleCard";
 import { VehicleHistoryCard } from "../../components/customer/VehicleHistoryCard";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export const MyVehicles: React.FC = () => {
   const {
@@ -67,6 +68,43 @@ export const MyVehicles: React.FC = () => {
   };
 
   const currentVehicleNames = VEHICLE_NAMES_BY_BRAND[formData.brand] || [];
+
+  const validateVehicleForm = () => {
+    const normalizedPlate = formData.licensePlate.trim().toUpperCase();
+
+    if (!normalizedPlate) {
+      toast.error("Biển số xe không được để trống.");
+      return null;
+    }
+
+    if (normalizedPlate.length > 20) {
+      toast.error("Biển số xe không được vượt quá 20 ký tự.");
+      return null;
+    }
+
+    if (!["Small", "Medium", "Large"].includes(formData.type)) {
+      toast.error("Loại xe phải là Small, Medium hoặc Large.");
+      return null;
+    }
+
+    if (!editingId && vehicles.length >= 5) {
+      toast.error("Mỗi khách hàng chỉ được lưu tối đa 5 xe.");
+      return null;
+    }
+
+    const duplicatedPlate = vehicles.some(
+      (vehicle) =>
+        vehicle.id !== editingId &&
+        vehicle.licensePlate?.trim().toUpperCase() === normalizedPlate,
+    );
+
+    if (duplicatedPlate) {
+      toast.error("Biển số xe này đã tồn tại.");
+      return null;
+    }
+
+    return normalizedPlate;
+  };
 
   const handleEditVehicle = (car: Vehicle) => {
     setEditingId(car.id);
@@ -183,15 +221,20 @@ export const MyVehicles: React.FC = () => {
         handleInputChange={handleInputChange}
         onSubmit={async (e: React.FormEvent) => {
           e.preventDefault();
+
+          const normalizedPlate = validateVehicleForm();
+          if (!normalizedPlate) return;
+
           const inputData = {
-            licensePlate: formData.licensePlate,
+            licensePlate: normalizedPlate,
             vehicleType: formData.type,
-            vehicleName: formData.vehicleName,
-            brand: formData.brand,
-            model: formData.model,
-            color: formData.color,
+            vehicleName: formData.vehicleName.trim(),
+            brand: formData.brand.trim(),
+            model: formData.model.trim(),
+            color: formData.color.trim(),
             isPrimary: formData.isPrimary,
           };
+
           try {
             if (editingId)
               await updateVehicle({ id: editingId, data: inputData });

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Building2,
@@ -39,6 +40,12 @@ const initialForm: StaffFormState = {
 };
 
 export const AdminStaff: React.FC = () => {
+  const { t, i18n } = useTranslation('customer');
+
+  const removeVietnameseTones = (str: string) => {
+    if (!str) return '';
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  };
   const {
     staffs,
     branches,
@@ -209,9 +216,7 @@ export const AdminStaff: React.FC = () => {
                             text-slate-900
                             dark:text-white
                         "
-          >
-            Staff Management
-          </h1>
+          >{t('adminStaff.title', { defaultValue: 'Staff Management' })}</h1>
 
           <p
             className="
@@ -220,9 +225,7 @@ export const AdminStaff: React.FC = () => {
                             text-slate-500
                             dark:text-slate-400
                         "
-          >
-            Manage staff members and branch assignments.
-          </p>
+          >{t('adminStaff.subtitle', { defaultValue: 'Manage staff members and branch assignments.' })}</p>
         </div>
 
         <button
@@ -247,9 +250,7 @@ export const AdminStaff: React.FC = () => {
                         hover:scale-[1.02]
                     "
         >
-          <Plus className="h-4 w-4" />
-          Add Staff
-        </button>
+          <Plus className="h-4 w-4" />{t('adminStaff.addStaff', { defaultValue: 'Add Staff' })}</button>
       </div>
 
       {/* SUMMARY + SEARCH */}
@@ -307,9 +308,7 @@ export const AdminStaff: React.FC = () => {
                                     tracking-wider
                                     text-slate-400
                                 "
-              >
-                Total Staff
-              </p>
+              >{t('adminStaff.totalStaff', { defaultValue: 'Total Staff' })}</p>
 
               <p
                 className="
@@ -346,7 +345,7 @@ export const AdminStaff: React.FC = () => {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search staff..."
+              placeholder={t('adminStaff.searchStaff', { defaultValue: 'Search staff...' })}
               className="
                                 w-full
                                 rounded-2xl
@@ -445,15 +444,15 @@ export const AdminStaff: React.FC = () => {
                                         text-slate-400
                                     "
                 >
-                  <th className="px-6 py-4">Staff</th>
+                  <th className="px-6 py-4">{t('adminStaff.staffTh', { defaultValue: 'Staff' })}</th>
 
-                  <th className="px-6 py-4">Phone</th>
+                  <th className="px-6 py-4">{t('adminStaff.phoneTh', { defaultValue: 'Phone' })}</th>
 
-                  <th className="px-6 py-4">Branch</th>
+                  <th className="px-6 py-4">{t('adminStaff.branch', { defaultValue: 'Branch' })}</th>
 
-                  <th className="px-6 py-4">Role</th>
+                  <th className="px-6 py-4">{t('adminStaff.roleTh', { defaultValue: 'Role' })}</th>
 
-                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">{t('adminStaff.status', { defaultValue: 'Status' })}</th>
 
                   <th
                     className="
@@ -461,9 +460,7 @@ export const AdminStaff: React.FC = () => {
                                             py-4
                                             text-right
                                         "
-                  >
-                    Actions
-                  </th>
+                  >{t('adminStaff.actions', { defaultValue: 'Actions' })}</th>
                 </tr>
               </thead>
 
@@ -575,7 +572,7 @@ export const AdminStaff: React.FC = () => {
                       >
                         <Building2 className="h-4 w-4 text-slate-400" />
 
-                        {staff.branch?.branchName ?? "No branch"}
+                        {staff.branch?.branchName ? t('adminBranches.branchNameFormat', { name: i18n.language.startsWith('en') ? removeVietnameseTones(staff.branch.branchName.replace(/ Branch/i, '').replace(/Chi nhánh /i, '').replace(/Quận/g, t('adminBranches.districtWord', { defaultValue: 'District' }))) : staff.branch.branchName.replace(/ Branch/i, '').replace(/Chi nhánh /i, '').replace(/Quận/g, t('adminBranches.districtWord', { defaultValue: 'District' })), defaultValue: staff.branch.branchName }) : t('adminStaff.noBranch', { defaultValue: 'No branch' })}
                       </div>
                     </td>
 
@@ -641,10 +638,7 @@ export const AdminStaff: React.FC = () => {
                                                                 : "bg-slate-400"
                                                             }
                                                         `}
-                        />
-
-                        {staff.isAvailable ? "Available" : "Unavailable"}
-                      </span>
+                        />{staff.isAvailable ? t('adminStaff.available', { defaultValue: 'Available' }) : t('adminStaff.unavailable', { defaultValue: 'Unavailable' })}</span>
                     </td>
 
                     {/* ACTION */}
@@ -731,7 +725,7 @@ export const AdminStaff: React.FC = () => {
                                         dark:text-white
                                     "
                 >
-                  {editingStaff ? "Edit Staff" : "Add Staff"}
+                  {editingStaff ? t('adminStaff.editStaff', { defaultValue: 'Edit Staff' }) : t('adminStaff.addStaff', { defaultValue: 'Add Staff' })}
                 </h2>
 
                 <p
@@ -741,9 +735,7 @@ export const AdminStaff: React.FC = () => {
                                         text-slate-500
                                     "
                 >
-                  {editingStaff
-                    ? "Update staff information."
-                    : "Create a new staff account."}
+                  {editingStaff ? t('adminStaff.updateDesc', { defaultValue: 'Update staff information.' }) : t('adminStaff.createDesc', { defaultValue: 'Create a new staff account.' })}
                 </p>
               </div>
 
@@ -777,9 +769,7 @@ export const AdminStaff: React.FC = () => {
                                         text-slate-700
                                         dark:text-slate-300
                                     "
-                >
-                  Email
-                </label>
+                >{t('adminStaff.email', { defaultValue: 'Email' })}</label>
 
                 <input
                   type="email"
@@ -829,9 +819,7 @@ export const AdminStaff: React.FC = () => {
                                             text-slate-700
                                             dark:text-slate-300
                                         "
-                  >
-                    Password
-                  </label>
+                  >{t('adminStaff.password', { defaultValue: 'Password' })}</label>
 
                   <input
                     type="password"
@@ -844,7 +832,7 @@ export const AdminStaff: React.FC = () => {
                         password: event.target.value,
                       }))
                     }
-                    placeholder="Enter password"
+                    placeholder={t('adminStaff.enterPassword', { defaultValue: 'Enter password' })}
                     className="
                                             w-full
                                             rounded-2xl
@@ -878,9 +866,7 @@ export const AdminStaff: React.FC = () => {
                                         text-slate-700
                                         dark:text-slate-300
                                     "
-                >
-                  Full Name
-                </label>
+                >{t('adminStaff.fullName', { defaultValue: 'Full Name' })}</label>
 
                 <input
                   required
@@ -925,9 +911,7 @@ export const AdminStaff: React.FC = () => {
                                         text-slate-700
                                         dark:text-slate-300
                                     "
-                >
-                  Phone Number
-                </label>
+                >{t('adminStaff.phoneNumber', { defaultValue: 'Phone Number' })}</label>
 
                 <input
                   required
@@ -972,9 +956,7 @@ export const AdminStaff: React.FC = () => {
                                         text-slate-700
                                         dark:text-slate-300
                                     "
-                >
-                  Branch
-                </label>
+                >{t('adminStaff.branch', { defaultValue: 'Branch' })}</label>
 
                 <select
                   required
@@ -1006,12 +988,10 @@ export const AdminStaff: React.FC = () => {
                                         dark:text-white
                                     "
                 >
-                  <option value="">Select branch</option>
+                  <option value="">{t('adminStaff.selectBranch', { defaultValue: 'Select branch' })}</option>
 
                   {branches.map((branch) => (
-                    <option key={branch.id} value={branch.id}>
-                      {branch.branchName}
-                    </option>
+                    <option key={branch.id} value={branch.id}>{t('adminBranches.branchNameFormat', { name: i18n.language.startsWith('en') ? removeVietnameseTones(branch.branchName.replace(/ Branch/i, '').replace(/Chi nhánh /i, '').replace(/Quận/g, t('adminBranches.districtWord', { defaultValue: 'District' }))) : branch.branchName.replace(/ Branch/i, '').replace(/Chi nhánh /i, '').replace(/Quận/g, t('adminBranches.districtWord', { defaultValue: 'District' })), defaultValue: branch.branchName })}</option>
                   ))}
                 </select>
               </div>
@@ -1050,9 +1030,7 @@ export const AdminStaff: React.FC = () => {
                                                 text-xs
                                                 text-slate-500
                                             "
-                    >
-                      Allow this staff member to be available for work.
-                    </p>
+                    >{t('adminStaff.allowAvailable', { defaultValue: 'Allow this staff member to be available for work.' })}</p>
                   </div>
 
                   <input
@@ -1100,9 +1078,7 @@ export const AdminStaff: React.FC = () => {
                                         dark:text-slate-200
                                         dark:hover:bg-white/15
                                     "
-                >
-                  Cancel
-                </button>
+                >{t('adminStaff.cancel', { defaultValue: 'Cancel' })}</button>
 
                 <button
                   type="submit"
@@ -1125,11 +1101,7 @@ export const AdminStaff: React.FC = () => {
                                         disabled:opacity-50
                                     "
                 >
-                  {isCreating || isUpdating
-                    ? "Saving..."
-                    : editingStaff
-                      ? "Save Changes"
-                      : "Create Staff"}
+                  {isCreating || isUpdating ? t('adminStaff.saving', { defaultValue: 'Saving...' }) : editingStaff ? t('adminStaff.saveChanges', { defaultValue: 'Save Changes' }) : t('adminStaff.createStaff', { defaultValue: 'Create Staff' })}
                 </button>
               </div>
             </form>

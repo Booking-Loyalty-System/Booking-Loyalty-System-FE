@@ -1,4 +1,5 @@
 import {Calendar, CheckCircle, Clock, Droplets} from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {BookingResponseData} from "@/features/products/domain/models/booking/booking.model.ts";
 
 export interface DashboardBooking extends Omit<BookingResponseData, 'status'> {
@@ -18,6 +19,7 @@ interface DashboardStatsProps {
 }
 
 export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localDate, setLocalDate }) => {
+    const { t } = useTranslation("customer");
     const completedCount = bookings.filter(b => b.status === 'Completed' || b.status === 'CheckedOut').length;
     const inProgressCount = bookings.filter(b => b.status === 'InProgress').length;
     const waitingCount = bookings.filter(b => b.status === 'Confirmed' || b.status === 'Queued' || b.status === 'CheckedIn').length;
@@ -38,7 +40,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                 </div>
                 <div>
                     <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{bookings.length}</p>
-                    <p className="text-sm text-slate-500 font-semibold mt-1">Tổng Lịch Đặt</p>
+                    <p className="text-sm text-slate-500 font-semibold mt-1">{t('dashboardStats.totalBookings')}</p>
                 </div>
             </div>
 
@@ -50,7 +52,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                 </div>
                 <div>
                     <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{completedCount}</p>
-                    <p className="text-sm text-slate-500 font-semibold mt-1">Đã Hoàn Thành</p>
+                    <p className="text-sm text-slate-500 font-semibold mt-1">{t('dashboardStats.completed')}</p>
                 </div>
             </div>
 
@@ -62,7 +64,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                 </div>
                 <div>
                     <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{inProgressCount}</p>
-                    <p className="text-sm text-slate-500 font-semibold mt-1">Đang Thực Hiện</p>
+                    <p className="text-sm text-slate-500 font-semibold mt-1">{t('dashboardStats.inProgress')}</p>
                 </div>
             </div>
 
@@ -74,7 +76,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ bookings, localD
                 </div>
                 <div>
                     <p className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight">{waitingCount}</p>
-                    <p className="text-sm text-slate-500 font-semibold mt-1">Đang Chờ (Queue)</p>
+                    <p className="text-sm text-slate-500 font-semibold mt-1">{t('dashboardStats.waiting')}</p>
                 </div>
             </div>
         </div>
