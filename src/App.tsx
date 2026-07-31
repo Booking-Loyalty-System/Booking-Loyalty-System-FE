@@ -33,6 +33,7 @@ import { AdminLayout } from "@/features/products/presentation/layouts/AdminLayou
 import { AdminChatFeedbacks } from "./features/products/presentation/pages/admin/AdminChatFeedback.tsx";
 import { AdminBookingFeedback } from "./features/products/presentation/pages/admin/AdminBookingFeedback.tsx";
 import StaffProfile from "@/features/products/presentation/pages/staff/StaffProfile";
+import { AdminWashBay } from "./features/products/presentation/pages/admin/AdminWashBay.tsx";
 
 function App() {
   return (
@@ -89,6 +90,7 @@ function App() {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/packages" element={<AdminPackages />} />
               <Route path="/admin/branches" element={<AdminBranches />} />
+              <Route path="/admin/wash-bays" element={<AdminWashBay />} />
               <Route path="/admin/loyalty" element={<AdminLoyalty />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />

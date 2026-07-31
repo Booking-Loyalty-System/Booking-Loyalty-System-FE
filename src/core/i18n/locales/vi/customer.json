@@ -839,7 +839,12 @@
     "saveBranch": "Lưu Chi Nhánh",
     "createBranch": "Tạo Chi Nhánh",
     "saveChanges": "Lưu Thay Đổi",
-    "mapHint": "Click vào bản đồ để ghim vị trí hoặc dùng nút \"Tìm Map\" bên cạnh địa chỉ"
+    "mapHint": "Click vào bản đồ để ghim vị trí hoặc dùng nút \"Tìm Map\" bên cạnh địa chỉ",
+    "searchMap": "Tìm Map",
+    "addressPlaceholder": "Nhập địa chỉ đầy đủ...",
+    "addressHelper": "* Nhập địa chỉ chi tiết và click \"Tìm Map\" để tự động đồng bộ tọa độ Lat/Lng.",
+    "selectOnMap": "Chọn trên bản đồ",
+    "locating": "Đang định vị..."
   },
   "adminStaff": {
     "title": "Quản Lý Nhân Viên",
