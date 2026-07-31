@@ -183,5 +183,9 @@ export const ENDPOINTS = {
         LATEST: (count = 10) => `/ChatFeedback/latest?count=${count}`,
         STAFF_STATISTICS: (topCount = 5) => `/ChatFeedback/staff-statistics?topCount=${topCount}`,
         DETAIL: (id: string) => `/ChatFeedback/${id}`,
+    },
+
+    REPORT: {
+        REVENUE_EXPORT_EXCEL: '/Report/revenue/export-excel',
     }
 };
