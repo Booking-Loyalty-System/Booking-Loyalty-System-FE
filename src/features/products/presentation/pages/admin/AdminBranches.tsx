@@ -127,7 +127,7 @@ export function AdminBranches() {
     name: "",
     description: "",
     discountType: "PERCENTAGE",
-    discountValue: 0,
+    discountValue: "" as number | string,
     priorityLevel: 0,
     startDate: "",
     endDate: "",
@@ -378,9 +378,10 @@ export function AdminBranches() {
     try {
       await createPromotion({
         ...newPromoForm,
+        discountValue: Number(newPromoForm.discountValue) || 0,
         startDate: new Date(newPromoForm.startDate).toISOString(),
         endDate: new Date(newPromoForm.endDate).toISOString(),
-        branchIds: [selectedBranchForPromo.id], // Tự động gắn branchId vừa tạo
+        branchIds: [selectedBranchForPromo.id],
       });
 
       alert(`Đã tạo và kích hoạt khuyến mãi mới cho chi nhánh: ${selectedBranchForPromo.name}`);
@@ -872,14 +873,22 @@ export function AdminBranches() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Loại giảm giá</label>
-                  <select value={newPromoForm.discountType} onChange={e => setNewPromoForm({ ...newPromoForm, discountType: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm">
+                  <select
+                    disabled
+                    value="PERCENTAGE"
+                    className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
+                  >
                     <option value="PERCENTAGE">Phần trăm (%)</option>
-                    <option value="AMOUNT">Số tiền mặt</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Mức giảm</label>
-                  <input type="number" value={newPromoForm.discountValue} onChange={e => setNewPromoForm({ ...newPromoForm, discountValue: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                  <input
+                    type="number"
+                    value={newPromoForm.discountValue}
+                    onChange={e => setNewPromoForm({ ...newPromoForm, discountValue: e.target.value === "" ? "" : Number(e.target.value) })}
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Bắt đầu</label>

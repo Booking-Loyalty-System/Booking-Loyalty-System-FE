@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  FileText,
   FileSpreadsheet,
   Calendar,
   Loader2,
@@ -106,7 +105,6 @@ export function AdminReports() {
   const getQuarter = (dateString: string) => Math.ceil(parseInt(dateString.split("-")[1]) / 3);
   const getYear = (dateString: string) => dateString.split("-")[0];
 
-  const handleExportPDF = () => alert("Exporting report as PDF...");
   const handleExportExcel = () => exportRevenueExcel(dateFilter);
 
   return (
@@ -121,9 +119,6 @@ export function AdminReports() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
-              <FileText className="w-4 h-4" /> {t('adminReports.exportPDF')}
-            </button>
             <button
               onClick={handleExportExcel}
               disabled={isExportingExcel}
