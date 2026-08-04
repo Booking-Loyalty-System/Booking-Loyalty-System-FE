@@ -171,7 +171,7 @@ export const QueueMonitor: React.FC = () => {
     e.preventDefault();
 
     if (isMaintenance) {
-      toast.error(t('queueMonitor.toast.bayMaintenance', { bayName }));
+      toast.error(t("queueMonitor.toast.bayMaintenance", { bayName }));
       return;
     }
 
@@ -189,7 +189,11 @@ export const QueueMonitor: React.FC = () => {
 
       if (!isVehicleSupported) {
         toast.error(
-          t('queueMonitor.toast.bayTypeMismatch', { bayName, supportedTypes: supportedTypes.join(', '), vehicleType: targetBooking.vehicleType }),
+          t("queueMonitor.toast.bayTypeMismatch", {
+            bayName,
+            supportedTypes: supportedTypes.join(", "),
+            vehicleType: targetBooking.vehicleType,
+          }),
         );
         return;
       }
@@ -254,14 +258,12 @@ export const QueueMonitor: React.FC = () => {
     setActionLoadingId(bookingId);
     try {
       await startBooking({ id: bookingId, bayId });
-      toast.success(
-        t('queueMonitor.toast.startWashSuccess', { bayName }),
-      );
+      toast.success(t("queueMonitor.toast.startWashSuccess", { bayName }));
       queryClient.invalidateQueries();
       if (selectedBay) setSelectedBay(null);
     } catch (error) {
       console.error(error);
-      toast.error(t('queueMonitor.toast.startWashFail'));
+      toast.error(t("queueMonitor.toast.startWashFail"));
     } finally {
       setActionLoadingId(null);
     }
@@ -275,13 +277,11 @@ export const QueueMonitor: React.FC = () => {
     setActionLoadingId(bookingId);
     try {
       await queueBooking({ id: bookingId, bayId });
-      toast.success(
-        t('queueMonitor.toast.queueWashSuccess', { bayName }),
-      );
+      toast.success(t("queueMonitor.toast.queueWashSuccess", { bayName }));
       queryClient.invalidateQueries();
     } catch (error) {
       console.error(error);
-      toast.error(t('queueMonitor.toast.queueWashFail'));
+      toast.error(t("queueMonitor.toast.queueWashFail"));
     } finally {
       setActionLoadingId(null);
     }
@@ -300,12 +300,12 @@ export const QueueMonitor: React.FC = () => {
       setActionLoadingId(actionModal.bookingId);
       try {
         await completedBooking(actionModal.bookingId);
-        toast.success(t('queueMonitor.toast.finishWashSuccess'));
+        toast.success(t("queueMonitor.toast.finishWashSuccess"));
         queryClient.invalidateQueries();
         if (selectedBay) setSelectedBay(null);
       } catch (error) {
         console.error(error);
-        toast.error(t('queueMonitor.toast.finishWashFail'));
+        toast.error(t("queueMonitor.toast.finishWashFail"));
       } finally {
         setActionLoadingId(null);
       }
@@ -339,7 +339,9 @@ export const QueueMonitor: React.FC = () => {
           <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 tracking-tight flex items-center gap-3">
             {t("queueMonitor.title")}
           </h1>
-          <p className="text-slate-500 text-sm font-medium mt-1">{t('queueMonitor.subtitle')}</p>
+          <p className="text-slate-500 text-sm font-medium mt-1">
+            {t("queueMonitor.subtitle")}
+          </p>
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
@@ -361,7 +363,7 @@ export const QueueMonitor: React.FC = () => {
             </div>
             <input
               type="text"
-              placeholder={t('queueMonitor.searchPlaceholder')}
+              placeholder={t("queueMonitor.searchPlaceholder")}
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -373,7 +375,9 @@ export const QueueMonitor: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('queueMonitor.stats.totalWaiting')}</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              {t("queueMonitor.stats.totalWaiting")}
+            </span>
             <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
               {isBookingsLoading ? "..." : totalWaitingVehicles}
             </h3>
@@ -385,7 +389,9 @@ export const QueueMonitor: React.FC = () => {
 
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('queueMonitor.stats.emptyBays')}</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              {t("queueMonitor.stats.emptyBays")}
+            </span>
             <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
               {isWashBaysLoading ? (
                 "..."
@@ -406,10 +412,14 @@ export const QueueMonitor: React.FC = () => {
 
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('queueMonitor.stats.avgWaitTime')}</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              {t("queueMonitor.stats.avgWaitTime")}
+            </span>
             <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
               {isBookingsLoading ? "..." : avgWaitTime}{" "}
-              <span className="text-xl font-bold text-slate-400">{t('queueMonitor.stats.minutes')}</span>
+              <span className="text-xl font-bold text-slate-400">
+                {t("queueMonitor.stats.minutes")}
+              </span>
             </h3>
           </div>
           <div className="w-14 h-14 bg-blue-50 rounded-2xl text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -446,7 +456,9 @@ export const QueueMonitor: React.FC = () => {
                 <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-3">
                   <Car className="w-8 h-8 text-slate-300" />
                 </div>
-                <p className="font-medium text-sm text-center px-4">{t('queueMonitor.unassignedQueue.noVehicles')}</p>
+                <p className="font-medium text-sm text-center px-4">
+                  {t("queueMonitor.unassignedQueue.noVehicles")}
+                </p>
               </div>
             ) : (
               waitingQueue.map((b, idx) => (
@@ -472,7 +484,8 @@ export const QueueMonitor: React.FC = () => {
                           </h4>
                         </div>
                         <p className="text-xs text-slate-500 font-medium truncate">
-                          {b.vehicleName || t('queueMonitor.unassignedQueue.unknownCar')}{" "}
+                          {b.vehicleName ||
+                            t("queueMonitor.unassignedQueue.unknownCar")}{" "}
                           {b.vehicleType ? (
                             <span className="text-slate-400">
                               ({b.vehicleType})
@@ -486,11 +499,16 @@ export const QueueMonitor: React.FC = () => {
 
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100 truncate max-w-[120px]">
-                        {b.serviceName || t('queueMonitor.unassignedQueue.standardWash')}
+                        {b.serviceName ||
+                          t("queueMonitor.unassignedQueue.standardWash")}
                       </span>
                       <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-semibold bg-slate-50 px-2 py-1 rounded-md border border-slate-100 shrink-0">
                         <Clock className="w-3 h-3 text-slate-400" />
-                        <span>{t('queueMonitor.unassignedQueue.waitMins', { time: (idx + 1) * 15 })}</span>
+                        <span>
+                          {t("queueMonitor.unassignedQueue.waitMins", {
+                            time: (idx + 1) * 15,
+                          })}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -505,16 +523,22 @@ export const QueueMonitor: React.FC = () => {
             <div className="bg-emerald-100 p-2 rounded-xl">
               <LayoutGrid className="w-5 h-5 text-emerald-600" />
             </div>
-            <h2 className="font-bold text-lg text-slate-800">{t('queueMonitor.bayStatus.title')}</h2>
+            <h2 className="font-bold text-lg text-slate-800">
+              {t("queueMonitor.bayStatus.title")}
+            </h2>
           </div>
 
           <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5 custom-scrollbar">
             {isWashBaysLoading ? (
-              <div className="text-center py-20 text-slate-400 font-medium animate-pulse">{t('queueMonitor.bayStatus.loading')}</div>
+              <div className="text-center py-20 text-slate-400 font-medium animate-pulse">
+                {t("queueMonitor.bayStatus.loading")}
+              </div>
             ) : baysStatus.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-slate-400">
                 <LayoutGrid className="w-12 h-12 text-slate-200 mb-3" />
-                <p className="font-medium">{t('queueMonitor.bayStatus.noBays')}</p>
+                <p className="font-medium">
+                  {t("queueMonitor.bayStatus.noBays")}
+                </p>
               </div>
             ) : (
               baysStatus.map((bay) => (
@@ -565,7 +589,11 @@ export const QueueMonitor: React.FC = () => {
                             {bay.name}
                           </h3>
                           {bay.bayQueue && bay.bayQueue.length > 0 && (
-                            <span className="bg-blue-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full">{t('queueMonitor.bayStatus.waitingCars', { count: bay.bayQueue.length })}</span>
+                            <span className="bg-blue-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full">
+                              {t("queueMonitor.bayStatus.waitingCars", {
+                                count: bay.bayQueue.length,
+                              })}
+                            </span>
                           )}
                         </div>
                         {bay.supportedTypes &&
@@ -582,7 +610,10 @@ export const QueueMonitor: React.FC = () => {
                                         : "bg-white text-slate-500 border border-slate-200/60"
                                   }`}
                                 >
-                                  {t(`queueMonitor.carTypes.${type.toLowerCase()}`, { defaultValue: type })}
+                                  {t(
+                                    `queueMonitor.carTypes.${type.toLowerCase()}`,
+                                    { defaultValue: type },
+                                  )}
                                 </span>
                               ))}
                             </div>
@@ -600,17 +631,21 @@ export const QueueMonitor: React.FC = () => {
                       }`}
                     >
                       {bay.isMaintenance
-                        ? t('queueMonitor.bayStatus.maintenance')
+                        ? t("queueMonitor.bayStatus.maintenance")
                         : bay.isOccupied
-                          ? t('queueMonitor.bayStatus.occupied')
-                          : t('queueMonitor.bayStatus.available')}
+                          ? t("queueMonitor.bayStatus.occupied")
+                          : t("queueMonitor.bayStatus.available")}
                     </span>
                   </div>
 
                   {bay.isMaintenance ? (
                     <div className="flex flex-col items-center justify-center text-center py-4 bg-rose-50 rounded-xl">
-                      <p className="text-sm font-semibold text-rose-600 mb-1">{t('queueMonitor.bayStatus.maintenanceTitle')}</p>
-                      <p className="text-xs text-rose-400/80">{t('queueMonitor.bayStatus.maintenanceDesc')}</p>
+                      <p className="text-sm font-semibold text-rose-600 mb-1">
+                        {t("queueMonitor.bayStatus.maintenanceTitle")}
+                      </p>
+                      <p className="text-xs text-rose-400/80">
+                        {t("queueMonitor.bayStatus.maintenanceDesc")}
+                      </p>
                     </div>
                   ) : bay.isOccupied && bay.booking ? (
                     <div
@@ -619,7 +654,9 @@ export const QueueMonitor: React.FC = () => {
                     >
                       <div className="space-y-2">
                         <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>{t('queueMonitor.bayStatus.washingTitle')}</p>
+                          <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                          {t("queueMonitor.bayStatus.washingTitle")}
+                        </p>
                         <div>
                           <h4 className="font-extrabold text-blue-950 text-base">
                             {bay.booking.licensePlate}
@@ -636,20 +673,30 @@ export const QueueMonitor: React.FC = () => {
                       <div className="flex items-center sm:flex-col justify-between sm:justify-center gap-3 sm:min-w-[130px] shrink-0">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-orange-600 bg-white px-3 py-1.5 rounded-lg border border-orange-100 shadow-sm w-full justify-center">
                           <Clock className="w-4 h-4 animate-pulse" />
-                          <span>{t('queueMonitor.bayStatus.remainingMins', { time: bay.remainingTime })}</span>
+                          <span>
+                            {t("queueMonitor.bayStatus.remainingMins", {
+                              time: bay.remainingTime,
+                            })}
+                          </span>
                         </div>
                         <button
                           onClick={() => handleFinishWash(bay.booking!.id)}
                           disabled={actionLoadingId === bay.booking.id}
                           className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition-all disabled:opacity-50 sm:w-full hover:shadow-md hover:-translate-y-0.5"
                         >
-                          <CheckCircle className="w-4 h-4" />{t('queueMonitor.bayStatus.complete')}</button>
+                          <CheckCircle className="w-4 h-4" />
+                          {t("queueMonitor.bayStatus.complete")}
+                        </button>
                       </div>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center text-center py-6 bg-slate-100/50 rounded-xl border border-slate-200/50 border-dashed">
-                      <p className="text-sm font-semibold text-slate-500 mb-1">{t('queueMonitor.bayStatus.readyTitle')}</p>
-                      <p className="text-xs text-slate-400">{t('queueMonitor.bayStatus.readyDesc')}</p>
+                      <p className="text-sm font-semibold text-slate-500 mb-1">
+                        {t("queueMonitor.bayStatus.readyTitle")}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {t("queueMonitor.bayStatus.readyDesc")}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -670,28 +717,30 @@ export const QueueMonitor: React.FC = () => {
                 <Info className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-blue-900 leading-tight">{t('queueMonitor.suggestion.title')}</h3>
+                <h3 className="text-lg font-black text-blue-900 leading-tight">
+                  {t("queueMonitor.suggestion.title")}
+                </h3>
                 <p className="text-sm text-blue-700 mt-1 font-medium">
-                  {t('queueMonitor.suggestion.desc1')}{" "}
+                  {t("queueMonitor.suggestion.desc1")}{" "}
                   <strong className="font-bold">
                     {suggestionModal.originalBayName}
                   </strong>{" "}
-                  {t('queueMonitor.suggestion.desc2')}
+                  {t("queueMonitor.suggestion.desc2")}
                 </p>
               </div>
             </div>
 
             <div className="p-6">
               <p className="text-sm text-slate-600 mb-4">
-                {t('queueMonitor.suggestion.foundPlate')}{" "}
+                {t("queueMonitor.suggestion.foundPlate")}{" "}
                 <span className="font-bold text-blue-950">
                   {suggestionModal.targetBookingPlate}
                 </span>{" "}
-                {t('queueMonitor.suggestion.foundGroup')}{" "}
+                {t("queueMonitor.suggestion.foundGroup")}{" "}
                 <span className="font-bold text-blue-950 uppercase">
                   {suggestionModal.targetBookingType}
                 </span>
-                ){t('queueMonitor.suggestion.foundCanStart')}
+                ){t("queueMonitor.suggestion.foundCanStart")}
               </p>
 
               <div className="bg-emerald-50 border-2 border-emerald-500/30 rounded-xl p-4 flex items-center justify-between mb-6 shadow-sm">
@@ -703,10 +752,14 @@ export const QueueMonitor: React.FC = () => {
                     <h4 className="font-bold text-emerald-900 text-lg">
                       {suggestionModal.suggestedBayName}
                     </h4>
-                    <p className="text-xs text-emerald-700 font-semibold uppercase tracking-wider">{t('queueMonitor.suggestion.statusEmpty')}</p>
+                    <p className="text-xs text-emerald-700 font-semibold uppercase tracking-wider">
+                      {t("queueMonitor.suggestion.statusEmpty")}
+                    </p>
                   </div>
                 </div>
-                <span className="bg-emerald-500 text-white text-[10px] px-2 py-1 rounded font-black uppercase tracking-wider animate-pulse">{t('queueMonitor.suggestion.washNow')}</span>
+                <span className="bg-emerald-500 text-white text-[10px] px-2 py-1 rounded font-black uppercase tracking-wider animate-pulse">
+                  {t("queueMonitor.suggestion.washNow")}
+                </span>
               </div>
 
               <div className="flex gap-3">
@@ -714,13 +767,17 @@ export const QueueMonitor: React.FC = () => {
                   onClick={handleDeclineSuggestion}
                   className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
                 >
-                  {t('queueMonitor.suggestion.decline', { bayName: suggestionModal.originalBayName })}
+                  {t("queueMonitor.suggestion.decline", {
+                    bayName: suggestionModal.originalBayName,
+                  })}
                 </button>
                 <button
                   onClick={handleAcceptSuggestion}
                   className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 shadow-md shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
-                  <Play className="w-4 h-4 fill-white" />{t('queueMonitor.suggestion.accept')}</button>
+                  <Play className="w-4 h-4 fill-white" />
+                  {t("queueMonitor.suggestion.accept")}
+                </button>
               </div>
             </div>
           </div>
@@ -742,7 +799,9 @@ export const QueueMonitor: React.FC = () => {
                   <h2 className="font-extrabold text-xl text-blue-950">
                     {activeBayDetail.name}
                   </h2>
-                  <p className="text-xs text-slate-500 font-medium">{t('queueMonitor.bayDetail.subtitle')}</p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {t("queueMonitor.bayDetail.subtitle")}
+                  </p>
                 </div>
               </div>
               <button
@@ -756,22 +815,30 @@ export const QueueMonitor: React.FC = () => {
             <div className="p-6 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-blue-50/50 border border-blue-100/60 p-4 rounded-xl">
-                  <span className="text-[11px] font-bold text-blue-500 uppercase tracking-wider block mb-1">{t('queueMonitor.bayDetail.waitingHere')}</span>
+                  <span className="text-[11px] font-bold text-blue-500 uppercase tracking-wider block mb-1">
+                    {t("queueMonitor.bayDetail.waitingHere")}
+                  </span>
                   <h4 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
                     {activeBayDetail.bayQueue.length} xe
                   </h4>
                 </div>
                 <div className="bg-indigo-50/50 border border-indigo-100/60 p-4 rounded-xl">
-                  <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-wider block mb-1">{t('queueMonitor.bayDetail.totalProcessTime')}</span>
+                  <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-wider block mb-1">
+                    {t("queueMonitor.bayDetail.totalProcessTime")}
+                  </span>
                   <h4 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500">
                     {activeBayDetail.totalBayWaitTime}{" "}
-                    <span className="text-sm font-semibold text-slate-400">{t('queueMonitor.bayDetail.waitMins')}</span>
+                    <span className="text-sm font-semibold text-slate-400">
+                      {t("queueMonitor.bayDetail.waitMins")}
+                    </span>
                   </h4>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t('queueMonitor.bayDetail.carsInside')}</h3>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+                  {t("queueMonitor.bayDetail.carsInside")}
+                </h3>
                 {activeBayDetail.booking ? (
                   <div className="bg-orange-50/60 border border-orange-100 p-4 rounded-xl flex justify-between items-center">
                     <div>
@@ -789,24 +856,38 @@ export const QueueMonitor: React.FC = () => {
                       </p>
                     </div>
                     <div className="text-right space-y-2">
-                      <span className="inline-block bg-white border border-orange-100 px-3 py-1 rounded-md text-xs font-bold text-orange-600">{t('queueMonitor.bayDetail.remainingMins', { time: activeBayDetail.remainingTime })}</span>
+                      <span className="inline-block bg-white border border-orange-100 px-3 py-1 rounded-md text-xs font-bold text-orange-600">
+                        {t("queueMonitor.bayDetail.remainingMins", {
+                          time: activeBayDetail.remainingTime,
+                        })}
+                      </span>
                       <button
                         onClick={() =>
                           handleFinishWash(activeBayDetail.booking!.id)
                         }
                         className="block text-[11px] font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
-                      >{t('queueMonitor.bayDetail.finishNow')}</button>
+                      >
+                        {t("queueMonitor.bayDetail.finishNow")}
+                      </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-4 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100">{t('queueMonitor.bayDetail.bayEmpty')}</div>
+                  <div className="text-center py-4 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100">
+                    {t("queueMonitor.bayDetail.bayEmpty")}
+                  </div>
                 )}
               </div>
 
               <div>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{t('queueMonitor.bayDetail.nextQueue', { count: activeBayDetail.bayQueue.length })}</h3>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+                  {t("queueMonitor.bayDetail.nextQueue", {
+                    count: activeBayDetail.bayQueue.length,
+                  })}
+                </h3>
                 {activeBayDetail.bayQueue.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic text-center py-6 border border-dashed border-slate-200 rounded-xl">{t('queueMonitor.bayDetail.noQueue')}</p>
+                  <p className="text-xs text-slate-400 italic text-center py-6 border border-dashed border-slate-200 rounded-xl">
+                    {t("queueMonitor.bayDetail.noQueue")}
+                  </p>
                 ) : (
                   <div className="space-y-3">
                     {activeBayDetail.bayQueue.map((b: any, index: number) => (
@@ -829,7 +910,11 @@ export const QueueMonitor: React.FC = () => {
                         </div>
 
                         <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-[11px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded border border-slate-100">{t('queueMonitor.bayDetail.waitApprox', { time: index * 15 + activeBayDetail.remainingTime })}</span>
+                          <span className="text-[11px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                            {t("queueMonitor.bayDetail.waitApprox", {
+                              time: index * 15 + activeBayDetail.remainingTime,
+                            })}
+                          </span>
                           <button
                             onClick={() =>
                               triggerStartWash(
@@ -841,7 +926,9 @@ export const QueueMonitor: React.FC = () => {
                             disabled={actionLoadingId === b.id}
                             className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-3 py-2 rounded-lg transition-all disabled:opacity-50 shadow-sm"
                           >
-                            <Play className="w-3 h-3 fill-white" />{t('queueMonitor.bayDetail.startWash')}</button>
+                            <Play className="w-3 h-3 fill-white" />
+                            {t("queueMonitor.bayDetail.startWash")}
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -853,9 +940,6 @@ export const QueueMonitor: React.FC = () => {
         </div>
       )}
 
-      {/* ======================================================= */}
-      {/* 🌟 MODAL UPLOAD ẢNH ĐÁNH CHẶN KHI HOÀN THÀNH */}
-      {/* ======================================================= */}
       {actionModal && actionModal.isOpen && (
         <ActionImageModal
           bookingId={actionModal.bookingId}
