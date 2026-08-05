@@ -1,21 +1,30 @@
 export interface Tier {
-    id: string;
-    tierName: string;
-    pointRate: number;
-    bookingWindow: number;
-    level: string;
+  id: string;
+  tierName: string;
+  level: string;
+  pointRate: number;
+  bookingWindow: number;
+  minPointsRequired: number;
+  maintenancePoints: number;
+  benefits: string[];
 }
 
 export interface CreateTierDto {
-    tierName: string;
-    pointRate: number;
-    bookingWindow: number;
-    level: string;
+  tierName: string;
+  level: string;
+  pointRate: number;
+  bookingWindow: number;
+  minPointsRequired: number;
+  maintenancePoints: number;
+  benefits: string[];
 }
 
 export interface UpdateTierDto {
-    tierName: string;
-    pointRate: number;
-    bookingWindow: number;
-    level: string;
+  tierName: string;
+  level: string;
+  pointRate: number;
+  bookingWindow: number;
+  minPointsRequired: number;
+  maintenancePoints: number;
+  benefits: string[];
 }

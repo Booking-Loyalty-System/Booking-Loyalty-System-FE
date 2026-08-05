@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { BookingSummaryProps } from "@/features/products/domain/models/booking/booking.model.ts";
-import { Tag, X, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Tag, X, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { translateDynamic } from "@/shared/utils/translateDynamic.ts";
 import { translatePromotion } from "@/shared/utils/dynamicTranslator.ts";
@@ -21,9 +21,40 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   const { t, i18n } = useTranslation("customer");
   const originalPrice = currentPackage?.price || 0;
 
-  // 1. Tính Promotion trên GIÁ GỐC trước
+  const voucherName = selectedVoucher
+    ? (selectedVoucher as any).name || (selectedVoucher as any).title || ""
+    : "";
+
+  const isFreeWashReward = Boolean(
+    selectedVoucher &&
+    ((selectedVoucher as any).isFreeWash === true ||
+      voucherName === "Phần thưởng Rửa Xe Miễn Phí"),
+  );
+
+  // Kiểm tra riêng giá trị Reward trên giá gốc để biết Reward có tự đưa
+  // đơn hàng về 0đ hay không. Trường hợp này không được dùng Promotion.
+  const rewardDiscountWithoutPromotion = selectedVoucher
+    ? isFreeWashReward
+      ? originalPrice
+      : Math.min(
+          originalPrice,
+          Math.max(0, Number((selectedVoucher as any).discountValue) || 0),
+        )
+    : 0;
+
+  const priceAfterRewardWithoutPromotion = Math.max(
+    0,
+    originalPrice - rewardDiscountWithoutPromotion,
+  );
+
+  const isPromotionBlocked = Boolean(
+    selectedVoucher &&
+    (isFreeWashReward || priceAfterRewardWithoutPromotion === 0),
+  );
+
+  // 1. Chỉ tính Promotion khi Reward hiện tại vẫn cho phép dùng Promotion.
   let promoDiscount = 0;
-  if (appliedPromotion) {
+  if (appliedPromotion && !isPromotionBlocked) {
     if (typeof (appliedPromotion as any).discountAmount !== "undefined") {
       promoDiscount = Math.min(
         originalPrice,
@@ -50,15 +81,8 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   // 2. Reward/Voucher được trừ SAU Promotion
   let voucherDiscount = 0;
   if (selectedVoucher) {
-    const vName =
-      (selectedVoucher as any).name || (selectedVoucher as any).title || "";
-
-    const isFreeWash =
-      (selectedVoucher as any).isFreeWash === true ||
-      vName === "Phần thưởng Rửa Xe Miễn Phí";
-
-    if (isFreeWash) {
-      // Free Wash miễn toàn bộ phần tiền còn lại sau Promotion.
+    if (isFreeWashReward) {
+      // Free Wash miễn toàn bộ giá và không kết hợp với Promotion.
       voucherDiscount = priceAfterPromotion;
     } else {
       voucherDiscount = Math.min(
@@ -71,9 +95,24 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   // 3. Tổng cuối cùng: Giá gốc → Promotion → Reward/Voucher
   let totalPrice = Math.max(0, priceAfterPromotion - voucherDiscount);
 
+  // Nếu Reward/Voucher dùng một lần có giá trị lớn hơn số tiền còn lại sau
+  // Promotion, phần chênh lệch này sẽ không được sử dụng.
+  const selectedVoucherValue = Math.max(
+    0,
+    Number((selectedVoucher as any)?.discountValue) || 0,
+  );
+
+  const unusedVoucherAmount =
+    selectedVoucher && !isFreeWashReward
+      ? Math.max(0, selectedVoucherValue - priceAfterPromotion)
+      : 0;
+
+  const shouldWarnVoucherLoss = unusedVoucherAmount > 0;
+
   // Khi không dùng Reward/Voucher, có thể dùng finalAmount do API Promotion trả về.
   if (
     appliedPromotion &&
+    !isPromotionBlocked &&
     typeof (appliedPromotion as any).finalAmount !== "undefined" &&
     !selectedVoucher
   ) {
@@ -86,8 +125,34 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
   const [promoInput, setPromoInput] = useState("");
   const [promoError, setPromoError] = useState("");
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+  const [showVoucherWarning, setShowVoucherWarning] = useState(false);
+
+  const promotionBlockedMessage = t("bookingSummary.promotionNotApplicable", {
+    defaultValue:
+      "Không thể dùng Promotion khi đã áp dụng Reward miễn phí hoặc Voucher giảm giá 100% giá trị.",
+  });
+
+  // Nếu người dùng đã áp dụng Promotion rồi mới chọn Reward miễn phí,
+  // gỡ Promotion khỏi state cha để payload booking không chứa cả hai ưu đãi.
+  useEffect(() => {
+    if (isPromotionBlocked && appliedPromotion) {
+      onRemovePromotion?.();
+      setPromoInput("");
+      setPromoError(promotionBlockedMessage);
+    }
+  }, [
+    appliedPromotion,
+    isPromotionBlocked,
+    onRemovePromotion,
+    promotionBlockedMessage,
+  ]);
 
   const handleApplyPromo = async () => {
+    if (isPromotionBlocked) {
+      setPromoError(promotionBlockedMessage);
+      return;
+    }
+
     if (!promoInput.trim()) return;
     setIsApplyingPromo(true);
     setPromoError("");
@@ -100,6 +165,20 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
       }
     }
     setIsApplyingPromo(false);
+  };
+
+  const handleConfirmClick = () => {
+    if (shouldWarnVoucherLoss) {
+      setShowVoucherWarning(true);
+      return;
+    }
+
+    onConfirmBooking();
+  };
+
+  const handleConfirmVoucherUsage = () => {
+    setShowVoucherWarning(false);
+    onConfirmBooking();
   };
 
   return (
@@ -168,7 +247,19 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
 
               {/* Promotion Section */}
               <div className="border-t border-[#f1f5f9] dark:border-white/5 pt-3">
-                {!appliedPromotion ? (
+                {isPromotionBlocked ? (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 dark:border-amber-500/20 dark:bg-amber-500/10">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
+                      <Tag className="h-3.5 w-3.5" />
+                      {t("bookingSummary.promotionUnavailable", {
+                        defaultValue: "Promotion không khả dụng",
+                      })}
+                    </div>
+                    <p className="mt-1 text-[11px] font-medium text-amber-600 dark:text-amber-300">
+                      {promotionBlockedMessage}
+                    </p>
+                  </div>
+                ) : !appliedPromotion ? (
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                       <Tag className="w-3.5 h-3.5" />{" "}
@@ -184,11 +275,16 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
                         })}
                         value={promoInput}
                         onChange={(e) => setPromoInput(e.target.value)}
+                        disabled={isPromotionBlocked}
                         className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 dark:text-white rounded-xl px-3 py-2 text-sm uppercase font-mono placeholder:normal-case placeholder:font-sans focus:outline-blue-500"
                       />
                       <button
                         onClick={handleApplyPromo}
-                        disabled={isApplyingPromo || !promoInput.trim()}
+                        disabled={
+                          isApplyingPromo ||
+                          !promoInput.trim() ||
+                          isPromotionBlocked
+                        }
                         className="bg-slate-900 dark:bg-blue-600 dark:border dark:border-white/20 text-white font-bold text-xs px-3 py-2 rounded-xl disabled:opacity-50"
                       >
                         {t("bookingSummary.apply", { defaultValue: "Apply" })}
@@ -239,25 +335,40 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
 
               {/* Reward/Voucher hiển thị sau Promotion đúng theo thứ tự tính tiền */}
               {selectedVoucher && (
-                <div className="flex justify-between items-center border-t border-[#f1f5f9] dark:border-white/5 pt-3 text-emerald-600 dark:text-emerald-400 font-medium">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-slate-400">
-                      {t("bookingSummary.appliedVoucher", {
-                        defaultValue: "Applied Voucher",
-                      })}
-                    </span>
-                    <span className="text-xs font-bold truncate max-w-[150px]">
-                      {translateDynamic(
-                        (selectedVoucher as any).title ||
-                          (selectedVoucher as any).name ||
-                          "Voucher",
-                        i18n.language,
-                      )}
+                <div className="space-y-2 border-t border-[#f1f5f9] pt-3 dark:border-white/5">
+                  <div className="flex items-center justify-between font-medium text-emerald-600 dark:text-emerald-400">
+                    <div className="flex flex-col">
+                      <span className="text-xs text-slate-400">
+                        {t("bookingSummary.appliedVoucher", {
+                          defaultValue: "Applied Voucher",
+                        })}
+                      </span>
+                      <span className="max-w-[150px] truncate text-xs font-bold">
+                        {translateDynamic(
+                          (selectedVoucher as any).title ||
+                            (selectedVoucher as any).name ||
+                            "Voucher",
+                          i18n.language,
+                        )}
+                      </span>
+                    </div>
+                    <span className="font-bold">
+                      -{voucherDiscount.toLocaleString("vi-VN")}đ
                     </span>
                   </div>
-                  <span className="font-bold">
-                    -{voucherDiscount.toLocaleString("vi-VN")}đ
-                  </span>
+
+                  {shouldWarnVoucherLoss && (
+                    <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                      <p className="text-[11px] font-medium leading-4">
+                        {t("bookingSummary.unusedVoucherWarning", {
+                          defaultValue:
+                            "Voucher vượt quá giá trị đơn hàng {{amount}}đ. Phần giá trị còn dư sẽ không được hoàn lại.",
+                          amount: unusedVoucherAmount.toLocaleString("vi-VN"),
+                        })}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -276,7 +387,7 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
         </div>
 
         <button
-          onClick={onConfirmBooking}
+          onClick={handleConfirmClick}
           disabled={!selectedPackageId || !selectedTime || isBooking}
           className="w-full mt-6 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_8px_30px_rgb(37,99,235,0.3)] hover:-translate-y-0.5 active:translate-y-0 border border-transparent dark:border-white/10 text-white font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -287,6 +398,76 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
               })}
         </button>
       </div>
+
+      {showVoucherWarning && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="voucher-warning-title"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#13151A]">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+
+              <div>
+                <h4
+                  id="voucher-warning-title"
+                  className="text-base font-bold text-slate-900 dark:text-white"
+                >
+                  {t("bookingSummary.confirmVoucherUsage", {
+                    defaultValue: "Xác nhận sử dụng Voucher?",
+                  })}
+                </h4>
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                  {t("bookingSummary.voucherLossConfirmation", {
+                    defaultValue:
+                      "Sau khi áp dụng Promotion, giá trị đơn hàng còn {{remainingAmount}}đ. Voucher {{voucherAmount}}đ của bạn chỉ được sử dụng {{usedAmount}}đ và {{unusedAmount}}đ còn dư sẽ không được hoàn lại hoặc sử dụng cho lần sau.",
+                    remainingAmount:
+                      priceAfterPromotion.toLocaleString("vi-VN"),
+                    voucherAmount: selectedVoucherValue.toLocaleString("vi-VN"),
+                    usedAmount: voucherDiscount.toLocaleString("vi-VN"),
+                    unusedAmount: unusedVoucherAmount.toLocaleString("vi-VN"),
+                  })}
+                </p>
+                <p className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                  {t("bookingSummary.stillContinueBooking", {
+                    defaultValue: "Bạn vẫn muốn tiếp tục đặt lịch?",
+                  })}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setShowVoucherWarning(false)}
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/5"
+              >
+                {t("bookingSummary.chooseAnotherVoucher", {
+                  defaultValue: "Chọn Voucher khác",
+                })}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmVoucherUsage}
+                disabled={isBooking}
+                className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isBooking
+                  ? t("bookingSummary.processing", {
+                      defaultValue: "Processing...",
+                    })
+                  : t("bookingSummary.confirmAnyway", {
+                      defaultValue: "Vẫn xác nhận",
+                    })}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
