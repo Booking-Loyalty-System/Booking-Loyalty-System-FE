@@ -156,7 +156,7 @@ export function AdminBranches() {
     branchName: editForm?.branchName || "",
     address: editForm?.address || "",
     hotline: editForm?.hotline || "",
-    operatingHours: editForm?.operatingHours || "8am-8pm",
+    operatingHours: editForm?.operatingHours || "8am-5pm",
     status: (editForm?.status as "Active" | "Inactive") || "Active",
     latitude: editForm?.latitude,
     longitude: editForm?.longitude,

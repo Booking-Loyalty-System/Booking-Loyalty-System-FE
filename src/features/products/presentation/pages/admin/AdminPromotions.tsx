@@ -18,6 +18,10 @@ import {
 } from "../../../application/useAdminPromotion";
 import type { DiscountType } from "../../../domain/models/admin-promotion/admin-promotion.model";
 
+// Thêm các hook cần thiết để lấy dữ liệu Branch và Tier
+import { useBranch } from "../../../application/useBranch";
+import { useAdminTier } from "../../../application/useAdminTier";
+
 type LocalPromoForm = Omit<CreateAdminPromotionInput, "discountValue"> & {
   discountValue: number | string;
   isActive?: boolean;
@@ -29,7 +33,7 @@ const emptyPromotionForm: LocalPromoForm = {
   name: "",
   description: "",
   discountType: "PERCENTAGE" as any,
-  discountValue: "", // Khởi tạo bằng chuỗi rỗng
+  discountValue: "",
   priorityLevel: 0,
   startDate: "",
   endDate: "",
@@ -37,37 +41,43 @@ const emptyPromotionForm: LocalPromoForm = {
   minSpend: null,
   requiresBirthday: false,
   tierIds: [],
-  branchIds: []
+  branchIds: [],
 };
 
 function toDateInputValue(isoDate: string) {
+  if (!isoDate) return "";
   return isoDate.slice(0, 10);
 }
 
 function toIsoDate(dateStr: string) {
+  if (!dateStr) return "";
   return new Date(dateStr + "T00:00:00Z").toISOString();
 }
 
 function formatDiscount(promo: AdminPromotionResponseData) {
-  if (promo.discountType === "Percentage") {
+  if (promo.discountType === "Percentage" || promo.discountType === ("PERCENTAGE" as any)) {
     return `${promo.discountValue}%`;
   }
   return `${promo.discountValue.toLocaleString("vi-VN")}đ`;
 }
 
-function formatDiscountType(type: DiscountType, t: any) {
-  return type === "Percentage" ? t("adminPromotions.percentage") : t("adminPromotions.fixedAmount");
+function formatDiscountType(type: DiscountType | string, t: any) {
+  return type === "Percentage" || type === "PERCENTAGE"
+    ? t("adminPromotions.percentage", { defaultValue: "Phần trăm" })
+    : t("adminPromotions.fixedAmount", { defaultValue: "Cố định" });
 }
 
 function formatUsage(promo: AdminPromotionResponseData) {
   if (promo.maxUses == null) {
-    return `${promo.usedCount} / `;
+    return `${promo.usedCount} / ∞`;
   }
   return `${promo.usedCount}/${promo.maxUses}`;
 }
 
 export function AdminPromotions() {
   const { t } = useTranslation("customer");
+
+  // Lấy dữ liệu Promotions
   const {
     promotions,
     isLoading,
@@ -78,6 +88,10 @@ export function AdminPromotions() {
     isCreating,
     isUpdating,
   } = useAdminPromotion();
+
+  // Lấy dữ liệu Branches và Tiers
+  const { branches } = useBranch();
+  const { tiers } = useAdminTier();
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -105,8 +119,8 @@ export function AdminPromotions() {
       discountType: promo.discountType as any,
       discountValue: promo.discountValue,
       priorityLevel: (promo as any).priorityLevel || 0,
-      startDate: promo.startDate,
-      endDate: promo.endDate,
+      startDate: toDateInputValue(promo.startDate),
+      endDate: toDateInputValue(promo.endDate),
       maxUses: promo.maxUses,
       minSpend: promo.minSpend,
       requiresBirthday: (promo as any).requiresBirthday || false,
@@ -130,6 +144,11 @@ export function AdminPromotions() {
         discountValue: Number(form.discountValue) || 0,
         maxUses: form.maxUses ?? null,
         minSpend: form.minSpend ?? null,
+        startDate: toIsoDate(form.startDate),
+        endDate: toIsoDate(form.endDate),
+        branchIds: form.branchIds || [],
+        tierIds: form.tierIds || [],
+        requiresBirthday: form.requiresBirthday || false,
       });
       handleCancel();
     }
@@ -146,15 +165,17 @@ export function AdminPromotions() {
         maxUses: form.maxUses ?? null,
         minSpend: form.minSpend ?? null,
         isActive: form.isActive ?? true,
-        branchIds: form.branchIds,
+        branchIds: form.branchIds || [],
+        tierIds: form.tierIds || [],
       };
+
       await updatePromotion({ id: editingId, data: updateData });
       handleCancel();
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm(t('adminPromotions.deleteConfirm'))) {
+    if (confirm(t('adminPromotions.deleteConfirm', { defaultValue: 'Bạn có chắc chắn muốn xóa?' }))) {
       await deletePromotion(id);
     }
   };
@@ -170,37 +191,57 @@ export function AdminPromotions() {
     }
   };
 
+  // Hàm xử lý tick/bỏ tick branch
+  const toggleBranch = (branchId: string) => {
+    if (!form) return;
+    const currentBranchIds = form.branchIds || [];
+    const newBranchIds = currentBranchIds.includes(branchId)
+      ? currentBranchIds.filter((id) => id !== branchId)
+      : [...currentBranchIds, branchId];
+    updateField("branchIds", newBranchIds);
+  };
+
+  // Hàm xử lý tick/bỏ tick tier
+  const toggleTier = (tierId: string) => {
+    if (!form) return;
+    const currentTierIds = form.tierIds || [];
+    const newTierIds = currentTierIds.includes(tierId)
+      ? currentTierIds.filter((id) => id !== tierId)
+      : [...currentTierIds, tierId];
+    updateField("tierIds", newTierIds);
+  };
+
   const showModal = (isAdding || editingId) && form;
 
   return (
     <div className="p-6 space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">{t('adminPromotions.title')}</h3>
+          <h3 className="text-2xl font-bold text-gray-900">{t('adminPromotions.title', { defaultValue: 'Khuyến mãi' })}</h3>
           <p className="text-gray-500">
-            {t('adminPromotions.subtitle')}
+            {t('adminPromotions.subtitle', { defaultValue: 'Quản lý các chương trình ưu đãi' })}
           </p>
         </div>
         <button
           onClick={handleAdd}
           className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all shadow-sm"
         >
-          <Plus className="w-5 h-5" /> {t('adminPromotions.addPromotion')}
+          <Plus className="w-5 h-5" /> {t('adminPromotions.addPromotion', { defaultValue: 'Thêm khuyến mãi' })}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.activeCount')}</p>
+          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.activeCount', { defaultValue: 'Đang hoạt động' })}</p>
           <p className="text-3xl font-bold text-gray-900">{stats.activeCount}</p>
         </div>
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.totalUsed')}</p>
+          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.totalUsed', { defaultValue: 'Tổng lượt dùng' })}</p>
           <p className="text-3xl font-bold text-blue-600">{stats.totalUsed}</p>
         </div>
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.totalPromotions')}</p>
+          <p className="text-sm text-gray-500 mb-1">{t('adminPromotions.totalPromotions', { defaultValue: 'Tổng số' })}</p>
           <p className="text-3xl font-bold text-green-600">{stats.total}</p>
         </div>
       </div>
@@ -208,20 +249,20 @@ export function AdminPromotions() {
       {/* Promotions List */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
-          <p className="text-gray-500">{t('adminPromotions.loading')}</p>
+          <p className="text-gray-500">{t('adminPromotions.loading', { defaultValue: 'Đang tải...' })}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.codeDesc')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.discountType')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.value')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.status')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.uses')}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.expires')}</th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">{t('adminPromotions.actions')}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.codeDesc', { defaultValue: 'Mã & Mô tả' })}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.discountType', { defaultValue: 'Loại' })}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.value', { defaultValue: 'Giá trị' })}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.status', { defaultValue: 'Trạng thái' })}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.uses', { defaultValue: 'Đã dùng' })}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.expires', { defaultValue: 'Hết hạn' })}</th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">{t('adminPromotions.actions', { defaultValue: 'Thao tác' })}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -266,10 +307,10 @@ export function AdminPromotions() {
                     >
                       {promo.isActive ? (
                         <>
-                          <CheckCircle2 className="w-3.5 h-3.5" />{t('adminPromotions.active')}</>
+                          <CheckCircle2 className="w-3.5 h-3.5" />{t('adminPromotions.active', { defaultValue: 'Hoạt động' })}</>
                       ) : (
                         <>
-                          <XCircle className="w-3.5 h-3.5" />{t('adminPromotions.inactive')}</>
+                          <XCircle className="w-3.5 h-3.5" />{t('adminPromotions.inactive', { defaultValue: 'Đã tắt' })}</>
                       )}
                     </button>
                   </td>
@@ -308,7 +349,7 @@ export function AdminPromotions() {
           <div className="bg-white w-full max-w-lg max-h-[90vh] rounded-2xl p-8 shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
               <h4 className="text-2xl font-bold text-gray-900">
-                {isAdding ? t('adminPromotions.addPromotion') : t('adminPromotions.editPromotion')}
+                {isAdding ? t('adminPromotions.addPromotion', { defaultValue: 'Thêm khuyến mãi' }) : t('adminPromotions.editPromotion', { defaultValue: 'Sửa khuyến mãi' })}
               </h4>
               <button
                 onClick={handleCancel}
@@ -319,9 +360,10 @@ export function AdminPromotions() {
             </div>
 
             <div className="space-y-6">
+              {/* Form Cơ bản */}
               {isAdding ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.promoCode', { defaultValue: 'Promo Code' })}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.promoCode', { defaultValue: 'Mã khuyến mãi' })}</label>
                   <input
                     type="text"
                     value={form.code}
@@ -334,7 +376,7 @@ export function AdminPromotions() {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.promoCode', { defaultValue: 'Promo Code' })}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.promoCode', { defaultValue: 'Mã khuyến mãi' })}</label>
                   <input
                     type="text"
                     value={form.code}
@@ -345,35 +387,33 @@ export function AdminPromotions() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.description', { defaultValue: 'Description' })}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.description', { defaultValue: 'Mô tả' })}</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => updateField("description", e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none transition-all"
-                  placeholder={t('adminPromotions.descPlaceholder', { defaultValue: 'Detailed promotion description...' })}
+                  placeholder={t('adminPromotions.descPlaceholder', { defaultValue: 'Nhập mô tả chi tiết...' })}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Khóa cứng loại giảm giá */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    {t('adminPromotions.discountType', { defaultValue: 'Type' })}
+                    {t('adminPromotions.discountType', { defaultValue: 'Loại giảm' })}
                   </label>
                   <select
                     disabled
                     value="PERCENTAGE"
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed outline-none appearance-none"
                   >
-                    <option value="PERCENTAGE">{t('adminPromotions.percentageSuffix', { defaultValue: 'Percentage (%)' })}</option>
+                    <option value="PERCENTAGE">{t('adminPromotions.percentageSuffix', { defaultValue: 'Phần trăm (%)' })}</option>
                   </select>
                 </div>
 
-                {/* Sửa input số */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    {t('adminPromotions.discountValue', { defaultValue: 'Discount Value' })}
+                    {t('adminPromotions.discountValue', { defaultValue: 'Giá trị giảm' })}
                   </label>
                   <input
                     type="number"
@@ -392,7 +432,7 @@ export function AdminPromotions() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.startDate', { defaultValue: 'Start Date' })}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.startDate', { defaultValue: 'Ngày bắt đầu' })}</label>
                   <div className="relative">
                     <Calendar className="absolute left-3.5 top-3 w-4 h-4 text-gray-400" />
                     <input
@@ -404,7 +444,7 @@ export function AdminPromotions() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.endDate', { defaultValue: 'End Date' })}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.endDate', { defaultValue: 'Ngày kết thúc' })}</label>
                   <div className="relative">
                     <Calendar className="absolute left-3.5 top-3 w-4 h-4 text-gray-400" />
                     <input
@@ -419,24 +459,25 @@ export function AdminPromotions() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.maxUses', { defaultValue: 'Max Uses' })}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.maxUses', { defaultValue: 'Số lượt dùng tối đa' })}</label>
                   <input
                     type="number"
                     value={form.maxUses ?? ""}
-                    onChange={(e) =>
-                      updateField(
-                        "maxUses",
-                        e.target.value === ""
-                          ? null
-                          : parseInt(e.target.value) || 0,
-                      )
-                    }
+                    onWheel={(e) => e.currentTarget.blur()}
+                    onChange={(e) => {
+                      if (e.target.value === "") {
+                        updateField("maxUses", null);
+                        return;
+                      }
+                      const val = parseInt(e.target.value, 10);
+                      updateField("maxUses", isNaN(val) ? 0 : val);
+                    }}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                    placeholder={t('adminPromotions.leaveEmptyUnlimited', { defaultValue: 'Leave empty for unlimited' })}
+                    placeholder={t('adminPromotions.leaveEmptyUnlimited', { defaultValue: 'Bỏ trống nếu không giới hạn' })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.minSpend', { defaultValue: 'Min Spend (đ)' })}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.minSpend', { defaultValue: 'Giá trị đơn tối thiểu' })}</label>
                   <input
                     type="number"
                     value={form.minSpend ?? ""}
@@ -449,13 +490,83 @@ export function AdminPromotions() {
                       )
                     }
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                    placeholder={t('adminPromotions.leaveEmptyNoRequirement', { defaultValue: 'Leave empty if no requirement' })}
+                    placeholder={t('adminPromotions.leaveEmptyNoRequirement', { defaultValue: 'Bỏ trống nếu không yêu cầu' })}
                   />
                 </div>
               </div>
 
+              {/* Các trường Advanced Options (Tier, Branch, Birthday) */}
+              <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-4">
+                <h5 className="text-sm font-semibold text-gray-900">{t('adminPromotions.advancedOptions', { defaultValue: 'Cài đặt nâng cao (Tùy chọn)' })}</h5>
+
+                {/* Chọn Branches */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    {t('adminPromotions.selectBranches', { defaultValue: 'Áp dụng cho chi nhánh' })}
+                  </label>
+                  <div className="max-h-40 overflow-y-auto border border-gray-300 bg-white rounded-lg p-3 space-y-2">
+                    {branches && branches.length > 0 ? (
+                      branches.map((branch) => (
+                        <label key={branch.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={form.branchIds?.includes(branch.id)}
+                            onChange={() => toggleBranch(branch.id)}
+                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{branch.branchName}</span>
+                        </label>
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">Chưa có dữ liệu chi nhánh</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Chọn Tiers */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    {t('adminPromotions.selectTiers', { defaultValue: 'Áp dụng cho hạng thành viên' })}
+                  </label>
+                  <div className="max-h-40 overflow-y-auto border border-gray-300 bg-white rounded-lg p-3 space-y-2">
+                    {tiers && tiers.length > 0 ? (
+                      tiers.map((tier: any) => (
+                        <label key={tier.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={form.tierIds?.includes(tier.id)}
+                            onChange={() => toggleTier(tier.id)}
+                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{tier.name || tier.tierName || 'Hạng chưa đặt tên'}</span>
+                        </label>
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">Chưa có dữ liệu hạng thành viên</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Yêu cầu sinh nhật */}
+                <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                  <input
+                    type="checkbox"
+                    id="promo-birthday"
+                    checked={form.requiresBirthday ?? false}
+                    onChange={(e) => updateField("requiresBirthday", e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="promo-birthday"
+                    className="text-sm font-medium text-gray-700 cursor-pointer"
+                  >
+                    {t('adminPromotions.requiresBirthdayLabel', { defaultValue: 'Yêu cầu là tháng sinh nhật của khách' })}
+                  </label>
+                </div>
+              </div>
+
               {editingId && (
-                <div className="flex items-center gap-2 pt-2">
+                <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                   <input
                     type="checkbox"
                     id="promo-active"
@@ -465,8 +576,10 @@ export function AdminPromotions() {
                   />
                   <label
                     htmlFor="promo-active"
-                    className="text-sm font-medium text-gray-700"
-                  >{t('adminPromotions.activeCount', { defaultValue: 'Active Status' })}</label>
+                    className="text-sm font-medium text-gray-700 cursor-pointer"
+                  >
+                    {t('adminPromotions.activeCount', { defaultValue: 'Trạng thái hoạt động' })}
+                  </label>
                 </div>
               )}
 
@@ -474,13 +587,15 @@ export function AdminPromotions() {
                 <button
                   onClick={isAdding ? handleCreate : handleSave}
                   disabled={isCreating || isUpdating}
-                  className="w-full py-3.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50"
+                  className="w-full py-3.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50 flex justify-center items-center gap-2"
                 >
-                  {isCreating || isUpdating
-                    ? t('adminPromotions.saving', { defaultValue: 'Saving...' })
-                    : isAdding
-                      ? t('adminPromotions.createPromotion', { defaultValue: 'Create Promotion' })
-                      : t('adminPromotions.saveChanges', { defaultValue: 'Save Changes' })}
+                  {isCreating || isUpdating ? (
+                    t('adminPromotions.saving', { defaultValue: 'Đang lưu...' })
+                  ) : isAdding ? (
+                    t('adminPromotions.createPromotion', { defaultValue: 'Tạo khuyến mãi' })
+                  ) : (
+                    t('adminPromotions.saveChanges', { defaultValue: 'Lưu thay đổi' })
+                  )}
                 </button>
               </div>
             </div>

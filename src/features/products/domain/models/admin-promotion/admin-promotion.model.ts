@@ -44,4 +44,5 @@ export interface UpdateAdminPromotionInput {
     minSpend?: number | null;
     isActive: boolean;
     branchIds?: string[];
+    tierIds?: string[];
 }
