@@ -250,13 +250,13 @@ export const BookWash: React.FC = () => {
   const earnedFreeWashes = Math.floor(totalWashes / 7);
   const redeemedFreeWashes = Array.isArray(redemptions)
     ? redemptions.filter(
-        (r) =>
-          r &&
-          (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" ||
-            r.rewardName === "Free Car Wash Reward" ||
-            r.rewardName.includes("Miễn Phí") ||
-            r.rewardName.includes("Free Wash")),
-      ).length
+      (r) =>
+        r &&
+        (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" ||
+          r.rewardName === "Free Car Wash Reward" ||
+          r.rewardName.includes("Miễn Phí") ||
+          r.rewardName.includes("Free Wash")),
+    ).length
     : 0;
   const availableFreeWashes = Math.max(
     0,
@@ -426,9 +426,8 @@ export const BookWash: React.FC = () => {
       setHasAppliedAutoPromo(true);
       toast.success(
         t("bookWash.toastAutoPromoApplied", {
-          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${
-            bestPromo.name || bestPromo.code
-          }`,
+          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${bestPromo.name || bestPromo.code
+            }`,
         }),
       );
     } else {
@@ -586,12 +585,12 @@ export const BookWash: React.FC = () => {
       response?: {
         status?: number;
         data?:
-          | string
-          | {
-              message?: string;
-              error?: string;
-              title?: string;
-            };
+        | string
+        | {
+          message?: string;
+          error?: string;
+          title?: string;
+        };
       };
     };
 
@@ -601,10 +600,10 @@ export const BookWash: React.FC = () => {
       typeof responseData === "string"
         ? responseData
         : responseData?.message ||
-          responseData?.error ||
-          responseData?.title ||
-          apiError.message ||
-          "";
+        responseData?.error ||
+        responseData?.title ||
+        apiError.message ||
+        "";
 
     const normalizedMessage = serverMessage.toLowerCase();
     const status = apiError.response?.status;
@@ -854,6 +853,28 @@ export const BookWash: React.FC = () => {
               toast.error("Voucher này không thể dùng cho gói đó!");
               return;
             }
+
+            const packagePrice = currentPackage?.price || 0;
+            let promoDiscount = 0;
+
+            if (appliedPromotion) {
+              if ((appliedPromotion as any).discountAmount !== undefined) {
+                promoDiscount = (appliedPromotion as any).discountAmount;
+              } else if (appliedPromotion.discountType === "Percentage") {
+                promoDiscount = Math.floor(packagePrice * (appliedPromotion.discountValue / 100));
+              } else if (appliedPromotion.discountType === "FixedAmount") {
+                promoDiscount = Math.min(packagePrice, appliedPromotion.discountValue);
+              }
+            }
+
+            const priceAfterPromo = packagePrice - promoDiscount;
+            const rewardDiscount = (voucher as any).discountAmount || (voucher as any).discountValue || (voucher as any).value || 0;
+
+            if (!(voucher as any).isFreeWash && rewardDiscount > priceAfterPromo) {
+              toast.error("Giá trị giảm của Reward lớn hơn số tiền cần thanh toán sau khi áp dụng Khuyến mãi. Không thể áp dụng!");
+              return;
+            }
+
             // Nếu là voucher Free Wash → clear promotion ngay lập tức
             if ((voucher as any).isFreeWash === true) {
               setAppliedPromotion(null);
@@ -861,6 +882,7 @@ export const BookWash: React.FC = () => {
             }
             setSelectedVoucher(voucher);
           }}
+
           totalPoints={customerMe?.availablePoint ?? 0}
           availableFreeWashes={availableFreeWashes}
         />

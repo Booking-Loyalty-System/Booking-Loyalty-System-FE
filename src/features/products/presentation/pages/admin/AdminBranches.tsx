@@ -19,6 +19,7 @@ import type { BranchResponseData } from "../../../domain/models/admin-branch/adm
 import { useTranslation } from "react-i18next";
 import { useStaff } from "@/features/products/application/useStaff";
 import { useAdminPromotion } from "@/features/products/application/useAdminPromotion";
+import { useWashBay } from "@/features/products/application/useWashBay";
 
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
@@ -91,10 +92,31 @@ export function AdminBranches() {
 
   const { createStaff, isCreatingStaff } = useStaff();
   const { promotions, updatePromotion, isUpdating, createPromotion, isCreating } = useAdminPromotion();
+  const { createWashBay, isCreatingWashBay } = useWashBay();
 
   // --- STATE MODALS THEO LUỒNG (WORKFLOW) ---
   const [selectedBranchForStaff, setSelectedBranchForStaff] = useState<{ id: string; name: string } | null>(null);
-  const [staffForm, setStaffForm] = useState({ email: "", password: "", fullName: "", phoneNumber: "" });
+  // Đã bỏ phoneNumber
+  const [staffForm, setStaffForm] = useState({ email: "", password: "", fullName: "" });
+
+  // State quản lý danh sách Wash Bays (Mặc định 4 khoang)
+  const [washBaysList, setWashBaysList] = useState<string[]>([
+    "Khoang rửa 1", "Khoang rửa 2", "Khoang rửa 3", "Khoang rửa 4"
+  ]);
+
+  const handleUpdateWashBayName = (index: number, newName: string) => {
+    const updated = [...washBaysList];
+    updated[index] = newName;
+    setWashBaysList(updated);
+  };
+
+  const handleAddWashBay = () => {
+    setWashBaysList([...washBaysList, `Khoang rửa ${washBaysList.length + 1}`]);
+  };
+
+  const handleRemoveWashBay = (index: number) => {
+    setWashBaysList(washBaysList.filter((_, i) => i !== index));
+  };
 
   const [selectedBranchForPromo, setSelectedBranchForPromo] = useState<{ id: string; name: string } | null>(null);
   const [selectedPromoId, setSelectedPromoId] = useState<string>("");
@@ -105,7 +127,7 @@ export function AdminBranches() {
     name: "",
     description: "",
     discountType: "PERCENTAGE",
-    discountValue: 0,
+    discountValue: "" as number | string,
     priorityLevel: 0,
     startDate: "",
     endDate: "",
@@ -190,7 +212,9 @@ export function AdminBranches() {
 
         // Ngay lập tức mở Modal Add Staff cho chi nhánh vừa tạo (LUỒNG BƯỚC 2)
         setSelectedBranchForStaff({ id: newBranchId, name: newBranchName });
-        setStaffForm({ email: "", password: "", fullName: "", phoneNumber: "" });
+        // Đã bỏ phoneNumber
+        setStaffForm({ email: "", password: "", fullName: "" });
+        setWashBaysList(["Khoang rửa 1", "Khoang rửa 2", "Khoang rửa 3", "Khoang rửa 4"]);
       } catch (error) {
         console.error("Failed to create branch:", error);
         alert("Có lỗi xảy ra khi tạo chi nhánh mới!");
@@ -280,32 +304,59 @@ export function AdminBranches() {
     }
   };
 
-  // --- LUỒNG BƯỚC 2: TẠO STAFF XONG CHUYỂN SANG PROMOTION ---
+  // --- LUỒNG BƯỚC 2: TẠO STAFF VÀ WASH BAYS XONG CHUYỂN SANG PROMOTION ---
   const handleSaveStaffData = async () => {
     if (!selectedBranchForStaff) return;
-    if (!staffForm.email || !staffForm.password || !staffForm.fullName || !staffForm.phoneNumber) {
-      alert("Vui lòng điền đầy đủ tất cả các trường dữ liệu!");
+
+    // Validate form nhân viên (Đã bỏ phoneNumber)
+    if (!staffForm.email || !staffForm.password || !staffForm.fullName) {
+      alert("Vui lòng điền đầy đủ tất cả các trường dữ liệu nhân viên!");
+      return;
+    }
+
+    // Validate danh sách khoang rửa
+    if (washBaysList.length === 0) {
+      alert("Vui lòng thêm ít nhất 1 khoang rửa xe cho chi nhánh!");
+      return;
+    }
+    if (washBaysList.some(name => !name.trim())) {
+      alert("Tên khoang rửa xe không được để trống!");
       return;
     }
 
     try {
+      // 1. Tạo tài khoản Nhân viên (Đã bỏ phoneNumber trong payload tùy vào hook custom của bạn, nếu hook custom vẫn require phoneNumber bạn nên truyền chuỗi rỗng "")
       await createStaff({
         email: staffForm.email,
         password: staffForm.password,
         fullName: staffForm.fullName,
-        phoneNumber: staffForm.phoneNumber,
         branchId: selectedBranchForStaff.id
       });
+
+      // 2. Tạo danh sách khoang rửa xe (Wash Bays) bằng Promise.all
+      const washBayPromises = washBaysList.map(name =>
+        createWashBay({
+          name: name.trim(),
+          branchId: selectedBranchForStaff.id
+        })
+      );
+      await Promise.all(washBayPromises);
 
       // Lưu trữ tạm nhánh hiện tại trước khi đóng modal
       const currentBranch = selectedBranchForStaff;
       setSelectedBranchForStaff(null);
 
+      // Reset danh sách khoang rửa về mặc định cho lần tạo sau
+      setWashBaysList(["Khoang rửa 1", "Khoang rửa 2", "Khoang rửa 3", "Khoang rửa 4"]);
+
       // Chuyển sang Modal Add Promotion (LUỒNG BƯỚC 3)
       setSelectedBranchForPromo(currentBranch);
       setSelectedPromoId("");
+
+      setIsCreatingNewPromo(true);
     } catch (err) {
-      console.error("Error dispatching staff registration:", err);
+      console.error("Error creating staff or wash bays:", err);
+      alert("Có lỗi xảy ra khi tạo nhân viên hoặc khoang rửa!");
     }
   };
 
@@ -327,9 +378,10 @@ export function AdminBranches() {
     try {
       await createPromotion({
         ...newPromoForm,
+        discountValue: Number(newPromoForm.discountValue) || 0,
         startDate: new Date(newPromoForm.startDate).toISOString(),
         endDate: new Date(newPromoForm.endDate).toISOString(),
-        branchIds: [selectedBranchForPromo.id], // Tự động gắn branchId vừa tạo
+        branchIds: [selectedBranchForPromo.id],
       });
 
       alert(`Đã tạo và kích hoạt khuyến mãi mới cho chi nhánh: ${selectedBranchForPromo.name}`);
@@ -512,7 +564,17 @@ export function AdminBranches() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminBranches.address', { defaultValue: 'Address' })}</label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {t('adminBranches.address', { defaultValue: 'Address' })}
+                    </label>
+                    {isGeocoding && (
+                      <span className="text-xs text-blue-600 flex items-center gap-1 font-medium animate-pulse">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-ping" />
+                        {t('adminBranches.locating', { defaultValue: 'Locating...' })}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex gap-2">
                     <textarea
                       value={editForm.address}
@@ -520,22 +582,29 @@ export function AdminBranches() {
                         setEditForm({ ...editForm, address: e.target.value })
                       }
                       rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                      placeholder="Nhập địa chỉ đầy đủ..."
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none text-sm transition-all shadow-sm hover:border-gray-400 focus:border-blue-500"
+                      placeholder={t('adminBranches.addressPlaceholder', { defaultValue: 'Enter full address...' })}
                     />
                     <button
                       type="button"
                       onClick={handleGeocodeAddress}
                       disabled={isGeocoding || !editForm.address}
-                      className="flex flex-col items-center justify-center px-4 bg-gray-100 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                      className="flex flex-col items-center justify-center px-4 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 active:bg-blue-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shrink-0 w-24 md:w-28 text-center"
                       title="Tìm tọa độ trên bản đồ"
                     >
-                      <Search className="w-5 h-5 mb-1" />
-                      <span className="text-xs font-medium">
-                  {t('adminBranches.mapHint', { defaultValue: 'Click on the map to pin the location or use the "Search Map" button next to the address' })}
+                      {isGeocoding ? (
+                        <div className="w-5 h-5 mb-1 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Search className="w-5 h-5 mb-1 text-blue-600" />
+                      )}
+                      <span className="text-[10px] font-bold tracking-wider uppercase">
+                        {t('adminBranches.searchMap', { defaultValue: 'Search Map' })}
                       </span>
                     </button>
                   </div>
+                  <p className="text-[11px] text-gray-500 italic mt-1.5 leading-relaxed">
+                    {t('adminBranches.addressHelper', { defaultValue: '* Enter detail address and click "Search Map" to sync coordinates automatically.' })}
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -577,8 +646,8 @@ export function AdminBranches() {
                       type="number"
                       readOnly
                       value={editForm.latitude || ""}
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg outline-none text-gray-500"
-                      placeholder="Chọn trên bản đồ"
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg outline-none text-gray-500 text-sm shadow-inner"
+                      placeholder={t('adminBranches.selectOnMap', { defaultValue: 'Select on map' })}
                     />
                   </div>
                   <div>
@@ -589,8 +658,8 @@ export function AdminBranches() {
                       type="number"
                       readOnly
                       value={editForm.longitude || ""}
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg outline-none text-gray-500"
-                      placeholder="Chọn trên bản đồ"
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg outline-none text-gray-500 text-sm shadow-inner"
+                      placeholder={t('adminBranches.selectOnMap', { defaultValue: 'Select on map' })}
                     />
                   </div>
                 </div>
@@ -659,15 +728,14 @@ export function AdminBranches() {
         </div>
       )}
 
-      {/* --- MODAL ADD STAFF (WORKFLOW STEP 2) --- */}
+      {/* --- MODAL ADD STAFF & WASH BAY (WORKFLOW STEP 2) --- */}
       {selectedBranchForStaff && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-scale-up">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-scale-up max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
               <h4 className="text-lg font-bold text-gray-900">
-                Bước 2: Tạo tài khoản Nhân viên
+                Bước 2: Tạo Nhân viên & Khoang rửa
               </h4>
-              {/* Nút X ở đây có thể cho phép người dùng dừng luồng (bỏ qua bước Staff) */}
               <button onClick={() => setSelectedBranchForStaff(null)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-5 h-5" />
               </button>
@@ -676,7 +744,7 @@ export function AdminBranches() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Họ và tên</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Họ và tên nhân viên</label>
                 <input
                   type="text"
                   value={staffForm.fullName}
@@ -686,7 +754,7 @@ export function AdminBranches() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Email</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Email nhân viên</label>
                 <input
                   type="email"
                   value={staffForm.email}
@@ -696,17 +764,7 @@ export function AdminBranches() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Số điện thoại</label>
-                <input
-                  type="text"
-                  value={staffForm.phoneNumber}
-                  onChange={(e) => setStaffForm({ ...staffForm, phoneNumber: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
-                  placeholder="09XXXXXXXX"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Mật khẩu tài khoản</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Mật khẩu tài khoản nhân viên</label>
                 <input
                   type="password"
                   value={staffForm.password}
@@ -715,23 +773,66 @@ export function AdminBranches() {
                   placeholder="••••••••"
                 />
               </div>
-            </div>
 
-            <div className="flex justify-between items-center pt-4 mt-6 border-t border-gray-100">
-              {/* Cho phép bỏ qua bước tạo staff nếu họ muốn */}
-              <button
-                onClick={() => setSelectedBranchForStaff(null)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-200"
-              >
-                Bỏ qua
-              </button>
-              <button
-                onClick={handleSaveStaffData}
-                disabled={isCreatingStaff}
-                className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 disabled:opacity-50"
-              >
-                {isCreatingStaff ? "Đang tạo..." : "Xác nhận & Tiếp tục"}
-              </button>
+              {/* THÔNG TIN WAYS BAY */}
+              <div className="border-t border-dashed border-gray-200 pt-4 mt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-indigo-600">
+                    Danh sách Khoang rửa (Wash Bays)
+                  </h5>
+                  <button
+                    type="button"
+                    onClick={handleAddWashBay}
+                    className="flex items-center gap-1 px-2 py-1 text-xs font-bold text-indigo-600 bg-indigo-50 rounded hover:bg-indigo-100 transition-colors"
+                  >
+                    <Plus className="w-3 h-3" /> Thêm khoang
+                  </button>
+                </div>
+
+                {/* Vùng cuộn nếu admin thêm quá nhiều khoang rửa */}
+                <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                  {washBaysList.map((wbName, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={wbName}
+                        onChange={(e) => handleUpdateWashBayName(index, e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium"
+                        placeholder={`Tên khoang rửa ${index + 1}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveWashBay(index)}
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Xóa khoang rửa này"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {washBaysList.length === 0 && (
+                    <p className="text-xs text-gray-400 italic text-center py-2">
+                      Chưa có khoang rửa nào. Vui lòng bấm "Thêm khoang".
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-4 mt-6 border-t border-gray-100">
+                <button
+                  onClick={() => setSelectedBranchForStaff(null)}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-200"
+                >
+                  Bỏ qua
+                </button>
+                <button
+                  onClick={handleSaveStaffData}
+                  disabled={isCreatingStaff || isCreatingWashBay}
+                  className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {isCreatingStaff || isCreatingWashBay ? "Đang tạo..." : "Xác nhận & Tiếp tục"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -772,14 +873,22 @@ export function AdminBranches() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Loại giảm giá</label>
-                  <select value={newPromoForm.discountType} onChange={e => setNewPromoForm({ ...newPromoForm, discountType: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm">
+                  <select
+                    disabled
+                    value="PERCENTAGE"
+                    className="w-full px-3 py-2 border rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
+                  >
                     <option value="PERCENTAGE">Phần trăm (%)</option>
-                    <option value="AMOUNT">Số tiền mặt</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Mức giảm</label>
-                  <input type="number" value={newPromoForm.discountValue} onChange={e => setNewPromoForm({ ...newPromoForm, discountValue: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                  <input
+                    type="number"
+                    value={newPromoForm.discountValue}
+                    onChange={e => setNewPromoForm({ ...newPromoForm, discountValue: e.target.value === "" ? "" : Number(e.target.value) })}
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Bắt đầu</label>

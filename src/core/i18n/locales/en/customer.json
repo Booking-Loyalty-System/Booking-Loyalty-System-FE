@@ -839,7 +839,12 @@
     "saveBranch": "Save Branch",
     "createBranch": "Create Branch",
     "saveChanges": "Save Changes",
-    "mapHint": "Click on the map to pin the location or use the \"Search Map\" button next to the address"
+    "mapHint": "Click on the map to pin the location or use the \"Search Map\" button next to the address",
+    "searchMap": "Search Map",
+    "addressPlaceholder": "Enter full address...",
+    "addressHelper": "* Enter detailed address and click \"Search Map\" to sync coordinates automatically.",
+    "selectOnMap": "Select on map",
+    "locating": "Locating..."
   },
   "adminStaff": {
     "title": "Staff Management",

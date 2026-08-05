@@ -8,5 +8,7 @@ export interface WashBay {
 }
 
 export interface IWashBayRepository {
+    getAllWashBays(): Promise<WashBay[]>;
     getWashBaysByBranch(branchId: string): Promise<WashBay[]>;
+    createWashBay(payload: { name: string; branchId: string }): Promise<WashBay>;
 }
