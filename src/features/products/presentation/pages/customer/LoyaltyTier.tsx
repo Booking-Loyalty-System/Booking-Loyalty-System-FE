@@ -11,13 +11,15 @@ import {
 import { useTranslation } from "react-i18next";
 import { useCustomerMe } from "@/features/products/application/useCustomer.ts";
 import { useLoyaltyHistory } from "@/features/products/application/useLoyalty.ts";
+import { useTier } from "@/features/products/application/useTier";
 import type { LoyaltyTransaction } from "@/features/products/domain/models/loyalty/loyalty.dto.ts";
 
 interface MembershipTier {
+  id: string;
   name: string;
-  pointsRangeKey: string;
-  pointsRangeDefault: string;
-  discount: string;
+  minPointsRequired: number;
+  maintenancePoints: number;
+  pointRate: number;
   multiplier: string;
   advanceBooking: number;
   benefits: string[];
@@ -27,9 +29,52 @@ interface MembershipTier {
   icon: React.ReactNode;
 }
 
+const normalizeTierName = (value?: string | null) =>
+  (value ?? "")
+    .replace(/\s+(tier|member)$/i, "")
+    .trim()
+    .toLowerCase();
+
+const formatMultiplier = (pointRate: number) =>
+  `${Number(pointRate.toFixed(2))}x`;
+
+const getTierAppearance = (tierName: string) => {
+  switch (normalizeTierName(tierName)) {
+    case "silver":
+      return {
+        colorClass:
+          "border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-300",
+        bgClass: "bg-slate-50 dark:bg-slate-800",
+        icon: <Award className="w-6 h-6 text-slate-400 dark:text-slate-300" />,
+      };
+    case "gold":
+      return {
+        colorClass:
+          "border-amber-200 dark:border-amber-500/30 text-amber-500 dark:text-amber-400",
+        bgClass: "bg-amber-50 dark:bg-amber-500/10",
+        icon: <Crown className="w-6 h-6 text-amber-500 dark:text-amber-400" />,
+      };
+    case "diamond":
+      return {
+        colorClass:
+          "border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-400",
+        bgClass: "bg-purple-50 dark:bg-purple-500/10",
+        icon: <Gem className="w-6 h-6 text-purple-600 dark:text-purple-400" />,
+      };
+    default:
+      return {
+        colorClass:
+          "border-slate-200 dark:border-white/10 text-blue-600 dark:text-blue-400",
+        bgClass: "bg-blue-50 dark:bg-blue-900/30",
+        icon: <Award className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
+      };
+  }
+};
+
 export const LoyaltyTier: React.FC = () => {
   const { t } = useTranslation("customer");
   const { customerMe } = useCustomerMe();
+  const { tiers: tierData = [] } = useTier();
   const { data: historyData, isLoading: isLoadingHistory } =
     useLoyaltyHistory();
 
@@ -38,92 +83,50 @@ export const LoyaltyTier: React.FC = () => {
   const totalPoints = customerMe?.totalPoint || 0; // Dùng để xét hạng
   const currentTierName = customerMe?.tier || "Bronze";
 
-  // Tính toán target dựa trên mức TỔNG ĐIỂM (totalPoints)
-  let targetPoints = 2000;
-  let nextTierName = "Silver";
-  if (totalPoints >= 2000 && totalPoints < 6000) {
-    targetPoints = 6000;
-    nextTierName = "Gold";
-  } else if (totalPoints >= 6000 && totalPoints < 15000) {
-    targetPoints = 15000;
-    nextTierName = "Diamond";
-  } else if (totalPoints >= 15000) {
-    targetPoints = totalPoints;
-    nextTierName = "Max Tier";
-  }
-
-  const pointsToGo = Math.max(0, targetPoints - totalPoints);
-  const progressPercentage =
-    totalPoints >= 15000 ? 100 : (totalPoints / targetPoints) * 100;
-
-  const baseTiers: MembershipTier[] = [
-    {
-      name: "Bronze",
-      pointsRangeKey: "loyaltyTier.tierBronzeRange",
-      pointsRangeDefault: "0 - 1999 points",
-      discount: "5%",
-      multiplier: "1x",
-      advanceBooking: 7,
-      benefits: ["benefitBirthdayBonus"],
-      isCurrent: false,
-      colorClass:
-        "border-slate-200 dark:border-white/10 text-blue-600 dark:text-blue-400",
-      bgClass: "bg-blue-50 dark:bg-blue-900/30",
-      icon: <Award className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
-    },
-    {
-      name: "Silver",
-      pointsRangeKey: "loyaltyTier.tierSilverRange",
-      pointsRangeDefault: "2000 - 5999 points",
-      discount: "10%",
-      multiplier: "1.5x",
-      advanceBooking: 14,
-      benefits: ["benefitPrioritySupport", "benefitExclusiveOffers"],
-      isCurrent: false,
-      colorClass:
-        "border-slate-200 dark:border-white/10 text-slate-400 dark:text-slate-300",
-      bgClass: "bg-slate-50 dark:bg-slate-800",
-      icon: <Award className="w-6 h-6 text-slate-400 dark:text-slate-300" />,
-    },
-    {
-      name: "Gold",
-      pointsRangeKey: "loyaltyTier.tierGoldRange",
-      pointsRangeDefault: "6000 - 14999 points",
-      discount: "15%",
-      multiplier: "2x",
-      advanceBooking: 21,
-      benefits: ["benefitPriorityBooking", "benefitFreeWashBirthday"],
-      isCurrent: false,
-      colorClass:
-        "border-amber-200 dark:border-amber-500/30 text-amber-500 dark:text-amber-400",
-      bgClass: "bg-amber-50 dark:bg-amber-500/10",
-      icon: <Crown className="w-6 h-6 text-amber-500 dark:text-amber-400" />,
-    },
-    {
-      name: "Diamond",
-      pointsRangeKey: "loyaltyTier.tierDiamondRange",
-      pointsRangeDefault: "15000+ points",
-      discount: "20%",
-      multiplier: "3x",
-      advanceBooking: 30,
-      benefits: ["benefitVipAccess", "benefitDedicatedManager"],
-      isCurrent: false,
-      colorClass:
-        "border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-400",
-      bgClass: "bg-purple-50 dark:bg-purple-500/10",
-      icon: <Gem className="w-6 h-6 text-purple-600 dark:text-purple-400" />,
-    },
-  ];
-
-  const tiers = baseTiers.map((tItem) => ({
-    ...tItem,
-    isCurrent:
-      tItem.name.toLowerCase() === currentTierName.toLowerCase() ||
-      (tItem.name === "Bronze" &&
-        (!currentTierName || currentTierName.toLowerCase() === "member")),
-  }));
+  // Tier API là nguồn dữ liệu duy nhất cho các thông số hiển thị.
+  const tiers: MembershipTier[] = React.useMemo(
+    () =>
+      [...tierData]
+        .sort((a, b) => a.minPointsRequired - b.minPointsRequired)
+        .map((tier) => ({
+          id: tier.id,
+          name: tier.tierName,
+          minPointsRequired: tier.minPointsRequired,
+          maintenancePoints: tier.maintenancePoints,
+          pointRate: tier.pointRate,
+          multiplier: formatMultiplier(tier.pointRate),
+          advanceBooking: tier.bookingWindow,
+          benefits: tier.benefits ?? [],
+          isCurrent:
+            normalizeTierName(tier.tierName) ===
+            normalizeTierName(currentTierName),
+          ...getTierAppearance(tier.tierName),
+        })),
+    [tierData, currentTierName],
+  );
 
   const currentTierInfo = tiers.find((tItem) => tItem.isCurrent) || tiers[0];
+  const currentTierIndex = Math.max(
+    0,
+    tiers.findIndex((tier) => tier.isCurrent),
+  );
+  const nextTier = tiers[currentTierIndex + 1];
+  const nextTierName = nextTier?.name ?? "Max Tier";
+  const pointsToGo = nextTier
+    ? Math.max(0, nextTier.minPointsRequired - totalPoints)
+    : 0;
+  const currentTierMinimum = currentTierInfo?.minPointsRequired ?? 0;
+  const progressPercentage = nextTier
+    ? Math.min(
+        100,
+        Math.max(
+          0,
+          ((totalPoints - currentTierMinimum) /
+            (nextTier.minPointsRequired - currentTierMinimum)) *
+            100,
+        ),
+      )
+    : 100;
 
   const transactions: LoyaltyTransaction[] = historyData?.transactions || [];
 
@@ -180,7 +183,7 @@ export const LoyaltyTier: React.FC = () => {
                 {t(`loyaltyTier.tiers.${currentTierName.toLowerCase()}`, {
                   defaultValue: `${currentTierName} Member`,
                 })}
-                {currentTierInfo.icon && (
+                {currentTierInfo?.icon && (
                   <span className="[&>svg]:text-amber-300 [&>svg]:fill-amber-300 [&>svg]:w-8 [&>svg]:h-8 inline-block shrink-0">
                     {currentTierInfo.icon}
                   </span>
@@ -216,7 +219,7 @@ export const LoyaltyTier: React.FC = () => {
                 })}
               </span>
               <span className="text-blue-950 dark:text-white font-bold">
-                {totalPoints >= 15000
+                {!nextTier
                   ? t("loyaltyTier.maxTierReached", {
                       defaultValue: "Max Tier Reached",
                     })
@@ -257,19 +260,25 @@ export const LoyaltyTier: React.FC = () => {
             <div className="bg-white/70 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-sky-300/70 dark:border-white/10 shadow-sm">
               <Gift className="w-5 h-5 mx-auto mb-1 text-sky-500 dark:text-slate-400" />
               <p className="text-2xl font-bold text-amber-500 dark:text-amber-400">
-                {currentTierInfo.discount}
+                {currentTierInfo?.multiplier ?? "—"}
               </p>
               <p className="text-xs text-sky-600 dark:text-slate-400">
-                {t("loyaltyTier.discountRateCard")}
+                {t("loyaltyTier.pointsMultiplierCard", {
+                  defaultValue: "Points Multiplier",
+                })}
               </p>
             </div>
             <div className="bg-white/70 dark:bg-white/5 hover:bg-white/90 dark:hover:bg-white/10 transition-colors backdrop-blur-sm p-4 rounded-xl text-center border border-sky-300/70 dark:border-white/10 shadow-sm">
               <Award className="w-5 h-5 mx-auto mb-1 text-sky-500 dark:text-slate-400" />
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {currentTierInfo.multiplier}
+                {currentTierInfo
+                  ? `${currentTierInfo.advanceBooking} ${t("bookWash.priority.days", { defaultValue: "days" })}`
+                  : "—"}
               </p>
               <p className="text-xs text-slate-400">
-                {t("loyaltyTier.pointsMultiplierCard")}
+                {t("loyaltyTier.advanceBooking", {
+                  defaultValue: "Advance Booking",
+                })}
               </p>
             </div>
           </div>
@@ -310,9 +319,17 @@ export const LoyaltyTier: React.FC = () => {
               </div>
             ))}
           </div>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-4 italic">
-            {t("loyaltyTier.formulaExample")}
-          </p>
+          {currentTierInfo && (
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-4 italic">
+              {t("loyaltyTier.formulaExampleDynamic", {
+                amount: (450000).toLocaleString("vi-VN"),
+                tier: currentTierInfo.name,
+                multiplier: currentTierInfo.multiplier,
+                points: Math.floor((450000 / 1000) * currentTierInfo.pointRate),
+                defaultValue: `Example: A 450,000đ wash for ${currentTierInfo.name} members = (450,000 / 1,000) × ${currentTierInfo.multiplier} = ${Math.floor((450000 / 1000) * currentTierInfo.pointRate)} points`,
+              })}
+            </p>
+          )}
         </div>
 
         <div>
@@ -322,7 +339,7 @@ export const LoyaltyTier: React.FC = () => {
             })}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-            {tiers.map((tier) => (
+            {tiers.map((tier, tierIndex) => (
               <div
                 key={tier.name}
                 className={`relative bg-white dark:bg-[#13151A] rounded-2xl p-6 border transition-all duration-300 flex flex-col justify-between ${tier.colorClass} ${
@@ -350,18 +367,12 @@ export const LoyaltyTier: React.FC = () => {
                     })}
                   </h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                    {t(tier.pointsRangeKey, {
-                      defaultValue: tier.pointsRangeDefault,
-                    })}
+                    {tiers[tierIndex + 1]
+                      ? `${tier.minPointsRequired} - ${tiers[tierIndex + 1].minPointsRequired - 1} ${t("loyaltyTier.points", { defaultValue: "points" })}`
+                      : `${tier.minPointsRequired}+ ${t("loyaltyTier.points", { defaultValue: "points" })}`}
                   </p>
 
                   <div className="mt-6 space-y-3 pt-6 border-t border-slate-100 dark:border-white/10">
-                    <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-                      <span className="text-emerald-500 font-bold">✓</span>
-                      <span>
-                        {t("loyaltyTier.benefitDiscount", { n: tier.discount })}
-                      </span>
-                    </div>
                     <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <span className="text-emerald-500 font-bold">✓</span>
                       <span>
@@ -378,18 +389,23 @@ export const LoyaltyTier: React.FC = () => {
                         })}
                       </span>
                     </div>
+                    <div className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                      <span className="text-emerald-500 font-bold">✓</span>
+                      <span>
+                        {tier.maintenancePoints > 0
+                          ? `${tier.maintenancePoints} ${t("loyaltyTier.maintenancePointsEvery90Days", { defaultValue: "maintenance points / 90 days" })}`
+                          : t("loyaltyTier.noMaintenanceRequired", {
+                              defaultValue: "No maintenance points required",
+                            })}
+                      </span>
+                    </div>
                     {tier.benefits.map((benefit, idx) => (
                       <div
                         key={idx}
                         className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
                       >
                         <span className="text-emerald-500 font-bold">✓</span>
-                        <span>
-                          {t(
-                            `loyaltyTier.benefit${benefit.replace("benefit", "")}`,
-                            { defaultValue: benefit },
-                          )}
-                        </span>
+                        <span>{benefit}</span>
                       </div>
                     ))}
                   </div>
