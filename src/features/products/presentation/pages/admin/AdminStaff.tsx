@@ -68,6 +68,7 @@ export const AdminStaff: React.FC = () => {
     useState<AdminStaffResponseData | null>(null);
 
   const [form, setForm] = useState<StaffFormState>(initialForm);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // =============================
   // SEARCH
@@ -194,6 +195,15 @@ export const AdminStaff: React.FC = () => {
   // =============================
   // DELETE
   // =============================
+
+  // Pagination logic
+  const STAFF_PER_PAGE = 5;
+  const totalStaffs = filteredStaffs?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalStaffs / STAFF_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * STAFF_PER_PAGE;
+  const endIndex = startIndex + STAFF_PER_PAGE;
+  const paginatedStaffs = (filteredStaffs || []).slice(startIndex, endIndex);
 
   return (
     <div className="space-y-6">
@@ -344,7 +354,10 @@ export const AdminStaff: React.FC = () => {
 
             <input
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setCurrentPage(1);
+              }}
               placeholder={t('adminStaff.searchStaff', { defaultValue: 'Search staff...' })}
               className="
                                 w-full
@@ -465,7 +478,7 @@ export const AdminStaff: React.FC = () => {
               </thead>
 
               <tbody>
-                {filteredStaffs.map((staff) => (
+                {paginatedStaffs.map((staff) => (
                   <tr
                     key={staff.id}
                     className="
@@ -672,6 +685,51 @@ export const AdminStaff: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 mt-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200/60 dark:border-white/10 shadow-xs">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t('bookingHistory.pagination.showing', { defaultValue: 'Hiển thị' })} {startIndex + 1}-{Math.min(endIndex, totalStaffs)} {t('bookingHistory.pagination.of', { defaultValue: 'của' })} {totalStaffs} {t('adminStaff.title', { defaultValue: 'Nhân viên' })}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={safeCurrentPage === 1}
+                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {t('bookingHistory.pagination.previous', { defaultValue: 'Trước' })}
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, index) => {
+                  const pageNumber = index + 1;
+                  return (
+                    <button
+                      type="button"
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                        safeCurrentPage === pageNumber
+                          ? "bg-blue-600 text-white shadow-sm border-blue-600"
+                          : "border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                disabled={safeCurrentPage === totalPages}
+                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {t('bookingHistory.pagination.next', { defaultValue: 'Tiếp' })}
+              </button>
+            </div>
           </div>
         )}
       </div>

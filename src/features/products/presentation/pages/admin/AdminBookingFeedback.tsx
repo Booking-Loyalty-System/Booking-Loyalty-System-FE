@@ -17,6 +17,7 @@ export function AdminBookingFeedback() {
 
     const { availableRewards, isLoadingRewards, giftReward, isGifting } = useReward();
     const [selectedFeedback, setSelectedFeedback] = useState<any | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const handleCopyId = (id: string, message: string) => {
         navigator.clipboard.writeText(id);
@@ -59,6 +60,14 @@ export function AdminBookingFeedback() {
         );
     }
 
+    const FEEDBACKS_PER_PAGE = 5;
+    const totalFeedbacks = filteredFeedbacks?.length || 0;
+    const totalPages = Math.max(1, Math.ceil(totalFeedbacks / FEEDBACKS_PER_PAGE));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const startIndex = (safeCurrentPage - 1) * FEEDBACKS_PER_PAGE;
+    const endIndex = startIndex + FEEDBACKS_PER_PAGE;
+    const paginatedFeedbacks = (filteredFeedbacks || []).slice(startIndex, endIndex);
+
     return (
         <div className="p-6 max-w-7xl mx-auto space-y-6 animate-fade-in">
             {/* Header Tiêu đề */}
@@ -93,7 +102,7 @@ export function AdminBookingFeedback() {
                         </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
-                        {filteredFeedbacks.map((item) => {
+                        {paginatedFeedbacks.map((item) => {
                             const isNegative = item.overallRating <= 2.5;
                             // Giả định backend trả về field `isGifted` hoặc `hasCompensated` để kiểm tra admin đã đền bù chưa
                             const isCompensated = item.isGifted;
@@ -152,6 +161,51 @@ export function AdminBookingFeedback() {
                     </table>
                 </div>
             </div>
+
+            {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 mt-2 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+                    <p className="text-sm font-medium text-slate-500">
+                        Hiển thị {startIndex + 1}-{Math.min(endIndex, totalFeedbacks)} của {totalFeedbacks} đánh giá
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                            disabled={safeCurrentPage === 1}
+                            className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Trước
+                        </button>
+                        <div className="flex items-center gap-1">
+                            {Array.from({ length: totalPages }, (_, index) => {
+                                const pageNumber = index + 1;
+                                return (
+                                    <button
+                                        type="button"
+                                        key={pageNumber}
+                                        onClick={() => setCurrentPage(pageNumber)}
+                                        className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                                            safeCurrentPage === pageNumber
+                                                ? "bg-indigo-600 text-white shadow-sm"
+                                                : "border border-slate-200 text-slate-600 hover:bg-slate-50"
+                                        }`}
+                                    >
+                                        {pageNumber}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                            disabled={safeCurrentPage === totalPages}
+                            className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Tiếp
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* MODAL CHI TIẾT & CHỌN VOUCHER HỆ THỐNG ĐỂ ĐỀN BÙ */}
             {selectedFeedback && (

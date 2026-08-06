@@ -78,6 +78,8 @@ export const LoyaltyTier: React.FC = () => {
   const { data: historyData, isLoading: isLoadingHistory } =
     useLoyaltyHistory();
 
+  const [currentPageTx, setCurrentPageTx] = React.useState(1);
+
   // Tách biệt hai loại điểm theo cấu trúc mới của API
   const availablePoints = customerMe?.availablePoint || 0; // Dùng để hiển thị số dư tiêu dùng
   const totalPoints = customerMe?.totalPoint || 0; // Dùng để xét hạng
@@ -165,6 +167,15 @@ export const LoyaltyTier: React.FC = () => {
       };
     });
   }, [transactions, availablePoints]);
+
+  // Pagination logic
+  const TX_PER_PAGE = 5;
+  const totalTx = transactionsWithBalance.length;
+  const totalTxPages = Math.max(1, Math.ceil(totalTx / TX_PER_PAGE));
+  const safeCurrentPageTx = Math.min(currentPageTx, totalTxPages);
+  const startTxIndex = (safeCurrentPageTx - 1) * TX_PER_PAGE;
+  const endTxIndex = startTxIndex + TX_PER_PAGE;
+  const paginatedTransactions = transactionsWithBalance.slice(startTxIndex, endTxIndex);
 
   return (
     <div className="min-h-screen bg-transparent p-4 md:p-8 font-sans antialiased text-slate-800 dark:text-white">
@@ -523,7 +534,7 @@ export const LoyaltyTier: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/10 text-sm text-slate-700 dark:text-slate-300">
-                    {transactionsWithBalance.map((tx, idx) => (
+                    {paginatedTransactions.map((tx, idx) => (
                       <tr
                         key={idx}
                         className="hover:bg-slate-50/80 dark:hover:bg-white/5 transition-colors"
@@ -606,6 +617,53 @@ export const LoyaltyTier: React.FC = () => {
                 </table>
               )}
             </div>
+
+            {totalTxPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {t("loyaltyTier.paginationShowing", {
+                    defaultValue: `Hiển thị ${startTxIndex + 1}-${Math.min(endTxIndex, totalTx)} của ${totalTx} giao dịch`,
+                  })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPageTx((page) => Math.max(1, page - 1))}
+                    disabled={safeCurrentPageTx === 1}
+                    className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {t("loyaltyTier.paginationPrevious", { defaultValue: "Trước" })}
+                  </button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalTxPages }, (_, index) => {
+                      const pageNumber = index + 1;
+                      return (
+                        <button
+                          type="button"
+                          key={pageNumber}
+                          onClick={() => setCurrentPageTx(pageNumber)}
+                          className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                            safeCurrentPageTx === pageNumber
+                              ? "bg-blue-600 text-white shadow-sm border-blue-600"
+                              : "border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPageTx((page) => Math.min(totalTxPages, page + 1))}
+                    disabled={safeCurrentPageTx === totalTxPages}
+                    className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {t("loyaltyTier.paginationNext", { defaultValue: "Tiếp" })}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
