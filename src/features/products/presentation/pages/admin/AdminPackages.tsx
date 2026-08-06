@@ -31,6 +31,7 @@ export function AdminPackages() {
 
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [editForm, setEditForm] = useState<WashPackageResponseData | null>(
     null,
   );
@@ -147,6 +148,15 @@ export function AdminPackages() {
     return [""];
   };
 
+  // Pagination logic
+  const PACKAGES_PER_PAGE = 5;
+  const totalPackages = packages?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalPackages / PACKAGES_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * PACKAGES_PER_PAGE;
+  const endIndex = startIndex + PACKAGES_PER_PAGE;
+  const paginatedPackages = (packages || []).slice(startIndex, endIndex);
+
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <div className="space-y-6">
@@ -172,8 +182,8 @@ export function AdminPackages() {
           </div>
         ) : (
           /* Packages Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {packages.map((pkg) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {paginatedPackages.map((pkg) => (
               <div
                 key={pkg.id}
                 className={`bg-white rounded-xl border-2 p-6 transition-all ${pkg.isActive
@@ -258,6 +268,51 @@ export function AdminPackages() {
                 </button>
               </div>
             ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 bg-white rounded-xl border border-gray-200/80 shadow-sm mt-4">
+            <p className="text-sm font-medium text-gray-500">
+              Hiển thị {startIndex + 1}-{Math.min(endIndex, totalPackages)} của {totalPackages} gói dịch vụ
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={safeCurrentPage === 1}
+                className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Trước
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, index) => {
+                  const pageNumber = index + 1;
+                  return (
+                    <button
+                      type="button"
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                        safeCurrentPage === pageNumber
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                disabled={safeCurrentPage === totalPages}
+                className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Tiếp
+              </button>
+            </div>
           </div>
         )}
       </div>

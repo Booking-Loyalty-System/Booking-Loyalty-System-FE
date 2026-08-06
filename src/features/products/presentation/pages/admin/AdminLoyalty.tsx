@@ -40,15 +40,6 @@ const tierStyles: Record<string, { bg: string; icon: string; border: string; tex
   Diamond: { bg: "bg-purple-50/60", icon: "text-purple-600", border: "border-purple-200/60", text: "text-purple-900", badge: "bg-purple-100 text-purple-800" },
 };
 
-const emptyTierForm: CreateAdminTierInput = {
-  tierName: "",
-  level: "",
-  pointRate: 1,
-  bookingWindow: 7,
-  minPointsRequired: 0,
-  maintenancePoints: 0,
-};
-
 const emptyRewardForm: CreateAdminRewardInput = {
   name: "",
   description: "",
@@ -75,11 +66,8 @@ export function AdminLoyalty() {
   const {
     tiers,
     isLoading,
-    createTier,
     updateTier,
-    deleteTier,
     isUpdating,
-    isCreating,
   } = useAdminLoyalty();
 
   const {
@@ -95,13 +83,13 @@ export function AdminLoyalty() {
 
   const [editingTierId, setEditingTierId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<CreateAdminTierInput | null>(null);
-  const [isAddingTier, setIsAddingTier] = useState(false);
 
   const [editingRewardId, setEditingRewardId] = useState<string | null>(null);
   const [rewardForm, setRewardForm] = useState<
     (CreateAdminRewardInput & { isActive?: boolean }) | null
   >(null);
   const [isAddingReward, setIsAddingReward] = useState(false);
+  const [currentRewardPage, setCurrentRewardPage] = useState(1);
 
   const handleEditTier = (tier: AdminTierResponseData) => {
     setEditingTierId(tier.id);
@@ -122,28 +110,9 @@ export function AdminLoyalty() {
     }
   };
 
-  const handleCreateTier = async () => {
-    if (editForm && editForm.tierName && editForm.level) {
-      await createTier(editForm);
-      handleCancelTier();
-    }
-  };
-
-  const handleDeleteTier = async (id: string) => {
-    if (confirm(t('adminLoyalty.deleteTierConfirm'))) {
-      await deleteTier(id);
-    }
-  };
-
   const handleCancelTier = () => {
     setEditingTierId(null);
-    setIsAddingTier(false);
     setEditForm(null);
-  };
-
-  const handleAddTier = () => {
-    setIsAddingTier(true);
-    setEditForm({ ...emptyTierForm });
   };
 
   const handleEditReward = (reward: AdminRewardResponseData) => {
@@ -222,6 +191,15 @@ export function AdminLoyalty() {
     }
   };
 
+  // Pagination for Rewards
+  const REWARDS_PER_PAGE = 5;
+  const totalRewards = rewards?.length || 0;
+  const totalRewardPages = Math.max(1, Math.ceil(totalRewards / REWARDS_PER_PAGE));
+  const safeCurrentRewardPage = Math.min(currentRewardPage, totalRewardPages);
+  const startRewardIndex = (safeCurrentRewardPage - 1) * REWARDS_PER_PAGE;
+  const endRewardIndex = startRewardIndex + REWARDS_PER_PAGE;
+  const paginatedRewards = (rewards || []).slice(startRewardIndex, endRewardIndex);
+
   return (
     <div className="p-8 space-y-12 bg-slate-50/50 min-h-screen font-sans antialiased">
       <div className="max-w-[1600px] mx-auto space-y-12">
@@ -239,13 +217,6 @@ export function AdminLoyalty() {
                 {t('adminLoyalty.tiersSubtitle')}
               </p>
             </div>
-            <button
-              onClick={handleAddTier}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-xl shadow-sm shadow-indigo-100 hover:shadow-md transition-all duration-200 group self-start sm:self-center"
-            >
-              <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
-              {t('adminLoyalty.addTier')}
-            </button>
           </div>
 
           {isLoading ? (
@@ -282,13 +253,6 @@ export function AdminLoyalty() {
                                 title={t('adminLoyalty.edit')}
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteTier(tier.id)}
-                                className="p-1.5 text-slate-400 hover:text-rose-600 rounded-md hover:bg-white transition-all"
-                                title={t('adminLoyalty.delete')}
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </>
                           ) : (
@@ -464,7 +428,7 @@ export function AdminLoyalty() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                  {rewards.map((reward) => (
+                  {paginatedRewards.map((reward) => (
                     <tr key={reward.id} className="hover:bg-slate-50/60 transition-colors duration-150 group">
                       <td className="px-6 py-4.5 whitespace-nowrap">
                         <div className="flex items-center gap-3.5">
@@ -539,108 +503,53 @@ export function AdminLoyalty() {
               </table>
             </div>
           )}
-        </section>
-      </div>
 
-      {/* ========================================================================= */}
-      {/* Add Tier Modal Component */}
-      {/* ========================================================================= */}
-      {isAddingTier && editForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 transition-all animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-100">
-            <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
-              <h4 className="text-lg font-bold text-blue-950 tracking-tight">
-                {t('adminLoyalty.addTierTitle')}
-              </h4>
-              <button
-                onClick={handleCancelTier}
-                className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-50 rounded-lg transition-all"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.tierName')}</label>
-                <input
-                  type="text"
-                  value={editForm.tierName}
-                  onChange={(e) => updateEditField("tierName", e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder-slate-400"
-                  placeholder={t('adminLoyalty.tierNamePlaceholder')}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.level')}</label>
-                <input
-                  type="text"
-                  value={editForm.level}
-                  onChange={(e) => updateEditField("level", e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder-slate-400"
-                  placeholder={t('adminLoyalty.levelPlaceholder')}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.pointRate')}</label>
-                  <input
-                    type="number"
-                    value={editForm.pointRate}
-                    onChange={(e) => updateEditField("pointRate", parseFloat(e.target.value) || 0)}
-                    step="0.1"
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.bookingWindow')}</label>
-                  <input
-                    type="number"
-                    value={editForm.bookingWindow}
-                    onChange={(e) => updateEditField("bookingWindow", parseInt(e.target.value) || 0)}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.minPoints')}</label>
-                  <input
-                    type="number"
-                    value={editForm.minPointsRequired}
-                    onChange={(e) => updateEditField("minPointsRequired", parseInt(e.target.value) || 0)}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{t('adminLoyalty.maintenancePoints')}</label>
-                  <input
-                    type="number"
-                    value={editForm.maintenancePoints}
-                    onChange={(e) => updateEditField("maintenancePoints", parseInt(e.target.value) || 0)}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                  />
-                </div>
-              </div>
-              <div className="pt-4 flex gap-3">
+          {totalRewardPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 mt-2 border-t border-slate-100">
+              <p className="text-sm font-medium text-slate-500">
+                Hiển thị {startRewardIndex + 1}-{Math.min(endRewardIndex, totalRewards)} của {totalRewards} phần thưởng
+              </p>
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={handleCancelTier}
-                  className="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-semibold transition-colors"
+                  onClick={() => setCurrentRewardPage((page) => Math.max(1, page - 1))}
+                  disabled={safeCurrentRewardPage === 1}
+                  className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  {t('adminLoyalty.cancel')}
+                  {t('bookingHistory.pagination.previous', { defaultValue: 'Trước' })}
                 </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalRewardPages }, (_, index) => {
+                    const pageNumber = index + 1;
+                    return (
+                      <button
+                        type="button"
+                        key={pageNumber}
+                        onClick={() => setCurrentRewardPage(pageNumber)}
+                        className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                          safeCurrentRewardPage === pageNumber
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "border border-slate-200 text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  })}
+                </div>
                 <button
-                  onClick={handleCreateTier}
-                  disabled={isCreating}
-                  className="w-2/3 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
+                  type="button"
+                  onClick={() => setCurrentRewardPage((page) => Math.min(totalRewardPages, page + 1))}
+                  disabled={safeCurrentRewardPage === totalRewardPages}
+                  className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isCreating ? t('adminLoyalty.creating') : t('adminLoyalty.createTier')}
+                  {t('bookingHistory.pagination.next', { defaultValue: 'Tiếp' })}
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </section>
+      </div>
 
       {/* ========================================================================= */}
       {/* Add / Edit Reward Modal Component */}

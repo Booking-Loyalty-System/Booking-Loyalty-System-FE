@@ -36,6 +36,7 @@ export function AdminWashBay() {
         name: "",
         branchId: "",
     });
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [isLoadingBranches, setIsLoadingBranches] = useState(true);
 
@@ -111,6 +112,15 @@ export function AdminWashBay() {
         branches.find(b => b.id === wb.branchId)?.branchName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Pagination logic
+    const WASH_BAYS_PER_PAGE = 5;
+    const totalWashBays = filteredWashBays?.length || 0;
+    const totalPages = Math.max(1, Math.ceil(totalWashBays / WASH_BAYS_PER_PAGE));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const startIndex = (safeCurrentPage - 1) * WASH_BAYS_PER_PAGE;
+    const endIndex = startIndex + WASH_BAYS_PER_PAGE;
+    const paginatedWashBays = (filteredWashBays || []).slice(startIndex, endIndex);
+
     return (
         <div className="p-6 space-y-6 animate-fade-in">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -127,7 +137,10 @@ export function AdminWashBay() {
                         </div>
                         <select
                             value={filterBranchId}
-                            onChange={(e) => setFilterBranchId(e.target.value)}
+                            onChange={(e) => {
+                                setFilterBranchId(e.target.value);
+                                setCurrentPage(1);
+                            }}
                             className="py-2 pr-4 bg-transparent outline-none text-sm text-gray-700 cursor-pointer"
                         >
                             <option value="">Tất cả chi nhánh</option>
@@ -146,7 +159,10 @@ export function AdminWashBay() {
                             type="text"
                             placeholder="Tìm kiếm khoang rửa..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setCurrentPage(1);
+                            }}
                             className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-64 text-sm"
                         />
                     </div>
@@ -192,7 +208,7 @@ export function AdminWashBay() {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredWashBays.map((wb: WashBay) => {
+                                paginatedWashBays.map((wb: WashBay) => {
                                     const branchName = branches.find(b => b.id === wb.branchId)?.branchName || "Chi nhánh không xác định";
                                     return (
                                         <tr key={wb.id} className="hover:bg-gray-50 transition-colors">
@@ -239,6 +255,51 @@ export function AdminWashBay() {
                     </table>
                 </div>
             </div>
+
+            {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 mt-2 bg-white rounded-xl border border-gray-200/80 shadow-sm">
+                    <p className="text-sm font-medium text-gray-500">
+                        Hiển thị {startIndex + 1}-{Math.min(endIndex, totalWashBays)} của {totalWashBays} khoang rửa
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                            disabled={safeCurrentPage === 1}
+                            className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Trước
+                        </button>
+                        <div className="flex items-center gap-1">
+                            {Array.from({ length: totalPages }, (_, index) => {
+                                const pageNumber = index + 1;
+                                return (
+                                    <button
+                                        type="button"
+                                        key={pageNumber}
+                                        onClick={() => setCurrentPage(pageNumber)}
+                                        className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                                            safeCurrentPage === pageNumber
+                                                ? "bg-blue-600 text-white shadow-sm"
+                                                : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                                        }`}
+                                    >
+                                        {pageNumber}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                            disabled={safeCurrentPage === totalPages}
+                            className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Tiếp
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Modal Add/Edit */}
             {isModalOpen && (

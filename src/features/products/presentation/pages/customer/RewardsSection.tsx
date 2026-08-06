@@ -45,6 +45,7 @@ export const RewardsSection: React.FC = () => {
   const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
   const [confirmReward, setConfirmReward] = useState<{ id: string, title: string, cost: number, isFreeWash: boolean } | null>(null);
+  const [currentHistoryPage, setCurrentHistoryPage] = useState(1);
   // Bảng cấu hình icon mẫu
   const iconMap = {
     GIFT: {
@@ -352,15 +353,26 @@ export const RewardsSection: React.FC = () => {
           </h3>
         </div>
 
-        <div className="divide-y divide-slate-100 dark:divide-white/10">
-          {!Array.isArray(redemptions) || redemptions.length === 0 ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500 font-medium text-center py-8">
-              {t("rewards.noRedemptionHistory", {
-                defaultValue: "Bạn chưa đổi phần thưởng nào.",
-              })}
-            </p>
-          ) : (
-            redemptions.map((v) => {
+        {(() => {
+          const HISTORY_PER_PAGE = 5;
+          const totalHistory = Array.isArray(redemptions) ? redemptions.length : 0;
+          const totalPages = Math.max(1, Math.ceil(totalHistory / HISTORY_PER_PAGE));
+          const safeCurrentPage = Math.min(currentHistoryPage, totalPages);
+          const startIndex = (safeCurrentPage - 1) * HISTORY_PER_PAGE;
+          const endIndex = startIndex + HISTORY_PER_PAGE;
+          const paginatedHistory = Array.isArray(redemptions) ? redemptions.slice(startIndex, endIndex) : [];
+
+          return (
+            <>
+              <div className="divide-y divide-slate-100 dark:divide-white/10">
+                {totalHistory === 0 ? (
+                  <p className="text-sm text-slate-400 dark:text-slate-500 font-medium text-center py-8">
+                    {t("rewards.noRedemptionHistory", {
+                      defaultValue: "Bạn chưa đổi phần thưởng nào.",
+                    })}
+                  </p>
+                ) : (
+                  paginatedHistory.map((v) => {
               if (!v) return null;
 
               const isHistoryFreeWash =
@@ -476,6 +488,56 @@ export const RewardsSection: React.FC = () => {
             })
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t("rewards.paginationShowing", {
+                defaultValue: `Hiển thị ${startIndex + 1}-${Math.min(endIndex, totalHistory)} của ${totalHistory} lịch sử`,
+              })}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentHistoryPage((page) => Math.max(1, page - 1))}
+                disabled={safeCurrentPage === 1}
+                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {t("rewards.paginationPrevious", { defaultValue: "Trước" })}
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, index) => {
+                  const pageNumber = index + 1;
+                  return (
+                    <button
+                      type="button"
+                      key={pageNumber}
+                      onClick={() => setCurrentHistoryPage(pageNumber)}
+                      className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                        safeCurrentPage === pageNumber
+                          ? "bg-blue-600 text-white shadow-sm border-blue-600"
+                          : "border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => setCurrentHistoryPage((page) => Math.min(totalPages, page + 1))}
+                disabled={safeCurrentPage === totalPages}
+                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {t("rewards.paginationNext", { defaultValue: "Tiếp" })}
+              </button>
+            </div>
+          </div>
+        )}
+            </>
+          );
+        })()}
       </div>
       {confirmReward && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
