@@ -41,7 +41,7 @@ export const RewardsSection: React.FC = () => {
   const availablePoints = customerMe?.availablePoint ?? 0;
   const totalWashes = customerMe?.totalWashes ?? 0;
   const earnedFreeWashes = Math.floor(totalWashes / 7);
-  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
+  const redeemedFreeWashes = Array.isArray(redemptions) ? redemptions.filter(r => r && (r.rewardName === "Thưởng Rửa xe VIP Miễn phí" || r.rewardName === "Free Car Wash Reward" || r.rewardName.includes("Miễn Phí") || r.rewardName.includes("Free Wash"))).length : 0;
   const availableFreeWashes = Math.max(0, earnedFreeWashes - redeemedFreeWashes);
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
   const [confirmReward, setConfirmReward] = useState<{ id: string, title: string, cost: number, isFreeWash: boolean } | null>(null);
@@ -78,7 +78,7 @@ export const RewardsSection: React.FC = () => {
         if (!reward) return null;
 
         // Nhận diện voucher Rửa Xe Miễn Phí
-        const isFreeWashReward = reward.name === "Phần thưởng Rửa Xe Miễn Phí";
+        const isFreeWashReward = reward.name === "Thưởng Rửa xe VIP Miễn phí";
 
         let iconConfig = iconMap.GIFT;
         if (reward.discountAmount >= 200) {
@@ -376,7 +376,7 @@ export const RewardsSection: React.FC = () => {
               if (!v) return null;
 
               const isHistoryFreeWash =
-                v.rewardName === "Phần thưởng Rửa Xe Miễn Phí";
+                v.rewardName === "Thưởng Rửa xe VIP Miễn phí";
 
               return (
                 <div

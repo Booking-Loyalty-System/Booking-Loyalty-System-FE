@@ -187,7 +187,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                 const vName =
                   (voucher as any).name || (voucher as any).title || "";
                 const isFreeWash =
-                  voucher.isFreeWash || vName === "Phần thưởng Rửa Xe Miễn Phí";
+                  voucher.isFreeWash || vName === "Thưởng Rửa xe VIP Miễn phí";
 
                 return (
                   <div
@@ -294,7 +294,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                 quickRedeemList.map((reward) => {
                   // Phân biệt Free Wash và Quà thường
                   const isFreeWashReward =
-                    reward.name === "Phần thưởng Rửa Xe Miễn Phí";
+                    reward.name === "Thưởng Rửa xe VIP Miễn phí";
                   const canRedeem = isFreeWashReward
                     ? availableFreeWashes >= 1
                     : totalPoints >= reward.pointsCost;
