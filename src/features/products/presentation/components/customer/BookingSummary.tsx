@@ -66,12 +66,16 @@ export const BookingSummary: React.FC<BookingSummaryProps> = ({
         Math.max(0, appliedPromotion.discountValue || 0),
       );
     } else if (appliedPromotion.discountType === "Percentage") {
+      const rawDiscount = Math.floor(
+        originalPrice *
+          (Math.max(0, appliedPromotion.discountValue || 0) / 100),
+      );
+      const maxDiscount = appliedPromotion.maxDiscount ?? null;
       promoDiscount = Math.min(
         originalPrice,
-        Math.floor(
-          originalPrice *
-            (Math.max(0, appliedPromotion.discountValue || 0) / 100),
-        ),
+        maxDiscount !== null && maxDiscount > 0
+          ? Math.min(rawDiscount, maxDiscount)
+          : rawDiscount,
       );
     }
   }

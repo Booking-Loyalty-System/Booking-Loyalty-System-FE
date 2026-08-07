@@ -392,9 +392,13 @@ export const BookWash: React.FC = () => {
 
         let calculatedDiscount = 0;
         if (promo.discountType === "Percentage") {
-          calculatedDiscount = Math.floor(
+          const raw = Math.floor(
             packagePrice * (promo.discountValue / 100),
           );
+          const maxDiscount = (promo as any).maxDiscount ?? null;
+          calculatedDiscount = maxDiscount !== null && maxDiscount > 0
+            ? Math.min(raw, maxDiscount)
+            : raw;
         } else if (promo.discountType === "FixedAmount") {
           calculatedDiscount = Math.min(packagePrice, promo.discountValue);
         }
@@ -861,7 +865,11 @@ export const BookWash: React.FC = () => {
               if ((appliedPromotion as any).discountAmount !== undefined) {
                 promoDiscount = (appliedPromotion as any).discountAmount;
               } else if (appliedPromotion.discountType === "Percentage") {
-                promoDiscount = Math.floor(packagePrice * (appliedPromotion.discountValue / 100));
+                const raw = Math.floor(packagePrice * (appliedPromotion.discountValue / 100));
+                const maxDiscount = appliedPromotion.maxDiscount ?? null;
+                promoDiscount = maxDiscount !== null && maxDiscount > 0
+                  ? Math.min(raw, maxDiscount)
+                  : raw;
               } else if (appliedPromotion.discountType === "FixedAmount") {
                 promoDiscount = Math.min(packagePrice, appliedPromotion.discountValue);
               }
