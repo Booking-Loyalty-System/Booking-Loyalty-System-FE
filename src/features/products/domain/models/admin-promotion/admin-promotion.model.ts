@@ -12,6 +12,7 @@ export interface AdminPromotionResponseData {
     endDate: string;
     maxUses: number | null;
     minSpend: number | null;
+    maxDiscount: number | null;
     requiresBirthday: boolean;
     tierIds: string[];
     branchIds: string[];
@@ -30,11 +31,13 @@ export interface CreateAdminPromotionInput {
     endDate: string;
     maxUses?: number | null;
     minSpend?: number | null;
+    maxDiscount?: number | null;
     requiresBirthday: boolean;
     tierIds: string[];
     branchIds: string[];
 }
 export interface UpdateAdminPromotionInput {
+    name?: string;
     description: string;
     discountType: DiscountType;
     discountValue: number;
@@ -42,6 +45,7 @@ export interface UpdateAdminPromotionInput {
     endDate: string;
     maxUses?: number | null;
     minSpend?: number | null;
+    maxDiscount?: number | null;
     isActive: boolean;
     branchIds?: string[];
     tierIds?: string[];

@@ -51,6 +51,7 @@ export const useAdminPromotion = () => {
         await updateMutation.mutateAsync({
             id: promotion.id,
             data: {
+                name: promotion.name,
                 description: promotion.description,
                 discountType: promotion.discountType,
                 discountValue: promotion.discountValue,
@@ -58,6 +59,7 @@ export const useAdminPromotion = () => {
                 endDate: promotion.endDate,
                 maxUses: promotion.maxUses,
                 minSpend: promotion.minSpend,
+                maxDiscount: promotion.maxDiscount,
                 isActive: !promotion.isActive,
             },
         });

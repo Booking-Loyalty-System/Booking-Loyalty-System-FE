@@ -131,8 +131,9 @@ export function AdminBranches() {
     priorityLevel: 0,
     startDate: "",
     endDate: "",
-    maxUses: 100,
+    maxUses: "" as number | string,
     minSpend: 0,
+    maxDiscount: "" as number | string,
     requiresBirthday: false,
     tierIds: [] as string[],
   });
@@ -378,9 +379,11 @@ export function AdminBranches() {
     try {
       await createPromotion({
         ...newPromoForm,
+        maxUses: newPromoForm.maxUses !== "" ? Number(newPromoForm.maxUses) : null,
         discountValue: Number(newPromoForm.discountValue) || 0,
-        startDate: new Date(newPromoForm.startDate).toISOString(),
-        endDate: new Date(newPromoForm.endDate).toISOString(),
+        maxDiscount: newPromoForm.maxDiscount ? Number(newPromoForm.maxDiscount) : null,
+        startDate: new Date(newPromoForm.startDate + "T12:00:00").toISOString(),
+        endDate: new Date(newPromoForm.endDate + "T12:00:00").toISOString(),
         branchIds: [selectedBranchForPromo.id],
       });
 
@@ -391,7 +394,7 @@ export function AdminBranches() {
       setIsCreatingNewPromo(false);
       setNewPromoForm({
         code: "", name: "", description: "", discountType: "PERCENTAGE", discountValue: 0, priorityLevel: 0,
-        startDate: "", endDate: "", maxUses: 100, minSpend: 0, requiresBirthday: false, tierIds: [],
+        startDate: "", endDate: "", maxUses: 100, minSpend: 0, maxDiscount: 0, requiresBirthday: false, tierIds: [],
       });
     } catch (error) {
       console.error("Lỗi khi tạo khuyến mãi mới:", error);
@@ -890,13 +893,33 @@ export function AdminBranches() {
                     className="w-full px-3 py-2 border rounded-lg text-sm"
                   />
                 </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Mức giảm tối đa (Max Discount)</label>
+                  <input
+                    type="number"
+                    value={newPromoForm.maxDiscount}
+                    onChange={e => setNewPromoForm({ ...newPromoForm, maxDiscount: e.target.value === "" ? "" : Number(e.target.value) })}
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                    placeholder="Bỏ trống hoặc 0 nếu không giới hạn"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Số lượt dùng tối đa</label>
+                  <input
+                    type="number"
+                    value={newPromoForm.maxUses}
+                    onChange={e => setNewPromoForm({ ...newPromoForm, maxUses: e.target.value === "" ? "" : Number(e.target.value) })}
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                    placeholder="Bỏ trống nếu không giới hạn"
+                  />
+                </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Bắt đầu</label>
-                  <input type="datetime-local" value={newPromoForm.startDate} onChange={e => setNewPromoForm({ ...newPromoForm, startDate: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                  <input type="date" value={newPromoForm.startDate} onChange={e => setNewPromoForm({ ...newPromoForm, startDate: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Kết thúc</label>
-                  <input type="datetime-local" value={newPromoForm.endDate} onChange={e => setNewPromoForm({ ...newPromoForm, endDate: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                  <input type="date" value={newPromoForm.endDate} onChange={e => setNewPromoForm({ ...newPromoForm, endDate: e.target.value })} className="w-full px-3 py-2 border rounded-lg text-sm" />
                 </div>
               </div>
             ) : (

@@ -39,6 +39,7 @@ const emptyPromotionForm: LocalPromoForm = {
   endDate: "",
   maxUses: null,
   minSpend: null,
+  maxDiscount: null,
   requiresBirthday: false,
   tierIds: [],
   branchIds: [],
@@ -51,7 +52,7 @@ function toDateInputValue(isoDate: string) {
 
 function toIsoDate(dateStr: string) {
   if (!dateStr) return "";
-  return new Date(dateStr + "T00:00:00Z").toISOString();
+  return new Date(dateStr + "T12:00:00").toISOString();
 }
 
 function formatDiscount(promo: AdminPromotionResponseData) {
@@ -114,7 +115,7 @@ export function AdminPromotions() {
     setIsAdding(false);
     setForm({
       code: promo.code,
-      name: (promo as any).name || "",
+      name: promo.name || "",
       description: promo.description,
       discountType: promo.discountType as any,
       discountValue: promo.discountValue,
@@ -123,6 +124,7 @@ export function AdminPromotions() {
       endDate: toDateInputValue(promo.endDate),
       maxUses: promo.maxUses,
       minSpend: promo.minSpend,
+      maxDiscount: promo.maxDiscount,
       requiresBirthday: (promo as any).requiresBirthday || false,
       tierIds: (promo as any).tierIds || [],
       branchIds: (promo as any).branchIds || [],
@@ -140,10 +142,12 @@ export function AdminPromotions() {
     if (form && form.code && form.description) {
       await createPromotion({
         ...form,
+        name: form.name || "",
         discountType: "PERCENTAGE" as any,
         discountValue: Number(form.discountValue) || 0,
         maxUses: form.maxUses ?? null,
         minSpend: form.minSpend ?? null,
+        maxDiscount: form.maxDiscount ?? null,
         startDate: toIsoDate(form.startDate),
         endDate: toIsoDate(form.endDate),
         branchIds: form.branchIds || [],
@@ -157,6 +161,7 @@ export function AdminPromotions() {
   const handleSave = async () => {
     if (form && editingId) {
       const updateData: UpdateAdminPromotionInput = {
+        name: form.name || "",
         description: form.description,
         discountType: "PERCENTAGE" as DiscountType,
         discountValue: Number(form.discountValue) || 0,
@@ -164,6 +169,7 @@ export function AdminPromotions() {
         endDate: toIsoDate(form.endDate),
         maxUses: form.maxUses ?? null,
         minSpend: form.minSpend ?? null,
+        maxDiscount: form.maxDiscount ?? null,
         isActive: form.isActive ?? true,
         branchIds: form.branchIds || [],
         tierIds: form.tierIds || [],
@@ -261,6 +267,7 @@ export function AdminPromotions() {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.value', { defaultValue: 'Giá trị' })}</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.status', { defaultValue: 'Trạng thái' })}</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.uses', { defaultValue: 'Đã dùng' })}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.startDateCol', { defaultValue: 'Bắt đầu' })}</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.expires', { defaultValue: 'Hết hạn' })}</th>
                 <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">{t('adminPromotions.actions', { defaultValue: 'Thao tác' })}</th>
               </tr>
@@ -281,7 +288,7 @@ export function AdminPromotions() {
                       </div>
                       <div>
                         <span className="font-semibold text-gray-900 block">
-                          {promo.code}
+                          {promo.name ? `${promo.name} (${promo.code})` : promo.code}
                         </span>
                         <span className="text-xs text-gray-500 line-clamp-1">
                           {promo.description}
@@ -316,6 +323,9 @@ export function AdminPromotions() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {formatUsage(promo)}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {toDateInputValue(promo.startDate)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
                     {toDateInputValue(promo.endDate)}
@@ -385,6 +395,17 @@ export function AdminPromotions() {
                   />
                 </div>
               )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.promoName', { defaultValue: 'Tên khuyến mãi' })}</label>
+                <input
+                  type="text"
+                  value={form.name ?? ""}
+                  onChange={(e) => updateField("name", e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  placeholder={t('adminPromotions.namePlaceholder', { defaultValue: 'Nhập tên khuyến mãi...' })}
+                />
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.description', { defaultValue: 'Mô tả' })}</label>
@@ -491,6 +512,26 @@ export function AdminPromotions() {
                     }
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                     placeholder={t('adminPromotions.leaveEmptyNoRequirement', { defaultValue: 'Bỏ trống nếu không yêu cầu' })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('adminPromotions.maxDiscount', { defaultValue: 'Giá trị giảm tối đa' })}</label>
+                  <input
+                    type="number"
+                    value={form.maxDiscount ?? ""}
+                    onChange={(e) =>
+                      updateField(
+                        "maxDiscount",
+                        e.target.value === ""
+                          ? null
+                          : parseInt(e.target.value) || 0,
+                      )
+                    }
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    placeholder={t('adminPromotions.leaveEmptyNoLimit', { defaultValue: 'Bỏ trống nếu không giới hạn' })}
                   />
                 </div>
               </div>
