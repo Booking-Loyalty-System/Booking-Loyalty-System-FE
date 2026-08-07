@@ -1082,7 +1082,7 @@
     "tryChangingFilters": "Thử thay đổi bộ lọc hoặc chọn ngày khác xem sao nhé.",
     "table": {
       "code": "Mã Code",
-      "customerVehicle": "Khách & Xe",
+      "customerVehicle": "Xe",
       "service": "Dịch vụ",
       "status": "Trạng thái",
       "actions": "Thao tác"
