@@ -136,5 +136,36 @@
         "desc": "Quét dung dịch bảo dưỡng giúp lốp đen bóng như mới."
       }
     }
+  },
+  "adminWashBay": {
+    "title": "Quản lý Khoang Rửa (Wash Bays)",
+    "subtitle": "Thêm, sửa, xóa các khoang rửa thuộc từng chi nhánh",
+    "allBranches": "Tất cả chi nhánh",
+    "searchPlaceholder": "Tìm kiếm khoang rửa...",
+    "addWashBay": "Thêm Khoang Rửa",
+    "washBayName": "Tên Khoang Rửa",
+    "belongsToBranch": "Trực thuộc Chi Nhánh",
+    "status": "Trạng thái",
+    "actions": "Thao tác",
+    "loadingData": "Đang tải dữ liệu...",
+    "noWashBayFound": "Không tìm thấy khoang rửa nào.",
+    "unknownBranch": "Chi nhánh không xác định",
+    "active": "Hoạt động",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "showingWashBays": "Hiển thị {{start}}-{{end}} của {{total}} khoang rửa",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "editWashBayTitle": "Chỉnh sửa Khoang Rửa",
+    "addWashBayTitle": "Thêm Khoang Rửa Mới",
+    "selectBranch": "-- Chọn chi nhánh --",
+    "washBayNamePlaceholder": "VD: Khoang rửa 1, Khu A, VIP Bay...",
+    "cancel": "Hủy bỏ",
+    "saving": "Đang lưu...",
+    "save": "Lưu lại",
+    "alertEnterNameAndBranch": "Vui lòng nhập tên khoang rửa và chọn chi nhánh!",
+    "errorSavingAlert": "Có lỗi xảy ra khi lưu thông tin khoang rửa!",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa khoang rửa này không?",
+    "errorDeletingAlert": "Có lỗi xảy ra khi xóa khoang rửa!"
   }
 }

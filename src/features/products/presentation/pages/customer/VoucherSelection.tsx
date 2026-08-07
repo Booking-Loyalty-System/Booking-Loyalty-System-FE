@@ -32,6 +32,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     title: string;
     cost: number;
     isFreeWash: boolean;
+    discountAmount: number;
   } | null>(null);
   const quickRedeemList = availableRewards.slice(0, 4);
 
@@ -40,6 +41,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
     requiredPts: number,
     title: string,
     isFreeWash: boolean,
+    discountAmount: number,
   ) => {
     // Kiểm tra điều kiện riêng cho phần thưởng Rửa Xe Miễn Phí
     if (isFreeWash && availableFreeWashes < 1) {
@@ -61,24 +63,56 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
       return;
     }
 
-    setConfirmReward({ id: rewardId, title, cost: requiredPts, isFreeWash });
+    setConfirmReward({
+      id: rewardId,
+      title,
+      cost: requiredPts,
+      isFreeWash,
+      discountAmount,
+    });
   };
 
   const executeRedeem = async () => {
     if (!confirmReward) return;
-    const { id, title } = confirmReward;
+    const rewardToRedeem = confirmReward;
+    const { id, title, cost, isFreeWash, discountAmount } = rewardToRedeem;
     setConfirmReward(null);
 
     try {
-      const newVoucher = await redeemVoucher(id);
+      const redeemResult = await redeemVoucher(id);
       toast.success(
         t("bookWash.voucher.toastRedeemSuccess", {
           title,
           defaultValue: `Successfully redeemed: ${title}`,
         }),
       );
-      if (newVoucher) {
-        onSelectVoucher(newVoucher);
+
+      if (redeemResult) {
+        // API redeem trả về RedemptionDto, không có discountValue.
+        // Ghép giá trị giảm từ Reward vừa đổi để BookingSummary tính đúng ngay,
+        // không phải chờ query danh sách my-vouchers tải lại.
+        const payload = (redeemResult as any)?.data ?? redeemResult;
+        const selectedVoucher: Voucher = {
+          id: (payload as any).id,
+          code: (payload as any).code ?? `REDEEM-${cost}PTS`,
+          title: (payload as any).title ?? (payload as any).rewardName ?? title,
+          description:
+            (payload as any).description ??
+            `Đã đổi thành công bằng ${cost} điểm`,
+          discountValue: Number(
+            (payload as any).discountValue ??
+              (payload as any).discountAmount ??
+              discountAmount ??
+              0,
+          ),
+          requiredPoints: cost,
+          status: ((payload as any).status ?? "Active") as Voucher["status"],
+          expiryDate: (payload as any).expiryDate ?? "Khả dụng",
+          isFreeWash: (payload as any).isFreeWash ?? isFreeWash,
+          washPackageId: (payload as any).washPackageId,
+        };
+
+        onSelectVoucher(selectedVoucher);
       }
     } catch (error) {
       toast.error(
@@ -243,7 +277,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                   </span>
                 </div>
                 <span className="text-sm font-black tracking-tight bg-white/20 px-2 py-0.5 rounded-lg">
-                  {totalPoints.toLocaleString()} pts
+                  {totalPoints.toLocaleString()} point
                 </span>
               </div>
             </div>
@@ -282,7 +316,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                         <span className="text-xs font-black text-slate-700 dark:text-slate-300">
                           {isFreeWashReward
                             ? "7 lượt"
-                            : `${reward.pointsCost} pts`}
+                            : `${reward.pointsCost} point`}
                         </span>
                         <button
                           onClick={() =>
@@ -291,6 +325,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                               reward.pointsCost,
                               reward.name,
                               isFreeWashReward,
+                              reward.discountAmount,
                             )
                           }
                           disabled={isRedeeming || !canRedeem}

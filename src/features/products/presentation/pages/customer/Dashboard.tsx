@@ -432,8 +432,8 @@ export const Dashboard: React.FC = () => {
                 </span>
                 <span className="text-blue-950 dark:text-white">
                   {isMaxTier
-                    ? `${totalPoint} pts`
-                    : `${totalPoint} / ${targetPoints} pts`}
+                    ? ` point`
+                    : ` point`}
                 </span>
               </div>
               <div className="w-full bg-sky-200 dark:bg-black/50 h-3 rounded-full overflow-hidden p-0.5 border border-sky-300/60 dark:border-white/5">

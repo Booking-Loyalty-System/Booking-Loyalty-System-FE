@@ -17,6 +17,8 @@ export const translateDynamic = (text: string | null | undefined, lang: string |
         translated = translated.replace(/Free Car Wash Reward/gi, 'Phần thưởng Rửa Xe Miễn Phí');
         translated = translated.replace(/Discount Voucher/gi, 'Voucher giảm giá');
         translated = translated.replace(/Special Voucher/gi, 'Voucher đặc biệt');
+        translated = translated.replace(/\bBay\s+([A-Za-z0-9]+)/gi, 'Khoang rửa $1');
+        translated = translated.replace(/\bBay\b/gi, 'Khoang rửa');
 
         // Numeric patterns (longer first)
         translated = translated.replace(new RegExp(`${numUnitPattern}\\s*off\\s+Voucher`, 'gi'), 'Voucher giảm $1');
@@ -42,6 +44,8 @@ export const translateDynamic = (text: string | null | undefined, lang: string |
         translated = translated.replace(/Phần thưởng Rửa Xe Miễn Phí/gi, 'Free Car Wash Reward');
         translated = translated.replace(/Voucher giảm giá/gi, 'Discount Voucher');
         translated = translated.replace(/Voucher đặc biệt/gi, 'Special Voucher');
+        translated = translated.replace(/Khoang\s+rửa\s+([A-Za-z0-9]+)/gi, 'Bay $1');
+        translated = translated.replace(/Khoang\s+rửa/gi, 'Bay');
         
         // Numeric patterns (longer first)
         translated = translated.replace(new RegExp(`Voucher\\s+giảm(?:\\s+giá)?\\s*${numUnitPattern}`, 'gi'), '$1 off Voucher');

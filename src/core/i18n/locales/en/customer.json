@@ -244,7 +244,7 @@
     "pointsBalance": "Points Balance",
     "availableRewards": "Available Rewards",
     "redeem": "Redeem",
-    "points": "pts",
+    "points": "point",
     "notEnoughPoints": "Not enough points",
     "redeemSuccess": "Redeemed successfully: {{title}}! Voucher has been added to your account.",
     "categories": {
@@ -267,14 +267,14 @@
     "infoTitle": "Automatically applied at checkout",
     "infoDesc": "All vouchers after redemption will be automatically optimized at the payment page. No manual code entry required!",
     "availableRewardsTitle": "Available Rewards",
-    "yourPointsMsg": "Your points: {{points}} pts",
+    "yourPointsMsg": "Your points: {{points}} point",
     "redeemableCountMsg": "You can redeem {{n}} reward(s)",
     "noRewardsAvailable": "No rewards available at the moment.",
     "comingSoonBadge": "Coming Soon",
     "validDaysLabel": "Valid for {{n}} days after redemption",
     "requirementLabel": "Requirement",
     "washesUnit": "wash(es)",
-    "pointsUnit": "pts",
+    "pointsUnit": "point",
     "processingBtn": "Processing...",
     "redeemNowBtn": "Redeem Now",
     "toastNotEnoughWashes": "You don't have any free wash credits to redeem!",
@@ -694,12 +694,15 @@
     },
     "status": {
       "pending": "Pending",
-      "queued": "Queued",
-      "checkedIn": "Checked In",
-      "checkedOut": "Checked Out",
+      "confirmed": "Confirmed",
       "inProgress": "In Progress",
       "completed": "Completed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "checkedOut": "Checked Out",
+      "queued": "Queued",
+      "checkedIn": "Checked In",
+      "rejected": "Rejected",
+      "noShow": "No Show"
     },
     "tiers": {
       "member": "Member",
@@ -745,7 +748,7 @@
     "title": "Admin Overview",
     "subtitle": "Track overall revenue and business performance.",
     "metrics": {
-      "totalRevenue": "Total Revenue",
+      "totalRevenue": "Current Month Revenue",
       "totalBookings": "Total Bookings",
       "activeCustomers": "Active Customers",
       "averageOrderValue": "Average Order Value"
@@ -764,7 +767,10 @@
       "revenueOverview": "Revenue Overview",
       "exportDataset": "Export Dataset",
       "currentTerm": "Current",
-      "previousTerm": "Previous"
+      "previousTerm": "Previous",
+      "currentPeriodRevenue": "Current Period Revenue",
+      "previousPeriodRevenue": "Previous Period Revenue",
+      "applyBtn": "Apply Audit"
     },
     "membershipTiers": {
       "title": "Membership Tiers",
@@ -937,7 +943,7 @@
     "status": "Applicable Status",
     "actions": "Actions",
     "noDesc": "No description",
-    "pts": "pts",
+    "pts": "point",
     "active": "Active",
     "inactive": "Inactive",
     "editReward": "Edit Reward Info",
@@ -1015,7 +1021,7 @@
     "value": "Value",
     "status": "Status",
     "uses": "Uses",
-    "expires": "Expires",
+    "expires": "End",
     "actions": "Actions",
     "percentage": "Percentage",
     "fixedAmount": "Fixed Amount",
@@ -1037,7 +1043,8 @@
     "saveChanges": "Save Changes",
     "percentageSuffix": "Percentage (%)",
     "fixedAmountSuffix": "Fixed Amount (đ)",
-    "description": "Description"
+    "description": "Description",
+    "startDateCol": "Start"
   },
   "staffSidebar": {
     "staffPortal": "Staff Portal",
@@ -1082,7 +1089,7 @@
     "tryChangingFilters": "Try changing the filters or selecting another date.",
     "table": {
       "code": "Code",
-      "customerVehicle": "Customer & Vehicle",
+      "customerVehicle": "Vehicle",
       "service": "Service",
       "status": "Status",
       "actions": "Actions"
