@@ -25,7 +25,7 @@ export function AdminPackages() {
     isLoading,
     createPackage,
     updatePackage,
-    deletePackage,
+
     toggleStatus,
   } = useWashPackage();
 
@@ -82,18 +82,6 @@ export function AdminPackages() {
         features: editForm.features.filter((f) => f.trim() !== ""),
       });
       handleCancel();
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (
-      confirm(
-        t("adminWashPackages.deleteConfirm", {
-          defaultValue: "Are you sure you want to delete this package?",
-        }),
-      )
-    ) {
-      await deletePackage(id);
     }
   };
 
