@@ -435,9 +435,13 @@ export const BookWash: React.FC = () => {
 
         let calculatedDiscount = 0;
         if (promo.discountType === "Percentage") {
-          calculatedDiscount = Math.floor(
+          const raw = Math.floor(
             packagePrice * (promo.discountValue / 100),
           );
+          const maxDiscount = (promo as any).maxDiscount ?? null;
+          calculatedDiscount = maxDiscount !== null && maxDiscount > 0
+            ? Math.min(raw, maxDiscount)
+            : raw;
         } else if (promo.discountType === "FixedAmount") {
           calculatedDiscount = Math.min(packagePrice, promo.discountValue);
         }
@@ -469,9 +473,8 @@ export const BookWash: React.FC = () => {
       setHasAppliedAutoPromo(true);
       toast.success(
         t("bookWash.toastAutoPromoApplied", {
-          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${
-            bestPromo.name || bestPromo.code
-          }`,
+          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${bestPromo.name || bestPromo.code
+            }`,
         }),
       );
     } else {
@@ -629,12 +632,12 @@ export const BookWash: React.FC = () => {
       response?: {
         status?: number;
         data?:
-          | string
-          | {
-              message?: string;
-              error?: string;
-              title?: string;
-            };
+        | string
+        | {
+          message?: string;
+          error?: string;
+          title?: string;
+        };
       };
     };
 
@@ -644,10 +647,10 @@ export const BookWash: React.FC = () => {
       typeof responseData === "string"
         ? responseData
         : responseData?.message ||
-          responseData?.error ||
-          responseData?.title ||
-          apiError.message ||
-          "";
+        responseData?.error ||
+        responseData?.title ||
+        apiError.message ||
+        "";
 
     const normalizedMessage = serverMessage.toLowerCase();
     const status = apiError.response?.status;
@@ -909,9 +912,11 @@ export const BookWash: React.FC = () => {
               if ((appliedPromotion as any).discountAmount !== undefined) {
                 promoDiscount = (appliedPromotion as any).discountAmount;
               } else if (appliedPromotion.discountType === "Percentage") {
-                promoDiscount = Math.floor(
-                  packagePrice * (appliedPromotion.discountValue / 100),
-                );
+                const raw = Math.floor(packagePrice * (appliedPromotion.discountValue / 100));
+                const maxDiscount = appliedPromotion.maxDiscount ?? null;
+                promoDiscount = maxDiscount !== null && maxDiscount > 0
+                  ? Math.min(raw, maxDiscount)
+                  : raw;
               } else if (appliedPromotion.discountType === "FixedAmount") {
                 promoDiscount = Math.min(
                   packagePrice,

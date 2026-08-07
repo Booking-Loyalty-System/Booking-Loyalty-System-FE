@@ -25,7 +25,6 @@ export function AdminPackages() {
     isLoading,
     createPackage,
     updatePackage,
-
     toggleStatus,
   } = useWashPackage();
 
@@ -192,11 +191,10 @@ export function AdminPackages() {
             {paginatedPackages.map((pkg) => (
               <div
                 key={pkg.id}
-                className={`bg-white rounded-xl border-2 p-6 transition-all ${
-                  pkg.isActive
-                    ? "border-blue-200 shadow-sm"
-                    : "border-gray-200 opacity-60"
-                }`}
+                className={`bg-white rounded-xl border-2 p-6 transition-all ${pkg.isActive
+                  ? "border-blue-200 shadow-sm"
+                  : "border-gray-200 opacity-60"
+                  }`}
               >
                 {/* Package Header */}
                 <div className="flex items-start justify-between mb-4">
@@ -258,11 +256,10 @@ export function AdminPackages() {
                 {/* Status Toggle */}
                 <button
                   onClick={() => toggleStatus(pkg)}
-                  className={`w-full py-2 rounded-lg font-semibold transition-colors ${
-                    pkg.isActive
-                      ? "bg-green-100 text-green-700 hover:bg-green-200"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                  }`}
+                  className={`w-full py-2 rounded-lg font-semibold transition-colors ${pkg.isActive
+                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                    }`}
                 >
                   {pkg.isActive ? (
                     <span className="flex items-center justify-center gap-2">
@@ -308,11 +305,10 @@ export function AdminPackages() {
                       type="button"
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
-                      className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
-                        safeCurrentPage === pageNumber
-                          ? "bg-blue-600 text-white shadow-sm"
-                          : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                      }`}
+                      className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${safeCurrentPage === pageNumber
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                        }`}
                     >
                       {pageNumber}
                     </button>
@@ -342,11 +338,11 @@ export function AdminPackages() {
               <h4 className="text-xl font-bold text-gray-900">
                 {isAdding
                   ? t("adminWashPackages.addNewPackage", {
-                      defaultValue: "Add New Package",
-                    })
+                    defaultValue: "Add New Package",
+                  })
                   : t("adminWashPackages.editPackage", {
-                      defaultValue: "Edit Package",
-                    })}
+                    defaultValue: "Edit Package",
+                  })}
               </h4>
               <button
                 onClick={handleCancel}
@@ -510,11 +506,11 @@ export function AdminPackages() {
                   <Save className="w-4 h-4" />
                   {isAdding
                     ? t("adminWashPackages.createPackage", {
-                        defaultValue: "Create Package",
-                      })
+                      defaultValue: "Create Package",
+                    })
                     : t("adminWashPackages.saveChanges", {
-                        defaultValue: "Save Changes",
-                      })}
+                      defaultValue: "Save Changes",
+                    })}
                 </button>
                 <button
                   onClick={handleCancel}
