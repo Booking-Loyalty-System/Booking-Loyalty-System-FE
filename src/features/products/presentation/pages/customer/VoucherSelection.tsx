@@ -277,7 +277,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                   </span>
                 </div>
                 <span className="text-sm font-black tracking-tight bg-white/20 px-2 py-0.5 rounded-lg">
-                  {totalPoints.toLocaleString()} pts
+                  {totalPoints.toLocaleString()} point
                 </span>
               </div>
             </div>
@@ -316,7 +316,7 @@ export const VoucherSelection: React.FC<VoucherSelectionProps> = ({
                         <span className="text-xs font-black text-slate-700 dark:text-slate-300">
                           {isFreeWashReward
                             ? "7 lượt"
-                            : `${reward.pointsCost} pts`}
+                            : `${reward.pointsCost} point`}
                         </span>
                         <button
                           onClick={() =>

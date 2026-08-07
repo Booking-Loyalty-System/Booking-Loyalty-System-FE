@@ -127,7 +127,7 @@ export function AdminDashboard() {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: t('adminDashboard.metrics.totalRevenue', { defaultValue: 'Total Revenue' }), value: `${(summary?.metrics?.totalRevenue || 0).toLocaleString("vi-VN")} đ`, icon: DollarSign, color: 'emerald' },
+          { label: t('adminDashboard.metrics.totalRevenue', { defaultValue: 'Current Month Revenue' }), value: `${(summary?.metrics?.totalRevenue || 0).toLocaleString("vi-VN")} đ`, icon: DollarSign, color: 'emerald' },
           { label: t('adminDashboard.metrics.totalBookings', { defaultValue: 'Total Bookings' }), value: summary?.metrics?.totalBookings || 0, icon: Calendar, color: 'blue' },
           { label: t('adminDashboard.metrics.activeCustomers', { defaultValue: 'Active Customers' }), value: summary?.metrics?.activeCustomers || 0, icon: Users, color: 'purple' },
           { label: t('adminDashboard.metrics.averageOrderValue', { defaultValue: 'Average Order Value' }), value: `${Math.round(summary?.metrics?.averageOrderValue || 0).toLocaleString("vi-VN")} đ`, icon: TrendingUp, color: 'amber' }
@@ -211,7 +211,7 @@ export function AdminDashboard() {
                 onClick={handleApplyFilter}
                 className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 self-end sm:self-auto"
               >
-                {t('adminDashboard.revenueComparison.applyBtn', { defaultValue: 'Áp dụng đối soát' })}
+                {t('adminDashboard.revenueComparison.applyBtn', { defaultValue: 'Apply Audit' })}
               </button>
             </div>
           </div>
@@ -221,7 +221,7 @@ export function AdminDashboard() {
           {/* Thống kê con số */}
           <div className="space-y-6">
             <div>
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">Doanh thu kỳ này</span>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">{t('adminDashboard.revenueComparison.currentPeriodRevenue', { defaultValue: 'Current Period Revenue' })}</span>
               <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-500 dark:text-white tracking-tight">
                 {(revenueComparison?.currentRevenue || 0).toLocaleString("vi-VN")} đ
               </div>
@@ -245,7 +245,7 @@ export function AdminDashboard() {
             </div>
 
             <div className="pt-6 border-t border-slate-100 dark:border-white/5">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-1">Doanh thu kỳ trước</span>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block mb-1">{t('adminDashboard.revenueComparison.previousPeriodRevenue', { defaultValue: 'Previous Period Revenue' })}</span>
               <span className="text-xl font-bold text-slate-600 dark:text-slate-400">
                 {(revenueComparison?.previousRevenue || 0).toLocaleString("vi-VN")} đ
               </span>

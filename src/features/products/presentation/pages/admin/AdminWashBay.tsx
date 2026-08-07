@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus, Edit2, Trash2, Save, X, Layers, Search, AlertCircle, Filter } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { translateDynamic } from "@/shared/utils/translateDynamic";
 import { useWashBay } from "@/features/products/application/useWashBay";
 import { AdminBranchRepositoryImplement } from "../../../infrastructure/repositories/admin-branch/admin-branch.repository.implement";
 import type { BranchResponseData } from "../../../domain/models/admin-branch/admin-branch.model";
@@ -14,6 +16,7 @@ interface WashBay {
 }
 
 export function AdminWashBay() {
+    const { t, i18n } = useTranslation();
     const [branches, setBranches] = useState<BranchResponseData[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -74,7 +77,7 @@ export function AdminWashBay() {
 
     const handleSave = async () => {
         if (!editForm.name.trim() || !editForm.branchId) {
-            alert("Vui lòng nhập tên khoang rửa và chọn chi nhánh!");
+            alert(t('adminWashBay.alertEnterNameAndBranch'));
             return;
         }
 
@@ -89,26 +92,26 @@ export function AdminWashBay() {
             handleCloseModal();
         } catch (error) {
             console.error("Lỗi khi lưu khoang rửa:", error);
-            alert("Có lỗi xảy ra khi lưu thông tin khoang rửa!");
+            alert(t('adminWashBay.errorSavingAlert'));
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa khoang rửa này không?")) {
+        if (window.confirm(t('adminWashBay.confirmDelete'))) {
             try {
                 if (deleteWashBay) {
                     await deleteWashBay(id);
                 }
             } catch (error) {
                 console.error("Lỗi khi xóa khoang rửa:", error);
-                alert("Có lỗi xảy ra khi xóa khoang rửa!");
+                alert(t('adminWashBay.errorDeletingAlert'));
             }
         }
     };
 
     // Chỉ cần lọc theo search query vì việc lọc theo branchId đã được React Query (API) xử lý
     const filteredWashBays = washBays.filter((wb: WashBay) =>
-        wb.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        translateDynamic(wb.name, i18n.language).toLowerCase().includes(searchQuery.toLowerCase()) ||
         branches.find(b => b.id === wb.branchId)?.branchName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -125,8 +128,8 @@ export function AdminWashBay() {
         <div className="p-6 space-y-6 animate-fade-in">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Quản lý Khoang Rửa (Wash Bays)</h3>
-                    <p className="text-gray-500">Thêm, sửa, xóa các khoang rửa thuộc từng chi nhánh</p>
+                    <h3 className="text-2xl font-bold text-gray-900">{t('adminWashBay.title')}</h3>
+                    <p className="text-gray-500">{t('adminWashBay.subtitle')}</p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -143,7 +146,7 @@ export function AdminWashBay() {
                             }}
                             className="py-2 pr-4 bg-transparent outline-none text-sm text-gray-700 cursor-pointer"
                         >
-                            <option value="">Tất cả chi nhánh</option>
+                            <option value="">{t('adminWashBay.allBranches')}</option>
                             {branches.map((branch) => (
                                 <option key={branch.id} value={branch.id}>
                                     {branch.branchName}
@@ -157,7 +160,7 @@ export function AdminWashBay() {
                         <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm khoang rửa..."
+                            placeholder={t("adminWashBay.searchPlaceholder")}
                             value={searchQuery}
                             onChange={(e) => {
                                 setSearchQuery(e.target.value);
@@ -171,8 +174,7 @@ export function AdminWashBay() {
                         onClick={handleAdd}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0 text-sm font-medium"
                     >
-                        <Plus className="w-4 h-4" /> Thêm Khoang Rửa
-                    </button>
+                        <Plus className="w-4 h-4" />{t('adminWashBay.addWashBay')}</button>
                 </div>
             </div>
 
@@ -182,10 +184,10 @@ export function AdminWashBay() {
                     <table className="w-full text-left text-sm text-gray-600">
                         <thead className="bg-gray-50 border-b border-gray-200 text-gray-700">
                             <tr>
-                                <th className="px-6 py-4 font-semibold">Tên Khoang Rửa</th>
-                                <th className="px-6 py-4 font-semibold">Trực thuộc Chi Nhánh</th>
-                                <th className="px-6 py-4 font-semibold">Trạng thái</th>
-                                <th className="px-6 py-4 font-semibold text-right">Thao tác</th>
+                                <th className="px-6 py-4 font-semibold">{t('adminWashBay.washBayName')}</th>
+                                <th className="px-6 py-4 font-semibold">{t('adminWashBay.belongsToBranch')}</th>
+                                <th className="px-6 py-4 font-semibold">{t('adminWashBay.status')}</th>
+                                <th className="px-6 py-4 font-semibold text-right">{t('adminWashBay.actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -193,9 +195,7 @@ export function AdminWashBay() {
                                 <tr>
                                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                                         <div className="flex justify-center items-center gap-2">
-                                            <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                                            Đang tải dữ liệu...
-                                        </div>
+                                            <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />{t('adminWashBay.loadingData')}</div>
                                     </td>
                                 </tr>
                             ) : filteredWashBays.length === 0 ? (
@@ -203,7 +203,7 @@ export function AdminWashBay() {
                                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                                         <div className="flex flex-col items-center justify-center gap-2">
                                             <AlertCircle className="w-8 h-8 text-gray-400" />
-                                            <p>Không tìm thấy khoang rửa nào.</p>
+                                            <p>{t('adminWashBay.noWashBayFound')}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -216,7 +216,7 @@ export function AdminWashBay() {
                                                 <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                                                     <Layers className="w-4 h-4" />
                                                 </div>
-                                                {wb.name}
+                                                {translateDynamic(wb.name, i18n.language)}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
@@ -225,23 +225,21 @@ export function AdminWashBay() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className="flex items-center gap-1.5 text-green-600 text-xs font-medium">
-                                                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                                    Hoạt động
-                                                </span>
+                                                    <span className="w-2 h-2 rounded-full bg-green-500"></span>{t('adminWashBay.active')}</span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <button
                                                         onClick={() => handleEdit(wb)}
                                                         className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title="Chỉnh sửa"
+                                                        title={t("adminWashBay.edit")}
                                                     >
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(wb.id)}
                                                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        title="Xóa"
+                                                        title={t("adminWashBay.delete")}
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
@@ -259,7 +257,7 @@ export function AdminWashBay() {
             {totalPages > 1 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 mt-2 bg-white rounded-xl border border-gray-200/80 shadow-sm">
                     <p className="text-sm font-medium text-gray-500">
-                        Hiển thị {startIndex + 1}-{Math.min(endIndex, totalWashBays)} của {totalWashBays} khoang rửa
+                        {t('adminWashBay.showingWashBays', { start: startIndex + 1, end: Math.min(endIndex, totalWashBays), total: totalWashBays })}
                     </p>
                     <div className="flex items-center gap-2">
                         <button
@@ -267,9 +265,7 @@ export function AdminWashBay() {
                             onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                             disabled={safeCurrentPage === 1}
                             className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                        >
-                            Trước
-                        </button>
+                        >{t('adminWashBay.previous')}</button>
                         <div className="flex items-center gap-1">
                             {Array.from({ length: totalPages }, (_, index) => {
                                 const pageNumber = index + 1;
@@ -294,9 +290,7 @@ export function AdminWashBay() {
                             onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                             disabled={safeCurrentPage === totalPages}
                             className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                        >
-                            Tiếp
-                        </button>
+                        >{t('adminWashBay.next')}</button>
                     </div>
                 </div>
             )}
@@ -307,7 +301,7 @@ export function AdminWashBay() {
                     <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-scale-up">
                         <div className="flex items-center justify-between mb-6">
                             <h4 className="text-xl font-bold text-gray-900">
-                                {isEditing ? "Chỉnh sửa Khoang Rửa" : "Thêm Khoang Rửa Mới"}
+                                {isEditing ? t('adminWashBay.editWashBayTitle') : t('adminWashBay.addWashBayTitle')}
                             </h4>
                             <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600">
                                 <X className="w-5 h-5" />
@@ -316,8 +310,7 @@ export function AdminWashBay() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Trực thuộc Chi Nhánh <span className="text-red-500">*</span>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminWashBay.belongsToBranch')}<span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     value={editForm.branchId}
@@ -325,7 +318,7 @@ export function AdminWashBay() {
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                                     disabled={isLoadingBranches}
                                 >
-                                    <option value="" disabled>-- Chọn chi nhánh --</option>
+                                    <option value="" disabled>{t('adminWashBay.selectBranch')}</option>
                                     {branches.map(branch => (
                                         <option key={branch.id} value={branch.id}>
                                             {branch.branchName}
@@ -335,15 +328,14 @@ export function AdminWashBay() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Tên Khoang Rửa <span className="text-red-500">*</span>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminWashBay.washBayName')}<span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={editForm.name}
                                     onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                    placeholder="VD: Khoang rửa 1, Khu A, VIP Bay..."
+                                    placeholder={t("adminWashBay.washBayNamePlaceholder")}
                                 />
                             </div>
                         </div>
@@ -352,16 +344,14 @@ export function AdminWashBay() {
                             <button
                                 onClick={handleCloseModal}
                                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                            >
-                                Hủy bỏ
-                            </button>
+                            >{t('adminWashBay.cancel')}</button>
                             <button
                                 onClick={handleSave}
                                 disabled={isCreatingWashBay}
                                 className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors"
                             >
                                 <Save className="w-4 h-4" />
-                                {isCreatingWashBay ? "Đang lưu..." : "Lưu lại"}
+                                {isCreatingWashBay ? t('adminWashBay.saving') : t('adminWashBay.save')}
                             </button>
                         </div>
                     </div>

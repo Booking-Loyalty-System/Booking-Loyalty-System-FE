@@ -278,7 +278,7 @@ export function AdminPromotions() {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.status', { defaultValue: 'Trạng thái' })}</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.uses', { defaultValue: 'Đã dùng' })}</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.startDateCol', { defaultValue: 'Bắt đầu' })}</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.expires', { defaultValue: 'Hết hạn' })}</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('adminPromotions.expires', { defaultValue: 'Kết thúc' })}</th>
                 <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">{t('adminPromotions.actions', { defaultValue: 'Thao tác' })}</th>
               </tr>
             </thead>

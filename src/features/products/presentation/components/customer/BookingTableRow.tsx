@@ -92,7 +92,7 @@ export const BookingTableRow: React.FC<BookingTableRowProps> = ({
                               : "bg-slate-50 text-slate-700 ring-slate-500/20 dark:bg-white/5 dark:text-slate-400"
           }`}
         >
-          {b.status}
+          {t(`dynamic.status.${b.status.charAt(0).toLowerCase() + b.status.slice(1)}`)}
         </span>
       </td>
 
