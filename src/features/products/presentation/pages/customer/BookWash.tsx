@@ -61,6 +61,49 @@ interface CreatedBookingData {
   vehicleName?: string;
 }
 
+// VoucherSelection có thể trả voucher trực tiếp hoặc dữ liệu đổi thưởng
+// chứa thông tin voucher bên trong `data`, `reward` hoặc `voucher`.
+// Chuẩn hóa tại đây để BookingSummary luôn nhận được cùng một cấu trúc.
+const normalizeVoucher = (voucher: Voucher): Voucher => {
+  const raw = voucher as any;
+  const source = raw?.data ?? raw;
+  const details = source?.reward ?? source?.voucher ?? source;
+
+  const rawDiscount =
+    source?.discountAmount ??
+    source?.discountValue ??
+    source?.value ??
+    details?.discountAmount ??
+    details?.discountValue ??
+    details?.value ??
+    0;
+
+  const parsedDiscount = Number(rawDiscount);
+  const discount = Number.isFinite(parsedDiscount) ? parsedDiscount : 0;
+  const voucherName =
+    source?.rewardName ??
+    source?.name ??
+    source?.title ??
+    details?.rewardName ??
+    details?.name ??
+    details?.title ??
+    "Voucher";
+
+  return {
+    ...raw,
+    ...source,
+    id: source?.id ?? raw?.id,
+    rewardName: voucherName,
+    name: voucherName,
+    discountAmount: discount,
+    discountValue: discount,
+    value: discount,
+    washPackageId: source?.washPackageId ?? details?.washPackageId,
+    isFreeWash:
+      source?.isFreeWash ?? details?.isFreeWash ?? raw?.isFreeWash ?? false,
+  } as Voucher;
+};
+
 interface SuccessScreenProps {
   booking: CreatedBookingData;
   vehicleInfo?: Vehicle;
@@ -250,13 +293,13 @@ export const BookWash: React.FC = () => {
   const earnedFreeWashes = Math.floor(totalWashes / 7);
   const redeemedFreeWashes = Array.isArray(redemptions)
     ? redemptions.filter(
-      (r) =>
-        r &&
-        (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" ||
-          r.rewardName === "Free Car Wash Reward" ||
-          r.rewardName.includes("Miễn Phí") ||
-          r.rewardName.includes("Free Wash")),
-    ).length
+        (r) =>
+          r &&
+          (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" ||
+            r.rewardName === "Free Car Wash Reward" ||
+            r.rewardName.includes("Miễn Phí") ||
+            r.rewardName.includes("Free Wash")),
+      ).length
     : 0;
   const availableFreeWashes = Math.max(
     0,
@@ -426,8 +469,9 @@ export const BookWash: React.FC = () => {
       setHasAppliedAutoPromo(true);
       toast.success(
         t("bookWash.toastAutoPromoApplied", {
-          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${bestPromo.name || bestPromo.code
-            }`,
+          defaultValue: `Đã tự động áp dụng ưu đãi tốt nhất: ${
+            bestPromo.name || bestPromo.code
+          }`,
         }),
       );
     } else {
@@ -585,12 +629,12 @@ export const BookWash: React.FC = () => {
       response?: {
         status?: number;
         data?:
-        | string
-        | {
-          message?: string;
-          error?: string;
-          title?: string;
-        };
+          | string
+          | {
+              message?: string;
+              error?: string;
+              title?: string;
+            };
       };
     };
 
@@ -600,10 +644,10 @@ export const BookWash: React.FC = () => {
       typeof responseData === "string"
         ? responseData
         : responseData?.message ||
-        responseData?.error ||
-        responseData?.title ||
-        apiError.message ||
-        "";
+          responseData?.error ||
+          responseData?.title ||
+          apiError.message ||
+          "";
 
     const normalizedMessage = serverMessage.toLowerCase();
     const status = apiError.response?.status;
@@ -846,9 +890,13 @@ export const BookWash: React.FC = () => {
               );
               return;
             }
+
+            // Không lưu trực tiếp response của lần đổi thưởng vì response có
+            // thể thiếu discountAmount/discountValue ở cấp ngoài cùng.
+            const normalizedVoucher = normalizeVoucher(voucher);
             if (
-              (voucher as any).washPackageId &&
-              (voucher as any).washPackageId !== selectedPackageId
+              (normalizedVoucher as any).washPackageId &&
+              (normalizedVoucher as any).washPackageId !== selectedPackageId
             ) {
               toast.error("Voucher này không thể dùng cho gói đó!");
               return;
@@ -861,28 +909,39 @@ export const BookWash: React.FC = () => {
               if ((appliedPromotion as any).discountAmount !== undefined) {
                 promoDiscount = (appliedPromotion as any).discountAmount;
               } else if (appliedPromotion.discountType === "Percentage") {
-                promoDiscount = Math.floor(packagePrice * (appliedPromotion.discountValue / 100));
+                promoDiscount = Math.floor(
+                  packagePrice * (appliedPromotion.discountValue / 100),
+                );
               } else if (appliedPromotion.discountType === "FixedAmount") {
-                promoDiscount = Math.min(packagePrice, appliedPromotion.discountValue);
+                promoDiscount = Math.min(
+                  packagePrice,
+                  appliedPromotion.discountValue,
+                );
               }
             }
 
             const priceAfterPromo = packagePrice - promoDiscount;
-            const rewardDiscount = (voucher as any).discountAmount || (voucher as any).discountValue || (voucher as any).value || 0;
+            const rewardDiscount = Number(
+              (normalizedVoucher as any).discountAmount ?? 0,
+            );
 
-            if (!(voucher as any).isFreeWash && rewardDiscount > priceAfterPromo) {
-              toast.error("Giá trị giảm của Reward lớn hơn số tiền cần thanh toán sau khi áp dụng Khuyến mãi. Không thể áp dụng!");
+            if (
+              !(normalizedVoucher as any).isFreeWash &&
+              rewardDiscount > priceAfterPromo
+            ) {
+              toast.error(
+                "Giá trị giảm của Reward lớn hơn số tiền cần thanh toán sau khi áp dụng Khuyến mãi. Không thể áp dụng!",
+              );
               return;
             }
 
             // Nếu là voucher Free Wash → clear promotion ngay lập tức
-            if ((voucher as any).isFreeWash === true) {
+            if ((normalizedVoucher as any).isFreeWash === true) {
               setAppliedPromotion(null);
               setHasAppliedAutoPromo(true);
             }
-            setSelectedVoucher(voucher);
+            setSelectedVoucher(normalizedVoucher);
           }}
-
           totalPoints={customerMe?.availablePoint ?? 0}
           availableFreeWashes={availableFreeWashes}
         />
