@@ -611,7 +611,7 @@ export const ProfileSettings: React.FC = () => {
                     })}
                   </span>
                   <span className="text-base font-black text-amber-300">
-                    {customerMe?.availablePoint ?? 0} pts
+                    {customerMe?.availablePoint ?? 0} point
                   </span>
                 </div>
               </div>

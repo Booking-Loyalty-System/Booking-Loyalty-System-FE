@@ -136,5 +136,36 @@
         "desc": "Applying tire polish for a brand new shiny look."
       }
     }
+  },
+  "adminWashBay": {
+    "title": "Wash Bays Management",
+    "subtitle": "Add, edit, delete wash bays in each branch",
+    "allBranches": "All Branches",
+    "searchPlaceholder": "Search wash bays...",
+    "addWashBay": "Add Wash Bay",
+    "washBayName": "Wash Bay Name",
+    "belongsToBranch": "Belongs to Branch",
+    "status": "Status",
+    "actions": "Actions",
+    "loadingData": "Loading data...",
+    "noWashBayFound": "No wash bays found.",
+    "unknownBranch": "Unknown Branch",
+    "active": "Active",
+    "edit": "Edit",
+    "delete": "Delete",
+    "showingWashBays": "Showing {{start}}-{{end}} of {{total}} wash bays",
+    "previous": "Previous",
+    "next": "Next",
+    "editWashBayTitle": "Edit Wash Bay",
+    "addWashBayTitle": "Add New Wash Bay",
+    "selectBranch": "-- Select Branch --",
+    "washBayNamePlaceholder": "Ex: Bay 1, Area A, VIP Bay...",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save": "Save",
+    "alertEnterNameAndBranch": "Please enter wash bay name and select a branch!",
+    "errorSavingAlert": "Error saving wash bay information!",
+    "confirmDelete": "Are you sure you want to delete this wash bay?",
+    "errorDeletingAlert": "Error deleting wash bay!"
   }
 }

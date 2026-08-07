@@ -693,13 +693,16 @@
       "superPremium": "Chăm sóc chi tiết toàn diện với phủ sáp và bảo dưỡng da"
     },
     "status": {
-      "pending": "Đang chờ xử lý",
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "inProgress": "Đang xử lý",
+      "completed": "Hoàn thành",
+      "cancelled": "Đã hủy",
+      "checkedOut": "Đã thanh toán",
       "queued": "Đang xếp hàng",
-      "checkedIn": "Đã Check-in",
-      "checkedOut": "Đã Check-out",
-      "inProgress": "Đang rửa xe",
-      "completed": "Đã hoàn thành",
-      "cancelled": "Đã hủy"
+      "checkedIn": "Đã đến",
+      "rejected": "Đã từ chối",
+      "noShow": "Vắng mặt"
     },
     "tiers": {
       "member": "Thành viên",
@@ -745,7 +748,7 @@
     "title": "Tổng Quan Hệ Thống",
     "subtitle": "Theo dõi tổng quan doanh thu và hiệu suất kinh doanh.",
     "metrics": {
-      "totalRevenue": "Tổng Doanh Thu",
+      "totalRevenue": "Doanh thu của tháng hiện tại",
       "totalBookings": "Tổng Lượt Đặt",
       "activeCustomers": "Khách Hoạt Động",
       "averageOrderValue": "Giá Trị Đơn Trung Bình"
@@ -764,7 +767,10 @@
       "revenueOverview": "Tổng Quan Doanh Thu",
       "exportDataset": "Xuất Dữ Liệu",
       "currentTerm": "Kỳ này",
-      "previousTerm": "Kỳ trước"
+      "previousTerm": "Kỳ trước",
+      "currentPeriodRevenue": "Doanh thu kỳ này",
+      "previousPeriodRevenue": "Doanh thu kỳ trước",
+      "applyBtn": "Áp dụng đối soát"
     },
     "membershipTiers": {
       "title": "Hạng Thành Viên",
@@ -937,7 +943,7 @@
     "status": "Trạng thái áp dụng",
     "actions": "Hành động",
     "noDesc": "Chưa có mô tả",
-    "pts": "pts",
+    "pts": "point",
     "active": "Hoạt động",
     "inactive": "Tạm dừng",
     "editReward": "Chỉnh sửa thông tin",
@@ -1015,7 +1021,7 @@
     "value": "Giá trị",
     "status": "Trạng thái",
     "uses": "Lượt dùng",
-    "expires": "Hết hạn",
+    "expires": "Kết thúc",
     "actions": "Thao tác",
     "percentage": "Phần trăm",
     "fixedAmount": "Số tiền cố định",
@@ -1037,7 +1043,8 @@
     "saveChanges": "Lưu thay đổi",
     "percentageSuffix": "Phần trăm (%)",
     "fixedAmountSuffix": "Số tiền cố định (đ)",
-    "description": "Mô tả"
+    "description": "Mô tả",
+    "startDateCol": "Bắt đầu"
   },
   "staffSidebar": {
     "staffPortal": "Cổng Nhân Viên",
