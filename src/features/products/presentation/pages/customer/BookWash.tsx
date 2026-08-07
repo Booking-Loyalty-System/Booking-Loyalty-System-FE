@@ -295,7 +295,7 @@ export const BookWash: React.FC = () => {
     ? redemptions.filter(
         (r) =>
           r &&
-          (r.rewardName === "Phần thưởng Rửa Xe Miễn Phí" ||
+          (r.rewardName === "Thưởng Rửa xe VIP Miễn phí" ||
             r.rewardName === "Free Car Wash Reward" ||
             r.rewardName.includes("Miễn Phí") ||
             r.rewardName.includes("Free Wash")),
