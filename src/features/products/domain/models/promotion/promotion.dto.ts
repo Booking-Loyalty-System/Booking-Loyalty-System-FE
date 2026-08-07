@@ -15,6 +15,7 @@ export interface Promotion {
     maxUses?: number | null; // Có thể thêm các trường này để khớp với Swagger
     usedCount?: number;
     minSpend?: number | null;
+    maxDiscount?: number | null;
 }
 
 export interface PromotionResponse {

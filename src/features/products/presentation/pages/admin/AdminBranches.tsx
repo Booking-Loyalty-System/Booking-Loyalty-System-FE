@@ -258,20 +258,6 @@ export function AdminBranches() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this branch?")) {
-      try {
-        setIsLoading(true);
-        await branchRepo.delete(id);
-        await fetchBranches();
-      } catch (error) {
-        console.error("Failed to delete branch:", error);
-        alert("Có lỗi xảy ra khi xóa chi nhánh!");
-        setIsLoading(false);
-      }
-    }
-  };
-
   const handleToggleStatus = async (branch: BranchResponseData) => {
     try {
       setIsLoading(true);
@@ -557,12 +543,6 @@ export function AdminBranches() {
                       title="Sửa chi nhánh"
                     >
                       <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(branch.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

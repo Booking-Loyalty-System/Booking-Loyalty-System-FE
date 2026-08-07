@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { translateDynamic } from "@/shared/utils/dynamicTranslator";
 
 export function AdminPackages() {
-  const { t } = useTranslation('customer');
+  const { t } = useTranslation("customer");
   const {
     packages,
     isLoading,
@@ -86,7 +86,13 @@ export function AdminPackages() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm(t('adminWashPackages.deleteConfirm', { defaultValue: 'Are you sure you want to delete this package?' }))) {
+    if (
+      confirm(
+        t("adminWashPackages.deleteConfirm", {
+          defaultValue: "Are you sure you want to delete this package?",
+        }),
+      )
+    ) {
       await deletePackage(id);
     }
   };
@@ -135,14 +141,20 @@ export function AdminPackages() {
 
     // TRƯỜNG HỢP 1: Nếu giá nhập vào cao hơn gói xịn nhất => Lấy features gói xịn nhất
     if (currentPrice >= highestPackage.price) {
-      return highestPackage.features.length > 0 ? highestPackage.features : [""];
+      return highestPackage.features.length > 0
+        ? highestPackage.features
+        : [""];
     }
 
     // TRƯỜNG HỢP 2: Nếu giá thấp hơn => Tìm gói có giá cao hơn kế tiếp (gói thấp nhất mà vẫn lớn hơn currentPrice)
-    const nextHigherPackage = activePackages.find((p) => p.price > currentPrice);
+    const nextHigherPackage = activePackages.find(
+      (p) => p.price > currentPrice,
+    );
 
     if (nextHigherPackage) {
-      return nextHigherPackage.features.length > 0 ? nextHigherPackage.features : [""];
+      return nextHigherPackage.features.length > 0
+        ? nextHigherPackage.features
+        : [""];
     }
 
     return [""];
@@ -164,7 +176,9 @@ export function AdminPackages() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-500">
-              {t('adminWashPackages.subtitle', { defaultValue: 'Create and manage wash service packages' })}
+              {t("adminWashPackages.subtitle", {
+                defaultValue: "Create and manage wash service packages",
+              })}
             </p>
           </div>
           <button
@@ -172,13 +186,17 @@ export function AdminPackages() {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            {t('adminWashPackages.addPackage', { defaultValue: 'Add Package' })}
+            {t("adminWashPackages.addPackage", { defaultValue: "Add Package" })}
           </button>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
-            <p className="text-gray-500">{t('adminWashPackages.loadingPackages', { defaultValue: 'Loading packages...' })}</p>
+            <p className="text-gray-500">
+              {t("adminWashPackages.loadingPackages", {
+                defaultValue: "Loading packages...",
+              })}
+            </p>
           </div>
         ) : (
           /* Packages Grid */
@@ -186,10 +204,11 @@ export function AdminPackages() {
             {paginatedPackages.map((pkg) => (
               <div
                 key={pkg.id}
-                className={`bg-white rounded-xl border-2 p-6 transition-all ${pkg.isActive
-                  ? "border-blue-200 shadow-sm"
-                  : "border-gray-200 opacity-60"
-                  }`}
+                className={`bg-white rounded-xl border-2 p-6 transition-all ${
+                  pkg.isActive
+                    ? "border-blue-200 shadow-sm"
+                    : "border-gray-200 opacity-60"
+                }`}
               >
                 {/* Package Header */}
                 <div className="flex items-start justify-between mb-4">
@@ -203,22 +222,22 @@ export function AdminPackages() {
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button
-                      onClick={() => handleDelete(pkg.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
 
                 {/* Package Info */}
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {translateDynamic(pkg.name, 'package', t)}
+                  {translateDynamic(pkg.name, "package", t)}
                 </h3>
 
-
-                <p className="text-sm text-gray-600 mb-4">{translateDynamic(pkg.name, 'packageDesc', t, pkg.description)}</p>
+                <p className="text-sm text-gray-600 mb-4">
+                  {translateDynamic(
+                    pkg.name,
+                    "packageDesc",
+                    t,
+                    pkg.description,
+                  )}
+                </p>
 
                 {/* Price and Duration */}
                 <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
@@ -241,7 +260,9 @@ export function AdminPackages() {
                   {pkg.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
-                      <span className="text-sm text-gray-700">{translateDynamic(feature, 'feature', t, feature)}</span>
+                      <span className="text-sm text-gray-700">
+                        {translateDynamic(feature, "feature", t, feature)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -249,20 +270,25 @@ export function AdminPackages() {
                 {/* Status Toggle */}
                 <button
                   onClick={() => toggleStatus(pkg)}
-                  className={`w-full py-2 rounded-lg font-semibold transition-colors ${pkg.isActive
-                    ? "bg-green-100 text-green-700 hover:bg-green-200"
-                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                    }`}
+                  className={`w-full py-2 rounded-lg font-semibold transition-colors ${
+                    pkg.isActive
+                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  }`}
                 >
                   {pkg.isActive ? (
                     <span className="flex items-center justify-center gap-2">
                       <CheckCircle2 className="w-4 h-4" />
-                      {t('adminWashPackages.active', { defaultValue: 'Active' })}
+                      {t("adminWashPackages.active", {
+                        defaultValue: "Active",
+                      })}
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <XCircle className="w-4 h-4" />
-                      {t('adminWashPackages.inactive', { defaultValue: 'Inactive' })}
+                      {t("adminWashPackages.inactive", {
+                        defaultValue: "Inactive",
+                      })}
                     </span>
                   )}
                 </button>
@@ -274,7 +300,8 @@ export function AdminPackages() {
         {totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 bg-white rounded-xl border border-gray-200/80 shadow-sm mt-4">
             <p className="text-sm font-medium text-gray-500">
-              Hiển thị {startIndex + 1}-{Math.min(endIndex, totalPackages)} của {totalPackages} gói dịch vụ
+              Hiển thị {startIndex + 1}-{Math.min(endIndex, totalPackages)} của{" "}
+              {totalPackages} gói dịch vụ
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -306,7 +333,9 @@ export function AdminPackages() {
               </div>
               <button
                 type="button"
-                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                onClick={() =>
+                  setCurrentPage((page) => Math.min(totalPages, page + 1))
+                }
                 disabled={safeCurrentPage === totalPages}
                 className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
@@ -323,7 +352,13 @@ export function AdminPackages() {
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h4 className="text-xl font-bold text-gray-900">
-                {isAdding ? t('adminWashPackages.addNewPackage', { defaultValue: 'Add New Package' }) : t('adminWashPackages.editPackage', { defaultValue: 'Edit Package' })}
+                {isAdding
+                  ? t("adminWashPackages.addNewPackage", {
+                      defaultValue: "Add New Package",
+                    })
+                  : t("adminWashPackages.editPackage", {
+                      defaultValue: "Edit Package",
+                    })}
               </h4>
               <button
                 onClick={handleCancel}
@@ -337,7 +372,9 @@ export function AdminPackages() {
               {/* Package Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('adminWashPackages.packageName', { defaultValue: 'Package Name' })}
+                  {t("adminWashPackages.packageName", {
+                    defaultValue: "Package Name",
+                  })}
                 </label>
                 <input
                   type="text"
@@ -346,14 +383,18 @@ export function AdminPackages() {
                     setEditForm({ ...editForm, name: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder={t('adminWashPackages.packageNamePlaceholder', { defaultValue: 'e.g. Premium Wash' })}
+                  placeholder={t("adminWashPackages.packageNamePlaceholder", {
+                    defaultValue: "e.g. Premium Wash",
+                  })}
                 />
               </div>
 
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('adminWashPackages.description', { defaultValue: 'Description' })}
+                  {t("adminWashPackages.description", {
+                    defaultValue: "Description",
+                  })}
                 </label>
                 <input
                   type="text"
@@ -362,7 +403,9 @@ export function AdminPackages() {
                     setEditForm({ ...editForm, description: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder={t('adminWashPackages.descriptionPlaceholder', { defaultValue: 'Brief description' })}
+                  placeholder={t("adminWashPackages.descriptionPlaceholder", {
+                    defaultValue: "Brief description",
+                  })}
                 />
               </div>
 
@@ -370,7 +413,9 @@ export function AdminPackages() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('adminWashPackages.price', { defaultValue: 'Price (VND)' })}
+                    {t("adminWashPackages.price", {
+                      defaultValue: "Price (VND)",
+                    })}
                   </label>
                   <input
                     type="number"
@@ -390,7 +435,9 @@ export function AdminPackages() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('adminWashPackages.duration', { defaultValue: 'Duration (min)' })}
+                    {t("adminWashPackages.duration", {
+                      defaultValue: "Duration (min)",
+                    })}
                   </label>
                   <input
                     type="number"
@@ -406,11 +453,12 @@ export function AdminPackages() {
                 </div>
               </div>
 
-
               {/* Features */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('adminWashPackages.features', { defaultValue: 'Features' })}
+                  {t("adminWashPackages.features", {
+                    defaultValue: "Features",
+                  })}
                 </label>
                 <div className="space-y-2">
                   {editForm.features.map((feature, idx) => (
@@ -420,7 +468,9 @@ export function AdminPackages() {
                         value={feature}
                         onChange={(e) => updateFeature(idx, e.target.value)}
                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder={t('adminWashPackages.featurePlaceholder', { defaultValue: 'Feature description' })}
+                        placeholder={t("adminWashPackages.featurePlaceholder", {
+                          defaultValue: "Feature description",
+                        })}
                       />
                       <button
                         onClick={() => removeFeature(idx)}
@@ -435,7 +485,9 @@ export function AdminPackages() {
                     className="flex items-center gap-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    {t('adminWashPackages.addFeature', { defaultValue: 'Add Feature' })}
+                    {t("adminWashPackages.addFeature", {
+                      defaultValue: "Add Feature",
+                    })}
                   </button>
                 </div>
               </div>
@@ -455,7 +507,9 @@ export function AdminPackages() {
                   htmlFor="isActive"
                   className="text-sm font-medium text-gray-700"
                 >
-                  {t('adminWashPackages.activeLabel', { defaultValue: 'Active (available for booking)' })}
+                  {t("adminWashPackages.activeLabel", {
+                    defaultValue: "Active (available for booking)",
+                  })}
                 </label>
               </div>
 
@@ -466,13 +520,19 @@ export function AdminPackages() {
                   className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
                   <Save className="w-4 h-4" />
-                  {isAdding ? t('adminWashPackages.createPackage', { defaultValue: 'Create Package' }) : t('adminWashPackages.saveChanges', { defaultValue: 'Save Changes' })}
+                  {isAdding
+                    ? t("adminWashPackages.createPackage", {
+                        defaultValue: "Create Package",
+                      })
+                    : t("adminWashPackages.saveChanges", {
+                        defaultValue: "Save Changes",
+                      })}
                 </button>
                 <button
                   onClick={handleCancel}
                   className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
                 >
-                  {t('adminWashPackages.cancel', { defaultValue: 'Cancel' })}
+                  {t("adminWashPackages.cancel", { defaultValue: "Cancel" })}
                 </button>
               </div>
             </div>

@@ -1082,7 +1082,7 @@
     "tryChangingFilters": "Try changing the filters or selecting another date.",
     "table": {
       "code": "Code",
-      "customerVehicle": "Customer & Vehicle",
+      "customerVehicle": "Vehicle",
       "service": "Service",
       "status": "Status",
       "actions": "Actions"

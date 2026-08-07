@@ -43,7 +43,7 @@ const staffDashboardEn = {
     "tryChangingFilters": "Try changing the filters or selecting another date.",
     "table": {
         "code": "Code",
-        "customerVehicle": "Customer & Vehicle",
+        "customerVehicle": "Vehicle",
         "service": "Service",
         "status": "Status",
         "actions": "Actions"
@@ -105,7 +105,7 @@ const staffDashboardVi = {
     "tryChangingFilters": "Thử thay đổi bộ lọc hoặc chọn ngày khác xem sao nhé.",
     "table": {
         "code": "Mã Code",
-        "customerVehicle": "Khách & Xe",
+        "customerVehicle": "Xe",
         "service": "Dịch vụ",
         "status": "Trạng thái",
         "actions": "Thao tác"
