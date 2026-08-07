@@ -97,6 +97,7 @@ export function AdminPromotions() {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<LocalPromoForm | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const stats = useMemo(() => {
     const activeCount = promotions.filter((p) => p.isActive).length;
@@ -219,6 +220,15 @@ export function AdminPromotions() {
 
   const showModal = (isAdding || editingId) && form;
 
+  // Pagination for Promotions
+  const PROMOS_PER_PAGE = 5;
+  const totalPromos = promotions?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalPromos / PROMOS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * PROMOS_PER_PAGE;
+  const endIndex = startIndex + PROMOS_PER_PAGE;
+  const paginatedPromotions = (promotions || []).slice(startIndex, endIndex);
+
   return (
     <div className="p-6 space-y-8 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -273,7 +283,7 @@ export function AdminPromotions() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {promotions.map((promo) => (
+              {paginatedPromotions.map((promo) => (
                 <tr key={promo.id} className="hover:bg-gray-50 group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -350,6 +360,51 @@ export function AdminPromotions() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 mt-2 border-t border-slate-100 bg-white rounded-b-2xl">
+          <p className="text-sm font-medium text-slate-500">
+            Hiển thị {startIndex + 1}-{Math.min(endIndex, totalPromos)} của {totalPromos} khuyến mãi
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={safeCurrentPage === 1}
+              className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              {t('bookingHistory.pagination.previous', { defaultValue: 'Trước' })}
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, index) => {
+                const pageNumber = index + 1;
+                return (
+                  <button
+                    type="button"
+                    key={pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    className={`min-w-9 h-9 px-3 rounded-lg text-sm font-bold transition-colors ${
+                      safeCurrentPage === pageNumber
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={safeCurrentPage === totalPages}
+              className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              {t('bookingHistory.pagination.next', { defaultValue: 'Tiếp' })}
+            </button>
+          </div>
         </div>
       )}
 

@@ -25,9 +25,10 @@ export const AdminChatFeedbacks: React.FC = () => {
     });
 
     const [selectedFeedbackId, setSelectedFeedbackId] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Fetch dữ liệu từ API qua React Query[cite: 16]
-    const { data: latestFeedbacks, isLoading: loadingFeedbacks } = useLatestFeedbacks(10);
+    const { data: latestFeedbacks, isLoading: loadingFeedbacks } = useLatestFeedbacks(50);
     const { data: staffStats, isLoading: loadingStats } = useStaffStatistics(5);
     const { data: detailData, isLoading: loadingDetail } = useFeedbackDetail(selectedFeedbackId);
 
@@ -66,6 +67,15 @@ export const AdminChatFeedbacks: React.FC = () => {
         setNewVoucher({ code: '', discountValue: '', type: 'Percentage', minOrderValue: '', expiryDays: '30' });
         setIsVoucherModalOpen(false);
     };
+
+    // Pagination logic
+    const FEEDBACKS_PER_PAGE = 5;
+    const totalFeedbacks = latestFeedbacks?.length || 0;
+    const totalPages = Math.max(1, Math.ceil(totalFeedbacks / FEEDBACKS_PER_PAGE));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const startIndex = (safeCurrentPage - 1) * FEEDBACKS_PER_PAGE;
+    const endIndex = startIndex + FEEDBACKS_PER_PAGE;
+    const paginatedFeedbacks = (latestFeedbacks || []).slice(startIndex, endIndex);
 
     return (
         <div className="space-y-6">
@@ -143,7 +153,7 @@ export const AdminChatFeedbacks: React.FC = () => {
                         ) : latestFeedbacks?.length === 0 ? (
                             <div className="p-8 text-center text-slate-400">Chưa có feedback chat nào.</div>
                         ) : (
-                            latestFeedbacks?.map((fb: any) => (
+                            paginatedFeedbacks.map((fb: any) => (
                                 <button
                                     key={fb.id}
                                     onClick={() => setSelectedFeedbackId(fb.id)}
@@ -173,6 +183,32 @@ export const AdminChatFeedbacks: React.FC = () => {
                             ))
                         )}
                     </div>
+
+                    {/* Chat Feedback Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-100 bg-slate-50/50">
+                            <p className="text-xs font-medium text-slate-500">
+                                {startIndex + 1}-{Math.min(endIndex, totalFeedbacks)} / {totalFeedbacks}
+                            </p>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                                    disabled={safeCurrentPage === 1}
+                                    className="px-2 py-1 rounded border border-slate-200 text-xs font-bold text-slate-600 hover:bg-white disabled:opacity-40 transition-colors"
+                                >
+                                    Trước
+                                </button>
+                                <span className="text-xs font-bold text-slate-600 px-2">{safeCurrentPage} / {totalPages}</span>
+                                <button
+                                    onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                                    disabled={safeCurrentPage === totalPages}
+                                    className="px-2 py-1 rounded border border-slate-200 text-xs font-bold text-slate-600 hover:bg-white disabled:opacity-40 transition-colors"
+                                >
+                                    Tiếp
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* 2. CHI TIẾT CHAT LOG & TẶNG VOUCHER ĐỀN BÙ */}

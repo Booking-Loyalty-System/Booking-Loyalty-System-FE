@@ -46,7 +46,7 @@ export const Dashboard: React.FC = () => {
   ).length;
   const totalSpent = customerMe?.totalSpent ?? 0;
 
-  // Dynamic calculations for tier thresholds
+  // Dynamic calculations for tier thresholds điểm số để biết mức tier tiếp theo 
   let targetPoints = 2000;
   if (totalPoint >= 2000 && totalPoint < 6000) {
     targetPoints = 6000;
@@ -417,8 +417,8 @@ export const Dashboard: React.FC = () => {
                     {isCustomerLoading
                       ? t("dashboard.loading", "Loading...")
                       : t(`loyaltyTier.tiers.${tier.toLowerCase()}`, {
-                          defaultValue: `${tier} Member`,
-                        })}
+                        defaultValue: `${tier} Member`,
+                      })}
                   </h2>
                 </div>
               </div>
@@ -555,13 +555,12 @@ export const Dashboard: React.FC = () => {
                       {t("dashboard.bookingStatus", "Status")}
                     </span>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase ${
-                        nextBooking.status === "Confirmed"
+                      className={`px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase ${nextBooking.status === "Confirmed"
                           ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
                           : nextBooking.status === "Pending"
                             ? "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400"
                             : "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
-                      }`}
+                        }`}
                     >
                       {nextBooking.status}
                     </span>
