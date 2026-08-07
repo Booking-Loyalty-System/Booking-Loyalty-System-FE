@@ -25,7 +25,6 @@ export function AdminPackages() {
     isLoading,
     createPackage,
     updatePackage,
-    // deletePackage,
     toggleStatus,
   } = useWashPackage();
 
@@ -84,18 +83,6 @@ export function AdminPackages() {
       handleCancel();
     }
   };
-
-  // const handleDelete = async (id: string) => {
-  //   if (
-  //     confirm(
-  //       t("adminWashPackages.deleteConfirm", {
-  //         defaultValue: "Are you sure you want to delete this package?",
-  //       }),
-  //     )
-  //   ) {
-  //     await deletePackage(id);
-  //   }
-  // };
 
   const handleCancel = () => {
     setIsEditing(null);
